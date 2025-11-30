@@ -1,37 +1,67 @@
 site_name: foodspec
+site_description: "Headless, research-grade Python toolkit for Raman and FTIR spectroscopy in food science."
 site_url: https://chandrasekarnarayana.github.io/foodspec
+
 repo_url: https://github.com/chandrasekarnarayana/foodspec
+repo_name: chandrasekarnarayana/foodspec
+
 theme:
   name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: teal
+    - scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
 nav:
   - Home: index.md
-  - Getting Started: getting_started.md
-  - Oil Authentication Tutorial: oil_auth_tutorial.md
-  - Heating Degradation: heating_tutorial.md
-  - CLI: cli.md
-  - Libraries: libraries.md
-  - Validation & Examples:
-      - Baselines: validation_baseline.md
-      - Peak Ratios: validation_peak_ratios.md
-      - Chemometrics Oils: validation_chemometrics_oils.md
-      - FTIR/Raman Preprocessing: ftir_raman_preprocessing.md
-      - Hyperspectral: hyperspectral.md
-  - QC & Novelty Detection: qc_tutorial.md
-  - Domains Overview: domains_overview.md
-  - Model Registry: model_registry.md
-  - Advanced: advanced_deep_learning.md
-  - MethodsX Protocol: methodsx_protocol.md
+  - Getting started: getting_started.md
+  - API reference: api_reference.md
+  - Public libraries & datasets: libraries.md
+  - Domains overview: domains_overview.md
+  - Hyperspectral workflows: hyperspectral.md
+  - Validation & chemometrics (oils): validation_chemometrics_oils.md
+  - MethodsX protocol mapping: methodsx_protocol.md
+  - Advanced deep learning: advanced_deep_learning.md
   - Citing foodspec: citing.md
-  - Design Overview: design/01_overview.md
-  - API Reference:
-      - foodspec: api_reference.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - codehilite
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+
 plugins:
   - search
   - mkdocstrings:
       handlers:
-        python: {}
-markdown_extensions:
-  - admonition
-  - codehilite
-  - toc:
-      permalink: true
+        python:
+          # Use default settings; rely on type hints and docstrings
+          options:
+            show_source: true
+            separate_signature: true
+            docstring_style: google
+            inherited_members: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/chandrasekarnarayana/foodspec
+      name: GitHub
+  generator: true
