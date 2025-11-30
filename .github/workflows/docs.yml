@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write  # allow mkdocs gh-deploy to push to gh-pages
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
