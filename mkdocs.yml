@@ -1,0 +1,40 @@
+site_name: foodspec
+site_url: https://your-org.github.io/foodspec
+repo_url: https://github.com/your-org/foodspec
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - Oil Authentication Tutorial: oil_auth_tutorial.md
+  - Heating Degradation: heating_tutorial.md
+  - CLI: cli.md
+  - Libraries: libraries.md
+  - Validation & Examples:
+      - Baselines: validation_baseline.md
+      - Peak Ratios: validation_peak_ratios.md
+      - Chemometrics Oils: validation_chemometrics_oils.md
+      - FTIR/Raman Preprocessing: ftir_raman_preprocessing.md
+      - Hyperspectral: hyperspectral.md
+  - QC & Novelty Detection: qc_tutorial.md
+  - Domains Overview: domains_overview.md
+  - Model Registry: model_registry.md
+  - Advanced: advanced_deep_learning.md
+  - MethodsX Protocol: methodsx_protocol.md
+  - Citing foodspec: citing.md
+  - Design Overview: design/01_overview.md
+  - API Reference:
+      - foodspec: api_reference.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append("src")
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true

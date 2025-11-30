@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# Coverage / test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Mkdocs build
+site/
+
+# OS generated
+.DS_Store
+Thumbs.db

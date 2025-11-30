@@ -1,0 +1,5 @@
+input_hdf5: "./out/preprocessed_oils.h5"
+label_column: "oil_type"
+output_report: "./out/oil_auth_report.html"
+classifier_name: "rf"
+cv_splits: 5

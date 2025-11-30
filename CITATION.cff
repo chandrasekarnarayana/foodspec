@@ -1,0 +1,64 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the information below."
+type: software
+title: "foodspec: A Python toolkit for Raman and FTIR spectroscopy in food science"
+version: "0.2.0"
+
+# TODO: set this to the actual release date when you tag 0.2.0 on PyPI/GitHub.
+# Example: "2025-11-30"
+date-released: "2025-11-30"
+
+authors:
+  - family-names: "Subramani Narayan"
+    given-names: "Chandrasekar"
+    affiliation: "Aix-Marseille Université, France"
+    email: "chandrasekarnarayana@gmail.com"
+    orcid: "https://orcid.org/0000-0002-8894-1627"
+
+# TODO: add additional authors/collaborators here as the package and paper evolve.
+#  - family-names: "Surname"
+#    given-names: "Firstname"
+#    affiliation: "Institute"
+#    orcid: "https://orcid.org/..."
+
+identifiers:
+  # TODO: replace these placeholders with real URLs once everything is finalized.
+  - type: url
+    value: "https://github.com/chandrasekarnarayana/foodspec"
+  - type: url
+    value: "https://pypi.org/project/foodspec/"
+
+repository-code: "https://github.com/chandrasekarnarayana/foodspec"
+license: "MIT"
+
+abstract: >
+  foodspec is a headless, research-grade Python toolkit for Raman and
+  FTIR spectroscopy in food science. It provides unified data structures
+  for spectra and hyperspectral cubes, reproducible preprocessing
+  (baseline correction, smoothing, scatter/normalization, FTIR/Raman
+  helpers), feature extraction (peaks, bands, ratios, fingerprinting),
+  chemometrics and machine learning (PCA, PLS, classifier/regressor
+  factory, mixture analysis), domain-specific workflows (oil
+  authentication, heating degradation, quality control), logging and
+  reporting utilities, and CLI commands for reproducible, FAIR-aligned
+  analysis.
+
+preferred-citation:
+  # This is intentionally a placeholder for the future MethodsX article.
+  # Update when the paper is accepted.
+  type: article
+  title: "FAIR-Compliant Computational Protocol for Raman and FTIR Spectroscopy in Food Science (working title)"
+  authors:
+    - family-names: "Subramani Narayan"
+      given-names: "Chandrasekar"
+      affiliation: "Aix-Marseille Université, France"
+      orcid: "https://orcid.org/0000-0002-8894-1627"
+  journal: "MethodsX"
+  year: 202X
+  # TODO: update these when you have them
+  # volume: ""
+  # issue: ""
+  # start: ""
+  # end: ""
+  # doi: "10.xxxx/xxxxx"
+  # url: "https://doi.org/10.xxxx/xxxxx"
