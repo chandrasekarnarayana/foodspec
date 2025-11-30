@@ -1,67 +1,34 @@
-site_name: foodspec
-site_description: "Headless, research-grade Python toolkit for Raman and FTIR spectroscopy in food science."
-site_url: https://chandrasekarnarayana.github.io/foodspec
-
+site_name: FoodSpec
+site_url: https://chandrasekarnarayana.github.io/foodspec/
 repo_url: https://github.com/chandrasekarnarayana/foodspec
-repo_name: chandrasekarnarayana/foodspec
 
 theme:
-  name: material
-  language: en
-  features:
-    - navigation.instant
-    - navigation.sections
-    - navigation.top
-    - search.highlight
-    - search.suggest
-    - content.code.copy
-  palette:
-    - scheme: default
-      primary: indigo
-      accent: teal
-    - scheme: slate
-      primary: indigo
-      accent: teal
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
+  name: "material"
 
 nav:
   - Home: index.md
-  - Getting started: getting_started.md
-  - API reference: api_reference.md
-  - Public libraries & datasets: libraries.md
-  - Domains overview: domains_overview.md
-  - Hyperspectral workflows: hyperspectral.md
-  - Validation & chemometrics (oils): validation_chemometrics_oils.md
-  - MethodsX protocol mapping: methodsx_protocol.md
-  - Advanced deep learning: advanced_deep_learning.md
-  - Citing foodspec: citing.md
+  - Getting Started: getting_started.md
+  - API Reference: api_reference.md
+  - CLI Usage: cli.md
+  - Libraries: libraries.md
 
-markdown_extensions:
-  - admonition
-  - attr_list
-  - codehilite
-  - footnotes
-  - md_in_html
-  - toc:
-      permalink: true
+  - Tutorials:
+      - FTIR & Raman Preprocessing: ftir_raman_preprocessing.md
+      - Heating Tutorial: heating_tutorial.md
+      - Oil Authentication Workflow: oil_auth_tutorial.md
+      - QC Workflow: qc_tutorial.md
+      - Validation – Baseline Models: validation_baseline.md
+      - Validation – Peak Ratios: validation_peak_ratios.md
 
-plugins:
-  - search
-  - mkdocstrings:
-      handlers:
-        python:
-          # Use default settings; rely on type hints and docstrings
-          options:
-            show_source: true
-            separate_signature: true
-            docstring_style: google
-            inherited_members: true
+  - Domains & Methods:
+      - Spectral Domains Overview: domains_overview.md
+      - Hyperspectral: hyperspectral.md
+      - Chemometrics for Edible Oils: validation_chemometrics_oils.md
+      - MethodsX Protocol: methodsx_protocol.md
+      - Advanced Deep Learning: advanced_deep_learning.md
 
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/chandrasekarnarayana/foodspec
-      name: GitHub
-  generator: true
+  - Model Registry: model_registry.md
+  - Citing FoodSpec: citing.md
+
+  - Design Documentation:
+      - Overview: design/01_overview.md
