@@ -1,6 +1,6 @@
 site_name: foodspec
-site_url: https://your-org.github.io/foodspec
-repo_url: https://github.com/your-org/foodspec
+site_url: https://chandrasekarnarayana.github.io/foodspec
+repo_url: https://github.com/chandrasekarnarayana/foodspec
 theme:
   name: material
 nav:
@@ -30,9 +30,6 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          setup_commands:
-            - import sys
-            - sys.path.append("src")
 markdown_extensions:
   - admonition
   - codehilite
