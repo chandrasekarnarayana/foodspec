@@ -48,3 +48,5 @@ Preprocessing makes real spectra comparable by removing background, reducing noi
 - Too-strong smoothing can flatten narrow peaks.
 - Normalization can hide absolute concentration effects.
 - Scatter corrections assume linear relationships; not ideal if chemical changes alter band shapes dramatically.
+> **Status:** Archived  
+> This page predates the current preprocessing guide. See [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md) for the recommended, up-to-date guidance.

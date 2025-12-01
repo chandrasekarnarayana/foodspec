@@ -1,73 +1,44 @@
-# API Reference
+# API reference hub
 
-::: foodspec.core.dataset
-    handler: python
+This section lists the main public classes and functions in foodspec via mkdocstrings. Use the keyword index for concept-based lookup, and the CLI page for command usage.
 
-::: foodspec.core.hyperspectral
-    handler: python
+## Core data structures
+::: foodspec.core.dataset.FoodSpectrumSet
+::: foodspec.core.hyperspectral.HyperSpectralCube
 
+## Preprocessing
 ::: foodspec.preprocess.baseline
-    handler: python
-
 ::: foodspec.preprocess.smoothing
-    handler: python
-
 ::: foodspec.preprocess.normalization
-    handler: python
-
-::: foodspec.preprocess.derivatives
-    handler: python
-
 ::: foodspec.preprocess.cropping
-    handler: python
-
 ::: foodspec.preprocess.ftir
-    handler: python
-
 ::: foodspec.preprocess.raman
-    handler: python
+::: foodspec.preprocess.derivatives
 
+## Features and ratios
 ::: foodspec.features.peaks
-    handler: python
-
 ::: foodspec.features.bands
-    handler: python
-
 ::: foodspec.features.ratios
-    handler: python
-
 ::: foodspec.features.fingerprint
-    handler: python
 
-::: foodspec.chemometrics.models
-    handler: python
-
-::: foodspec.chemometrics.validation
-    handler: python
-
+## Chemometrics and models
 ::: foodspec.chemometrics.pca
-    handler: python
-
+::: foodspec.chemometrics.models
+::: foodspec.chemometrics.validation
 ::: foodspec.chemometrics.mixture
-    handler: python
+::: foodspec.chemometrics.deep
 
+## Apps and workflows
 ::: foodspec.apps.oils
-    handler: python
-
 ::: foodspec.apps.heating
-    handler: python
-
 ::: foodspec.apps.qc
-    handler: python
-
 ::: foodspec.apps.dairy
-    handler: python
-
 ::: foodspec.apps.meat
-    handler: python
-
 ::: foodspec.apps.microbial
-    handler: python
+::: foodspec.apps.protocol_validation
+::: foodspec.apps.methodsx_reproduction
+::: foodspec.cli
 
-::: foodspec.model_registry
-    handler: python
+### Navigation tips
+- Concept-based lookup: see `keyword_index.md`.
+- CLI usage: see `cli.md`.

@@ -20,3 +20,5 @@ Preprocessing modules provide sklearn-compatible transformers for baseline corre
 
 ## Derivatives
 ::: foodspec.preprocess.derivatives
+> **Status:** Archived  
+> This page has been superseded by the unified API reference. See [api_reference.md](api_reference.md#preprocessing) for current preprocessing APIs.

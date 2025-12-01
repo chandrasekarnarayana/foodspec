@@ -1,47 +1,64 @@
-site_name: FoodSpec
-site_url: https://chandrasekarnarayana.github.io/foodspec/
-repo_url: https://github.com/chandrasekarnarayana/foodspec
+site_name: "foodspec"
+site_url: "https://chandrasekarnarayana.github.io/foodspec"
+repo_url: "https://github.com/chandrasekarnarayana/foodspec"
 
 theme:
-  name: "material"
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            separate_signature: true
+            docstring_style: google
+            inherited_members: true
 
 nav:
-  - Home: index.md
-  - Getting Started:
-      - Overview: getting_started.md
+  - Overview:
+      - Home: index.md
+  - Getting started:
       - Installation: installation.md
-      - Quickstart (CLI): quickstart_cli.md
-      - Quickstart (Python): quickstart_python.md
-  - User Guide:
-      - Data formats & libraries: data_formats.md
-      - CSV → HDF5 pipeline: csv_to_library.md
-      - Command-line usage: cli_reference.md
-      - Python API usage: python_usage.md
-      - Configuration & logging: config_logging.md
-      - Troubleshooting & FAQs: troubleshooting_faq.md
+      - Getting started: getting_started.md
+      - CLI quickstart: quickstart_cli.md
+      - Python quickstart: quickstart_python.md
   - Workflows:
       - Oil authentication: oil_auth_tutorial.md
-      - Heating & degradation: heating_tutorial.md
-      - Meat quality: meat_tutorial.md
-      - Microbial contamination: microbial_tutorial.md
-      - Mixture analysis (NNLS / MCR-ALS): mixture_tutorial.md
-      - Hyperspectral analysis: hyperspectral_tutorial.md
+      - Heating degradation: heating_tutorial.md
+      - Mixture analysis (EVOO–sunflower): mixture_tutorial.md  # TODO: replace with workflows_mixture.md if created
+      - Quality control / novelty detection: qc_tutorial.md
+      - Hyperspectral analysis: hyperspectral_tutorial.md  # TODO: workflows_hyperspectral.md if created
+      - Domain templates:
+          - Overview: domains_overview.md
+          - Meat quality: meat_tutorial.md
+          - Microbial contamination: microbial_tutorial.md
+  - User guide:
+      - Libraries & public datasets: libraries.md
+      - Data formats & CSV → HDF5: csv_to_library.md
+      - Raman/FTIR preprocessing: ftir_raman_preprocessing.md
+      - CLI reference: cli.md
+      - Model registry: model_registry.md
+      - Configs, logging, and reports: config_logging.md
+  - Methods & theory:
+      - Spectral concepts: spectral_basics.md  # TODO: spectral_concepts.md if split later
+      # Statistical tests for food spectroscopy: stats_tests.md  # TODO
+      - Machine learning models: chemometrics_guide.md  # TODO: ml_models.md if split later
+      - Statistical tests for food spectroscopy: stats_tests.md
+      - Metrics and interpretation: metrics_interpretation.md
+  - Protocol & reproducibility:
+      - Chemometrics validation (oils): validation_chemometrics_oils.md
+      - MethodsX protocol mapping: methodsx_protocol.md
       - Protocol benchmarks: protocol_benchmarks.md
-      - MethodsX reproduction: methodsx_protocol.md
-  - Spectral & ML Concepts:
-      - Spectroscopy basics: spectral_basics.md
-      - Preprocessing guide: preprocessing_guide.md
-      - Chemometrics & models: chemometrics_guide.md
-      - Metrics & result interpretation: metrics_interpretation.md
-      - Best practices & reporting: reporting_guidelines.md
-  - API Reference:
-      - Core objects: api_core.md
-      - Preprocessing: api_preprocess.md
-      - Features & chemometrics: api_features_chemometrics.md
-      - IO & datasets: api_io_data.md
-      - CLI & apps: api_cli_apps.md
-  - Developer Guide:
-      - Architecture & design: design_overview.md
-      - Testing & coverage: testing_coverage.md
+      - FAQ & troubleshooting: troubleshooting_faq.md  # TODO: faqs_troubleshooting.md if renamed
+      - Reporting guidelines: reporting_guidelines.md
+  - Reference & index:
+      - API reference: api_reference.md  # if regenerated; otherwise use API pages
+      - Keyword index & glossary: keyword_index.md
+  - Advanced:
+      - Deep learning: advanced_deep_learning.md
+      - Design overview: design/01_overview.md
+  - Project:
+      - Citing foodspec: citing.md
       - Contributing: contributing.md
-      - Release & versioning: releasing.md

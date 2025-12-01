@@ -17,3 +17,5 @@ python examples/validation_peak_ratios.py
 ```
 
 This produces `validation_peak_ratios.png` and prints summary statistics.
+> **Status:** Archived  
+> This page reflects older peak-ratio validation examples. Refer to the current workflows in [oil_auth_tutorial.md](oil_auth_tutorial.md) and metrics guidance in [metrics_interpretation.md](metrics_interpretation.md).

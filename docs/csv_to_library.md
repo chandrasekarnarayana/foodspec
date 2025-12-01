@@ -2,6 +2,14 @@
 
 foodspec converts CSVs to reusable spectral libraries (HDF5) for all workflows.
 
+## Supported inputs
+| Format | Description | Required columns | Typical use |
+| --- | --- | --- | --- |
+| CSV (wide) | One column per spectrum, one row per wavenumber | `wavenumber`, sample columns | Fast conversion to HDF5 |
+| CSV (long/tidy) | One row per (sample_id, wavenumber, intensity) | `sample_id`, `wavenumber`, `intensity` | Public datasets, tidy data |
+| Folder of TXT/CSV | One file per spectrum, aligned axes | filename, wavenumber/intensity columns | Instrument exports |
+| HDF5 library | Serialized FoodSpectrumSet | x, wavenumbers, metadata, modality | Primary format for workflows |
+
 ## CSV layouts
 ### Wide format
 ```

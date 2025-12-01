@@ -1,98 +1,79 @@
-# Oil Authentication Tutorial
-
-This tutorial walks through the end-to-end oil authentication workflow using **foodspec**.
-
-## 1. Load data
-```python
-from foodspec.data.loader import load_example_oils
-
-spectra = load_example_oils()
-print(spectra.x.shape, spectra.metadata.head())
-```
-
-## 2. Inspect raw spectra
-```python
-from foodspec.viz.spectra import plot_spectra, plot_mean_spectrum
-import matplotlib.pyplot as plt
-
-plot_spectra(spectra, color_by="oil_type")
-plt.show()
-```
-
-## 3. Run the authentication workflow
-```python
-from foodspec.apps.oils import run_oil_authentication_workflow
-
-result = run_oil_authentication_workflow(spectra, label_column="oil_type", classifier_name="rf", cv_splits=5)
-print(result.cv_metrics)
-print("Confusion matrix:\n", result.confusion_matrix)
-
-# Inspect feature importances (if available, e.g., RandomForest)
-if result.feature_importances is not None:
-    print(result.feature_importances.sort_values(ascending=False).head())
-```
-
-## 4. Visualize results
-```python
-from foodspec.viz.classification import plot_confusion_matrix
-
-plot_confusion_matrix(result.confusion_matrix, class_names=result.class_labels)
-plt.show()
-```
-
-## 5. Inspect features and model
-- `result.pipeline` holds the fitted preprocessing + feature + classifier pipeline.
-- `result.feature_importances` (if available) ranks important peaks/ratios.
-- Change classifier by setting `classifier_name` (e.g., `"rf"`, `"svm_rbf"`, `"logreg"`) in the workflow or CLI options.
-
-## 6. Next steps
-- Swap classifiers via `classifier_name` (e.g., `svm_rbf`, `logreg`, `rf`).
-- Integrate your own datasets using `load_folder` and consistent metadata columns.
 # Oil authentication workflow
 
+Questions this page answers
+- Can we classify edible oils from Raman/FTIR spectra?
+- How do I run the workflow via CSV → library → oil-auth?
+- How do I interpret PCA, confusion matrix, and feature importance?
+- How should I report the results?
+
 ## Scientific question
-“Which oil type is this? Is the sample authentic or adulterated?” The goal is to classify spectra (Raman or FTIR) into known oil types and flag potential adulteration.
+Determine oil type and detect adulteration using vibrational spectra.
 
-### Expected input
-- A spectral library (HDF5) created from CSV/TXT using `foodspec csv-to-library` or `foodspec preprocess`.
-- Metadata must contain an oil-type label column (e.g., `oil_type`), and optionally batch or instrument identifiers.
-- Sample preparation (outside the scope of this package): consistent dilution (if any), identical optical path/ATR pressure, and minimal fluorescence/background for Raman.
+## End-to-end example
+### CLI path
+1) Convert CSV to library (wide format example):
+```bash
+foodspec csv-to-library data/oils.csv libraries/oils.h5 \
+  --format wide \
+  --wavenumber-column wavenumber \
+  --label-column oil_type \
+  --modality raman
+```
+2) Run oil authentication (CLI):
+```bash
+foodspec oil-auth libraries/oils.h5 \
+  --label-column oil_type \
+  --classifier-name rf \
+  --cv-splits 5 \
+  --output-dir runs/oils_demo
+```
+Outputs: metrics.json/CSV, confusion_matrix.png, feature importances (if available), report.md.
 
-## Workflow overview (CSV → HDF5 → foodspec oil-auth)
-1. Start from raw CSV/TXT (wide or long).  
-2. Convert to HDF5 library:
-   ```bash
-   foodspec csv-to-library data/oils.csv libraries/oils.h5 --format wide --wavenumber-column wavenumber --modality raman --label-column oil_type
-   ```
-3. Run authentication:
-   ```bash
-   foodspec oil-auth libraries/oils.h5 --label-column oil_type --classifier-name rf --cv-splits 5 --output-dir runs/oil_auth
-   ```
-   - `--label-column`: metadata column with ground truth classes.
-   - `--classifier-name`: choose `rf` (random forest), `svm_rbf`, `logreg`, etc.
-   - `--cv-splits`: stratified folds (default 5).
-   - Outputs: metrics.json/CSV, confusion_matrix.png, report.md in a timestamped folder.
+### Python variant
+```python
+from foodspec.data import load_library
+from foodspec.apps.oils import run_oil_authentication_workflow
 
-## Preprocessing used by the workflow
-- **Baseline correction (ALS)**: removes fluorescence/background (Raman) or sloping baselines (FTIR).  
-- **Smoothing (Savitzky–Golay)**: reduces noise while preserving peak shape.  
-- **Normalization (Vector/MSC)**: compensates for intensity scaling/scatter differences.  
-- **Cropping (600–1800 cm⁻¹)**: focuses on fingerprint region where most discriminative oil bands reside.  
-Rationale: improve class separability by stabilizing baseline and scale, and restricting to informative bands.
+fs = load_library("libraries/oils.h5")
+result = run_oil_authentication_workflow(fs, label_column="oil_type", classifier_name="rf", cv_splits=5)
+print(result.cv_metrics.head())
+```
 
-## Classification models (intuitive view)
-- **Logistic regression**: linear decision boundary; good baseline model.  
-- **SVM (linear/RBF)**: margin maximization; RBF can capture nonlinear boundaries.  
-- **Random forest**: ensemble of decision trees; robust to nonlinearities and variable importance can be inspected.  
-All models are trained on peak/ratio features generated by the workflow pipeline.
+### Inspecting PCA and confusion matrix
+- PCA: visualize clustering of classes; look for separation by oil type.
+- Confusion matrix: check misclassifications; identify similar oils being confused.
+- Feature importance: peak/ratio contributions; focus on chemically meaningful bands (e.g., 1655/1742).
 
-## Reported metrics and interpretation
-- **Accuracy**: overall correctness; >0.9 often expected for clean lab datasets, lower for challenging/real-world data.  
-- **Macro F1**: balances precision/recall across classes; robust to class imbalance.  
-- **Confusion matrix**: identifies which classes are confused (e.g., similar fatty-acid profiles).  
-- **Precision/Recall** (per-class, in tables): useful for adulteration detection where false negatives matter.
+## Interpretation
+- Accuracy/macro F1 reflect overall performance; use stratified CV (default).  
+- Good accuracy is dataset-dependent; for clean lab spectra expect higher scores; for challenging/adulterated sets, report limitations.
+- Cross-validation reduces optimistic bias and shows variance across folds.
 
-### Reporting guidance (paper/MethodsX)
-- **Main text/figures**: confusion matrix figure; overall accuracy and macro F1; brief description of preprocessing and model.  
-- **Supplementary**: per-class precision/recall/F1 table; details on hyperparameters; additional representative spectra.  
-- **Follow-up analyses**: independent validation set, robustness across batches/instruments, adulteration levels, and external QC (e.g., GC–MS reference).
+## Reporting
+- Main text: overall accuracy/macro F1, confusion matrix figure, brief preprocessing/model description.  
+- Supplementary: per-class precision/recall/F1, feature importances/ratios, spectra examples, run metadata/configs.
+- For MethodsX/FAIR: include preprocessing steps (baseline, smoothing, normalization, crop), classifier choice, CV design, and dataset provenance.
+
+## Optional: comparing ratios between oil types with statistical tests
+You can test whether a specific band ratio differs across oil types (useful for interpretation/papers).
+```python
+import pandas as pd
+from scipy.stats import kruskal
+from foodspec.features.ratios import compute_ratios
+
+# Assume peak heights already extracted to df_peaks; here we build a ratio
+ratio_def = {"ratio_1655_1745": ("peak_1655.0_height", "peak_1742.0_height")}
+df_ratios = compute_ratios(df_peaks, ratio_def)
+df_ratios["oil_type"] = fs.metadata["oil_type"].values
+
+groups = [g["ratio_1655_1745"].values for _, g in df_ratios.groupby("oil_type")]
+stat, p = kruskal(*groups)
+print(f"Kruskal–Wallis H={stat:.3f}, p={p:.3g}")
+```
+Interpretation: a small p-value suggests at least one oil type has a different ratio distribution. Not required for classification, but useful for scientific interpretation and MethodsX-style reporting.
+
+See also
+- `csv_to_library.md`
+- `preprocessing_guide.md`
+- `metrics_interpretation.md`
+- `keyword_index.md`

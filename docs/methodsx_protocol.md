@@ -40,3 +40,6 @@ Convert each to HDF5 using `foodspec csv-to-library` or the public loaders; see 
 5. For publication:  
    - **Main**: PCA scores figure, confusion matrix, classification metrics (accuracy/F1), mixture metrics (R²/RMSE).  
    - **Supplementary**: additional per-class metrics, residual plots, spectra examples, run_metadata.json for reproducibility.
+
+See also
+- Keyword index: `keyword_index.md`

@@ -1,69 +1,59 @@
-# Heating Degradation Analysis
+# Heating degradation workflow
 
-Use `run_heating_degradation_analysis` to assess heating-induced spectral changes.
+Questions this page answers
+- How do heating time/temperature affect oil spectra?
+- How do I run the heating workflow (Python and CLI)?
+- How do I interpret ratio trends, slopes, and ANOVA?
+- How should I report these results?
 
-```python
-from foodspec.apps.heating import run_heating_degradation_analysis
-from foodspec.data.loader import load_example_oils  # replace with your dataset
-from foodspec.viz.heating import plot_ratio_vs_time
-import matplotlib.pyplot as plt
+## Experiment setup
+- Input: spectra with metadata column (e.g., `heating_time` or `temperature`); optional `oil_type`.
+- Goal: track degradation via ratios (e.g., 1655/1742) over time/cycles.
 
-spectra = load_example_oils()
-# spectra.metadata should include a time column, e.g., "heating_time"
-result = run_heating_degradation_analysis(spectra, time_column="heating_time")
-
-print(result.key_ratios.head())        # peak ratios vs time
-print(result.trend_models)             # fitted LinearRegression models
-print(result.anova_results)            # optional ANOVA across groups (if present)
-
-# Plot ratio vs time with fitted trend
-ratio_name = "ratio_1655_1742"
-model = result.trend_models[ratio_name]
-plot_ratio_vs_time(result.time_variable, result.key_ratios[ratio_name], model=model)
-plt.show()
-```
-
-Outputs:
-- Preprocessed spectra and cropped wavenumbers.
-- Peak ratios (e.g., 1655/1742) vs the heating time variable.
-- Trend models (`LinearRegression`) per ratio, and optionally per `oil_type` group.
-- ANOVA summary if at least two groups are available.
-# Heating & degradation workflow
-
-## Scientific question
-“How do heating time and temperature affect oil composition and quality?” Spectra track chemical changes (oxidation, polymerization) over time or across frying cycles.
-
-### Required metadata
-- A time/temperature variable (e.g., `heating_time`, `cycle`, or `temperature`).
-- Optional group labels (e.g., `oil_type`, treatment vs control).
-
-## How FoodSpec computes trends
-1. Preprocess spectra (ALS baseline, Savitzky–Golay smoothing, Vector/MSC normalization, fingerprint cropping).  
-2. Extract peak ratios indicative of oxidation: e.g., 1655/1742 cm⁻¹ (C=C/C=O balance).  
-3. Fit simple trend models: linear regression of ratio vs time.  
-4. Optional ANOVA: compare ratio distributions across groups (e.g., oil types) using one-way ANOVA on end-point or aggregated values.
-
-### Mathematics (high level)
-- Trend model: for each ratio \( r \), fit \( r = a + b \cdot t \) (t = time/temperature). Slope \( b \) indicates increase/decrease over heating.  
-- ANOVA: tests whether group means differ significantly; reports F statistic and p-value (p < 0.05 suggests group differences).
-
-## Metrics and interpretation
-- **Slope**: sign and magnitude reflect degradation direction/rate.  
-- **R (corr)** or **R²** (if reported): strength of linear trend.  
-- **ANOVA p-value**: evidence of group differences; small p suggests statistically distinct behaviors.  
-- **Ratios table**: key_ratios per sample; inspect variability.
-
-## Workflow usage (CLI)
+## Running the workflow
+CLI:
 ```bash
-foodspec heating \
-  libraries/heating_demo.h5 \
+foodspec heating libraries/heating.h5 \
   --time-column heating_time \
   --output-dir runs/heating_demo
 ```
-Outputs: ratios.csv, trend summaries, optional anova.csv, ratio_vs_time.png, report.md.
+Outputs: ratios.csv, ratio_vs_time.png, optional anova.csv, report.md.
 
-## Reporting guidance (MethodsX style)
-- **Main figures**: ratio vs time plot with fitted trend line; annotate slope and R or p-value.  
-- **Main text**: describe preprocessing choices and key ratio(s) used, with slope/p-values.  
-- **Supplementary**: full ratios table; ANOVA table; spectra before/after heating; per-time-point stats.  
-- **Supporting tests** (conceptual): peroxide value, anisidine value, sensory panel, or GC–MS profiling for corroboration.
+Python:
+```python
+from foodspec.data import load_library
+from foodspec.apps.heating import run_heating_degradation_analysis
+fs = load_library("libraries/heating.h5")
+res = run_heating_degradation_analysis(fs, time_column="heating_time")
+print(res.key_ratios.head())
+```
+
+## Interpreting results
+- Ratios vs time: slope sign/magnitude indicates increasing/decreasing features (e.g., unsaturation loss).  
+- Trend model: simple linear fit \( r = a + b t \); slope \( b \) is key metric.  
+- ANOVA (if group labels): p-value tests differences between groups (e.g., oil types).
+- Look for consistent trends across batches; inspect variance.
+
+## Reporting
+- Main figures: ratio_vs_time plot with fitted line; note slope and any significant p-values.  
+- Main text: preprocessing summary, ratio definition, slope/correlation, ANOVA if applicable.  
+- Supplementary: full ratios table, ANOVA table, spectra before/after heating, run metadata/configs.
+- Supporting tests (conceptual): peroxide/anisidine values, GC–MS, sensory panel for corroboration.
+
+## Optional: testing degradation trends
+Test whether a ratio changes significantly over time using simple linear regression.
+```python
+import pandas as pd
+from scipy.stats import linregress
+
+# df_ratios has columns: ratio_1655_1745, heating_time
+slope, intercept, r, p, stderr = linregress(df_ratios["heating_time"], df_ratios["ratio_1655_1745"])
+print(f"slope={slope:.3f}, R²={r**2:.3f}, p={p:.3g}")
+```
+Interpretation: slope indicates direction/magnitude of change; p tests if slope differs from zero; R² shows how much of the ratio variance is explained by time. Include these in MethodsX-style reports alongside plots.
+
+See also
+- `preprocessing_guide.md`
+- `metrics_interpretation.md`
+- `reporting_guidelines.md`
+- `keyword_index.md`

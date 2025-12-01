@@ -63,26 +63,84 @@ print("Explained variance ratio:", pca_res.explained_variance_ratio_)
 - Explore the CLI workflows from the command line with `foodspec about` and related commands.
 # Getting started
 
-This page introduces foodspec from a food-science and spectroscopy perspective, focusing on clear, reproducible workflows.
+Questions this page answers
+- Who is foodspec for?
+- How do I install it (core vs deep extra)?
+- How do I run a minimal Python and CLI example?
+- What is the typical pipeline?
 
-## What is a spectral library?
-- A spectral library is an HDF5 file that bundles:
-  - `x`: 2D array of intensities (n_samples × n_wavenumbers).
-  - `wavenumbers`: shared axis for all spectra.
-  - `metadata`: labels and experimental info (e.g., oil_type, heating_time).
-  - `modality`: Raman/FTIR/NIR tag.
-- Libraries can be created from CSV or folders of text files and are used by all CLI/Python workflows.
+## Who is it for?
+Food scientists, analytical chemists, QC engineers, and data scientists working with Raman/FTIR spectra who need reproducible preprocessing, chemometrics, and reporting.
 
-## Typical pipeline
-1) **Raw data** (instrument export, CSV, TXT).  
-2) **Convert to library** (CSV→HDF5 via `foodspec csv-to-library` or Python `create_library`).  
-3) **Preprocess** (baseline, smoothing, normalization, FTIR/Raman helpers).  
-4) **Feature/chemometrics** (peaks/ratios, PCA/PLS, classifiers/regressors).  
-5) **Metrics & reports** (confusion matrices, regression metrics, markdown/plots).  
+## Installation
+- Core:
+  ```bash
+  pip install foodspec
+  ```
+- Deep-learning extra (optional 1D CNN prototype):
+  ```bash
+  pip install "foodspec[deep]"
+  ```
+- Verify:
+  ```bash
+  foodspec about
+  ```
 
-## Quick links
-- Installation: see `installation.md`.
-- CLI first run: `quickstart_cli.md`.
-- Python first run: `quickstart_python.md`.
-- Data formats & libraries: `data_formats.md` and `csv_to_library.md`.
-- Workflows: oil authentication, heating, mixture, hyperspectral, QC (see Workflows section).
+## Minimal Python example
+```python
+from pathlib import Path
+import matplotlib.pyplot as plt
+from foodspec.data import load_library
+from foodspec.preprocess.baseline import ALSBaseline
+from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
+from foodspec.preprocess.normalization import VectorNormalizer
+from foodspec.chemometrics.pca import run_pca
+from foodspec.validation import validate_spectrum_set
+
+fs = load_library(Path("libraries/oils_demo.h5"))
+validate_spectrum_set(fs)
+
+X = fs.x
+for step in [
+    ALSBaseline(lambda_=1e5, p=0.01, max_iter=10),
+    SavitzkyGolaySmoother(window_length=9, polyorder=3),
+    VectorNormalizer(norm="l2"),
+]:
+    X = step.fit_transform(X)
+
+_, pca_res = run_pca(X, n_components=2)
+plt.scatter(pca_res.scores[:, 0], pca_res.scores[:, 1], c="steelblue")
+plt.xlabel("PC1"); plt.ylabel("PC2"); plt.tight_layout()
+plt.savefig("pca_scores.png", dpi=150)
+```
+
+## Minimal CLI example (hypothetical public dataset)
+1) Convert CSV (wide) to HDF5:
+```bash
+foodspec csv-to-library data/oils.csv libraries/oils.h5 \
+  --format wide \
+  --wavenumber-column wavenumber \
+  --label-column oil_type \
+  --modality raman
+```
+2) Run oil authentication:
+```bash
+foodspec oil-auth libraries/oils.h5 \
+  --label-column oil_type \
+  --output-dir runs/oils_demo
+```
+Outputs: metrics.json/CSV, confusion_matrix.png, report.md in a timestamped folder.
+
+## Typical pipeline (text diagram)
+Raw spectra → CSV/TXT → **HDF5 library** → Preprocess (baseline, smoothing, normalization, crop) → Features/chemometrics (peaks/ratios/PCA/PLS/models) → Metrics & reports (plots, JSON/Markdown).
+
+## Links
+- Libraries & formats: `libraries.md`, `csv_to_library.md`
+- Workflows: oil authentication, heating, mixture, hyperspectral, QC
+- User guide: CLI reference (`cli.md`), preprocessing (`ftir_raman_preprocessing.md`)
+- Keyword lookup: `keyword_index.md`
+
+See also
+- `oil_auth_tutorial.md`
+- `heating_tutorial.md`
+- `csv_to_library.md`

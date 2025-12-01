@@ -1,3 +1,6 @@
+> **Audience:** Developers and maintainers  
+> This page documents internal testing practices and coverage notes; it is not required for normal users.
+
 # Testing & coverage
 
 FoodSpec relies on extensive, fast, synthetic tests to keep the protocol trustworthy.

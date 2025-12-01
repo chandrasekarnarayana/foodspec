@@ -1,3 +1,6 @@
+> **Audience:** Developers and maintainers  
+> This page documents internal release/versioning steps; it is not required for normal users.
+
 # Release & versioning
 
 FoodSpec versions are tracked in `__version__` and `pyproject.toml`. Releases are published to PyPI and tagged on GitHub.

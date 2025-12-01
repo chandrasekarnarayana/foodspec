@@ -1,49 +1,65 @@
-# FTIR and Raman Preprocessing (simplified)
+# Raman/FTIR preprocessing guide
 
-These utilities provide basic corrections for FTIR atmospheric components, ATR effects, and Raman cosmic-ray spikes. They are simplified and intended as starting points, not vendor-grade implementations.
+Questions this page answers
+- Why preprocess Raman/FTIR spectra?
+- Which baseline, smoothing, normalization, and helpers should I use?
+- How do I configure them in Python and CLI?
 
-## Atmospheric and ATR (FTIR)
+## Why preprocessing matters
+- Baseline: removes fluorescence (Raman) or sloping background (FTIR).
+- Smoothing: reduces noise while preserving peaks.
+- Scatter/normalization: corrects intensity scaling, pathlength, and scatter differences.
+- Derivatives: enhance subtle features and reduce baseline.
+- FTIR/Raman helpers: handle ATR effects, atmospheric bands, and cosmic rays.
 
+## Baseline correction
+- **ALSBaseline**: general-purpose baseline removal; tune `lambda_`, `p`.
+- **RubberbandBaseline**: convex-hull baseline; useful for concave backgrounds.
+- **PolynomialBaseline**: low-degree fit for globally smooth baselines.
+
+## Smoothing
+- **Savitzky–Golay**: preserves peak shape; choose odd window length, polyorder < window.
+- **MovingAverageSmoother**: simple denoising; may broaden peaks.
+
+## Scatter & normalization
+- **Vector/Area/Max normalizers**: scale spectra to unit norm/area; remove overall intensity differences.
+- **SNVNormalizer**: subtract mean, divide by std per spectrum; removes additive/multiplicative scatter.
+- **MSCNormalizer**: regress onto reference (mean spectrum) and correct slope/intercept; good for scatter variation.
+- **InternalPeakNormalizer**: normalize to a stable internal band (mean intensity in a window).
+
+## Derivatives
+- **DerivativeTransformer**: Savitzky–Golay derivatives (1st/2nd) to emphasize subtle bands and suppress baseline.
+
+## FTIR/Raman-specific helpers
+- **AtmosphericCorrector**: subtracts water/CO₂ components (FTIR).
+- **SimpleATRCorrector**: heuristic ATR depth correction (FTIR).
+- **CosmicRayRemover**: detects/replaces spikes (Raman).
+
+## Example pipeline (Python)
 ```python
-from foodspec.preprocess.ftir import AtmosphericCorrector, SimpleATRCorrector
-
-corr = AtmosphericCorrector()
-corr.fit(X, wavenumbers=wn)
-X_corr = corr.transform(X)
-
-atr = SimpleATRCorrector()
-atr.fit(X_corr, wavenumbers=wn)
-X_atr = atr.transform(X_corr)
-```
-
-- `AtmosphericCorrector` builds synthetic water/CO2 bases and subtracts scaled contributions via least squares.
-- `SimpleATRCorrector` applies an approximate wavelength-dependent scaling based on refractive index ratio.
-
-## Cosmic-ray removal (Raman)
-
-```python
-from foodspec.preprocess.raman import CosmicRayRemover
-
-cr = CosmicRayRemover()
-X_clean = cr.fit_transform(X_raman)
-```
-
-`CosmicRayRemover` detects spikes relative to a local median/MAD and interpolates neighbors.
-
-**Note:** These are simplified algorithms meant for lightweight correction; for production or regulatory-grade workflows, further refinement and validation are recommended.
-
-## Wavenumber-aware usage
-
-Some transformers need the wavenumber axis. Use `set_wavenumbers` before placing them in a pipeline:
-
-```python
-from foodspec.preprocess.ftir import AtmosphericCorrector, SimpleATRCorrector
 from sklearn.pipeline import Pipeline
+from foodspec.preprocess.baseline import ALSBaseline
+from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
+from foodspec.preprocess.normalization import VectorNormalizer
+from foodspec.preprocess.cropping import RangeCropper
 
-corr = AtmosphericCorrector().set_wavenumbers(wn)
-atr = SimpleATRCorrector().set_wavenumbers(wn)
-
-pipe = Pipeline([("atm", corr), ("atr", atr)])
-X_corr = pipe.fit_transform(X)
-# now corr/atr can be part of a sklearn Pipeline without passing wavenumbers each call
+pipe = Pipeline([
+    ("als", ALSBaseline(lambda_=1e5, p=0.01, max_iter=10)),
+    ("savgol", SavitzkyGolaySmoother(window_length=9, polyorder=3)),
+    ("norm", VectorNormalizer(norm="l2")),
+    ("crop", RangeCropper(min_wn=600, max_wn=1800)),
+])
+X_proc = pipe.fit_transform(fs.x)
 ```
+
+## CLI usage
+Most workflows (oil-auth, heating) include defaults. For raw folders:
+```bash
+foodspec preprocess raw_folder out.h5 --modality raman --min-wn 600 --max-wn 1800
+```
+
+See also
+- `preprocessing_guide.md`
+- `oil_auth_tutorial.md`
+- `heating_tutorial.md`
+- `keyword_index.md`

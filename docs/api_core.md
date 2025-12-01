@@ -9,3 +9,5 @@ Core objects define the main data structures used by FoodSpec. For workflow exam
 ## HyperSpectralCube
 
 ::: foodspec.core.hyperspectral.HyperSpectralCube
+> **Status:** Archived  
+> This page has been superseded by the unified API reference. See [api_reference.md](api_reference.md#core-data-structures) for current core data structure APIs.

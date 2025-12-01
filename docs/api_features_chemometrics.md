@@ -14,3 +14,5 @@ Feature extractors and chemometrics models power FoodSpec workflows. For example
 ::: foodspec.chemometrics.validation
 ::: foodspec.chemometrics.mixture
 ::: foodspec.chemometrics.deep
+> **Status:** Archived  
+> This page has been superseded by the unified API reference. See [api_reference.md](api_reference.md#features-and-ratios) and [api_reference.md](api_reference.md#chemometrics-and-models) for current feature and chemometrics APIs.

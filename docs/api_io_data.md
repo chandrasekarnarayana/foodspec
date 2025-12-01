@@ -10,3 +10,5 @@ IO and data modules handle conversion between raw files, CSV, HDF5 libraries, an
 ## Data loaders
 ::: foodspec.data.loader
 ::: foodspec.data.public
+> **Status:** Archived  
+> This page has been superseded by the unified API reference. See [api_reference.md](api_reference.md#apps-and-workflows) and [api_reference.md](api_reference.md#features-and-ratios) for current IO and data loader APIs.
