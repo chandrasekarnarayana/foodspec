@@ -89,3 +89,27 @@ def test_cli_domains(tmp_path):
     assert reports
     report_dir = reports[0]
     _assert_report_files(report_dir, ["summary.json", "cv_metrics.csv", "confusion_matrix.csv"])
+
+
+def test_cli_csv_to_library(tmp_path):
+    csv_path = tmp_path / "wide.csv"
+    wn = np.linspace(1000, 1004, 3)
+    df = pd.DataFrame({"wavenumber": wn, "s1": [1.0, 1.1, 1.2], "s2": [2.0, 2.1, 2.2]})
+    df.to_csv(csv_path, index=False)
+    out_h5 = tmp_path / "out.h5"
+    result = runner.invoke(
+        app,
+        [
+            "csv-to-library",
+            str(csv_path),
+            str(out_h5),
+            "--format",
+            "wide",
+            "--wavenumber-column",
+            "wavenumber",
+            "--modality",
+            "raman",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert out_h5.exists()

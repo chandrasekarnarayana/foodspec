@@ -37,3 +37,14 @@ def test_ratio_and_cluster_plots():
     fig2, ax2 = plt.subplots()
     plot_cluster_map(label_img, ax=ax2)
     plt.close(fig2)
+
+
+def test_pixel_roundtrip_labels():
+    cube = _make_cube()
+    fs = cube.to_pixel_spectra()
+    labels = np.array([0, 1, 2, 3])
+    img = cube.from_pixel_labels(labels)
+    assert img.shape == (2, 2)
+    assert np.array_equal(img.ravel(), labels)
+    assert fs.metadata["row"].tolist() == [0, 0, 1, 1]
+    assert fs.metadata["col"].tolist() == [0, 1, 0, 1]

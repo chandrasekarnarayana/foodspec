@@ -36,8 +36,15 @@ def load_config(path: PathLike) -> Dict[str, Any]:
 def merge_cli_overrides(config: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
     """Merge CLI overrides (non-None) into base config."""
 
-    merged = dict(config)
-    for k, v in overrides.items():
-        if v is not None:
-            merged[k] = v
-    return merged
+    def _merge(base: Dict[str, Any], over: Dict[str, Any]) -> Dict[str, Any]:
+        merged: Dict[str, Any] = dict(base)
+        for k, v in over.items():
+            if v is None:
+                continue
+            if isinstance(v, dict) and isinstance(base.get(k), dict):
+                merged[k] = _merge(base[k], v)
+            else:
+                merged[k] = v
+        return merged
+
+    return _merge(config, overrides)

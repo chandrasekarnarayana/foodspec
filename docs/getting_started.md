@@ -61,3 +61,28 @@ print("Explained variance ratio:", pca_res.explained_variance_ratio_)
 - See [Libraries](libraries.md) to build HDF5 spectral libraries and use public datasets.
 - See [Validation & chemometrics](validation_chemometrics_oils.md) for oil-authentication examples.
 - Explore the CLI workflows from the command line with `foodspec about` and related commands.
+# Getting started
+
+This page introduces foodspec from a food-science and spectroscopy perspective, focusing on clear, reproducible workflows.
+
+## What is a spectral library?
+- A spectral library is an HDF5 file that bundles:
+  - `x`: 2D array of intensities (n_samples × n_wavenumbers).
+  - `wavenumbers`: shared axis for all spectra.
+  - `metadata`: labels and experimental info (e.g., oil_type, heating_time).
+  - `modality`: Raman/FTIR/NIR tag.
+- Libraries can be created from CSV or folders of text files and are used by all CLI/Python workflows.
+
+## Typical pipeline
+1) **Raw data** (instrument export, CSV, TXT).  
+2) **Convert to library** (CSV→HDF5 via `foodspec csv-to-library` or Python `create_library`).  
+3) **Preprocess** (baseline, smoothing, normalization, FTIR/Raman helpers).  
+4) **Feature/chemometrics** (peaks/ratios, PCA/PLS, classifiers/regressors).  
+5) **Metrics & reports** (confusion matrices, regression metrics, markdown/plots).  
+
+## Quick links
+- Installation: see `installation.md`.
+- CLI first run: `quickstart_cli.md`.
+- Python first run: `quickstart_python.md`.
+- Data formats & libraries: `data_formats.md` and `csv_to_library.md`.
+- Workflows: oil authentication, heating, mixture, hyperspectral, QC (see Workflows section).

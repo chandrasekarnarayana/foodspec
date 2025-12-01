@@ -7,28 +7,41 @@ theme:
 
 nav:
   - Home: index.md
-  - Getting Started: getting_started.md
-  - API Reference: api_reference.md
-  - CLI Usage: cli.md
-  - Libraries: libraries.md
-
-  - Tutorials:
-      - FTIR & Raman Preprocessing: ftir_raman_preprocessing.md
-      - Heating Tutorial: heating_tutorial.md
-      - Oil Authentication Workflow: oil_auth_tutorial.md
-      - QC Workflow: qc_tutorial.md
-      - Validation – Baseline Models: validation_baseline.md
-      - Validation – Peak Ratios: validation_peak_ratios.md
-
-  - Domains & Methods:
-      - Spectral Domains Overview: domains_overview.md
-      - Hyperspectral: hyperspectral.md
-      - Chemometrics for Edible Oils: validation_chemometrics_oils.md
-      - MethodsX Protocol: methodsx_protocol.md
-      - Advanced Deep Learning: advanced_deep_learning.md
-
-  - Model Registry: model_registry.md
-  - Citing FoodSpec: citing.md
-
-  - Design Documentation:
-      - Overview: design/01_overview.md
+  - Getting Started:
+      - Overview: getting_started.md
+      - Installation: installation.md
+      - Quickstart (CLI): quickstart_cli.md
+      - Quickstart (Python): quickstart_python.md
+  - User Guide:
+      - Data formats & libraries: data_formats.md
+      - CSV → HDF5 pipeline: csv_to_library.md
+      - Command-line usage: cli_reference.md
+      - Python API usage: python_usage.md
+      - Configuration & logging: config_logging.md
+      - Troubleshooting & FAQs: troubleshooting_faq.md
+  - Workflows:
+      - Oil authentication: oil_auth_tutorial.md
+      - Heating & degradation: heating_tutorial.md
+      - Meat quality: meat_tutorial.md
+      - Microbial contamination: microbial_tutorial.md
+      - Mixture analysis (NNLS / MCR-ALS): mixture_tutorial.md
+      - Hyperspectral analysis: hyperspectral_tutorial.md
+      - Protocol benchmarks: protocol_benchmarks.md
+      - MethodsX reproduction: methodsx_protocol.md
+  - Spectral & ML Concepts:
+      - Spectroscopy basics: spectral_basics.md
+      - Preprocessing guide: preprocessing_guide.md
+      - Chemometrics & models: chemometrics_guide.md
+      - Metrics & result interpretation: metrics_interpretation.md
+      - Best practices & reporting: reporting_guidelines.md
+  - API Reference:
+      - Core objects: api_core.md
+      - Preprocessing: api_preprocess.md
+      - Features & chemometrics: api_features_chemometrics.md
+      - IO & datasets: api_io_data.md
+      - CLI & apps: api_cli_apps.md
+  - Developer Guide:
+      - Architecture & design: design_overview.md
+      - Testing & coverage: testing_coverage.md
+      - Contributing: contributing.md
+      - Release & versioning: releasing.md

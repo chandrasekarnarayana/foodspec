@@ -1,7 +1,6 @@
 # MethodsX protocol reproduction
 
-This page explains how to reproduce the core analyses described in the MethodsX
-protocol article using foodspec.
+This page maps the MethodsX protocol paper directly to FoodSpec commands and outputs so that all figures and tables can be reproduced from public datasets.
 
 ## Command
 
@@ -9,36 +8,35 @@ protocol article using foodspec.
 foodspec reproduce-methodsx --output-dir runs/methodsx_protocol
 ```
 
-This command:
+Produces a timestamped run directory with metrics.json, run_metadata.json, confusion_matrix/PCA plots, and report.md.
 
-- loads public edible-oil datasets (or synthetic stand-ins, depending on the environment and configuration),
-- runs:
-  - an oil-type classification analysis,
-  - an EVOO–sunflower mixture analysis,
-  - PCA visualization of preprocessed spectra,
-- and writes:
-  - `metrics.json` (classification and mixture metrics),
-  - `run_metadata.json` (environment and version info),
-  - confusion matrix and PCA plots,
-  - a summary `report.md`.
+## Datasets (public)
 
-## Mapping to the MethodsX article
+1. **Mendeley edible oils (Raman/FTIR)** – multi-class classification.  
+2. **EVOO–sunflower Raman mixtures (data.gouv.fr, DOI 10.57745/DOGT0E)** – fraction regression/mixture analysis.  
+3. **Groundnut adulteration ATR-MIR (Kaggle)** – optional robustness/adulteration check.  
 
-The outputs from `foodspec reproduce-methodsx` correspond to:
+Convert each to HDF5 using `foodspec csv-to-library` or the public loaders; see Libraries for folder structure.
 
-- Figure X – PCA score plot → `pca_scores.png` in the run directory.
-- Figure Y – Confusion matrix for oil-type classification → `confusion_matrix.png`.
-- Table 1 – Classification metrics (accuracy, F1, etc.) → `metrics.json` under the "classification" section.
-- Table 2 – Mixture-analysis metrics (R², RMSE) → `metrics.json` under the "mixture" section.
+## Mapping figures/tables to commands
 
-(Replace X and Y with actual figure numbers once the manuscript is finalized.)
+- **PCA scores (Figure)**: generated from the classification dataset; output `oil_pca_scores.png`.  
+  - Command: `foodspec reproduce-methodsx` (internal PCA).  
+  - Dataset: public oils library (Raman/FTIR).
+- **Confusion matrix (Figure)**: `oil_confusion_matrix.png`.  
+  - Command: `foodspec reproduce-methodsx` (oil classification step).  
+  - Metrics: accuracy, F1 in `metrics.json` (classification section).
+- **Classification metrics (Table)**: accuracy/F1 summary in `metrics.json`.  
+  - Use overall values for main text; per-class precision/recall can be supplementary if available.
+- **Mixture analysis metrics (Table/Plot)**: `mixture_r2`, `mixture_rmse` in `metrics.json`; add predicted vs true fraction plot if desired.  
+  - Dataset: EVOO–sunflower library.
 
-## Datasets
+## Reproduction checklist
 
-The reproduction workflow uses:
-
-- a public edible-oil dataset for classification,
-- a public EVOO–sunflower mixture dataset for regression,
-
-accessed via the `foodspec.data.public` loaders. See [Libraries](libraries.md)
-for instructions on downloading and organizing these datasets.
+1. Download public datasets and convert to HDF5 libraries (see Libraries and CSV→HDF5 pages).  
+2. Run `foodspec reproduce-methodsx --output-dir runs/methodsx_protocol`.  
+3. Verify artifacts in the run directory: metrics.json, report.md, PCA/confusion matrix plots.  
+4. Align outputs with paper figures/tables (rename or re-caption as needed).  
+5. For publication:  
+   - **Main**: PCA scores figure, confusion matrix, classification metrics (accuracy/F1), mixture metrics (R²/RMSE).  
+   - **Supplementary**: additional per-class metrics, residual plots, spectra examples, run_metadata.json for reproducibility.

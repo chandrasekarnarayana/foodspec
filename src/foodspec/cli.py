@@ -33,6 +33,7 @@ from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.core.hyperspectral import HyperSpectralCube
 from foodspec.data.libraries import load_library
 from foodspec.config import load_config, merge_cli_overrides
+from foodspec.io import create_library, load_csv_spectra
 from foodspec.io.exporters import to_hdf5
 from foodspec.io.loaders import load_folder
 from foodspec.model_registry import load_model as registry_load_model
@@ -556,6 +557,68 @@ def about() -> None:
     typer.echo(
         "Description: foodspec is a headless, research-grade toolkit for Raman/FTIR in food science."
     )
+
+
+@app.command("csv-to-library")
+def csv_to_library(
+    csv_path: str = typer.Argument(..., help="Input CSV file with spectra."),
+    output_hdf5: str = typer.Argument(
+        ..., help="Output HDF5 library path (will be created or overwritten)."
+    ),
+    format: str = typer.Option(
+        "wide",
+        "--format",
+        help="CSV layout: 'wide' (one column per spectrum) or 'long' (tidy format).",
+        case_sensitive=False,
+    ),
+    modality: str = typer.Option(
+        "raman",
+        "--modality",
+        help="Spectroscopy modality tag (e.g. 'raman', 'ftir').",
+    ),
+    wavenumber_column: str = typer.Option(
+        "wavenumber",
+        "--wavenumber-column",
+        help="Name of the wavenumber column.",
+    ),
+    sample_id_column: str = typer.Option(
+        "sample_id",
+        "--sample-id-column",
+        help="For 'long' format: sample identifier column.",
+    ),
+    intensity_column: str = typer.Option(
+        "intensity",
+        "--intensity-column",
+        help="For 'long' format: intensity column.",
+    ),
+    label_column: str = typer.Option(
+        "",
+        "--label-column",
+        help="Optional label column name (e.g. oil_type).",
+    ),
+):
+    """
+    Convert a CSV file of spectra into an HDF5 library usable by foodspec workflows.
+    """
+
+    label_column = label_column or None
+    logger.info("Loading CSV spectra from %s", csv_path)
+    ds = load_csv_spectra(
+        csv_path=csv_path,
+        format=format,
+        wavenumber_column=wavenumber_column,
+        sample_id_column=sample_id_column,
+        intensity_column=intensity_column,
+        label_column=label_column,
+        modality=modality,
+    )
+
+    output_path = Path(output_hdf5)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    logger.info("Saving HDF5 library to %s", output_hdf5)
+    create_library(path=output_hdf5, spectra=ds)
+    logger.info("Done. Library contains %s spectra.", len(ds))
 
 
 @app.command("model-info")
