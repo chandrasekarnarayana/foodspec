@@ -59,9 +59,10 @@ viz = [
 foodspec = "foodspec.cli:app"
 
 [project.urls]
-Documentation = "https://github.com/your-org/foodspec#documentation"
-Source = "https://github.com/your-org/foodspec"
-Issues = "https://github.com/your-org/foodspec/issues"
+Homepage = "https://github.com/chandrasekarnarayana/foodspec"
+Documentation = "https://chandrasekarnarayana.github.io/foodspec/"
+Source = "https://github.com/chandrasekarnarayana/foodspec"
+Issues = "https://github.com/chandrasekarnarayana/foodspec/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/foodspec"]
