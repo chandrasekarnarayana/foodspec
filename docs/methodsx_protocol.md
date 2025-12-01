@@ -42,4 +42,4 @@ Convert each to HDF5 using `foodspec csv-to-library` or the public loaders; see 
    - **Supplementary**: additional per-class metrics, residual plots, spectra examples, run_metadata.json for reproducibility.
 
 See also
-- Keyword index: `keyword_index.md`
+- Keyword index: [keyword_index.md](keyword_index.md)

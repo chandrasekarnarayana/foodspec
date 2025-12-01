@@ -41,7 +41,21 @@ coeffs, resid = nnls_mixture(mixture_spectrum, pure_matrix)  # pure_matrix: (n_p
 C, S = mcr_als(X_mixture, n_components=2)  # X_mixture: (n_samples, n_points)
 ```
 
+### Quick metric check
+```python
+from sklearn.metrics import r2_score, mean_squared_error
+import numpy as np
+pred = pure_matrix @ coeffs
+print("RMSE:", np.sqrt(mean_squared_error(mixture_spectrum, pred)))
+```
+Interpretation: small RMSE and high R² indicate good reconstruction; inspect residuals for bias.
+
 ## Reporting guidance
 - **Main figures**: predicted vs true fraction plot; residual plot.  
 - **Supplementary**: recovered pure spectra (S), concentration profiles (C), detailed RMSE/MAE tables.  
 - State assumptions (linear mixing, non-negativity) and wavenumber range used; include any calibration/validation split details.
+
+See also
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [stats_tests.md](stats_tests.md)
+- [api_reference.md](api_reference.md)

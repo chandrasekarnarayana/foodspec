@@ -59,7 +59,7 @@ foodspec preprocess raw_folder out.h5 --modality raman --min-wn 600 --max-wn 180
 ```
 
 See also
-- `preprocessing_guide.md`
+- `keyword_index.md`
 - `oil_auth_tutorial.md`
 - `heating_tutorial.md`
 - `keyword_index.md`

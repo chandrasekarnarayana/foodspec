@@ -21,7 +21,7 @@ foodspec csv-to-library \
   --modality raman \
   --label-column oil_type
 ```
-This creates an HDF5 spectral library usable by all workflows.
+This creates an HDF5 spectral library usable by all workflows (validated `FoodSpectrumSet`).
 
 ## 3) Run oil authentication
 ```bash
@@ -43,3 +43,4 @@ Outputs (timestamped folder):
 Tips:
 - Use `--classifier-name` to switch models (rf, svm_rbf, logreg, etc.).
 - Add `--save-model` to persist the fitted pipeline via the model registry.
+- For long/tidy CSVs, use `--format long --sample-id-column ... --intensity-column ...`.

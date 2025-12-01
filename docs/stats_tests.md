@@ -55,6 +55,17 @@ Interpretation: compares mean band ratios between two oil types. If p is small, 
 - Reporting: “A paired t-test indicated a change in ratio after heating (t=…, p=…).”
 - Implementation: external; foodspec provides features over time.
 
+**Example (SciPy)**
+```python
+import pandas as pd
+from scipy.stats import ttest_rel
+
+# df has columns: ratio_before, ratio_after for matched samples
+stat, p = ttest_rel(df["ratio_before"], df["ratio_after"])
+print(f"paired t={stat:.3f}, p={p:.3g}")
+```
+Interpretation: tests mean difference within paired samples (e.g., pre/post heating). Small p suggests a systematic change; report effect size if possible.
+
 ### One-way ANOVA
 - Question: Do three or more group means differ?
 - Assumptions: normality of residuals, homogeneity of variance, independence.
@@ -140,6 +151,15 @@ print(f"r={stat:.3f}, p={p:.3g}")
 ```
 Interpretation: measures linear association between a ratio and time/temperature. Small p suggests a significant linear relationship; r indicates strength/direction.
 
+**Simple regression example (SciPy)**
+```python
+from scipy.stats import linregress
+
+result = linregress(df["heating_time"], df["ratio_1655_1745"])
+print(f"slope={result.slope:.3f}, R²={result.rvalue**2:.3f}, p={result.pvalue:.3g}")
+```
+Interpretation: slope sign/magnitude shows trend; p tests if slope differs from zero; R² indicates variance explained.
+
 ## Effect sizes
 - **Cohen’s d**: standardized mean difference (two groups).
 - **η² / partial η²**: proportion of variance explained in ANOVA.
@@ -147,7 +167,7 @@ Interpretation: measures linear association between a ratio and time/temperature
 - Reporting: include effect size alongside p-value for practical relevance.
 
 See also
-- `metrics_interpretation.md`
-- `oil_auth_tutorial.md`
-- `methodsx_protocol.md`
-- `api_reference.md`
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [methodsx_protocol.md](methodsx_protocol.md)
+- [api_reference.md](api_reference.md)

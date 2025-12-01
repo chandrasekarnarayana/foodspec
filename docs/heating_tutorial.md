@@ -53,7 +53,7 @@ print(f"slope={slope:.3f}, R²={r**2:.3f}, p={p:.3g}")
 Interpretation: slope indicates direction/magnitude of change; p tests if slope differs from zero; R² shows how much of the ratio variance is explained by time. Include these in MethodsX-style reports alongside plots.
 
 See also
-- `preprocessing_guide.md`
-- `metrics_interpretation.md`
-- `reporting_guidelines.md`
-- `keyword_index.md`
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [reporting_guidelines.md](reporting_guidelines.md)
+- [keyword_index.md](keyword_index.md)
+- [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)

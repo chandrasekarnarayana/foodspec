@@ -10,6 +10,6 @@
 ## FAQs
 - **Can foodspec handle non-food spectra?** Yes; it is domain-agnostic but tuned for food spectroscopy defaults.
 - **What accuracy is “good”?** Depends on task and dataset; use protocol benchmarks as a reference and report F1/CM plots.
-- **How do I choose preprocessing?** Start with ALS + Savitzky-Golay + Vector/MSC; consult `preprocessing_guide.md`.
+- **How do I choose preprocessing?** Start with ALS + Savitzky-Golay + Vector/MSC; see `ftir_raman_preprocessing.md`.
 - **Where are reports written?** CLI commands create timestamped folders under `--output-dir` with metrics, plots, and markdown summaries.
 - **Can I customize models?** Yes; use the Python API to build your own pipelines or swap classifiers via CLI flags.

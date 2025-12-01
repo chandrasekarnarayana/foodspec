@@ -84,7 +84,7 @@ Questions this page answers
 - For detailed errors, inspect report folder (`summary.json`, `metrics.json`, `report.md`) and logs printed to stdout.
 
 See also
-- `csv_to_library.md`
-- `oil_auth_tutorial.md`
-- `preprocessing_guide.md`
-- `keyword_index.md`
+- [csv_to_library.md](csv_to_library.md)
+- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [keyword_index.md](keyword_index.md)
+- [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)

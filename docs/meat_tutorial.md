@@ -44,7 +44,7 @@ print(res.cv_metrics.head())
 - Cross-validation reduces bias; mention folds/stratification.
 
 See also
-- `domains_overview.md`
-- `oil_auth_tutorial.md`
-- `metrics_interpretation.md`
-- `methodsx_protocol.md`
+- [domains_overview.md](domains_overview.md)
+- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [methodsx_protocol.md](methodsx_protocol.md)

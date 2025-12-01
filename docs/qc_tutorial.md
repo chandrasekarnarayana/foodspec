@@ -33,12 +33,21 @@ print(res.labels_pred.value_counts())
 - Check distribution of scores; adjust threshold if needed (domain knowledge).  
 - A QC failure may indicate adulteration, contamination, instrument drift, or out-of-spec batch; verify with orthogonal tests.
 
+### Quick check
+```python
+auth_count = (res.labels_pred == "authentic").sum()
+suspect_count = (res.labels_pred == "suspect").sum()
+print({"authentic": auth_count, "suspect": suspect_count})
+```
+Interpretation: monitor how many samples fall below threshold; revisit threshold/model if too many false alarms.
+
 ## Reporting
 - Main: histogram of scores with threshold; counts of authentic vs suspect.  
 - Supplementary: per-batch scores, thresholds used, preprocessing steps, model parameters.  
 - Document reference set composition and any label filters used for training.
 
 See also
-- `csv_to_library.md`
-- `metrics_interpretation.md`
-- `reporting_guidelines.md`
+- [csv_to_library.md](csv_to_library.md)
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [reporting_guidelines.md](reporting_guidelines.md)
+- [api_reference.md](api_reference.md)

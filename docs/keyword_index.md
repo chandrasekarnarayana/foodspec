@@ -64,7 +64,7 @@ Questions this page answers
 - **model-info** — inspect saved model metadata. See: `cli.md`.
 
 See also
-- `metrics_interpretation.md`
-- `oil_auth_tutorial.md`
-- `methodsx_protocol.md`
-- `api_reference.md`
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [methodsx_protocol.md](methodsx_protocol.md)
+- [api_reference.md](api_reference.md)

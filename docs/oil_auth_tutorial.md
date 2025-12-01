@@ -73,7 +73,7 @@ print(f"Kruskal–Wallis H={stat:.3f}, p={p:.3g}")
 Interpretation: a small p-value suggests at least one oil type has a different ratio distribution. Not required for classification, but useful for scientific interpretation and MethodsX-style reporting.
 
 See also
-- `csv_to_library.md`
-- `preprocessing_guide.md`
-- `metrics_interpretation.md`
-- `keyword_index.md`
+- [csv_to_library.md](csv_to_library.md)
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [keyword_index.md](keyword_index.md)
+- [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)

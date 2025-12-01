@@ -47,7 +47,7 @@ print(res.cv_metrics.head())
 - Supplementary: per-class precision/recall/F1, spectra examples, feature importances/ratios, run metadata/configs.
 
 See also
-- `domains_overview.md`
-- `metrics_interpretation.md`
-- `oil_auth_tutorial.md`
-- `methodsx_protocol.md`
+- [domains_overview.md](domains_overview.md)
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [methodsx_protocol.md](methodsx_protocol.md)

@@ -58,6 +58,6 @@ fs_mix = load_public_evoo_sunflower_raman(root="path/to/evoo_sunflower")
 These return validated FoodSpectrumSet objects ready for workflows.
 
 See also
-- `csv_to_library.md`
-- `oil_auth_tutorial.md`
-- `mixture_tutorial.md`
+- [csv_to_library.md](csv_to_library.md)
+- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [mixture_tutorial.md](mixture_tutorial.md)

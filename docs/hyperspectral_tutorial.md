@@ -37,3 +37,8 @@ plot_ratio_map(cube, num1=1655, num2=1742)
 - Cluster maps summarize segmentation (e.g., phases or contaminants).
 - **Main figure**: key intensity/ratio map with color bar and scale.  
 - **Supplementary**: representative pixel spectra, mean spectrum, cluster map variations, and any preprocessing notes (cropping/smoothing applied to pixels).
+
+See also
+- [metrics_interpretation.md](metrics_interpretation.md)
+- [keyword_index.md](keyword_index.md)
+- [api_reference.md](api_reference.md)
