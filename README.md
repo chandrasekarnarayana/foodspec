@@ -134,6 +134,8 @@ But most analyses are locked in ad hoc scripts, inconsistent preprocessing, and 
 
 ## Installation
 
+Requires Python 3.10+.
+
 ```bash
 # core installation
 pip install foodspec
@@ -276,8 +278,8 @@ Each loader:
 
 Full documentation (Getting started, API, CLI, workflows, MethodsX protocol, deep learning, citing) is provided via MkDocs.
 
-Docs URL (placeholder):  
-`https://<your-docs-host>/foodspec/`
+Docs URL:  
+https://chandrasekarnarayana.github.io/foodspec/
 
 Key pages:
 - Getting started – installation, basic examples, data loading.
