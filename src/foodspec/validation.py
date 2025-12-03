@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import sys
 import platform
+import sys
 import warnings
 
 import numpy as np

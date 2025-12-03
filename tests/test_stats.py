@@ -2,19 +2,19 @@ import numpy as np
 import pandas as pd
 
 from foodspec.stats import (
-    run_ttest,
-    run_anova,
-    run_tukey_hsd,
-    compute_correlations,
-    compute_correlation_matrix,
-    compute_cross_correlation,
-    compute_cohens_d,
+    bootstrap_metric,
     check_minimum_samples,
+    compute_cohens_d,
+    compute_correlation_matrix,
+    compute_correlations,
+    compute_cross_correlation,
+    permutation_test_metric,
+    run_anova,
     run_kruskal_wallis,
     run_mannwhitney_u,
+    run_ttest,
+    run_tukey_hsd,
     run_wilcoxon_signed_rank,
-    bootstrap_metric,
-    permutation_test_metric,
 )
 
 

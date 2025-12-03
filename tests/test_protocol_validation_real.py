@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from foodspec.apps import protocol_validation as pv
 from foodspec.core.dataset import FoodSpectrumSet
@@ -26,7 +26,13 @@ def test_protocol_validation_benchmarks_full(tmp_path, monkeypatch):
     # patch train_test_split to use larger test_size to satisfy class counts
     from sklearn.model_selection import train_test_split as sk_split
 
-    monkeypatch.setattr(pv, "train_test_split", lambda *args, **kwargs: sk_split(*args, test_size=0.5, stratify=args[1], random_state=0))
+    monkeypatch.setattr(
+        pv,
+        "train_test_split",
+        lambda *args, **kwargs: sk_split(
+            *args, test_size=0.5, stratify=args[1], random_state=0
+        ),
+    )
 
     summary = pv.run_protocol_benchmarks(output_dir=tmp_path, random_state=0)
     assert "classification" in summary

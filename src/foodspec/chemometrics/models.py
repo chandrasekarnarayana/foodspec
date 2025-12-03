@@ -5,14 +5,14 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-from sklearn.cross_decomposition import PLSRegression
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 
 __all__ = [
     "make_pls_regression",

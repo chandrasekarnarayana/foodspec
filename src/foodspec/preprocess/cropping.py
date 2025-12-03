@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import Tuple
 
 import numpy as np
+from sklearn.base import BaseEstimator
 
 from foodspec.core.dataset import FoodSpectrumSet
-from sklearn.base import BaseEstimator
 
 __all__ = ["RangeCropper", "crop_spectrum_set"]
 

@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from foodspec.io.csv_import import load_csv_spectra
 from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.io.csv_import import load_csv_spectra
 
 
 def test_load_csv_wide(tmp_path):

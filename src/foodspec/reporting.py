@@ -154,7 +154,9 @@ def export_run_metadata(
     return output_path
 
 
-def export_model_and_metrics(model: Any, metrics: Dict[str, Any], path_base: pathlib.Path | str) -> Dict[str, pathlib.Path]:
+def export_model_and_metrics(
+    model: Any, metrics: Dict[str, Any], path_base: pathlib.Path | str
+) -> Dict[str, pathlib.Path]:
     """Save a fitted model and associated metrics side-by-side.
 
     Parameters

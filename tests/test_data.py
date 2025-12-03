@@ -1,14 +1,13 @@
 import numpy as np
-import pandas as pd
 import pytest
 
 from foodspec.core.dataset import FoodSpectrumSet
-from foodspec.data.loader import load_example_oils
 from foodspec.data.libraries import (
     create_library,
     load_library,
     search_library_fingerprint,
 )
+from foodspec.data.loader import load_example_oils
 
 
 def test_load_example_oils():
@@ -22,7 +21,7 @@ def test_load_example_oils():
 def test_library_round_trip(tmp_path):
     ds = load_example_oils()
     path = tmp_path / "lib.h5"
-    h5 = pytest.importorskip("h5py")
+    pytest.importorskip("h5py")
     create_library(path, ds)
     ds_loaded = load_library(path)
     assert np.allclose(ds.x, ds_loaded.x)
@@ -47,4 +46,3 @@ def test_search_library_fingerprint():
     # Highest similarity should correspond to identical spectra
     top_matches = sims.values.argmax(axis=1)
     assert np.all(top_matches < len(lib))
-

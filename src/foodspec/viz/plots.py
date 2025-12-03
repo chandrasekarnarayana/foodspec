@@ -5,7 +5,7 @@ All functions return a Matplotlib Axes for further customization.
 
 from __future__ import annotations
 
-from typing import Iterable, Optional, Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -105,7 +105,12 @@ def plot_mean_with_ci(
     return ax
 
 
-def plot_pca_scores(scores: np.ndarray, labels: Optional[Sequence] = None, components: Tuple[int, int] = (1, 2), ax=None):
+def plot_pca_scores(
+    scores: np.ndarray,
+    labels: Optional[Sequence] = None,
+    components: Tuple[int, int] = (1, 2),
+    ax=None,
+):
     """
     Scatter plot of PCA scores.
 

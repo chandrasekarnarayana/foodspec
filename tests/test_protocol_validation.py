@@ -3,7 +3,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from foodspec.apps.protocol_validation import run_protocol_benchmarks
 from foodspec.core.dataset import FoodSpectrumSet
@@ -36,8 +35,6 @@ def test_run_protocol_benchmarks_smoke(tmp_path):
     def fake_mix(random_state=0):
         return {"task": "mixture_regression", "rmse": 0.0, "r2": 1.0}
 
-    # avoid stratified split constraints on tiny synthetic data
-    monkeypatcher = pv
     pv._classification_benchmark = fake_cls  # type: ignore
     pv._mixture_benchmark = fake_mix  # type: ignore
 
@@ -62,7 +59,6 @@ def test_run_protocol_benchmarks_cv_splits(tmp_path, monkeypatch):
 
     def _classification_benchmark(random_state=0):
         ds = _synthetic_classification()
-        X = ds.x
         y = ds.metadata["oil_type"].to_numpy()
         # trivial metrics for coverage
         return {"task": "oil_classification", "accuracy": 1.0}, pd.DataFrame(

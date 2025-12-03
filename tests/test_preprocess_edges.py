@@ -1,9 +1,17 @@
 import numpy as np
 import pytest
 
-from foodspec.preprocess.baseline import ALSBaseline, PolynomialBaseline, RubberbandBaseline
-from foodspec.preprocess.normalization import VectorNormalizer, SNVNormalizer, MSCNormalizer
-from foodspec.preprocess.smoothing import SavitzkyGolaySmoother, MovingAverageSmoother
+from foodspec.preprocess.baseline import (
+    ALSBaseline,
+    PolynomialBaseline,
+    RubberbandBaseline,
+)
+from foodspec.preprocess.normalization import (
+    MSCNormalizer,
+    SNVNormalizer,
+    VectorNormalizer,
+)
+from foodspec.preprocess.smoothing import MovingAverageSmoother, SavitzkyGolaySmoother
 
 
 def test_baseline_invalid_shapes():

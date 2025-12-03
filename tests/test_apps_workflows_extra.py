@@ -3,15 +3,20 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 
-from foodspec.apps.heating import run_heating_degradation_analysis, run_heating_quality_workflow
+from foodspec.apps.heating import (
+    run_heating_degradation_analysis,
+    run_heating_quality_workflow,
+)
 from foodspec.apps.methodsx_reproduction import run_methodsx_reproduction
-from foodspec.apps.oils import run_oil_authentication_workflow, run_oil_authentication_quickstart
+from foodspec.apps.oils import (
+    run_oil_authentication_quickstart,
+    run_oil_authentication_workflow,
+)
 from foodspec.apps.protocol_validation import run_protocol_benchmarks
 from foodspec.apps.qc import apply_qc_model, run_qc_workflow, train_qc_model
-from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.chemometrics.mixture import run_mixture_analysis_workflow
+from foodspec.core.dataset import FoodSpectrumSet
 
 
 def _make_dataset(n_samples: int, n_features: int, labels: list[str], modality: str = "raman") -> FoodSpectrumSet:

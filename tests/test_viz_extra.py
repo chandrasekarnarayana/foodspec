@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 
 from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.viz.pca import plot_pca_loadings, plot_pca_scores
 from foodspec.viz.spectra import plot_mean_spectrum, plot_spectra
-from foodspec.viz.pca import plot_pca_scores, plot_pca_loadings
 
 
 def _fs():

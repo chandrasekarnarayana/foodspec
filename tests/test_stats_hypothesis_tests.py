@@ -1,15 +1,14 @@
-import numpy as np
 import pandas as pd
 import pytest
 
 from foodspec.stats import (
     run_anova,
-    run_ttest,
-    run_manova,
-    run_mannwhitney_u,
-    run_wilcoxon_signed_rank,
-    run_kruskal_wallis,
     run_friedman_test,
+    run_kruskal_wallis,
+    run_mannwhitney_u,
+    run_manova,
+    run_ttest,
+    run_wilcoxon_signed_rank,
 )
 
 

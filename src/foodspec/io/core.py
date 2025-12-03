@@ -9,8 +9,8 @@ from pathlib import Path
 
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.io import csv_import
-from foodspec.io.text_formats import read_csv_table, read_csv_folder, read_jcamp
-from foodspec.io.vendor_formats import read_spc, read_opus
+from foodspec.io.text_formats import read_csv_folder, read_jcamp
+from foodspec.io.vendor_formats import read_opus, read_spc
 
 
 def detect_format(path: str | os.PathLike) -> str:

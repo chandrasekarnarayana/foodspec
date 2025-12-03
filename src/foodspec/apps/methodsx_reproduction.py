@@ -3,17 +3,15 @@
 from __future__ import annotations
 
 from os import PathLike
-from pathlib import Path
 from typing import Dict
 
-import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score, mean_squared_error
 
 from foodspec.apps.oils import run_oil_authentication_workflow
 from foodspec.chemometrics.pca import run_pca
@@ -24,9 +22,9 @@ from foodspec.data.public import (
 from foodspec.reporting import (
     create_run_dir,
     save_figure,
+    summarize_metrics_for_markdown,
     write_json,
     write_markdown_report,
-    summarize_metrics_for_markdown,
 )
 from foodspec.viz.classification import plot_confusion_matrix
 from foodspec.viz.pca import plot_pca_scores

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import io
 from os import PathLike
 from pathlib import Path
 from typing import Literal
-import io
 
 import numpy as np
 import pandas as pd

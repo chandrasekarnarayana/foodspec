@@ -18,15 +18,13 @@ from scipy import stats
 try:
     import statsmodels.api as sm
     from statsmodels.multivariate.manova import MANOVA
-    from statsmodels.stats.multicomp import pairwise_tukeyhsd
-    from statsmodels.stats.multicomp import pairwise_gameshowell
+    from statsmodels.stats.multicomp import pairwise_gameshowell, pairwise_tukeyhsd
 except ImportError:  # pragma: no cover
     sm = None
     MANOVA = None
     pairwise_tukeyhsd = None
     pairwise_gameshowell = None
 
-from foodspec.core.dataset import FoodSpectrumSet
 
 
 @dataclass
@@ -154,7 +152,6 @@ def run_manova(data: pd.DataFrame, groups: Iterable) -> TestResult:
         raise ImportError("statsmodels is required for MANOVA.")
     df = data.copy()
     df["_group"] = np.asarray(groups)
-    formula = " + ".join([f"C{col}" for col in data.columns])  # placeholder
     # statsmodels MANOVA uses endog/exog, use from_formula convenience
     mv = MANOVA.from_formula(f"{' + '.join(data.columns)} ~ _group", data=df)
     res = mv.mv_test()
@@ -320,22 +317,36 @@ def run_mannwhitney_u(
         g1 = data.loc[data[group_col] == groups[0], value_col].to_numpy()
         g2 = data.loc[data[group_col] == groups[1], value_col].to_numpy()
     else:
-        # Allow either a tuple/list of two samples, or passing the second sample via `group_col`
-        # for convenience in tests or quick calls.
+        # Allow either a tuple/list of two samples, or passing the second sample via
+        # `group_col` for convenience in tests or quick calls.
         if group_col is not None and not isinstance(group_col, str) and value_col is None:
             try:
                 g1, g2 = data, group_col
             except Exception as exc:  # pragma: no cover
-                raise ValueError("Provide two samples (g1, g2) or a DataFrame with group/value columns.") from exc
+                raise ValueError(
+                    "Provide two samples (g1, g2) or "
+                    "a DataFrame with group/value columns."
+                ) from exc
         else:
             try:
                 g1, g2 = data
             except Exception as exc:  # pragma: no cover
-                raise ValueError("Provide two samples (g1, g2) or a DataFrame with group/value columns.") from exc
+                raise ValueError(
+                    "Provide two samples (g1, g2) or "
+                    "a DataFrame with group/value columns."
+                ) from exc
 
     stat, p = stats.mannwhitneyu(g1, g2, alternative=alternative)
     summary = pd.DataFrame(
-        [{"test": "mannwhitney_u", "statistic": stat, "pvalue": p, "df": None, "alternative": alternative}]
+        [
+            {
+                "test": "mannwhitney_u",
+                "statistic": stat,
+                "pvalue": p,
+                "df": None,
+                "alternative": alternative,
+            }
+        ]
     )
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
 

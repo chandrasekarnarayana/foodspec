@@ -1,9 +1,9 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 import pytest
 
 from foodspec.io.base import SpectraLoader
-from foodspec.io.core import detect_format, _to_spectrum_set_from_df, read_spectra
+from foodspec.io.core import _to_spectrum_set_from_df, detect_format, read_spectra
 
 
 def test_spectraloader_protocol_accepts_callable():
@@ -16,11 +16,16 @@ def test_spectraloader_protocol_accepts_callable():
 
 
 def test_detect_format_variants(tmp_path):
-    file_csv = tmp_path / "a.csv"; file_csv.write_text("w,n\n1,2")
-    file_txt = tmp_path / "b.txt"; file_txt.write_text("w,n\n1,2")
-    file_jdx = tmp_path / "c.jdx"; file_jdx.write_text("dummy")
-    file_spc = tmp_path / "d.spc"; file_spc.write_text("dummy")
-    file_opus = tmp_path / "e.opus"; file_opus.write_text("dummy")
+    file_csv = tmp_path / "a.csv"
+    file_csv.write_text("w,n\n1,2")
+    file_txt = tmp_path / "b.txt"
+    file_txt.write_text("w,n\n1,2")
+    file_jdx = tmp_path / "c.jdx"
+    file_jdx.write_text("dummy")
+    file_spc = tmp_path / "d.spc"
+    file_spc.write_text("dummy")
+    file_opus = tmp_path / "e.opus"
+    file_opus.write_text("dummy")
 
     assert detect_format(file_csv) == "csv"
     assert detect_format(file_txt) == "csv"

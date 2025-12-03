@@ -1,9 +1,11 @@
 import numpy as np
-import pandas as pd
 import pytest
 
 from foodspec.chemometrics.models import make_classifier
-from foodspec.chemometrics.validation import compute_classification_metrics, compute_regression_metrics
+from foodspec.chemometrics.validation import (
+    compute_classification_metrics,
+    compute_regression_metrics,
+)
 
 
 def test_make_classifier_supported_and_invalid():

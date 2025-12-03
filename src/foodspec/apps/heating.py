@@ -7,17 +7,17 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LinearRegression
 from scipy import stats
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
 
 from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.features.peaks import PeakFeatureExtractor
+from foodspec.features.ratios import RatioFeatureGenerator
 from foodspec.preprocess.baseline import ALSBaseline
 from foodspec.preprocess.cropping import RangeCropper
 from foodspec.preprocess.normalization import VectorNormalizer
 from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-from foodspec.features.peaks import PeakFeatureExtractor
-from foodspec.features.ratios import RatioFeatureGenerator
 from foodspec.validation import validate_spectrum_set
 
 __all__ = [

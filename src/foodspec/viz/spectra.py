@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Optional, Sequence
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
 from foodspec.core.dataset import FoodSpectrumSet
@@ -51,11 +50,11 @@ def plot_spectra(
         seen = {}
         new_handles = []
         new_labels = []
-        for h, l in zip(handles, labels):
-            if l not in seen:
-                seen[l] = True
+        for h, lbl in zip(handles, labels):
+            if lbl not in seen:
+                seen[lbl] = True
                 new_handles.append(h)
-                new_labels.append(l)
+                new_labels.append(lbl)
         ax.legend(new_handles, new_labels, title=color_by)
 
     ax.set_xlabel("Wavenumber (cm$^{-1}$)")
@@ -97,4 +96,3 @@ def plot_mean_spectrum(
     ax.invert_xaxis()
     ax.legend()
     return ax
-

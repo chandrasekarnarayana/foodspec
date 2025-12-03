@@ -1,22 +1,22 @@
 import numpy as np
 
 from foodspec.metrics import (
-    compute_classification_metrics,
-    compute_regression_metrics,
-    compute_roc_curve,
-    compute_pr_curve,
-    compute_embedding_silhouette,
     compute_between_within_ratio,
     compute_between_within_stats,
+    compute_classification_metrics,
+    compute_embedding_silhouette,
+    compute_pr_curve,
+    compute_regression_metrics,
+    compute_roc_curve,
 )
 from foodspec.viz import (
+    plot_bland_altman,
+    plot_calibration_with_ci,
     plot_confusion_matrix,
-    plot_roc_curve,
     plot_pr_curve,
     plot_regression_calibration,
     plot_residuals,
-    plot_calibration_with_ci,
-    plot_bland_altman,
+    plot_roc_curve,
 )
 
 

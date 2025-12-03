@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import sys
-import importlib.util
 from pathlib import Path
 from typing import Any, Optional
 
@@ -19,23 +19,23 @@ import typer
 from sklearn.pipeline import Pipeline
 
 from foodspec import __version__
-from foodspec.logging_utils import get_logger, log_run_metadata
 from foodspec.apps.dairy import run_dairy_authentication_workflow
 from foodspec.apps.heating import run_heating_degradation_analysis
 from foodspec.apps.meat import run_meat_authentication_workflow
+from foodspec.apps.methodsx_reproduction import run_methodsx_reproduction
 from foodspec.apps.microbial import run_microbial_detection_workflow
 from foodspec.apps.oils import run_oil_authentication_workflow
-from foodspec.apps.qc import apply_qc_model, train_qc_model
 from foodspec.apps.protocol_validation import run_protocol_benchmarks
-from foodspec.apps.methodsx_reproduction import run_methodsx_reproduction
+from foodspec.apps.qc import apply_qc_model, train_qc_model
 from foodspec.chemometrics.mixture import nnls_mixture
+from foodspec.config import load_config, merge_cli_overrides
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.core.hyperspectral import HyperSpectralCube
 from foodspec.data.libraries import load_library
-from foodspec.config import load_config, merge_cli_overrides
 from foodspec.io import create_library, load_csv_spectra
 from foodspec.io.exporters import to_hdf5
 from foodspec.io.loaders import load_folder
+from foodspec.logging_utils import get_logger, log_run_metadata
 from foodspec.model_registry import load_model as registry_load_model
 from foodspec.model_registry import save_model as registry_save_model
 from foodspec.preprocess.baseline import ALSBaseline
@@ -45,10 +45,10 @@ from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
 from foodspec.reporting import (
     create_report_folder,
     save_figure,
-    write_metrics_csv,
-    write_summary_json,
     write_json,
     write_markdown_report,
+    write_metrics_csv,
+    write_summary_json,
 )
 from foodspec.viz.classification import plot_confusion_matrix
 from foodspec.viz.heating import plot_ratio_vs_time
@@ -150,7 +150,13 @@ def _write_heating_report(result, output_dir: Path, time_column: str) -> Path:
         if name == "by_oil_type":
             continue
         if hasattr(model, "coef_"):
-            rows.append({"ratio": name, "slope": float(model.coef_.ravel()[0]), "intercept": float(model.intercept_.ravel()[0])})
+            rows.append(
+                {
+                    "ratio": name,
+                    "slope": float(model.coef_.ravel()[0]),
+                    "intercept": float(model.intercept_.ravel()[0]),
+                }
+            )
     if rows:
         write_metrics_csv(report_dir, "trend_models", pd.DataFrame(rows))
     # ANOVA
@@ -158,9 +164,18 @@ def _write_heating_report(result, output_dir: Path, time_column: str) -> Path:
         write_metrics_csv(report_dir, "anova_results", result.anova_results)
     # Plot first ratio vs time
     if not result.key_ratios.empty:
-        ratio_col = "ratio_1655_1742" if "ratio_1655_1742" in result.key_ratios.columns else result.key_ratios.columns[0]
+        ratio_col = (
+            "ratio_1655_1742"
+            if "ratio_1655_1742" in result.key_ratios.columns
+            else result.key_ratios.columns[0]
+        )
         fig, ax = plt.subplots()
-        plot_ratio_vs_time(result.time_variable, result.key_ratios[ratio_col], model=result.trend_models.get(ratio_col), ax=ax)
+        plot_ratio_vs_time(
+            result.time_variable,
+            result.key_ratios[ratio_col],
+            model=result.trend_models.get(ratio_col),
+            ax=ax,
+        )
         save_figure(report_dir, "ratio_vs_time", fig)
         plt.close(fig)
     summary = {
@@ -359,8 +374,13 @@ def oil_auth(
 ):
     """Run oil authentication workflow and save HTML report."""
 
-    run_meta = log_run_metadata(logger, {"command": "oil-auth"})
-    base_cfg = {"input_hdf5": input_hdf5, "label_column": label_column, "output_report": output_report, "cv_splits": cv_splits}
+    _run_meta = log_run_metadata(logger, {"command": "oil-auth"})
+    base_cfg = {
+        "input_hdf5": input_hdf5,
+        "label_column": label_column,
+        "output_report": output_report,
+        "cv_splits": cv_splits,
+    }
     cfg = load_config(config) if config else base_cfg
     cfg = merge_cli_overrides(cfg, base_cfg)
 
@@ -378,7 +398,7 @@ def oil_auth(
         label_column=label_column,
         output_report=Path(output_report),
         classifier_name=classifier_name,
-        run_metadata=run_meta,
+        run_metadata=_run_meta,
     )
     typer.echo(f"Report folder: {report_dir}")
     if save_model_path is not None:
@@ -408,7 +428,7 @@ def heating_command(
 ):
     """Run heating degradation workflow and write report folder."""
 
-    run_meta = log_run_metadata(logger, {"command": "heating"})
+    _run_meta = log_run_metadata(logger, {"command": "heating"})
     ds = load_library(input_hdf5)
     result = run_heating_degradation_analysis(ds, time_column=time_column)
     report_dir = _write_heating_report(result, Path(output_dir), time_column=time_column)

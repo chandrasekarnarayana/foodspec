@@ -1,11 +1,11 @@
 from pathlib import Path
 
 from foodspec.reporting import (
+    export_model_and_metrics,
+    export_run_metadata,
+    summarize_model_performance,
     summarize_preprocessing_pipeline,
     summarize_stats_results,
-    summarize_model_performance,
-    export_run_metadata,
-    export_model_and_metrics,
 )
 
 
@@ -21,10 +21,6 @@ def test_reporting_helpers_summaries(tmp_path: Path):
 
 
 def test_export_model_and_metrics(tmp_path: Path):
-    class Dummy:
-        pass
-
-    dummy = Dummy()
     # simple pickleable object (e.g., dict) to avoid pickling errors with local classes
     model = {"model": "dummy"}
     paths = export_model_and_metrics(model, {"acc": 0.9}, tmp_path / "model_run")

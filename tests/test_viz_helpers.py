@@ -5,13 +5,13 @@ matplotlib.use("Agg")  # ensure headless for tests
 import numpy as np
 
 from foodspec.viz.plots import (
-    plot_spectra_overlay,
-    plot_mean_with_ci,
-    plot_pca_scores,
-    plot_pca_loadings,
     plot_confusion_matrix,
     plot_correlation_heatmap,
+    plot_mean_with_ci,
+    plot_pca_loadings,
+    plot_pca_scores,
     plot_regression_calibration,
+    plot_spectra_overlay,
 )
 
 

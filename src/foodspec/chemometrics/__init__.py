@@ -1,8 +1,13 @@
 """Chemometric model helpers."""
 
-from .models import make_classifier, make_pls_da, make_pls_regression, make_mlp_regressor
+from .mixture import mcr_als, nnls_mixture
+from .models import (
+    make_classifier,
+    make_mlp_regressor,
+    make_pls_da,
+    make_pls_regression,
+)
 from .pca import run_pca
-from .mixture import nnls_mixture, mcr_als
 from .validation import (
     compute_classification_metrics,
     compute_regression_metrics,

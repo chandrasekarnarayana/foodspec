@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 
 from foodspec.utils.troubleshooting import (
+    check_missing_metadata,
+    detect_outliers,
     estimate_snr,
     summarize_class_balance,
-    detect_outliers,
-    check_missing_metadata,
 )
 
 

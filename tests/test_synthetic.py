@@ -1,6 +1,9 @@
 import numpy as np
 
-from foodspec.synthetic import generate_synthetic_raman_spectrum, generate_synthetic_ftir_spectrum
+from foodspec.synthetic import (
+    generate_synthetic_ftir_spectrum,
+    generate_synthetic_raman_spectrum,
+)
 
 
 def test_generate_raman_shape_and_noise():

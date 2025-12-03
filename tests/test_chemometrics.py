@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 from sklearn.datasets import make_classification, make_regression
 
 from foodspec.chemometrics.models import make_pls_da, make_pls_regression

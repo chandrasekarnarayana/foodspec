@@ -8,17 +8,31 @@ from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, r2_score, mean_squared_error
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    mean_squared_error,
+    r2_score,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.cross_decomposition import PLSRegression
 
-from foodspec.data.public import load_public_evoo_sunflower_raman, load_public_mendeley_oils
 from foodspec.chemometrics.models import make_classifier
+from foodspec.data.public import (
+    load_public_evoo_sunflower_raman,
+    load_public_mendeley_oils,
+)
 from foodspec.preprocess.baseline import ALSBaseline
-from foodspec.preprocess.normalization import VectorNormalizer, MSCNormalizer
+from foodspec.preprocess.normalization import MSCNormalizer
 from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-from foodspec.reporting import create_run_dir, write_json, write_markdown_report, summarize_metrics_for_markdown
+from foodspec.reporting import (
+    create_run_dir,
+    summarize_metrics_for_markdown,
+    write_json,
+    write_markdown_report,
+)
 
 __all__ = ["run_protocol_benchmarks"]
 

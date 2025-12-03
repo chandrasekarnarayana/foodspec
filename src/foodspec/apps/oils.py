@@ -8,19 +8,19 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import confusion_matrix
 
+from foodspec.chemometrics.models import make_classifier
+from foodspec.chemometrics.validation import compute_classification_metrics
 from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.features.peaks import PeakFeatureExtractor
+from foodspec.features.ratios import compute_ratios
 from foodspec.preprocess.baseline import ALSBaseline
 from foodspec.preprocess.cropping import RangeCropper
 from foodspec.preprocess.normalization import VectorNormalizer
 from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-from foodspec.features.peaks import PeakFeatureExtractor
-from foodspec.features.ratios import RatioFeatureGenerator, compute_ratios
-from foodspec.chemometrics.models import make_classifier
-from foodspec.chemometrics.validation import compute_classification_metrics
 from foodspec.validation import validate_spectrum_set
 
 __all__ = [

@@ -102,7 +102,6 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
                     wavenumbers <= peak_center + self.tolerance
                 )
                 if not np.any(mask):
-                    peak_idx = np.argmax(np.full_like(wavenumbers, -np.inf))
                     area = np.nan
                     height = np.nan
                 else:
@@ -110,7 +109,6 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
                     local_y = spectrum[mask]
                     local_max_idx = np.argmax(local_y)
                     height = local_y[local_max_idx]
-                    peak_idx = np.where(mask)[0][local_max_idx]
                     area = np.trapezoid(local_y, x=local_w)
 
                 if "height" in self.features:

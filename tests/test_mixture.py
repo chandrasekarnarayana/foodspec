@@ -1,6 +1,6 @@
 import numpy as np
 
-from foodspec.chemometrics.mixture import nnls_mixture, mcr_als
+from foodspec.chemometrics.mixture import mcr_als, nnls_mixture
 
 
 def test_nnls_mixture_two_components():
@@ -16,7 +16,6 @@ def test_nnls_mixture_two_components():
 def test_mcr_als_simple_mixture():
     s1 = np.array([1.0, 2.0])
     s2 = np.array([0.5, 1.0])
-    pure = np.vstack([s1, s2]).T
     mixtures = np.array(
         [
             0.2 * s1 + 0.8 * s2,

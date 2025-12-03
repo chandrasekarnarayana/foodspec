@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_ratio_by_group(ratio_values, group_labels, ax=None, kind: str = "box"):
@@ -34,7 +34,7 @@ def plot_ratio_by_group(ratio_values, group_labels, ax=None, kind: str = "box"):
     if kind == "box":
         ax.boxplot(data, labels=unique, patch_artist=True)
     elif kind == "violin":
-        parts = ax.violinplot(data, showmedians=True)
+        ax.violinplot(data, showmedians=True)
         ax.set_xticks(range(1, len(unique) + 1))
         ax.set_xticklabels(unique)
     elif kind == "strip":

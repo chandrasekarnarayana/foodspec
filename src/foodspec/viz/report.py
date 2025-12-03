@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional
 
 import matplotlib.pyplot as plt
-import pandas as pd
 
 from foodspec.apps.oils import OilAuthResult
 from foodspec.viz.classification import plot_confusion_matrix

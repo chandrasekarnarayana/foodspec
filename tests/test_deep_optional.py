@@ -23,6 +23,7 @@ def test_conv1d_requires_tensorflow(monkeypatch):
 
 def test_conv1d_with_fake_tensorflow(monkeypatch):
     import types
+
     import numpy as np
 
     class FakeSequential:
@@ -79,6 +80,7 @@ def test_conv1d_with_fake_tensorflow(monkeypatch):
 
 def test_conv1d_predict_before_fit(monkeypatch):
     import types
+
     import numpy as np
 
     fake_tf = types.SimpleNamespace(

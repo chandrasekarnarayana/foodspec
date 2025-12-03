@@ -1,6 +1,6 @@
 import numpy as np
 
-from foodspec.stats.effects import compute_cohens_d, compute_anova_effect_sizes
+from foodspec.stats.effects import compute_anova_effect_sizes, compute_cohens_d
 
 
 def test_compute_cohens_d_pooled_and_unpooled():

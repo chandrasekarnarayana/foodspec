@@ -7,7 +7,6 @@ from typing import Dict, Optional, Sequence, Tuple
 import numpy as np
 from sklearn import metrics as skm
 
-
 __all__ = [
     "compute_classification_metrics",
     "compute_regression_metrics",

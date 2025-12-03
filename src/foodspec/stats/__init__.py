@@ -8,27 +8,25 @@ groups (e.g., oil types), assess correlations (e.g., ratios vs heating time),
 and summarize study design balance.
 """
 
-from foodspec.stats.hypothesis_tests import (
-    run_ttest,
-    run_anova,
-    run_manova,
-    run_tukey_hsd,
-    games_howell,
-)
 from foodspec.stats.correlations import (
-    compute_correlations,
     compute_correlation_matrix,
+    compute_correlations,
     compute_cross_correlation,
 )
-from foodspec.stats.robustness import bootstrap_metric, permutation_test_metric
-from foodspec.stats.effects import compute_cohens_d, compute_anova_effect_sizes
-from foodspec.stats.design import summarize_group_sizes, check_minimum_samples
+from foodspec.stats.design import check_minimum_samples, summarize_group_sizes
+from foodspec.stats.effects import compute_anova_effect_sizes, compute_cohens_d
 from foodspec.stats.hypothesis_tests import (
+    games_howell,
+    run_anova,
+    run_friedman_test,
     run_kruskal_wallis,
     run_mannwhitney_u,
+    run_manova,
+    run_ttest,
+    run_tukey_hsd,
     run_wilcoxon_signed_rank,
-    run_friedman_test,
 )
+from foodspec.stats.robustness import bootstrap_metric, permutation_test_metric
 
 __all__ = [
     "run_ttest",

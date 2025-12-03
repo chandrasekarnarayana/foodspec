@@ -1,11 +1,8 @@
-from pathlib import Path
 
-import numpy as np
-import pandas as pd
 import pytest
 
-from foodspec.io.text_formats import read_csv_folder, read_jcamp
 from foodspec.io.core import detect_format, read_spectra
+from foodspec.io.text_formats import read_csv_folder, read_jcamp
 
 
 def test_read_csv_folder_inconsistent_axes(tmp_path):

@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from foodspec.io.core import detect_format, read_spectra
-from foodspec.io.vendor_formats import read_spc, read_opus
-import pytest
+from foodspec.io.vendor_formats import read_opus, read_spc
 
 
 def test_detect_format_file_and_folder(tmp_path: Path):

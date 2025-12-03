@@ -43,7 +43,9 @@ def compute_cohens_d(group1, group2, pooled: bool = True) -> float:
     return float(d)
 
 
-def compute_anova_effect_sizes(ss_between: float, ss_total: float, ss_within: float | None = None) -> pd.Series:
+def compute_anova_effect_sizes(
+    ss_between: float, ss_total: float, ss_within: float | None = None
+) -> pd.Series:
     """
     Compute eta-squared and partial eta-squared for ANOVA.
 
@@ -54,7 +56,8 @@ def compute_anova_effect_sizes(ss_between: float, ss_total: float, ss_within: fl
     ss_total : float
         Total sum of squares.
     ss_within : float | None, optional
-        Sum of squares within groups (error term). If provided, partial eta-squared is computed.
+        Sum of squares within groups (error term). If provided, partial
+        eta-squared is computed.
 
     Returns
     -------

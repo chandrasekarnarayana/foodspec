@@ -49,7 +49,8 @@ def compute_ratio_table(ratios: pd.DataFrame, metadata: pd.DataFrame | None = No
     Parameters
     ----------
     ratios : pd.DataFrame
-        Long or wide table of ratios. Expected columns: spectrum_id, ratio_name, value (long) OR wide with ratio columns.
+        Long or wide table of ratios. Expected columns: spectrum_id, ratio_name,
+        value (long) OR wide with ratio columns.
     metadata : pd.DataFrame, optional
         Metadata indexed by spectrum_id (or with spectrum_id column) for grouping.
     group_keys : list/tuple of str, optional

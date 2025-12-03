@@ -1,7 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from foodspec.apps.heating import HeatingAnalysisResult, run_heating_degradation_analysis
+from foodspec.apps.heating import (
+    HeatingAnalysisResult,
+    run_heating_degradation_analysis,
+)
 from foodspec.core.dataset import FoodSpectrumSet
 
 
