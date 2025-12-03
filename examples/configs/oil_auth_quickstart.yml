@@ -1,0 +1,4 @@
+input_hdf5: libraries/oils.h5
+label_column: oil_type
+classifier_name: rf
+cv_splits: 5

@@ -28,6 +28,7 @@ __all__ = [
     "default_oil_preprocessing_pipeline",
     "default_oil_feature_pipeline",
     "run_oil_authentication_workflow",
+    "run_oil_authentication_quickstart",
 ]
 
 
@@ -179,7 +180,39 @@ def run_oil_authentication_workflow(
     classifier_name: str = "rf",
     cv_splits: int = 5,
 ) -> OilAuthResult:
-    """Run oil authentication pipeline with cross-validation."""
+    """Run oil authentication pipeline with cross-validation.
+
+    This wrapper applies a default preprocessing stack (baseline correction,
+    Savitzky–Golay smoothing, L2 normalization, fingerprint crop), extracts
+    peak/ratio features characteristic of edible oils, and trains a classifier.
+
+    Parameters
+    ----------
+    spectra : FoodSpectrumSet
+        Spectral library with an ``oil_type`` (or other) label column.
+    label_column : str, optional
+        Metadata column containing class labels, by default ``"oil_type"``.
+    classifier_name : str, optional
+        Classifier key supported by ``foodspec.chemometrics.models.make_classifier``
+        (e.g., ``"rf"``, ``"svm_rbf"``, ``"logreg"``), by default ``"rf"``.
+    cv_splits : int, optional
+        Number of stratified folds for cross-validation, by default 5.
+
+    Returns
+    -------
+    OilAuthResult
+        Contains the fitted pipeline, cross-validation metrics, confusion matrix,
+        class labels, and optional feature importances (when available).
+
+    Raises
+    ------
+    ValueError
+        If the specified label column is missing from metadata.
+
+    See also
+    --------
+    docs/workflows/oil_authentication.md : Workflow recipe and interpretation.
+    """
 
     validate_spectrum_set(spectra)
     if label_column not in spectra.metadata.columns:
@@ -236,4 +269,41 @@ def run_oil_authentication_workflow(
         confusion_matrix=cm,
         class_labels=classes.tolist(),
         feature_importances=feature_importances,
+    )
+
+
+def run_oil_authentication_quickstart(
+    spectra: FoodSpectrumSet,
+    label_column: str = "oil_type",
+    classifier_name: str = "rf",
+    cv_splits: int = 3,
+) -> OilAuthResult:
+    """Lightweight wrapper to run oil authentication with defaults.
+
+    Parameters
+    ----------
+    spectra : FoodSpectrumSet
+        Spectral library with an oil-type label column.
+    label_column : str, optional
+        Metadata column containing class labels, by default ``"oil_type"``.
+    classifier_name : str, optional
+        Classifier key (e.g., ``"rf"``, ``"svm_rbf"``), by default ``"rf"``.
+    cv_splits : int, optional
+        Number of CV folds, by default 3 (faster than the full workflow).
+
+    Returns
+    -------
+    OilAuthResult
+
+    Notes
+    -----
+    Intended for quick validation and tutorial examples; for publication runs,
+    prefer ``run_oil_authentication_workflow`` with full CV.
+    """
+
+    return run_oil_authentication_workflow(
+        spectra=spectra,
+        label_column=label_column,
+        classifier_name=classifier_name,
+        cv_splits=cv_splits,
     )

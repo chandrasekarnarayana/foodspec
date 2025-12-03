@@ -20,7 +20,11 @@ from foodspec.features.peaks import PeakFeatureExtractor
 from foodspec.features.ratios import RatioFeatureGenerator
 from foodspec.validation import validate_spectrum_set
 
-__all__ = ["HeatingAnalysisResult", "run_heating_degradation_analysis"]
+__all__ = [
+    "HeatingAnalysisResult",
+    "run_heating_degradation_analysis",
+    "run_heating_quality_workflow",
+]
 
 
 @dataclass
@@ -61,9 +65,31 @@ def run_heating_degradation_analysis(
 ) -> HeatingAnalysisResult:
     """Run heating degradation analysis.
 
-    Applies baseline/smoothing/normalization/cropping, extracts a simple
-    peak ratio versus heating time, fits trend regressions, and computes
-    a basic ANOVA if groups are present.
+    Applies baseline/smoothing/normalization/cropping, extracts a key
+    unsaturation/carbonyl ratio versus heating time, fits trend regressions,
+    and computes a basic ANOVA if groups are present.
+
+    Parameters
+    ----------
+    spectra : FoodSpectrumSet
+        Spectral dataset with a heating/time column in metadata.
+    time_column : str, optional
+        Metadata column indicating heating time or stage, by default ``"heating_time"``.
+
+    Returns
+    -------
+    HeatingAnalysisResult
+        Preprocessed spectra, wavenumbers, time variable, ratio table,
+        fitted trend models, and optional ANOVA table.
+
+    Raises
+    ------
+    ValueError
+        If the specified time column is missing.
+
+    See also
+    --------
+    docs/workflows/heating_quality_monitoring.md : Workflow and interpretation.
     """
 
     validate_spectrum_set(spectra)
@@ -127,6 +153,34 @@ def run_heating_degradation_analysis(
         trend_models=trend_models,
         anova_results=anova_results,
     )
+
+
+def run_heating_quality_workflow(
+    spectra: FoodSpectrumSet,
+    time_column: str = "heating_time",
+    group_column: str | None = None,
+) -> HeatingAnalysisResult:
+    """Convenience wrapper for heating/quality monitoring.
+
+    Parameters
+    ----------
+    spectra : FoodSpectrumSet
+        Dataset with heating/time metadata.
+    time_column : str, optional
+        Metadata column encoding heating time or stage, by default ``"heating_time"``.
+    group_column : str | None, optional
+        Optional grouping factor (e.g., oil_type/batch). If provided and present,
+        group-wise trend models are computed.
+
+    Returns
+    -------
+    HeatingAnalysisResult
+
+    See also
+    --------
+    docs/workflows/heating_quality_monitoring.md : End-to-end recipe and reporting.
+    """
+    return run_heating_degradation_analysis(spectra=spectra, time_column=time_column)
 
 
 class _HeatingCropper(RangeCropper):

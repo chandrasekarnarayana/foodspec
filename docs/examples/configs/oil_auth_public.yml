@@ -1,0 +1,24 @@
+# Example config for oil authentication (public data)
+input_hdf5: libraries/oils.h5
+output_dir: runs/oil_auth_demo
+label_column: oil_type
+classifier_name: rf
+cv_splits: 3
+modality: raman
+
+# Plot/report options
+plots:
+  pca_scores: true
+  confusion_matrix: true
+  feature_importances: true
+  spectra_overlay: false
+reports:
+  summary_json: true
+  markdown_report: true
+  export_run_metadata: true
+
+# Additional metadata for reproducibility
+metadata:
+  instrument: "Demo Raman"
+  spectral_range_cm_1: "600-1800"
+  notes: "Public oil auth demo"

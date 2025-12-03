@@ -1,0 +1,4 @@
+mixture_hdf5: libraries/mixtures.h5
+pure_hdf5: libraries/pure_refs.h5
+mode: nnls
+output_dir: runs/mixture_demo

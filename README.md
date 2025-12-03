@@ -281,6 +281,10 @@ Full documentation (Getting started, API, CLI, workflows, MethodsX protocol, dee
 Docs URL:  
 https://chandrasekarnarayana.github.io/foodspec/
 
+### Documentation as a book
+
+The site is organized like a book (Foundations → Preprocessing → ML → Workflows → Protocols → API). Use the sidebar to navigate parts/chapters, or jump via the keyword index. Quickstarts and appendices are available if you prefer a task-first approach.
+
 Key pages:
 - Getting started – installation, basic examples, data loading.
 - Libraries – building and loading spectral libraries (HDF5, CSV, public datasets).
@@ -315,6 +319,37 @@ When sending PRs:
 - Run `pytest` (all tests should pass).
 - Keep coverage ≥ 80% where possible.
 - Update docs and type hints for new public APIs.
+
+---
+
+## Acknowledgements
+
+The development of **foodspec** draws upon the collective strength of interdisciplinary research at the intersection of food science, spectroscopy, physics, and machine learning. Its evolution has been enriched by the generous guidance, scientific exchange, and collaborative spirit of several individuals.
+
+### Collaborators & Scientific Contributors
+
+- **Dr. Jhinuk Gupta**  
+  *Department of Food and Nutritional Sciences, Sri Sathya Sai Institute of Higher Learning (SSSIHL), Andhra Pradesh, India*  
+  LinkedIn: https://www.linkedin.com/in/dr-jhinuk-gupta-a7070141/  
+  
+
+- **Dr. Sai Muthukumar V**  
+  *Department of Physics, SSSIHL, Andhra Pradesh, India*  
+  LinkedIn: https://www.linkedin.com/in/sai-muthukumar-v-ab78941b/  
+  
+
+- **Ms. Amrita Shaw**  
+  *Department of Food and Nutritional Sciences, SSSIHL, Andhra Pradesh, India*  
+  LinkedIn: https://www.linkedin.com/in/amrita-shaw-246491213/  
+  
+
+- **Deepak L. N. Kallepalli**  
+  *Cognievolve AI Inc., Canada & HCL Technologies Ltd., Bangalore, India*  
+  LinkedIn: https://www.linkedin.com/in/deepak-kallepalli/  
+  
+
+## Project Intention & Philosophy
+foodspec exists to standardize and contextualize computational methods in food spectroscopy. It fills the gap of fragmented tools and inconsistent preprocessing by providing an integrated workflow and learning resource. It serves food scientists, data scientists entering spectroscopy, physicists working with instruments, ML engineers building predictive models for food data, and students learning computational food science. Core principles: open, clear, reproducible workflows; strong scientific grounding across physics, chemistry, statistics, and ML; real-world usability in labs and QA/QC; interpretability and transparency for beginners and experts alike.
 
 ---
 

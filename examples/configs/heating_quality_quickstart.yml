@@ -1,0 +1,3 @@
+input_hdf5: libraries/oils_heating.h5
+time_column: heating_time
+output_dir: runs/heating_demo

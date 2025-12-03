@@ -12,7 +12,7 @@ from sklearn.svm import OneClassSVM
 
 from foodspec.core.dataset import FoodSpectrumSet
 
-__all__ = ["QCResult", "train_qc_model", "apply_qc_model"]
+__all__ = ["QCResult", "train_qc_model", "apply_qc_model", "run_qc_workflow"]
 
 
 @dataclass
@@ -89,4 +89,50 @@ def apply_qc_model(
         threshold=threshold,
         model=model,
         metadata=meta,
+    )
+
+
+def run_qc_workflow(
+    spectra: FoodSpectrumSet,
+    train_mask: Optional[pd.Series] = None,
+    model_type: str = "oneclass_svm",
+    threshold: Optional[float] = None,
+    higher_score_is_more_normal: bool = True,
+    **kwargs: Any,
+) -> QCResult:
+    """Train and apply a QC/novelty detector in one call.
+
+    Parameters
+    ----------
+    spectra : FoodSpectrumSet
+        Spectral dataset containing reference and evaluation samples.
+    train_mask : Optional[pd.Series], optional
+        Boolean mask marking reference/authentic samples. If None, train on all.
+    model_type : str, optional
+        ``\"oneclass_svm\"`` or ``\"isolation_forest\"``, by default ``\"oneclass_svm\"``.
+    threshold : Optional[float], optional
+        Optional custom decision threshold. If None, a heuristic is used.
+    higher_score_is_more_normal : bool, optional
+        Whether higher scores indicate more normal samples (OneClassSVM decision_function),
+        by default True.
+    **kwargs : Any
+        Additional model kwargs forwarded to the estimator constructor.
+
+    Returns
+    -------
+    QCResult
+        Scores, predicted labels, threshold, fitted model, and metadata copy.
+
+    See also
+    --------
+    docs/workflows/batch_quality_control.md : QC workflow and reporting guidance.
+    """
+
+    model = train_qc_model(spectra, train_mask=train_mask, model_type=model_type, **kwargs)
+    return apply_qc_model(
+        spectra,
+        model=model,
+        threshold=threshold,
+        higher_score_is_more_normal=higher_score_is_more_normal,
+        metadata=spectra.metadata,
     )

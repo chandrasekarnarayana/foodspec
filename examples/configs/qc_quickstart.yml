@@ -1,0 +1,3 @@
+input_hdf5: libraries/qc_ref.h5
+model_type: oneclass_svm
+output_dir: runs/qc_demo

@@ -7,6 +7,7 @@ import pathlib
 from datetime import datetime, timezone
 from typing import Any, Dict
 
+import joblib
 import pandas as pd
 
 __all__ = [
@@ -18,6 +19,10 @@ __all__ = [
     "write_json",
     "write_markdown_report",
     "summarize_metrics_for_markdown",
+    "summarize_preprocessing_pipeline",
+    "summarize_stats_results",
+    "summarize_model_performance",
+    "export_run_metadata",
 ]
 
 
@@ -97,3 +102,83 @@ def write_markdown_report(path: pathlib.Path | str, title: str, sections: Dict[s
         parts.append(body)
     path.write_text("\n\n".join(parts), encoding="utf-8")
     return path
+
+
+def summarize_preprocessing_pipeline(pipeline) -> Dict[str, Any]:
+    """Summarize a preprocessing pipeline (best-effort stringification)."""
+
+    if pipeline is None:
+        return {"pipeline": "None"}
+    return {"pipeline": str(pipeline)}
+
+
+def summarize_stats_results(stats_result) -> Dict[str, Any]:
+    """Summarize statistical results into a JSON-friendly dict."""
+
+    if stats_result is None:
+        return {}
+    if hasattr(stats_result, "summary"):
+        return {"summary": stats_result.summary.to_dict(orient="records")}
+    if isinstance(stats_result, dict):
+        return stats_result
+    return {"summary": str(stats_result)}
+
+
+def summarize_model_performance(metrics: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize model metrics into a reporting-friendly dict."""
+
+    return metrics or {}
+
+
+def export_run_metadata(
+    output_path: pathlib.Path | str,
+    config: Dict[str, Any] | None,
+    metrics: Dict[str, Any] | None,
+    stats_results: Dict[str, Any] | None,
+    extra_info: Dict[str, Any] | None = None,
+) -> pathlib.Path:
+    """
+    Export run metadata (config, metrics, stats) to JSON for reproducibility.
+    """
+
+    payload: Dict[str, Any] = {
+        "config": config or {},
+        "metrics": metrics or {},
+        "stats": stats_results or {},
+    }
+    if extra_info:
+        payload["extra"] = extra_info
+    output_path = pathlib.Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    write_json(output_path, payload)
+    return output_path
+
+
+def export_model_and_metrics(model: Any, metrics: Dict[str, Any], path_base: pathlib.Path | str) -> Dict[str, pathlib.Path]:
+    """Save a fitted model and associated metrics side-by-side.
+
+    Parameters
+    ----------
+    model : Any
+        Fitted estimator or pipeline.
+    metrics : dict
+        Metrics dictionary (classification or regression).
+    path_base : Path or str
+        Base path without extension; ``.joblib`` and ``.json`` will be written.
+
+    Returns
+    -------
+    dict
+        Paths written: ``{"model": Path, "metrics": Path}``.
+    """
+
+    base = pathlib.Path(path_base)
+    base.parent.mkdir(parents=True, exist_ok=True)
+    model_path = base.with_suffix(".joblib")
+    metrics_path = base.with_suffix(".json")
+    try:
+        joblib.dump(model, model_path)
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        raise RuntimeError(f"Could not serialize model to {model_path}: {exc}") from exc
+    write_json(metrics_path, metrics or {})
+    return {"model": model_path, "metrics": metrics_path}

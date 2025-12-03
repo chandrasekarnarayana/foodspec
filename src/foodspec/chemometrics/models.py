@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -13,7 +14,12 @@ from sklearn.svm import SVC
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.ensemble import RandomForestClassifier
 
-__all__ = ["make_pls_regression", "make_pls_da", "make_classifier"]
+__all__ = [
+    "make_pls_regression",
+    "make_pls_da",
+    "make_classifier",
+    "make_mlp_regressor",
+]
 
 
 class _PLSProjector(BaseEstimator, TransformerMixin):
@@ -71,7 +77,7 @@ def make_classifier(model_name: str, **kwargs: Any) -> BaseEstimator:
     Parameters
     ----------
     model_name :
-        One of: ``logreg``, ``svm_linear``, ``svm_rbf``, ``rf``, ``xgb``, ``lgbm``, ``knn``.
+        One of: ``logreg``, ``svm_linear``, ``svm_rbf``, ``rf``, ``xgb``, ``lgbm``, ``knn``, ``mlp``.
     kwargs :
         Additional parameters forwarded to the model constructor.
 
@@ -92,6 +98,10 @@ def make_classifier(model_name: str, **kwargs: Any) -> BaseEstimator:
         return RandomForestClassifier(**kwargs)
     if name == "knn":
         return KNeighborsClassifier(**kwargs)
+    if name == "mlp":
+        params: Dict[str, Any] = {"max_iter": 500, "hidden_layer_sizes": (100,), "random_state": 42}
+        params.update(kwargs)
+        return MLPClassifier(**params)
     if name == "xgb":
         try:
             from xgboost import XGBClassifier  # type: ignore
@@ -106,5 +116,29 @@ def make_classifier(model_name: str, **kwargs: Any) -> BaseEstimator:
         return LGBMClassifier(**kwargs)
 
     raise ValueError(
-        "model_name must be one of {'logreg','svm_linear','svm_rbf','rf','xgb','lgbm','knn'}"
+        "model_name must be one of {'logreg','svm_linear','svm_rbf','rf','xgb','lgbm','knn','mlp'}"
     )
+
+
+def make_mlp_regressor(hidden_layer_sizes: tuple[int, ...] = (100,), **kwargs: Any) -> MLPRegressor:
+    """Create an MLP regressor with sensible defaults for spectral calibration.
+
+    Parameters
+    ----------
+    hidden_layer_sizes : tuple[int, ...]
+        Sizes of hidden layers.
+    kwargs :
+        Additional MLPRegressor kwargs.
+
+    Returns
+    -------
+    MLPRegressor
+        Instantiated regressor.
+    """
+    params: Dict[str, Any] = {
+        "hidden_layer_sizes": hidden_layer_sizes,
+        "max_iter": 500,
+        "random_state": 42,
+    }
+    params.update(kwargs)
+    return MLPRegressor(**params)
