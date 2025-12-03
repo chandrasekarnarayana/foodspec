@@ -72,3 +72,4 @@
 - Enrich interpretability: RF importances, PLS loadings, and domain-focused visuals embedded in docs/workflows.
 - Expand workflow examples and calibration/regression utilities (DL kept optional with clear cautions).
 - Extend reproducibility/reporting metadata/configs for new domains (dairy, spices, beverages) and add more real-data tutorials when licensing permits.
+- Keep tutorials as stubs pointing to canonical workflow pages; consolidate domain content under `docs/workflows/` and maintain consistent, grouped-stage diagrams (data → preprocess → features → model/stats → report).

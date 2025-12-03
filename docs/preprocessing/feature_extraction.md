@@ -2,6 +2,25 @@
 
 Feature extraction turns preprocessed spectra into quantitative descriptors for chemometrics and ML. This chapter covers peaks, band integration, ratios, and fingerprint similarity.
 
+## What?
+Extract peaks, bands, and ratios from preprocessed spectra to create interpretable features. Inputs: preprocessed spectra + wavenumbers + expected peaks/bands. Outputs: feature tables (heights, areas, ratios), plus peak/ratio summaries by group.
+
+## Why?
+Vibrational bands encode chemistry (unsaturation, carbonyls, proteins). Peaks/ratios normalize scaling, highlight relative composition, and feed PCA/PLS/ML with interpretable variables rooted in Raman/FTIR physics.
+
+## When?
+**Use when** you need chemically meaningful features for classification, regression, or QC; when literature bands are known.  
+**Limitations:** noisy/uncorrected baselines bias heights; overlapping peaks reduce interpretability; poorly chosen bands/ratios risk “data dredging.”
+
+## Where? (pipeline)
+Upstream: baseline → smoothing → normalization → crop.  
+Downstream: stats (ANOVA/Games–Howell/Kruskal), effect sizes, ML/PLS, reporting tables.
+```mermaid
+flowchart LR
+  A[Preprocessed spectra] --> B[Peaks/Bands/Ratios]
+  B --> C[Peak/ratio summaries]
+  C --> D[Stats + ML + Plots]
+```
 ## Why this matters in food spectroscopy
 - Peaks and bands correspond to chemical groups; ratios and integrals summarize composition changes (e.g., unsaturation vs carbonyl, oxidation markers).
 - Quantitative features feed PCA/PLS/ML; poor feature choices limit interpretability and performance.

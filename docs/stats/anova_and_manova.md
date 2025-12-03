@@ -1,13 +1,34 @@
 # ANOVA and MANOVA for Food Spectroscopy
 
-ANOVA tests whether group means differ; MANOVA extends this to multiple dependent variables (e.g., multiple peak ratios or PC scores). This chapter details both, with food spectroscopy examples.
+## What?
+ANOVA tests whether group means differ; MANOVA extends this to multiple dependent variables (e.g., multiple peak ratios or PC scores). Inputs: numeric responses (ratios/intensities/PCs) plus group labels. Outputs: test statistics (F, Wilks/Pillai), p-values, and optional post-hoc tables (Tukey, Games–Howell).
+
+## Why?
+Group comparisons underpin authentication, treatment effects (heating/oxidation), and QC. Raman/FTIR bands reflect chemistry; testing ratios/peaks across groups provides statistical evidence for observed spectral differences beyond visual plots.
+
+## When?
+**Use when**
+- ≥3 groups (one-way ANOVA) or multiple responses (MANOVA) and you want to test mean differences.
+- Groups are reasonably independent and preprocessing is stable.
+
+**Limitations**
+- ANOVA assumes normality/homoscedasticity; MANOVA adds multivariate normality and covariance homogeneity. If violated, consider transforms or nonparametric/robust alternatives (Kruskal–Wallis + Games–Howell).
+
+## Where? (pipeline)
+Upstream: preprocessing → feature extraction (peaks, ratios, PCs).  
+Downstream: post-hoc tests (Tukey/Games–Howell), effect sizes, reporting tables/plots.
+```mermaid
+flowchart LR
+  A[Preprocessed features (ratios/PCs)] --> B[ANOVA / MANOVA]
+  B --> C[Post-hoc (Tukey or Games–Howell)]
+  C --> D[Effect sizes + plots/tables]
+```
 
 ## ANOVA basics
 - **One-way ANOVA:** Compares means across ≥3 groups.
   - F-statistic: \( F = \frac{SS_\text{between}/(k-1)}{SS_\text{within}/(N-k)} \)
-    - \( SS_\text{between} \): sum of squares between groups; \( SS_\text{within} \): within groups; \( k \): groups; \( N \): total samples.
   - Assumptions: normality of residuals, homoscedasticity, independence.
-- **Two-way ANOVA (outline):** Two factors (e.g., oil_type and batch) and interaction; requires balanced or at least sufficiently populated cells.
+- **Two-way ANOVA (outline):** Two factors (e.g., oil_type and batch) and interaction; requires balanced or sufficiently populated cells.
 
 ## MANOVA: Multivariate Analysis of Variance
 - **What/why:** Multivariate generalization of ANOVA when you have several correlated responses (e.g., multiple ratios or PC scores) and want a single test of group separation. Avoids multiple univariate tests and captures covariance between responses.
@@ -61,7 +82,7 @@ Interpretation: Welch-style pairwise comparisons without assuming equal variance
 
 ## Code snippets
 ```python
-from foodspec.stats import run_anova, run_tukey_hsd, compute_anova_effect_sizes
+from foodspec.stats import run_anova, run_tukey_hsd, compute_anova_effect_sizes, games_howell, run_manova
 
 # df with columns ratio, oil_type
 res = run_anova(df["ratio"], df["oil_type"])
@@ -78,6 +99,15 @@ try:
     print(tukey.head())
 except ImportError:
     pass
+
+# Games–Howell (robust post-hoc)
+gh = games_howell(df["ratio"], df["oil_type"])
+print(gh.head())
+
+# MANOVA on multiple ratios
+X = df_ratios[['ratio_1655_1745', 'ratio_3010_2850']]
+mv_res = run_manova(X, df_ratios['oil_type'])
+print(mv_res.pvalue)
 ```
 
 ## Decision aid: Is ANOVA appropriate?

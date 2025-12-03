@@ -1,38 +1,66 @@
 # Chemometrics & models
 
-This guide provides intuition for the main methods used in FoodSpec to extract information from spectra.
+This guide ties together the main chemometric models used in FoodSpec and how they connect to preprocessing, metrics, and statistics.
 
-> For notation and symbols, see the [Glossary](glossary.md). For practical bands/ratios, see the mini-guide in [Feature extraction](preprocessing/feature_extraction.md#how-to-choose-bands-and-ratios-decision-mini-guide).
+> For notation see the [Glossary](glossary.md). For practical bands/ratios, see [Feature extraction](preprocessing/feature_extraction.md#how-to-choose-bands-and-ratios-decision-mini-guide). For metrics, see [Metrics & Evaluation](metrics/metrics_and_evaluation.md).
 
-## PCA (Principal Component Analysis)
-- Purpose: reduce dimensionality, visualize clustering, and identify spectral regions driving variance.  
-- Outputs: **scores** (sample coordinates in PC space) and **loadings** (weights per wavenumber).  
-- Explained variance: fraction of total variance captured by PCs; use scree plots to pick PCs.  
-- Interpretation: clusters in score plots suggest similarity; loadings show which bands contribute most.
+## What?
+Defines PCA/PLS projections, classifiers, and mixture models, with inputs (preprocessed spectra, labels/targets, or pure spectra) and outputs (scores/loadings, predictions, fractions, metrics).
+
+## Why?
+Spectra are high-dimensional and correlated; chemometrics reduces dimensionality, builds predictive models, and estimates mixtures while respecting spectroscopy constraints (non-negativity, correlated bands).
+
+## When?
+**Use when:** you need dimensionality reduction (PCA), calibration (PLS), supervised discrimination (LogReg/SVM/RF/kNN/PLS-DA), or mixture estimation (NNLS/MCR-ALS).  
+**Limitations:** small n → prefer simpler models + CIs; strong nonlinearity → consider RBF SVM/MLP; mixture models assume non-negative combinations of appropriate references.
+
+## Where? (pipeline)
+Upstream: consistent preprocessing (baseline → smoothing → normalization → optional derivatives/features).  
+Downstream: metrics (F1, AUC, RMSE), stats tests (ANOVA/Games–Howell on ratios/PCs), interpretability (loadings/importances), reporting.
+```mermaid
+flowchart LR
+  A[Preprocessing + features] --> B[Chemometric model]
+  B --> C[Metrics + stats tests]
+  C --> D[Interpretation + reporting]
+```
+
+## PCA (scores & loadings)
+- Purpose: reduce dimensionality, visualize clustering, identify spectral regions driving variance.  
+- Outputs: scores (sample coordinates) and loadings (wavenumber weights); explained variance via scree.  
+- Interpretation: clusters in scores → similarity/differences; high loadings near bands → chemically relevant drivers. Pair with silhouette/between-within metrics from the metrics chapter.
 
 ## PLS / PLS-DA
-- PLS (regression) links spectra (X) to a continuous response (y), maximizing covariance.  
-- PLS-DA combines PLS projection with a classifier (e.g., logistic regression).  
-- Good for correlated predictors and modest sample sizes; watch for overfitting—use cross-validation.
+- PLS regression links spectra \(X\) to y (continuous); PLS-DA couples PLS scores with a classifier.  
+- Good for correlated predictors and modest sample size; validate with CV and report RMSE/R² (and calibration plots with CI).
 
-## Classifiers (intuitive)
-- **Logistic regression**: linear boundary; fast baseline.  
-- **SVM (linear/RBF)**: maximizes margin; RBF handles nonlinear separations.  
-- **Random forest**: ensemble of trees; captures nonlinearities and can rank feature importance.  
-- **kNN**: instance-based; sensitive to scaling and class imbalance.  
-Choose based on data size, linearity, and need for interpretability.
+## Classifiers (selection)
+- Logistic regression: linear, fast baseline.  
+- SVM (linear/RBF): margin maximization; RBF handles nonlinear boundaries.  
+- Random Forest: nonlinear, feature importances.  
+- kNN: instance-based, sensitive to scaling/imbalance.  
+Choose by data size/linearity/interpretability; always report per-class metrics.
 
 ## Mixture models (NNLS, MCR-ALS)
-- **NNLS**: for one mixture spectrum \(\mathbf{x}\) and pure spectra matrix \(\mathbf{S}\), solve \(\mathbf{x} \approx \mathbf{S}\mathbf{c}\) with \(c_i \ge 0\). Coefficients \(\mathbf{c}\) are estimated fractions.  
-- **MCR-ALS**: for multiple mixtures matrix \(\mathbf{X}\), factorize \(\mathbf{X} \approx \mathbf{C}\mathbf{S}^\top\) iteratively with non-negativity. Retrieves concentrations \(\mathbf{C}\) and pure-like spectra \(\mathbf{S}\).
+- NNLS: for one mixture spectrum \(\mathbf{x}\) and pure spectra matrix \(\mathbf{S}\), solve \(\min_{\mathbf{c}\ge0}\|\mathbf{x}-\mathbf{S}\mathbf{c}\|_2^2\); \(\mathbf{c}\) are non-negative fractions.
+- MCR-ALS: for multiple mixtures \(\mathbf{X}\), factorize \(\mathbf{X}\approx \mathbf{C}\mathbf{S}^\top\) with non-negativity; returns concentrations \(\mathbf{C}\) and estimated pure spectra \(\mathbf{S}\).
+- Diagnostics: reconstruction RMSE/R² and residual plots (see [Mixture models](ml/mixture_models.md)).
 
 ## Validation helpers
-- Cross-validation (stratified for classification) to estimate generalization.
-- Metrics: accuracy, F1, confusion matrices for classification; R²/RMSE for regression/mixture.
-- Permutation tests (if used) to assess significance by label shuffling.
+- Cross-validation (stratified for classification) to estimate generalization.  
+- Permutation tests (optionally) for label-randomization checks.  
+- Metrics: F1/ROC–AUC/confusion for classification; RMSE/MAE/R² for regression/mixture; silhouette/between-within for embeddings.
 
-## Practical guidelines
-- Always keep preprocessing identical between train/test.
-- Stratify when classes are imbalanced; report per-class metrics.
-- Inspect residuals for regression/mixture tasks to detect bias.
-- Prefer simpler models if performance is similar—easier to explain and reproduce.
+## Practical guidance
+- Keep preprocessing identical between train/test; scale features for distance-based models.  
+- Stratify or balance classes; report supports and macro metrics.  
+- Pair visuals (PCA/score plots, reconstruction overlays) with quantitative metrics + CIs.  
+- Prefer simpler models when performance is similar to ease interpretation and reproducibility.  
+- Inspect residuals for regression/mixture; large structure in residuals implies missing bands or model mismatch.  
+- For heteroscedastic groups, use Games–Howell for post-hoc comparisons on ratios/PCs (see [ANOVA & MANOVA](stats/anova_and_manova.md)).
+
+## See also
+- [Metrics & Evaluation](metrics/metrics_and_evaluation.md)  
+- [Model evaluation & validation](ml/model_evaluation_and_validation.md)  
+- [Mixture models](ml/mixture_models.md)  
+- [Model interpretability](ml/model_interpretability.md)  
+- [Workflow design & reporting](workflows/workflow_design_and_reporting.md)

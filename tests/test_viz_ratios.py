@@ -1,1 +1,28 @@
-import numpy as np\n+\n+from foodspec.viz import plot_ratio_by_group, plot_ratio_scatter, plot_ratio_vs_continuous\n+\n+\n+def test_plot_ratio_by_group_runs():\n+    ratios = np.array([1, 2, 3, 4])\n+    groups = np.array([\"A\", \"A\", \"B\", \"B\"])\n+    ax = plot_ratio_by_group(ratios, groups)\n+    assert hasattr(ax, \"plot\")\n+\n+\n+def test_plot_ratio_scatter_runs():\n+    rx = np.array([1, 2, 3])\n+    ry = np.array([3, 2, 1])\n+    ax = plot_ratio_scatter(rx, ry, group_labels=[\"x\", \"y\", \"y\"])\n+    assert hasattr(ax, \"scatter\")\n+\n+\n+def test_plot_ratio_vs_continuous_runs():\n+    ratios = np.array([1, 2, 3, 4])\n+    cont = np.array([0, 1, 2, 3])\n+    ax = plot_ratio_vs_continuous(ratios, cont)\n+    assert hasattr(ax, \"scatter\")\n*** End Patch```E assistant to=functions.shell_commandọdọ prosительного(json__(/*!json*/{"command":"apply_patch <<'PATCH'\n*** Begin Patch\n*** Add File: tests/test_viz_ratios.py\n+import numpy as np\n+\n+from foodspec.viz import plot_ratio_by_group, plot_ratio_scatter, plot_ratio_vs_continuous\n+\n+\n+def test_plot_ratio_by_group_runs():\n+    ratios = np.array([1, 2, 3, 4])\n+    groups = np.array([\"A\", \"A\", \"B\", \"B\"])\n+    ax = plot_ratio_by_group(ratios, groups)\n+    assert hasattr(ax, \"plot\")\n+\n+\n+def test_plot_ratio_scatter_runs():\n+    rx = np.array([1, 2, 3])\n+    ry = np.array([3, 2, 1])\n+    ax = plot_ratio_scatter(rx, ry, group_labels=[\"x\", \"y\", \"y\"])\n+    assert hasattr(ax, \"scatter\")\n+\n+\n+def test_plot_ratio_vs_continuous_runs():\n+    ratios = np.array([1, 2, 3, 4])\n+    cont = np.array([0, 1, 2, 3])\n+    ax = plot_ratio_vs_continuous(ratios, cont)\n+    assert hasattr(ax, \"scatter\")\n*** End Patch\nPATCH"}"} ***!
+import numpy as np
+
+from foodspec.viz import (
+    plot_ratio_by_group,
+    plot_ratio_scatter,
+    plot_ratio_vs_continuous,
+)
+
+
+def test_plot_ratio_by_group_runs():
+    ratios = np.array([1, 2, 3, 4])
+    groups = np.array(["A", "A", "B", "B"])
+    ax = plot_ratio_by_group(ratios, groups)
+    assert hasattr(ax, "plot")
+
+
+def test_plot_ratio_scatter_runs():
+    rx = np.array([1, 2, 3])
+    ry = np.array([3, 2, 1])
+    ax = plot_ratio_scatter(rx, ry, group_labels=["x", "y", "y"])
+    assert hasattr(ax, "scatter")
+
+
+def test_plot_ratio_vs_continuous_runs():
+    ratios = np.array([1, 2, 3, 4])
+    cont = np.array([0, 1, 2, 3])
+    ax = plot_ratio_vs_continuous(ratios, cont)
+    assert hasattr(ax, "scatter")

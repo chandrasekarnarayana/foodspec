@@ -1,4 +1,6 @@
-# Quality control / novelty detection
+# Quality control / novelty detection (tutorial view)
+
+> Canonical workflow: [Workflow: Batch Quality Control](workflows/batch_quality_control.md). This tutorial view mirrors that pipeline and is retained for convenience.
 
 Questions this page answers
 - Is a new batch in-distribution compared to a reference library?

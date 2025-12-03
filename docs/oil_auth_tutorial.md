@@ -1,4 +1,6 @@
-# Oil authentication workflow
+# Oil authentication workflow (tutorial view)
+
+> The canonical workflow is now maintained in [Workflow: Oil Authentication](workflows/oil_authentication.md). This tutorial view is retained for convenience; content is harmonized with the workflow page.
 
 Questions this page answers
 - Can we classify edible oils from Raman/FTIR spectra?

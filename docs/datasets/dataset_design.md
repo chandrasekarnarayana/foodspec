@@ -40,6 +40,17 @@ Questions this page answers:
 - [ ] Reference targets recorded with units (regression).
 - [ ] Planned splits documented; no leakage between train/test.
 
+## Data formats and flows (visual)
+Describe the ingestion pipeline so readers know how files become libraries and workflows:
+- Raw files (CSV/TXT/vendor) → `read_spectra` → `FoodSpectrumSet`
+- `FoodSpectrumSet` → `create_library` → HDF5
+- HDF5 → Workflows (preprocess → features → models/stats → reports)
+> Reproducible figure: run  
+> ```bash
+> python docs/examples/visualization/generate_dataset_flow_diagram.py
+> ```  
+> to save `docs/assets/dataset_flow.png`, a simple schematic of the above pipeline (raw → read_spectra → FoodSpectrumSet → create_library → workflows). Ensure axes (cm⁻¹) and metadata fields are annotated.
+
 ## See also
 - Instrument formats & loading: [instrument_file_formats](../user_guide/instrument_file_formats.md)
 - Workflow design: [workflow_design_and_reporting](../workflows/workflow_design_and_reporting.md)

@@ -1,63 +1,90 @@
 # ML & Chemometrics: Model Evaluation and Validation
 
-Robust evaluation is essential for trustworthy food spectroscopy models. This chapter summarizes validation design, metrics, and sanity checks for classification and regression tasks.
+Robust evaluation is essential for trustworthy food spectroscopy models. This page follows the WHAT/WHY/WHEN/WHERE template and adds concrete guidance for visualizing cross-validation (CV) results.
 
-## 1. Why validation matters
-- Prevents overfitting and false confidence, especially on small datasets.
-- Ensures reported performance reflects generalization to new batches/instruments.
-- Supports reproducibility and protocol-grade reporting.
+> For notation see the [Glossary](../glossary.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
 
-## 2. Cross-validation designs
-- **Stratified k-fold (classification):** Preserve class proportions; common default.
-- **Group-aware CV:** If batches/instruments exist, group by batch to avoid leakage.
-- **Train/test split:** Simple, but less stable on small datasets.
-- **Permutation tests:** Assess whether performance is above chance.
-- **Pitfalls:** Normalize within folds; avoid tuning on the test set; document seeds.
+## What?
+Defines validation schemes (train/test, stratified CV, group-aware CV, permutation tests), the metrics to report, and how to visualize per-fold outcomes (confusion matrices, residuals, calibration).
 
-## 3. Classification metrics
-- **Accuracy:** Overall correct fraction; can mislead with imbalance.
-- **Precision/Recall/F1 (macro):** Class-averaged; robust to imbalance.
-- **Confusion matrix:** Per-class error patterns; critical for adulteration detection.
-- **ROC-AUC/PR-AUC:** Optional for probabilistic models; beware of small-sample noise.
+## Why?
+Spectral datasets are often small, imbalanced, or batch-structured. Validation guards against overfitting/leakage, provides uncertainty via fold variability, and underpins protocol-grade reporting.
 
-## 4. Regression metrics
-- **RMSE/MAE:** Absolute error scales; MAE is robust to outliers.
-- **R²:** Variance explained; watch for negative values on poor fits.
-- **Residual analysis:** Plot residuals vs predicted/true; look for bias or heteroscedasticity.
+## When?
+**Use:** stratified k-fold for classification; group-aware CV when batches/instruments matter; permutation tests when checking above-chance performance.  
+**Limitations:** tiny n inflates variance; imbalance makes accuracy unreliable; always scale/normalize within folds to avoid leakage.
 
-## 5. Example (high level)
+## Where? (pipeline)
+Upstream: fixed preprocessing/feature steps.  
+Validation: CV/permutation.  
+Downstream: metrics + plots + stats on key ratios.  
+```mermaid
+flowchart LR
+  A[Preprocess + features] --> B[CV / permutation]
+  B --> C[Metrics + per-fold plots]
+  C --> D[Reporting + stats tables]
+```
+
+## Validation designs
+- **Stratified k-fold (classification):** preserve class proportions.  
+- **Group-aware CV:** avoid leakage across batches/instruments.  
+- **Train/test split:** simple, less stable on small n.  
+- **Permutation tests:** label-shuffle to test above-chance performance.  
+- **Pitfalls:** normalize within folds; do not tune on test; document seeds/splits.
+
+## Metrics (by task)
+- Classification: F1_macro/balanced accuracy + confusion matrix; ROC/PR for imbalance.  
+- Regression/calibration: RMSE/MAE/R²/Adjusted R² + predicted vs true + residuals; calibration with CI bands; Bland–Altman for agreement.  
+- Embeddings: silhouette, between/within F-like stats with permutation p_perm (see metrics chapter).
+
+## Visualizing CV folds (guidance replacing TODO)
+Pattern: collect per-fold predictions and metrics, then plot distributions:
 ```python
 from foodspec.chemometrics.validation import cross_validate_pipeline
+from foodspec.viz import plot_confusion_matrix, plot_regression_calibration, plot_residuals
 
 cv = cross_validate_pipeline(pipeline, X_feat, y_labels, cv_splits=5, scoring="f1_macro")
-print(cv["mean"], cv["std"])
+# Per-fold metrics
+print(cv["metrics_per_fold"])  # e.g., list of F1s
+# Example per-fold confusion matrix (if returned/recomputed)
+plot_confusion_matrix(cv["confusion_matrices"][0], labels=class_labels)
 ```
-> CV plotting pattern: after CV, collect per-fold predictions, then use `foodspec.viz.plot_confusion_matrix` for classification or `plot_residuals`/`plot_regression_calibration` for regression. Example:
-> ```python
-> from foodspec.viz import plot_confusion_matrix
-> cms = cv["confusion_matrices"]  # if returned; else recompute per fold
-> fig, ax = plt.subplots()
-> plot_confusion_matrix(cms[-1], class_labels=class_names, ax=ax)  # visualize last fold or mean cm
-> ```
+- For regression folds: loop over folds, plot residuals or predicted vs true per fold, or aggregate predicted/true across folds and plot once.  
+- For a quick visual summary of fold metrics: make a boxplot/violin of the per-fold metric list.
 
-## 6. Sanity checks and pitfalls
-- Very high scores with tiny datasets → likely overfitting or leakage.
-- Imbalance → prefer macro/weighted metrics; inspect per-class performance.
-- Re-run with different seeds/folds to test stability.
-- Document preprocessing, model hyperparameters, seeds, and data splits.
+## Examples
+### Classification (stratified CV)
+```python
+cv = cross_validate_pipeline(clf, X_feat, y_labels, cv_splits=5, scoring="f1_macro")
+f1s = cv["metrics_per_fold"]
+# visualize distribution of f1s with a simple boxplot (matplotlib/seaborn)
+```
+### Regression
+```python
+cv = cross_validate_pipeline(pls_reg, X_feat, y_cont, cv_splits=5, scoring="neg_root_mean_squared_error")
+# After CV, refit on full data if appropriate; visualize calibration/residuals on a held-out set or via CV predictions.
+```
 
-## 7. Visuals to include
-- Confusion matrix with per-class labels.
-- Residual plots; predicted vs true scatter for regression.
-- Metric distributions across folds.
+## Sanity checks and pitfalls
+- Very high scores on tiny n → suspect overfitting/leakage.  
+- Imbalance → use macro metrics; inspect per-class supports.  
+- Re-run with different seeds/folds to test stability; report mean ± std/CI across folds.  
+- Keep preprocessing identical across folds; document seeds, splits, hyperparameters.
+
+## Typical plots (with metrics)
+- Confusion matrix (per fold or aggregate) + F1/accuracy/supports.  
+- ROC/PR for rare-event tasks.  
+- Predicted vs true + residuals for regression; calibration with CI (`plot_calibration_with_ci`).  
+- Fold-metric distribution plot (box/violin of per-fold F1 or RMSE).
 
 ## Summary
-- Validation design (CV, grouping) and metric choice are as important as the model itself.
-- Use macro metrics and confusion matrices for classification; RMSE/MAE/R² and residuals for regression.
-- Avoid leakage; report seeds, splits, and preprocessing steps for reproducibility.
+- Choose validation design aligned with data structure (stratified, group-aware).  
+- Pair metrics with uncertainty (fold variability, bootstrap CIs).  
+- Avoid leakage; report seeds/splits/preprocessing.  
+- Visualize per-fold behavior to reveal instability or class-specific failures.
 
 ## Further reading
-- [Classification & regression](classification_regression.md)
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
-- [Reproducibility checklist](../protocols/reproducibility_checklist.md)
+- [Classification & regression](classification_regression.md)  
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)  
+- [Reproducibility checklist](../protocols/reproducibility_checklist.md)  
 - [Workflows](../workflows/oil_authentication.md)

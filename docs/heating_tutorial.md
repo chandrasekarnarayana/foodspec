@@ -1,4 +1,6 @@
-# Heating degradation workflow
+# Heating degradation workflow (tutorial view)
+
+> Canonical workflow: [Workflow: Heating Quality Monitoring](workflows/heating_quality_monitoring.md). This tutorial view mirrors that pipeline and is retained for convenience.
 
 Questions this page answers
 - How do heating time/temperature affect oil spectra?

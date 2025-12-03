@@ -1,4 +1,6 @@
-# Mixture analysis (NNLS / MCR-ALS)
+# Mixture analysis (tutorial view)
+
+> Canonical workflow: [Workflow: Mixture Analysis](workflows/mixture_analysis.md). This tutorial view mirrors that pipeline and is retained for convenience.
 
 ## Problem
 Estimate the fraction of component A vs B (e.g., EVOO–sunflower) in a mixture from Raman/FTIR spectra.

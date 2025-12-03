@@ -1,83 +1,102 @@
 # ML & Chemometrics: Classification and Regression
 
-Supervised learning connects spectral features to labels (oil_type, species) or continuous targets (mixture fraction, heating time proxies). This chapter explains model choices, when to use them, and practical concerns in food spectroscopy.
+Supervised learning connects spectral features to labels (oil_type, species) or continuous targets (mixture fraction, heating proxies). This page follows the WHAT/WHY/WHEN/WHERE template for clarity.
 
-## Why this matters in food spectroscopy
-- Authentication/adulteration: classification with balanced or imbalanced classes.
-- QC/novelty: one-class or binary detection with emphasis on sensitivity/specificity.
-- Calibration: regression for continuous properties (mixture fraction, moisture, quality indices).
+> For notation see the [Glossary](../glossary.md). For bands/ratios, see [Feature extraction](../preprocessing/feature_extraction.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
 
-## 1. Model families
-- **Linear models:** Logistic Regression, Linear SVM, PLS-DA. Good for linearly separable data, interpretable loadings/weights, smaller datasets.
-- **Non-linear kernels:** RBF SVM captures curved boundaries; tune C and gamma carefully. k-NN is simple but sensitive to scale and noise.
-- **Ensembles:** Random Forest, Gradient Boosting (if enabled) handle non-linearities and interactions; often robust to noisy features.
-- **Regression:** PLS regression for mixtures or property prediction; Support Vector Regression (SVR) for non-linear trends.
+## What?
+Defines model families for classification (LogReg, SVM, RF, kNN, PLS-DA) and regression/calibration (PLS, SVR), with inputs (preprocessed features/ratios/PCs) and outputs (predictions, probabilities/scores, calibration curves, metrics).
 
-## 2. When to use / not to use
-- **Use linear/PLS-DA when:** You want interpretability; dataset is modest; features are ratios/peaks; classes are approximately linear.
-- **Use RBF SVM/RF when:** Complex decision boundaries; higher-dimensional feature sets; you can afford tuning/validation.
-- **Avoid high-capacity models when:** Very small datasets risk overfitting; noisy preprocessing; extreme class imbalance without care.
+## Why?
+Authentication/adulteration, QC/novelty, and calibration require models that handle correlated bands and small-to-medium n. Supervised models turn spectral variation into decisions or calibrated estimates, and must be paired with suitable metrics/plots to avoid overclaiming.
 
-## 3. Cross-validation and metrics
-- **CV design:** Stratified k-fold for classification; grouped CV if batches exist. Small datasets: fewer folds to keep enough training data.
-- **Metrics:** Accuracy/F1_macro for imbalance; confusion matrix for per-class errors; ROC/PR for rare positives. Regression: RMSE, MAE, R², calibration/residual plots.
-- **Pitfalls:** Data leakage (normalize per fold), tuning on test sets, over-interpreting small performance gaps.
-- See [Metrics & evaluation](../metrics/metrics_and_evaluation.md) and Stats ([hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [effect sizes](../stats/t_tests_effect_sizes_and_power.md)) when comparing models.
+## When?
+**Use:**  
+- Linear/PLS-DA: modest n, interpretable boundaries, ratios/PCs roughly linear.  
+- RBF SVM/RF: nonlinear boundaries, richer feature sets.  
+- PLS/linear/SVR: continuous targets, mixtures, property prediction.  
+**Limitations:**  
+- Small n: risk of overfitting—use CV + CIs.  
+- Imbalance: accuracy can mislead—use macro F1/PR.  
+- Always standardize consistently; leakage if scaling across folds.
 
-## 4. Example (high level)
+## Where? (pipeline)
+Upstream: baseline/smoothing/normalization → optional derivatives → features/ratios/PCs.  
+Model: classifier/regressor.  
+Downstream: metrics (F1/AUC/RMSE/R² + CIs), plots (confusion, ROC/PR, calibration/residual), stats tests on key ratios (ANOVA/Games–Howell), reporting.
+```mermaid
+flowchart LR
+  A[Preprocess + features] --> B[Classifier / Regressor]
+  B --> C[Metrics + plots + stats]
+  C --> D[Interpretation & reporting]
+```
+
+## Model families (at a glance)
+- **Linear / PLS-DA**: interpretable coefficients/loadings; good for smaller, near-linear problems.  
+- **SVM (linear/RBF)**: max-margin; RBF handles curved boundaries (tune C, gamma).  
+- **Random Forest / Ensembles**: nonlinear, feature importances; robust to noisy predictors.  
+- **kNN**: simple baseline; sensitive to scaling/imbalance.  
+- **PLS regression / SVR**: calibration and property prediction; pair with calibration plots + residuals.
+
+## Metrics and plots (pair visuals with numbers)
+- Classification: F1_macro, balanced accuracy, confusion matrix; ROC/PR for imbalance (see `plot_confusion_matrix`, `plot_roc_curve`).  
+- Regression/calibration: RMSE/MAE/R²/Adjusted R², predicted vs true, residuals; `plot_calibration_with_ci` for confidence bands, `plot_bland_altman` for agreement.  
+- Embeddings: silhouette, between/within F-like stats with permutation p_perm alongside PCA/t-SNE visuals.
+
+## Examples
+### Classification (SVM)
 ```python
 from foodspec.chemometrics.models import make_classifier
 from foodspec.chemometrics.validation import cross_validate_pipeline
+from foodspec.viz import plot_confusion_matrix
 
 clf = make_classifier("svm_rbf", C=10.0, gamma=0.1)
 cv_res = cross_validate_pipeline(clf, X_feat, y_labels, cv_splits=5, scoring="f1_macro")
+plot_confusion_matrix(cv_res["confusion_matrix"], labels=class_labels)
 ```
-CLI analogue: `foodspec oil-auth --classifier-name svm_rbf --cv-splits 5`.
 
-### Regression / calibration example
+### Regression / calibration (PLS)
 ```python
-import numpy as np
-import pandas as pd
 from foodspec.chemometrics.models import make_pls_regression
-from foodspec.chemometrics.validation import compute_regression_metrics
+from foodspec.metrics import compute_regression_metrics
+from foodspec.viz import plot_regression_calibration, plot_residuals
 
-# X_feat: shape (n_samples, n_features); y_cont: continuous target (e.g., mixture fraction)
 pls = make_pls_regression(n_components=3)
 pls.fit(X_feat, y_cont)
 y_pred = pls.predict(X_feat).ravel()
 metrics = compute_regression_metrics(y_cont, y_pred)
-print(metrics)  # reports RMSE, MAE, R^2
+plot_regression_calibration(y_cont, y_pred)  # add CI with plot_calibration_with_ci if desired
+plot_residuals(y_cont, y_pred)
 ```
-
 ![Regression calibration plot: predicted vs true values](../assets/regression_calibration.png)
 
-*Figure: Example regression calibration plot showing predicted vs true values for a PLS regression model on synthetic data. Points close to the diagonal line indicate good calibration; systematic deviation signals bias or underfitting/overfitting. See the [Calibration / regression workflow](../workflows/calibration_regression_example.md) for an end-to-end example with robustness checks.*
+## Practical notes for food spectra
+- Imbalance: use macro metrics, class weights, and PR curves for rare positives.  
+- Scaling: apply the same scaling/derivative steps per fold; avoid leakage.  
+- Interpretation: map coefficients/loadings/importances back to bands (unsaturation, carbonyl) and report ANOVA/Games–Howell on key ratios when relevant.  
+- Validate: stratified CV; report supports and CIs; inspect residuals for bias or structure.
 
-## 5. Practical notes for food spectra
-- **Class imbalance:** Common in adulteration tasks; use macro metrics, possibly class weights.
-- **Feature scaling:** Ensure consistent preprocessing; derivatives/ratios can change scale.
-- **Interpretation:** Link model importance/loadings back to wavenumbers (e.g., unsaturation bands) for scientific insight.
-
-## 6. Visuals to include
-- Confusion matrix (classification), ROC/PR curves for imbalance (use `plot_confusion_matrix`, `plot_roc_curve`).
-- Predicted vs true plots (regression) and residuals; calibration curve (bias/slope) (use `plot_regression_calibration`, `plot_residuals`).
-- For regression/calibration, pair curves with uncertainty: use `plot_calibration_with_ci` for confidence bands and, when comparing methods, consider Bland–Altman plots (see [Metrics & evaluation](../metrics/metrics_and_evaluation.md)).
-- Feature importance or model coefficients/loadings for interpretability.
+## Typical plots (with metrics)
+- Confusion matrix + F1/accuracy/supports.  
+- ROC/PR + AUC (especially for rare-event adulteration).  
+- Predicted vs true + residuals + RMSE/R² (calibration).  
+- Calibration curve with CI; Bland–Altman for agreement.  
+- Feature importances/loadings to link decisions to wavenumbers.
 
 ## Reproducible figure generation
-- Classification: run a simple PCA+SVM on example oils, then call `plot_confusion_matrix` (optionally ROC/PR if scores are available).
-- Regression: use the PLS example above and generate calibration/residual plots via `foodspec.viz`.
-- For agreement assessment, add Bland–Altman when comparing model vs reference lab values.
+- Classification: PCA + SVM on example oils, then `plot_confusion_matrix` (ROC/PR if scores available).  
+- Regression: PLS on example mixtures; generate calibration/residual plots (`plot_regression_calibration`, `plot_calibration_with_ci`, `plot_residuals`).  
+- Agreement: `plot_bland_altman` when comparing model vs lab measurements.
 
 ## Summary
-- Choose linear/PLS-DA for interpretability and smaller datasets; non-linear models for complex boundaries.
-- Use stratified CV and appropriate metrics; avoid leakage and overfitting.
-- Tie model outputs back to chemical meaning (bands/ratios) for reporting.
+- Match model complexity to data size/linearity; prefer interpretable models when performance is similar.  
+- Combine visuals with metrics + uncertainty; avoid leakage; handle imbalance explicitly.  
+- Tie outputs back to chemistry (bands/ratios) and support claims with stats tests on key features.
 
 ## Further reading
-- [PCA and dimensionality reduction](pca_and_dimensionality_reduction.md)
-- [Mixture models & fingerprinting](mixture_models.md)
-- [Model evaluation & validation](model_evaluation_and_validation.md)
-- [Workflows](../workflows/oil_authentication.md)
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
-- [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)
+- [PCA and dimensionality reduction](pca_and_dimensionality_reduction.md)  
+- [Mixture models & fingerprinting](mixture_models.md)  
+- [Model evaluation & validation](model_evaluation_and_validation.md)  
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)  
+- [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)  
+- [Workflow design & reporting](../workflows/workflow_design_and_reporting.md)

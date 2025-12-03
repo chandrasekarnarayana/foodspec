@@ -5,15 +5,30 @@
 
 Oil authentication addresses “What oil is this?” and “Is it adulterated?” using Raman/FTIR spectra. This workflow provides a complete, reproducible recipe from raw spectra to publication-ready metrics and plots.
 
-Relevant visual aids: spectrum overlays, PCA scores/loadings, confusion matrix, boxplots/violin plots of key ratios. See [Plots guidance](workflow_design_and_reporting.md#plots-visualizations) for expectations.
+Relevant visual aids: spectrum overlays, PCA scores/loadings, confusion matrix, boxplots/violin plots of key ratios. See [Plots guidance](workflow_design_and_reporting.md#plots-visualizations) for expectations. The tutorial content is merged here; see also the legacy tutorial file for reference.
 
 ```mermaid
 flowchart LR
-  A[Raw spectra (HDF5/CSV)] --> B[Preprocessing (baseline, Savitzky–Golay, norm, crop)]
-  B --> C[Feature extraction (peaks + ratios)]
-  C --> D[Model training (e.g., RF/SVM/PLS-DA)]
-  D --> E[Evaluation (CV metrics, confusion matrix, PCA)]
-  E --> F[Reports (plots, metrics.json, report.md)]
+  subgraph Data
+    A[Raw/vendor files]
+    B[read_spectra -> FoodSpectrumSet]
+  end
+  subgraph Preprocess & Features
+    C[Baseline + SavGol + norm + crop]
+    D[Peaks + ratios]
+  end
+  subgraph Model
+    E[RF / SVM / PLS-DA]
+  end
+  subgraph Evaluate
+    F[CV metrics + confusion + PCA]
+    G[Stats on ratios (ANOVA/G-H)]
+  end
+  subgraph Report
+    H[plots + metrics.json + report.md]
+  end
+  A --> B --> C --> D --> E --> F --> H
+  D --> G --> H
 ```
 
 ## 1. Problem and dataset
@@ -132,6 +147,11 @@ print(gh.head())
 ```
 - **Interpretation:** ANOVA p-value < 0.05 suggests at least one oil type differs in the ratio; Tukey or Games–Howell identifies which pairs. Report effect size where possible.
 See theory: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [ANOVA](../stats/anova_and_manova.md).
+
+### Ratio plots (recommended)
+- Use `plot_ratio_by_group` for key ratios (e.g., 1655/1742) across oil types; separated medians/IQRs imply differences—support with ANOVA/Games–Howell and effect sizes.
+- Ratio–ratio scatter (e.g., 1655/1742 vs 3010/2850) highlights compositional regimes; pair with silhouette/ANOVA on each ratio.
+- Summary tables (peak/ratio mean ± SD by oil_type) can accompany plots in supplementary material.
 
 ## Further reading
 - [Baseline correction](../preprocessing/baseline_correction.md)

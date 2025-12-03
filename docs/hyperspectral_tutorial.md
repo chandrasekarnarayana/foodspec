@@ -1,4 +1,6 @@
-# Hyperspectral analysis
+# Hyperspectral analysis (tutorial view)
+
+> Canonical workflow: [Workflow: Hyperspectral Mapping](workflows/hyperspectral_mapping.md). This tutorial view mirrors that pipeline and is retained for convenience.
 
 ## What is a hyperspectral cube?
 - A 3D array `(height, width, n_wavenumbers)` where each pixel has a full spectrum.

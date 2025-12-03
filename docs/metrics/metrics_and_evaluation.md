@@ -4,6 +4,26 @@ Metrics tell you how well a workflow answers a scientific or QC question. Differ
 
 > For notation and symbols, see the [Glossary](../glossary.md).
 
+## What?
+Defines classification, regression, embedding-structure, and agreement metrics; pairs each with recommended plots. Inputs: true/pred labels or continuous targets (plus scores), embeddings, ratios. Outputs: metric dictionaries, plots (confusion matrix, ROC/PR, calibration, residuals, Bland–Altman), and uncertainty (bootstrapped CI).
+
+## Why?
+Spectral tasks span authentication (imbalanced), calibration (bias/precision), and structure exploration (PCA/t-SNE). Metrics + plots + uncertainty prevent overclaiming and align results with chemistry/QA/QC expectations.
+
+## When?
+**Use when** you need quantitative evidence for model performance, group separation, or agreement (model vs lab).  
+**Limitations:** small n → prefer CIs/bootstraps; imbalanced classes → prefer PR/F1 over accuracy; embeddings are qualitative unless paired with silhouette/between-within metrics.
+
+## Where? (pipeline)
+Upstream: preprocessing → features → models/embeddings.  
+Downstream: stats tests (ANOVA/Games–Howell on features), reporting (metrics.json, plots).
+```mermaid
+flowchart LR
+  A[Preprocess + features] --> B[Model / Embedding]
+  B --> C[Metrics + plots + uncertainty]
+  C --> D[Reporting / stats tables]
+```
+
 ## 1. Why evaluation metrics matter
 - Accuracy alone can mislead (class imbalance, asymmetric costs).
 - Authentication/adulteration often prioritizes sensitivity/specificity or precision–recall.
