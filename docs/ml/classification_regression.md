@@ -35,6 +35,7 @@ flowchart LR
 - **Linear / PLS-DA**: interpretable coefficients/loadings; good for smaller, near-linear problems.  
 - **SVM (linear/RBF)**: max-margin; RBF handles curved boundaries (tune C, gamma).  
 - **Random Forest / Ensembles**: nonlinear, feature importances; robust to noisy predictors.  
+- **Boosted trees (GradientBoosting / XGBoost / LightGBM)**: strong tabular performance; handle interactions and imbalance; require tuning (learning rate, trees).  
 - **kNN**: simple baseline; sensitive to scaling/imbalance.  
 - **PLS regression / SVR**: calibration and property prediction; pair with calibration plots + residuals.
 

@@ -101,14 +101,15 @@ Outputs: `metrics.json`, `confusion_matrix.png`, `report.md` in a timestamped fo
 - Main text: summary metrics + confusion matrix figure. Supplement: per-class precision/recall, spectra examples, configs.
 
 ### Qualitative & quantitative interpretation
-- **Qualitative:** PCA scores and ratio boxplots show class structure; confusion matrix reveals which oils are confused.
-- **Quantitative:** Report macro F1/balanced accuracy; silhouette on PCA scores; ANOVA/Tukey on key ratios (link to [ANOVA/MANOVA](../stats/anova_and_manova.md)); effect sizes when applicable.
+- **Qualitative:** PCA scores and ratio boxplots show class structure; confusion matrix reveals which oils are confused. RF importances/PLS loadings (see interpretability figures) highlight bands driving separation—link back to unsaturation/carbonyl bands.
+- **Quantitative:** Report macro F1/balanced accuracy; silhouette on PCA scores; ANOVA/Tukey/Games–Howell on key ratios (link to [ANOVA/MANOVA](../stats/anova_and_manova.md)); effect sizes when applicable.
 - **Reviewer phrasing:** “PCA shows moderate separation of oil classes (silhouette ≈ …); the RF classifier reached macro F1 = …; ratios at 1655/1742 cm⁻¹ differed across oils (ANOVA p < …).”
 
 ### Peak & ratio summary tables
 - Generate mean ± std of key peak positions/intensities and ratios by oil_type for supplementary tables.
 - Example: use `compute_peak_stats` and `compute_ratio_table` on extracted features; report which bands/ratios differ most across oils (with p-values/effect sizes).
 - Reviewer phrasing: “Table 1 summarizes unsaturation/carbonyl ratios by oil type (mean ± SD); Games–Howell indicates oil A > oil B (p_adj < …).”
+- Visuals to pair: RF feature importances / PLS loadings (assets `rf_feature_importance.png`, `pls_loadings.png`) to link discriminative bands to chemistry.
 
 ## Summary
 - Baseline + smoothing + normalization + crop → peak/ratio features → RF/SVM/PLS-DA → CV metrics and confusion matrix.

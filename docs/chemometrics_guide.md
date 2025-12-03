@@ -37,8 +37,9 @@ flowchart LR
 - Logistic regression: linear, fast baseline.  
 - SVM (linear/RBF): margin maximization; RBF handles nonlinear boundaries.  
 - Random Forest: nonlinear, feature importances.  
+- Gradient boosting (sklearn) and boosted trees (optional XGBoost/LightGBM via `pip install foodspec[ml]`): strong tabular performance and good with nonlinear interactions; tune learning rate/trees.  
 - kNN: instance-based, sensitive to scaling/imbalance.  
-Choose by data size/linearity/interpretability; always report per-class metrics.
+Choose by data size/linearity/interpretability; always report per-class metrics and pair with ROC/PR where appropriate.
 
 ## Mixture models (NNLS, MCR-ALS)
 - NNLS: for one mixture spectrum \(\mathbf{x}\) and pure spectra matrix \(\mathbf{S}\), solve \(\min_{\mathbf{c}\ge0}\|\mathbf{x}-\mathbf{S}\mathbf{c}\|_2^2\); \(\mathbf{c}\) are non-negative fractions.

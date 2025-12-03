@@ -7,7 +7,7 @@ from foodspec.chemometrics.validation import compute_classification_metrics, com
 
 
 def test_make_classifier_supported_and_invalid():
-    names = ["logreg", "svm_linear", "svm_rbf", "rf", "knn"]
+    names = ["logreg", "svm_linear", "svm_rbf", "rf", "knn", "gboost"]
     for name in names:
         model = make_classifier(name)
         assert hasattr(model, "fit")
@@ -15,6 +15,11 @@ def test_make_classifier_supported_and_invalid():
         make_classifier("unknown")
     try:
         model = make_classifier("xgb")
+        assert hasattr(model, "fit")
+    except ImportError:
+        pass
+    try:
+        model = make_classifier("lgbm")
         assert hasattr(model, "fit")
     except ImportError:
         pass

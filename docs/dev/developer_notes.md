@@ -70,9 +70,15 @@
 - **Workflow/CLI layer:** domain apps (oils, heating, mixtures, QC, hyperspectral), CLI commands, reporting/export helpers, reproducibility configs.
 
 ## 10. Developer Roadmap (High-Level)
-- Harden vendor IO: more mocks/fixtures and examples for SPC/OPUS/JCAMP; ensure graceful fallbacks remain.
-- Raise coverage above 90% by exercising IO/core/text/vendor branches, remaining stats/preprocess edges, and viz ratio helpers; add lightweight linting CI.
-- Enrich interpretability: RF importances, PLS loadings, and domain-focused visuals embedded in docs/workflows.
-- Expand workflow examples and calibration/regression utilities (DL kept optional with clear cautions).
-- Extend reproducibility/reporting metadata/configs for new domains (dairy, spices, beverages) and add more real-data tutorials when licensing permits.
-- Keep tutorials as stubs pointing to canonical workflow pages; consolidate domain content under `docs/workflows/` and maintain consistent, grouped-stage diagrams (data → preprocess → features → model/stats → report).
+- Vendor IO: continue to harden with mocks/fixtures and worked examples for SPC/OPUS/JCAMP; keep graceful fallbacks for missing optional deps.
+- Coverage & CI: coverage is >90% (IO/text/vendor, stats/preprocess/viz branches now exercised); lightweight lint CI (ruff) added—keep both green on PRs (run `pytest --cov` + `ruff check` locally).
+- Interpretability: RF importances, PLS loadings, and domain visuals are embedded in docs/workflows (see assets `rf_feature_importance.png`, `pls_loadings.png`); keep adding domain-specific figures as data permit.
+- Workflows & calibration: workflows are canonical (tutorial stubs removed); keep expanding examples and calibration/regression utilities. DL remains optional—always compare against classical baselines and state cautions.
+- Reproducibility/reporting: extend metadata/config patterns to new domains (dairy, spices, beverages) and add real-data tutorials when licensing permits.
+- Diagrams: maintain consistent staged diagrams (data → preprocess → features → model/stats → report) across workflows; keep flowcharts readable and updated when workflow steps change.
+
+## 11. Diagram / flowchart standards
+- Use a consistent staged structure in workflow diagrams: **Data → Preprocess → Features → Model/Stats → Report**.
+- Prefer left-to-right flowcharts (Mermaid `flowchart LR`) with grouped stages and concise labels; avoid cramped nodes.
+- When workflow steps change, update the corresponding diagram and ensure text and links match.
+- Keep colors/icons consistent with existing diagrams; avoid overly dense styling that hurts readability.

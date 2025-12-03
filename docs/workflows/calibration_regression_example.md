@@ -53,7 +53,7 @@ print("Bootstrap CI:", boot["ci"], "Permutation p-value:", perm["p_value"])
 
 *Figure: Predicted vs true values for a PLS regression on synthetic data. Points close to the diagonal indicate good calibration; systematic deviation signals bias. Generated via `docs/examples/ml/generate_regression_calibration_figure.py`.*
 
-Optionally add uncertainty/agreements:
+Optionally add uncertainty/agreements (DL optional—use only with sufficient data and always benchmark against PLS/linear baselines):
 
 ```python
 from foodspec.viz import plot_calibration_with_ci, plot_bland_altman

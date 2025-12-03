@@ -80,7 +80,7 @@ But most analyses are locked in ad hoc scripts, inconsistent preprocessing, and 
 - PCA:
   - `run_pca` giving scores, loadings, explained variance.  
 - Models:
-  - Classifier/regressor factory: Random Forest, SVM variants, Logistic Regression, PLS / PLS-DA, kNN, etc.  
+  - Classifier/regressor factory: Random Forest, Gradient Boosting, optional XGBoost/LightGBM, SVM variants, Logistic Regression, PLS / PLS-DA, kNN, etc.  
 - Validation:
   - Cross-validation helpers, classification/regression metrics, permutation tests.  
 - Mixture analysis:

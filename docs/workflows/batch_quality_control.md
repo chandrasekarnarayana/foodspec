@@ -11,18 +11,17 @@ For troubleshooting (class imbalance, outliers), see [Common problems & solution
 ```mermaid
 flowchart LR
   subgraph Data
-    A[Reference library]
-    D[New samples]
+    A[Reference library] --> D[New samples]
   end
   subgraph Preprocess
     B[Baseline + norm + crop]
   end
-  subgraph Model
+  subgraph Model/Stats
     C[OC-SVM / IsolationForest]
+    F[Scores + threshold + optional PCA]
   end
-  subgraph Evaluate & Report
-    F[Scores + threshold]
-    G[Reports/plots]
+  subgraph Report
+    G[Plots (scores, PCA) + report.md]
   end
   A --> B --> C --> F --> G
   D --> B

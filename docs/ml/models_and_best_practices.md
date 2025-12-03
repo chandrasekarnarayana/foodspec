@@ -28,6 +28,8 @@ See also:
 ### Non-linear
 - **RBF SVM** (`make_classifier("svm_rbf")`): handles non-linear decision boundaries; requires kernel parameters (C, gamma); watch for scaling and overfitting.
 - **Random Forest** (`make_classifier("rf")`): robust to mixed signals, offers feature importances; useful when peak subsets drive class differences.
+- **Gradient Boosting** (`make_classifier("gboost")`): scikit-learn GradientBoostingClassifier; strong non-linear learner for moderate-sized tabular spectral features; can outperform RF when interactions matter.
+- **XGBoost / LightGBM** (`make_classifier("xgb")`, `make_classifier("lgbm")`): optional extras (`pip install foodspec[ml]`); fast boosted trees with handling of non-linear interactions and imbalance; tune learning_rate/estimators/depth. Prefer when you have enough samples and need strong tabular performance.
 - **k-NN** (`make_classifier("knn")`): simple, instance-based; good quick baseline; sensitive to scaling and class imbalance.
 
 ### Regression / calibration
@@ -48,7 +50,7 @@ flowchart LR
 
     B --> B1{Dataset size?}
     B1 -->|Small / linear-ish| B2[Logistic Regression or SVM (linear)]
-    B1 -->|Larger or non-linear| B3[RBF SVM or Random Forest]
+    B1 -->|Larger or non-linear| B3[RBF SVM / RF / Boosting]
 
     C --> C1{Strong linear relation?}
     C1 -->|Yes| C2[PLS Regression]
@@ -57,7 +59,7 @@ flowchart LR
 
 Task-to-model mapping:
 - Authentication / multi-class oils: linear SVM, RBF SVM, RF; start simple (logreg) as baseline.
-- Rare adulteration/spoilage (imbalance): linear/RBF SVM with class weights, RF; evaluate with PR curves.
+- Rare adulteration/spoilage (imbalance): linear/RBF SVM with class weights, RF or boosted trees; evaluate with PR curves.
 - Calibration (quality index, moisture): PLS regression; consider non-linear (MLP) if bias remains.
 - Quick baselines / interpretability: k-NN, logistic regression, RF feature importances.
 
@@ -87,6 +89,20 @@ plot_confusion_matrix(metrics["confusion_matrix"], class_labels=np.unique(y_test
 ```
 
 Use when: non-linear class boundaries (e.g., subtle oil-type differences). Interpret using F1_macro and confusion matrix; add ROC/PR when scores are available.
+
+### Boosted trees example (optional xgboost/lightgbm)
+```python
+# pip install foodspec[ml]  # installs xgboost + lightgbm
+from foodspec.chemometrics.models import make_classifier
+from foodspec.metrics import compute_classification_metrics
+
+clf = make_classifier("xgb", n_estimators=200, learning_rate=0.05, subsample=0.8, random_state=42)
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+metrics = compute_classification_metrics(y_test, y_pred)
+print(metrics[["accuracy", "f1_macro"]])
+```
+Use when: you need strong non-linear tabular performance and can install optional deps. Pair with PR/ROC curves and feature importances/gain plots to interpret.
 
 ## Regression / calibration example (PLS)
 ```python

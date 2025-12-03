@@ -9,20 +9,20 @@ Suggested visuals: intensity/ratio maps, cluster maps, pixel-level spectra, PCA 
 ```mermaid
 flowchart LR
   subgraph Data
-    A[Flat spectra (pixels)]
-    B[image_shape metadata]
+    A[Flat pixel spectra] --> B[image_shape metadata]
   end
-  subgraph Preprocess & Cube
+  subgraph Preprocess
     C[Baseline + norm + crop]
-    D[Rebuild cube (HyperSpectralCube)]
   end
-  subgraph Features & Segmentation
-    E[Ratios / PCs]
-    F[Cluster / classify]
+  subgraph Features
+    D[Rebuild cube] --> E[Ratios / PCs]
   end
-  subgraph Evaluate & Report
-    G[Maps + metrics (IoU/accuracy/silhouette)]
-    H[Reports/plots]
+  subgraph Model/Stats
+    F[Cluster / classify pixels]
+    G[Metrics: IoU/accuracy, silhouette]
+  end
+  subgraph Report
+    H[Maps + spectra + report.md]
   end
   A --> C --> D --> E --> F --> G --> H
   B --> D

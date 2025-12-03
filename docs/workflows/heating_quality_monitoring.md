@@ -10,11 +10,24 @@ For troubleshooting (e.g., low SNR, metadata gaps), see [Common problems & solut
 
 ```mermaid
 flowchart LR
-  A[Raw spectra + heating metadata] --> B[Preprocessing (baseline, smoothing, norm, crop)]
-  B --> C[Feature extraction (peak ratios e.g., 1655/1742)]
-  C --> D[Trend modeling (linear fit, ANOVA)]
-  D --> E[Evaluation (slopes, p-values, plots)]
-  E --> F[Reports (metrics, plots, report.md)]
+  subgraph Data
+    A[Raw spectra] --> A2[Heating metadata (time/temp)]
+  end
+  subgraph Preprocess
+    B[Baseline + smoothing + norm + crop]
+  end
+  subgraph Features
+    C[Peak ratios (e.g., 1655/1742) ± PCA]
+  end
+  subgraph Model/Stats
+    D[Trend models (linear/ANCOVA) + ANOVA]
+    E[Metrics: slope, R², p-values; plots]
+  end
+  subgraph Report
+    F[Ratio vs time + stats tables + report.md]
+  end
+  A --> B --> C --> D --> E --> F
+  A2 --> D
 ```
 
 ## 1. Problem and dataset

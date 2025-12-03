@@ -5,11 +5,22 @@ This chapter explains what a workflow means in FoodSpec and how to design, execu
 ## What is a workflow in FoodSpec?
 ```mermaid
 flowchart LR
-  A[Scientific question] --> B[Experimental design & instrument]
-  B --> C[Data acquisition & organization]
-  C --> D[Preprocessing & feature extraction]
-  D --> E[Stats / ML analysis]
-  E --> F[Interpretation & reporting]
+  subgraph Data
+    A[Scientific question]
+    B[Experimental design & instrument]
+    C[Data acquisition & organization]
+  end
+  subgraph Preprocess
+    D[Baseline / smoothing / norm / crop]
+    E[Features: peaks, ratios, PCA/PLS]
+  end
+  subgraph Model_Stats
+    F[Stats & ML (tests, classifiers, regressors, mixtures)]
+  end
+  subgraph Report
+    G[Metrics + plots + report.md + run_metadata]
+  end
+  A --> B --> C --> D --> E --> F --> G
 ```
 - It is a pipeline from question → instrument → data → preprocessing → features → analysis → interpretation → reporting.
 - It aligns scientific goals with acquisition conditions, preprocessing choices, analysis methods, and clear outputs.

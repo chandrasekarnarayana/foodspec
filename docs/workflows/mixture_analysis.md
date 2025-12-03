@@ -10,11 +10,24 @@ For troubleshooting (peak alignment, imbalance of mixtures), see [Common problem
 
 ```mermaid
 flowchart LR
-  A[Raw mixtures (+ pure refs)] --> B[Preprocessing (baseline, smoothing, norm, crop)]
-  B --> C[Feature space (optional PCA) or stay in spectra]
-  C --> D[NNLS (with pure refs) or MCR-ALS (unsupervised)]
-  D --> E[Metrics (RMSE, R²), residuals, plots]
-  E --> F[Report (pred vs true, residuals, report.md)]
+  subgraph Data
+    A[Raw mixtures] --> A2[Optional pure refs]
+  end
+  subgraph Preprocess
+    B[Baseline + smoothing + norm + align]
+  end
+  subgraph Features
+    C[Stay in spectra or optional PCA/ratios]
+  end
+  subgraph Model/Stats
+    D[NNLS (with refs) or MCR-ALS]
+    E[Metrics: RMSE, R²; residuals]
+  end
+  subgraph Report
+    F[Pred vs true + residual overlays + report.md]
+  end
+  A --> B --> C --> D --> E --> F
+  A2 --> D
 ```
 
 ## 1. Problem and dataset
