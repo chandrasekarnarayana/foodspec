@@ -1,6 +1,10 @@
 import numpy as np
 
-from foodspec.viz.ratios import plot_ratio_by_group, plot_ratio_scatter, plot_ratio_vs_continuous
+from foodspec.viz.ratios import (
+    plot_ratio_by_group,
+    plot_ratio_scatter,
+    plot_ratio_vs_continuous,
+)
 
 
 def test_ratio_by_group_variants():
