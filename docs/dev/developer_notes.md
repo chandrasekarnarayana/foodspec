@@ -1,9 +1,12 @@
 # Developer Notes / Coding Standards
 
+![FoodSpec logo](../assets/foodspec_logo.png)
+
 ## 1. Purpose of This Document
 - Provide clear guidance for contributors and maintainers on how to write, document, and test foodspec code.
 - Support long-term maintainability, clarity, and reproducibility across preprocessing, feature extraction, ML, stats, and workflows.
 - Audience: contributors, maintainers, and students learning scientific Python and chemometrics in food spectroscopy.
+- Documentation scope: domain workflow pages are canonical; tutorial stubs have been removed from navigation to avoid duplication. Keep new content consolidated in the workflow files.
 
 ## 2. Coding Principles and Standards
 - **Clarity over cleverness**: Prefer readability, explicitness, and traceability over terse or obscure constructs.

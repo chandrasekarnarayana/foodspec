@@ -1,5 +1,7 @@
 # foodspec
 
+![FoodSpec logo](assets/foodspec_logo.png)
+
 foodspec is a headless, research-grade Python toolkit for Raman and FTIR spectroscopy in food science. It provides unified data models for 1D spectra and hyperspectral cubes, reproducible preprocessing pipelines, feature extraction, chemometrics, and turnkey workflows such as oil authentication, heating degradation, and mixture modeling.
 
 ### Why FoodSpec (short back-cover)

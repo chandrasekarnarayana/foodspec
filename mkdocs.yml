@@ -4,6 +4,8 @@ repo_url: "https://github.com/chandrasekarnarayana/foodspec"
 
 theme:
   name: material
+  logo: assets/foodspec_logo.png
+  favicon: assets/foodspec_logo.png
   features:
     - content.footer
 
@@ -81,14 +83,6 @@ nav:
       - Hyperspectral mapping: workflows/hyperspectral_mapping.md
       - Calibration / regression example: workflows/calibration_regression_example.md
       - Domain templates: workflows/domain_templates.md
-      - Tutorials (stubs pointing to canonical workflows):
-          - Oil authentication tutorial (see workflow): oil_auth_tutorial.md
-          - Heating tutorial (see workflow): heating_tutorial.md
-          - Mixture tutorial (see workflow): mixture_tutorial.md
-          - QC tutorial (see workflow): qc_tutorial.md
-          - Hyperspectral tutorial (see workflow): hyperspectral_tutorial.md
-          - Meat tutorial (see domain templates): meat_tutorial.md
-          - Microbial tutorial (see domain templates): microbial_tutorial.md
   - Protocols & Reproducibility:
       - MethodsX protocol: protocols/methodsx_protocol.md
       - Reproducibility checklist: protocols/reproducibility_checklist.md
