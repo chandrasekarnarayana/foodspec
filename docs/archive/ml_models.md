@@ -60,7 +60,7 @@ Questions this page answers
 
 See also
 - [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
-- [Oil authentication tutorial](../oil_auth_tutorial.md)
+- [Oil authentication tutorial](../workflows/oil_authentication.md)
 - [MethodsX protocol](../protocols/methodsx_protocol.md)
 - [API index](../api/index.md)
 # ML models (legacy)

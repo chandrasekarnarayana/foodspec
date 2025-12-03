@@ -18,4 +18,4 @@ python examples/validation_preprocessing_baseline.py
 
 This produces `validation_baseline.png` and prints a summary table in the console.
 > **Status:** Archived  
-> This page describes an earlier iteration of baseline validation. See the current preprocessing guides in [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md) and workflow-specific validation in [oil_auth_tutorial.md](oil_auth_tutorial.md).
+> This page describes an earlier iteration of baseline validation. See the current preprocessing guides in [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md) and workflow-specific validation in [workflows/oil_authentication.md](workflows/oil_authentication.md).

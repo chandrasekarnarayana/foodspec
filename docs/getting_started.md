@@ -93,6 +93,6 @@ Outputs: metrics.json/CSV, confusion_matrix.png, report.md in a timestamped fold
 - Keyword lookup: [keyword_index.md](keyword_index.md)
 
 See also
-- [oil_auth_tutorial.md](oil_auth_tutorial.md)
-- [heating_tutorial.md](heating_tutorial.md)
+- [workflows/oil_authentication.md](workflows/oil_authentication.md)
+- [workflows/heating_quality_monitoring.md](workflows/heating_quality_monitoring.md)
 - [csv_to_library.md](csv_to_library.md)

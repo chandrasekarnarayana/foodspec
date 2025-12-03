@@ -85,6 +85,6 @@ Questions this page answers
 
 See also
 - [csv_to_library.md](csv_to_library.md)
-- [oil_auth_tutorial.md](oil_auth_tutorial.md)
+- [workflows/oil_authentication.md](workflows/oil_authentication.md)
 - [keyword_index.md](keyword_index.md)
 - [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)

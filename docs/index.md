@@ -67,7 +67,6 @@ The development of **foodspec** draws upon the collective strength of interdisci
 - [MethodsX protocol](protocols/methodsx_protocol.md) – mapping between foodspec commands and the MethodsX article.  
 - [Citing foodspec](citing.md) – how to cite the software and the protocol paper.
  - [Instrument & file formats](user_guide/instrument_file_formats.md) – how to load CSV/JCAMP/SPC/OPUS exports into FoodSpec.
-- **If you are a reviewer/methods user:** follow the path → Foundations → IO/Preprocessing → Workflows → MethodsX protocol → Reproducibility checklist → Reporting guidelines; key API references are under `api/`.
 
 ## Project Intention & Philosophy
 - **Core principles**: open, clear, reproducible workflows; strong scientific grounding (physics + chemistry + statistics + ML); real-world usability in labs and QA/QC; interpretability and transparency; accessible to beginners and experts.

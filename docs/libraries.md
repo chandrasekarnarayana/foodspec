@@ -59,5 +59,5 @@ These return validated FoodSpectrumSet objects ready for workflows.
 
 See also
 - [csv_to_library.md](csv_to_library.md)
-- [oil_auth_tutorial.md](oil_auth_tutorial.md)
-- [mixture_tutorial.md](mixture_tutorial.md)
+- [workflows/oil_authentication.md](workflows/oil_authentication.md)
+- [workflows/mixture_analysis.md](workflows/mixture_analysis.md)

@@ -71,7 +71,7 @@
 
 ## 10. Developer Roadmap (High-Level)
 - Harden vendor IO: more mocks/fixtures and examples for SPC/OPUS/JCAMP; ensure graceful fallbacks remain.
-- Raise coverage on IO/stats edge branches and preprocessing corner cases; consider lightweight linting CI.
+- Raise coverage above 90% by exercising IO/core/text/vendor branches, remaining stats/preprocess edges, and viz ratio helpers; add lightweight linting CI.
 - Enrich interpretability: RF importances, PLS loadings, and domain-focused visuals embedded in docs/workflows.
 - Expand workflow examples and calibration/regression utilities (DL kept optional with clear cautions).
 - Extend reproducibility/reporting metadata/configs for new domains (dairy, spices, beverages) and add more real-data tutorials when licensing permits.

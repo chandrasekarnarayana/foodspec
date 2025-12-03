@@ -146,7 +146,7 @@ print(ratio_summary.head())
 *Interpretation:* A band with different mean positions across groups may indicate chemical/environmental shifts; large intensity SD within group suggests variability/noise. Ratio tables with clear between-group differences but small within-group std support discriminative power; pair with ANOVA/Kruskal and effect sizes.
 
 **Cross-links**
-- Vibrational assignments: [Spectroscopy basics](../foundations/spectroscopy_basics.md#vibrational-modes-and-their-spectral-signatures).
+- Vibrational assignments: [Spectroscopy basics](../foundations/spectroscopy_basics.md#3a-vibrational-modes-and-spectral-signatures).
 - Workflows using these ratios: [Oil authentication](../workflows/oil_authentication.md), [Heating quality monitoring](../workflows/heating_quality_monitoring.md).
 - Chemometric context: [Chemometrics guide](../chemometrics_guide.md).
 
