@@ -14,12 +14,15 @@ Hypothesis tests answer questions like “Are mean ratios different across oil t
 - **MANOVA:** Are multivariate means (e.g., multiple ratios/PCs) different across groups?
   - Uses Wilks’ Lambda, Pillai’s trace, etc. (statsmodels required).
 - **Post-hoc (Tukey HSD):** Which pairs differ after ANOVA?
-- **Nonparametric (baseline):** Kruskal–Wallis when normality/variance assumptions are violated (TODO other tests).
+- **Nonparametric:** Kruskal–Wallis (≥3 groups) or Mann–Whitney/Wilcoxon (2 groups) when normality/variance assumptions are violated.
 
-## Assumptions (and what if they fail)
-- Normality (approximate): t-tests/ANOVA assume roughly normal residuals; large samples are more robust.
-- Homoscedasticity (equal variances): Welch t-tests mitigate; ANOVA assumes homogeneity; if violated, consider transformations or nonparametric.
-- Independence: Spectra within groups should be independent replicates; randomize acquisition order to reduce drift effects.
+## Assumptions (and when not to use)
+| Assumption | Applies to | Diagnose | If violated |
+| --- | --- | --- | --- |
+| Normality of residuals | t-tests/ANOVA | QQ-plots, Shapiro on residuals | Transform, or use nonparametric |
+| Homoscedasticity | ANOVA, pooled t-test | Levene/Bartlett, residual vs fit plots | Welch t-test, transform, nonparametric |
+| Independence | All | Study design, randomized acquisition | Re-acquire or block; avoid paired tests on independent data |
+| Sufficient group size | All | Group counts | Use caution with very small n; report effect sizes/CI |
 
 ## Interpretation
 - **p-value:** Probability of observing the statistic (or more extreme) under the null hypothesis. Small p suggests group differences.

@@ -1,95 +1,49 @@
-# Protocols: MethodsX Mapping (Oil Authentication Example)
+# MethodsX protocol reproduction
 
-This chapter provides a MethodsX-style protocol for Raman oil authentication using FoodSpec. It covers materials, data acquisition, organization, analysis steps, and expected outcomes, and maps them to the `foodspec` CLI and API. Adapt the same template to FTIR/NIR or other domains.
+This page maps the MethodsX protocol paper directly to FoodSpec commands and outputs so that all figures and tables can be reproduced from public datasets.
 
-## Objective
-- Authenticate edible oils (e.g., differentiate olive, sunflower, canola) and detect adulteration using Raman spectra.
-- Produce reproducible, report-ready outputs (metrics, confusion matrices, PCA plots) aligned with MethodsX/FAIR principles.
+> If you are a reviewer or reader checking reproducibility, run the command below, then compare the produced metrics/plots with the figures/tables described here. See the Reproducibility checklist and Reporting guidelines for what to archive.
 
-## Materials and instruments (generic)
-- Raman spectrometer (e.g., 532/633/785 nm) with standard cuvette or vial holder.
-- Calibration standards (e.g., silicon wafer for Raman shift check).
-- Samples: known oils for training; blind or suspect oils for testing.
-- Computer with Python 3.10+, FoodSpec installed (`pip install foodspec`).
-- Optional: public/open dataset (e.g., Mendeley edible oils) converted to HDF5.
+## Command
 
-## Sample preparation (generic)
-1. Homogenize oils; avoid bubbles/particulates.
-2. Transfer to clean vial/cuvette; minimize fluorescence by choosing appropriate laser/wavelength/power.
-3. Acquire replicate spectra per sample to capture variability.
-
-## Data acquisition guidelines
-- Spectral range: fingerprint (≈600–1800 cm⁻¹); optionally CH stretches (2800–3100 cm⁻¹).
-- Resolution: sufficient to resolve unsaturation/ester bands (e.g., 4–8 cm⁻¹).
-- Export: vendor TXT/CSV; one spectrum per file or a wide CSV. Ensure wavenumber axis is ascending.
-
-## Data organization
-- Folder or HDF5 library containing:
-  - `x`: spectra (n_samples × n_wavenumbers), ascending cm⁻¹.
-  - `wavenumbers`: axis.
-  - `metadata`: columns `sample_id`, `oil_type`, optional `batch`, `instrument`.
-  - `modality`: `"raman"` or `"ftir"`.
-- Recommended: Convert CSV → HDF5 using `foodspec csv-to-library` (see [CSV → HDF5 pipeline](../csv_to_library.md)).
-
-## Analysis pipeline (CLI)
-1. Convert raw CSV to HDF5 (if needed):
-   ```bash
-   foodspec csv-to-library data/oils.csv libraries/oils.h5 \
-     --format wide --wavenumber-column wavenumber --label-column oil_type --modality raman
-   ```
-2. Run oil authentication:
-   ```bash
-   foodspec oil-auth libraries/oils.h5 --label-column oil_type --output-dir runs/oil_auth
-   ```
-   Outputs: `metrics.json`, `confusion_matrix.png`, `report.md`, `run_metadata.json`.
-
-## Statistical analysis steps
-- After classification, test key ratios across oil types:
-  - Run one-way ANOVA on ratios (e.g., 1655/1742) vs oil_type using `foodspec.stats.run_anova`.
-  - Apply Tukey HSD (if statsmodels installed) to identify differing pairs.
-  - Compute effect sizes (eta-squared/partial) where sums of squares are available.
-- For regression/adulteration tasks, correlate predicted mixture fractions with ground truth; report RMSE/MAE and Pearson/Spearman correlations.
-- Report alpha level, effect sizes, and confidence intervals where possible.
-
-## Analysis pipeline (Python)
-```python
-from foodspec.data.loader import load_example_oils
-from foodspec.apps.oils import run_oil_authentication_workflow
-
-fs = load_example_oils()  # or load_library("libraries/oils.h5")
-res = run_oil_authentication_workflow(fs, label_column="oil_type", classifier_name="rf", cv_splits=5)
-print(res.cv_metrics)
+```bash
+foodspec reproduce-methodsx --output-dir runs/methodsx_protocol
 ```
 
-## Steps and rationale
-- **Preprocessing:** ALS baseline → Savitzky–Golay smoothing → L2 normalization → crop 600–1800 cm⁻¹.
-- **Features:** Peaks around 1655, 1742, 1450 cm⁻¹; ratios 1655/1742, 1450/1655.
-- **Models:** Random Forest (robust default); alternatives: SVM/PLS-DA.
-- **Validation:** Stratified k-fold CV (5x); report accuracy, macro F1; confusion matrix.
-- **Statistics:** ANOVA/Tukey on key ratios to corroborate model-driven discrimination; effect sizes to convey magnitude.
+Produces a timestamped run directory with metrics.json, run_metadata.json, confusion_matrix/PCA plots, and report.md.
 
-## Expected outcomes
-- Clear separation of oil types in PCA; confusion matrix with high diagonal entries.
-- Typical metrics: macro F1 in the high 0.8–0.9 range on clean datasets; lower if classes are subtle or data noisy.
-- Artifacts generated: metrics.json, run_metadata.json, confusion_matrix.png, optional feature importances.
-- Statistical tests should show significant differences in key ratios across oil types; post-hoc identifies specific pairs.
+## Datasets (public)
 
-## Notes and tips
-- Check baselines/fluorescence; adjust ALS parameters if over/under-correcting.
-- Ensure wavenumbers are aligned and ascending; mismatches cause feature shifts.
-- For adulteration levels (regression), consider mixture analysis (NNLS/PLS) instead of pure classification.
+1. **Mendeley edible oils (Raman/FTIR)** – multi-class classification.  
+2. **EVOO–sunflower Raman mixtures (data.gouv.fr, DOI 10.57745/DOGT0E)** – fraction regression/mixture analysis.  
+3. **Groundnut adulteration ATR-MIR (Kaggle)** – optional robustness/adulteration check.  
 
-## Mapping to figures/tables
-- **Scores/loadings:** Use PCA plots for exploratory figures.
-- **Confusion matrix:** Main classification figure.
-- **Metrics table:** Include accuracy, macro F1; per-class metrics in Supplementary.
-- **Preprocessing/model config:** Include in methods text or Supplementary.
+Convert each to HDF5 using `foodspec csv-to-library` or the public loaders; see Libraries for folder structure.
 
-## Validation and reproducibility
-- Capture software versions, seeds, CV splits, preprocessing choices (see [Reproducibility checklist](reproducibility_checklist.md)).
-- Use `run_metadata.json` and saved configs for audits.
+## Mapping figures/tables to commands
 
-## Further reading
-- [Reproducibility checklist](reproducibility_checklist.md)
-- [Benchmarking framework](benchmarking_framework.md)
-- [Oil authentication workflow](../workflows/oil_authentication.md)
+- **PCA scores (Figure)**: generated from the classification dataset; output `oil_pca_scores.png`.  
+  - Command: `foodspec reproduce-methodsx` (internal PCA).  
+  - Dataset: public oils library (Raman/FTIR).
+- **Confusion matrix (Figure)**: `oil_confusion_matrix.png`.  
+  - Command: `foodspec reproduce-methodsx` (oil classification step).  
+  - Metrics: accuracy, F1 in `metrics.json` (classification section).
+- **Classification metrics (Table)**: accuracy/F1 summary in `metrics.json`.  
+  - Use overall values for main text; per-class precision/recall can be supplementary if available.
+- **Mixture analysis metrics (Table/Plot)**: `mixture_r2`, `mixture_rmse` in `metrics.json`; add predicted vs true fraction plot if desired.  
+  - Dataset: EVOO–sunflower library.
+
+## Reproduction checklist
+
+1. Download public datasets and convert to HDF5 libraries (see Libraries and CSV→HDF5 pages).  
+2. Run `foodspec reproduce-methodsx --output-dir runs/methodsx_protocol`.  
+3. Verify artifacts in the run directory: metrics.json, report.md, PCA/confusion matrix plots.  
+4. Align outputs with paper figures/tables (rename or re-caption as needed).  
+5. For publication:  
+   - **Main**: PCA scores figure, confusion matrix, classification metrics (accuracy/F1), mixture metrics (R²/RMSE).  
+   - **Supplementary**: additional per-class metrics, residual plots, spectra examples, run_metadata.json for reproducibility.
+
+See also
+- Keyword index: [keyword_index.md](../keyword_index.md)
+- Reproducibility: [reproducibility_checklist.md](reproducibility_checklist.md), [reporting_guidelines.md](../reporting_guidelines.md), [benchmarking_framework.md](benchmarking_framework.md)
+- Related workflows: [workflows/oil_authentication.md](../workflows/oil_authentication.md), [workflows/mixture_analysis.md](../workflows/mixture_analysis.md)

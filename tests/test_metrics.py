@@ -5,6 +5,9 @@ from foodspec.metrics import (
     compute_regression_metrics,
     compute_roc_curve,
     compute_pr_curve,
+    compute_embedding_silhouette,
+    compute_between_within_ratio,
+    compute_between_within_stats,
 )
 from foodspec.viz import (
     plot_confusion_matrix,
@@ -12,6 +15,8 @@ from foodspec.viz import (
     plot_pr_curve,
     plot_regression_calibration,
     plot_residuals,
+    plot_calibration_with_ci,
+    plot_bland_altman,
 )
 
 
@@ -43,6 +48,10 @@ def test_regression_metrics_and_plots():
     assert ax is not None
     ax = plot_residuals(y_true, y_pred)
     assert ax is not None
+    ax = plot_calibration_with_ci(y_true, y_pred)
+    assert ax is not None
+    ax = plot_bland_altman(y_true, y_pred)
+    assert ax is not None
 
 
 def test_roc_pr_helpers():
@@ -52,3 +61,15 @@ def test_roc_pr_helpers():
     assert auc_val > 0.5
     prec, rec, _ = compute_pr_curve(y_true, y_scores)
     assert prec.size == rec.size
+
+
+def test_embedding_structure_metrics():
+    scores = np.array([[0, 0], [0.1, 0.1], [1, 1], [1.1, 1.1]])
+    labels = np.array([0, 0, 1, 1])
+    sil = compute_embedding_silhouette(scores, labels)
+    assert sil >= 0
+    ratio = compute_between_within_ratio(scores, labels)
+    assert ratio > 5
+    stats = compute_between_within_stats(scores, labels, n_permutations=20, random_state=0)
+    assert "f_stat" in stats and stats["f_stat"] == stats["ratio"]
+    assert np.isnan(stats["p_perm"]) or 0 <= stats["p_perm"] <= 1

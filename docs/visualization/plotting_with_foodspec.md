@@ -46,11 +46,17 @@ Use to localize components/defects and visualize spatial heterogeneity.
 
 ## Regression calibration
 ```python
-from foodspec.viz import plot_regression_calibration
+from foodspec.viz import (
+    plot_regression_calibration,
+    plot_calibration_with_ci,
+    plot_bland_altman,
+)
 
 ax = plot_regression_calibration(y_true, y_pred)
+ax = plot_calibration_with_ci(y_true, y_pred)
+ax = plot_bland_altman(y_true, y_pred)
 ```
-Use for calibration/regression tasks to check predicted vs true alignment.
+Use for calibration/regression tasks to check predicted vs true alignment. Add CI bands to convey uncertainty and Bland–Altman for method agreement (model vs reference lab). Good fit hugs the 1:1 line; Bland–Altman bias near 0 with tight limits indicates agreement; trends in diff vs mean suggest scale/offset issues.
 
 ## Where these appear in workflows
 - Oil authentication: confusion matrix, PCA scores/loadings, boxplots of ratios.

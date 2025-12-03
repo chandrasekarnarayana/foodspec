@@ -26,11 +26,18 @@ from foodspec.preprocess.derivatives import DerivativeTransformer
 deriv = DerivativeTransformer(order=1, window_length=11, polyorder=3)
 X_d1 = deriv.transform(X_preprocessed)
 ```
-> TODO: Add a small helper to preview derivative effects alongside raw spectra.
+Preview derivatives alongside raw spectra with `foodspec.viz.plot_spectra` or a custom overlay.
 
 ## 5. Visuals to include
-- Figure: Raw vs 1st derivative vs 2nd derivative for overlapping lipid bands.
-- Figure: Comparison of discriminative power (e.g., PCA on raw vs derivative spectra).
+- **Derivative overlays (single spectrum):** Plot original, 1st, and 2nd derivatives for a preprocessed oil spectrum (e.g., example oils). Axes: wavenumber vs intensity/derivative units. Purpose: show peak sharpening vs noise. Use `DerivativeTransformer` + `plot_spectra` for overlays.
+- **Overlap/utility check:** Apply PCA on raw vs derivative spectra (same dataset) and compare score plots; illustrates discriminative gain. Axes: PC1 vs PC2 colored by class.
+
+## Reproducible figure generation
+- Figures for this chapter can be generated with `docs/examples/visualization/generate_derivative_overlays.py`, which should:
+  - Load the example oils dataset.
+  - Plot original, 1st-, and 2nd-derivative spectra for a representative sample and save to `docs/assets/derivative_overlays.png`.
+  - Build PCA on raw vs 1st-derivative spectra and plot PC1–PC2 colored by oil type to compare separation; save to `docs/assets/derivative_pca_comparison.png`.
+  - Use `DerivativeTransformer`, `SavitzkyGolaySmoother`, and the plotting helpers in `foodspec.viz` for consistent styling.
 
 ## Summary
 - Derivatives can separate overlapping peaks and suppress slow baselines.

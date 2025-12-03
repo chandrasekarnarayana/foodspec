@@ -17,6 +17,11 @@ Questions this page answers:
 - **Confusion matrices and per-class metrics:** clarify where models struggle.
 - **Residuals and calibration plots:** show bias and spread in regression.
 
+### Reading loadings (PCA/PLS)
+- **Scores vs loadings:** scores plot shows samples in latent space; loadings plot shows which wavenumbers drive each component.
+- **Example (oils):** If oil A vs B separate along PC1 and loadings have strong positive contributions near ~1655 cm⁻¹ (unsaturation), that band is characteristic of oil A. Use [Spectroscopy basics](../foundations/spectroscopy_basics.md) for vibrational assignments.
+- Pair qualitative plots with metrics (e.g., silhouette/between-within on scores) to quantify separation.
+
 ## Practical examples
 ```python
 from foodspec.chemometrics.pca import run_pca
@@ -37,10 +42,10 @@ For PLS-DA/PLS regression, examine loading vectors and VIP-like interpretations;
 
 ## Visual examples
 ![Random Forest feature importances](../assets/rf_feature_importance.png)
-*Figure: RF feature importances on synthetic spectra. Top bands correspond to simulated peaks; relate them to known chemical bands.*
+*Figure: RF feature importances on synthetic spectra. Top bands correspond to simulated peaks; relate them to known chemical bands. Flat or noisy importances may indicate weak signal or overfitting.*
 
 ![PLS loadings example](../assets/pls_loadings.png)
-*Figure: PLS loadings for the first component, showing influential wavenumbers in a calibration task.*
+*Figure: PLS loadings for the first component, showing influential wavenumbers in a calibration task. Loadings sign shows positive/negative association with the component; peaks in loadings point to bands driving separation or prediction.*
 
 ## Reporting guidance
 - Report top contributing bands/ratios and their chemical meaning.

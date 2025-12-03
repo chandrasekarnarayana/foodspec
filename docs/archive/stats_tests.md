@@ -8,8 +8,7 @@ Questions this page answers
 - How do I run common tests with SciPy on foodspec-derived features?
 - How should I report test results in a paper?
 
-> Note: foodspec provides spectral features (peaks, bands, ratios); statistical hypothesis tests are run with SciPy/statsmodels.  
-> Dependencies: SciPy (https://scipy.org/), statsmodels (https://www.statsmodels.org/)
+> Status: Legacy/archived. The maintained statistics content lives under `../stats/`. FoodSpec provides spectral features; statistical hypothesis tests are run with SciPy/statsmodels. Dependencies: SciPy (https://scipy.org/), statsmodels (https://www.statsmodels.org/)
 
 ## Introduction
 Statistical tests help determine whether observed spectral differences or trends are unlikely to be due to chance. In Raman/FTIR food studies, they support claims about authenticity, treatment effects (heating, storage), or mixture proportions.
@@ -168,6 +167,12 @@ Interpretation: slope sign/magnitude shows trend; p tests if slope differs from 
 
 See also
 - [metrics_interpretation.md](metrics_interpretation.md)
-- [oil_auth_tutorial.md](oil_auth_tutorial.md)
-- [methodsx_protocol.md](methodsx_protocol.md)
-- [api_reference.md](api_reference.md)
+- [Oil authentication tutorial](../oil_auth_tutorial.md)
+- [MethodsX protocol](../protocols/methodsx_protocol.md)
+- [API index](../api/index.md)
+# Statistical tests (legacy)
+
+> **Status:** Legacy/archived. See the Statistics section (`docs/stats/*`) for the current, maintained content on hypothesis testing, ANOVA, and nonparametric methods.
+
+> **Status: Legacy / Archived**  
+> Replaced by the Stats chapters (overview, hypothesis testing, ANOVA/MANOVA, nonparametric, effect sizes). See [Stats overview](../stats/overview.md).

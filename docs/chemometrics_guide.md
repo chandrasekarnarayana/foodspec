@@ -2,6 +2,8 @@
 
 This guide provides intuition for the main methods used in FoodSpec to extract information from spectra.
 
+> For notation and symbols, see the [Glossary](glossary.md). For practical bands/ratios, see the mini-guide in [Feature extraction](preprocessing/feature_extraction.md#how-to-choose-bands-and-ratios-decision-mini-guide).
+
 ## PCA (Principal Component Analysis)
 - Purpose: reduce dimensionality, visualize clustering, and identify spectral regions driving variance.  
 - Outputs: **scores** (sample coordinates in PC space) and **loadings** (weights per wavenumber).  

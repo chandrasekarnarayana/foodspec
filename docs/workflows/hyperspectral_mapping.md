@@ -42,6 +42,11 @@ fig = plot_hyperspectral_intensity_map(cube, target_wavenumber=1655, window=5)
 - For unsupervised segments: stability across runs; correlation of ratio maps vs reference metrics.
 - Inspect edge artifacts and spatial smoothness.
 
+### Qualitative & quantitative interpretation
+- **Qualitative:** Intensity/ratio maps reveal spatial patterns; cluster maps show segmentation; inspect representative pixel spectra for classes.
+- **Quantitative:** Report pixel accuracy/IoU if ground-truth masks exist; silhouette or between/within metrics on pixel embeddings (PCA) for cluster separability; confusion matrix for pixel labels. Link to [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+- **Reviewer phrasing:** “Ratio maps highlight localized high-intensity regions; clustering yields k segments with silhouette ≈ …; pixel-level IoU vs reference mask = …; representative spectra confirm chemical plausibility.”
+
 ## Summary
 - Preprocess → rebuild cube → ratios/PCs → clustering/classification → maps + metrics.
 - Pair maps with pixel spectra and QC plots; report preprocessing and class definitions.

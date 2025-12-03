@@ -52,8 +52,25 @@ print(f"slope={slope:.3f}, R²={r**2:.3f}, p={p:.3g}")
 ```
 Interpretation: slope indicates direction/magnitude of change; p tests if slope differs from zero; R² shows how much of the ratio variance is explained by time. Include these in MethodsX-style reports alongside plots.
 
+### Minimal workflow example (Python)
+```python
+import numpy as np
+from foodspec.data import load_example_oils
+from foodspec.apps.heating import run_heating_degradation_analysis
+
+fs = load_example_oils()
+fs.metadata["heating_time"] = np.linspace(0, 60, len(fs))
+result = run_heating_degradation_analysis(fs, time_column="heating_time")
+print(result.key_ratios.head())
+```
+
+Recommended plots: ratio vs time with regression line; ANOVA boxplots; residuals. See [plotting](visualization/plotting_with_foodspec.md) and [metrics](metrics/metrics_and_evaluation.md).  
+Preprocessing links: [Baseline](preprocessing/baseline_correction.md), [Normalization](preprocessing/normalization_smoothing.md).  
+Stats links: [ANOVA/hypothesis testing](stats/hypothesis_testing_in_food_spectroscopy.md), [Nonparametric](stats/nonparametric_methods_and_robustness.md).  
+Reproducibility: [Checklist](protocols/reproducibility_checklist.md), [Reporting](reporting_guidelines.md).
+
 See also
-- [metrics_interpretation.md](metrics_interpretation.md)
+- [Metrics & evaluation](metrics/metrics_and_evaluation.md)
 - [reporting_guidelines.md](reporting_guidelines.md)
 - [keyword_index.md](keyword_index.md)
 - [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)

@@ -28,6 +28,8 @@ __all__ = [
     "summarize_class_balance",
     "detect_outliers",
     "check_missing_metadata",
+    "generate_synthetic_raman_spectrum",
+    "generate_synthetic_ftir_spectrum",
 ]
 
 # Single source of truth for the package version.
@@ -57,3 +59,4 @@ from .stats import (
     permutation_test_metric,
 )
 from .utils.troubleshooting import estimate_snr, summarize_class_balance, detect_outliers, check_missing_metadata
+from .synthetic import generate_synthetic_raman_spectrum, generate_synthetic_ftir_spectrum

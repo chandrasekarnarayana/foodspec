@@ -1,4 +1,7 @@
-# API reference: CLI & applications
+# API reference: CLI & applications (legacy)
+
+> **Status: Legacy / Archived**  
+> Superseded by CLI reference and [api/workflows.md](../api/workflows.md). Kept for reference only.
 
 CLI entry point (`foodspec.cli`) exposes workflows; application modules orchestrate preprocessing, features, and models. For usage, see the CLI reference and workflow tutorials.
 
@@ -15,4 +18,4 @@ CLI entry point (`foodspec.cli`) exposes workflows; application modules orchestr
 ::: foodspec.apps.protocol_validation
 ::: foodspec.apps.methodsx_reproduction
 > **Status:** Archived  
-> This page has been superseded by the unified API reference. See [api_reference.md](api_reference.md#apps-and-workflows) for current application and CLI APIs.
+> This page has been superseded by the unified API reference. See [API index](../api/index.md) for current application and CLI APIs.

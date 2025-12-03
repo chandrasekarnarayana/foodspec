@@ -53,13 +53,29 @@ print("Bootstrap CI:", boot["ci"], "Permutation p-value:", perm["p_value"])
 
 *Figure: Predicted vs true values for a PLS regression on synthetic data. Points close to the diagonal indicate good calibration; systematic deviation signals bias. Generated via `docs/examples/ml/generate_regression_calibration_figure.py`.*
 
+Optionally add uncertainty/agreements:
+
+```python
+from foodspec.viz import plot_calibration_with_ci, plot_bland_altman
+
+ax = plot_calibration_with_ci(y_true, y_pred)
+ax.figure.savefig("calibration_ci.png", dpi=150)
+ax = plot_bland_altman(y_true, y_pred)
+ax.figure.savefig("bland_altman.png", dpi=150)
+```
+
 ## Reporting
 - Report RMSE/MAE/R² with confidence intervals (bootstrap) and, if needed, permutation p-values for chance-level checks.
 - Include predicted-vs-true plots and residual diagnostics for transparency.
 - Note preprocessing steps, feature choices (ratios/PCs), model settings (components), and validation design.
 
+### Qualitative & quantitative interpretation
+- **Qualitative:** Predicted vs true should cluster around the 1:1 line; residuals should be structureless and homoscedastic.
+- **Quantitative:** Report RMSE/MAE/R² (and adjusted R² if multiple predictors); consider bootstrap CIs and permutation checks for small n. Add CI bands on calibration plots (`plot_calibration_with_ci`) and, when comparing methods, use Bland–Altman to assess agreement (bias, limits). Link to [Metrics & evaluation](../metrics/metrics_and_evaluation.md) and [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md) for supporting stats.
+- **Reviewer phrasing:** “Calibration achieved R² = … and RMSE = …; residuals show no trend with fitted values, suggesting adequate model form.”
+
 ## See also
 - [Classification & regression](../ml/classification_regression.md)
-- [Metrics & interpretation](../metrics_interpretation.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
 - [Workflow design](workflow_design_and_reporting.md)
 - [Stats: nonparametric & robustness](../stats/nonparametric_methods_and_robustness.md)

@@ -85,6 +85,16 @@ Outputs: `metrics.json`, `confusion_matrix.png`, `report.md` in a timestamped fo
 - Highlight chemically meaningful loadings/feature importances (e.g., unsaturation bands).
 - Main text: summary metrics + confusion matrix figure. Supplement: per-class precision/recall, spectra examples, configs.
 
+### Qualitative & quantitative interpretation
+- **Qualitative:** PCA scores and ratio boxplots show class structure; confusion matrix reveals which oils are confused.
+- **Quantitative:** Report macro F1/balanced accuracy; silhouette on PCA scores; ANOVA/Tukey on key ratios (link to [ANOVA/MANOVA](../stats/anova_and_manova.md)); effect sizes when applicable.
+- **Reviewer phrasing:** “PCA shows moderate separation of oil classes (silhouette ≈ …); the RF classifier reached macro F1 = …; ratios at 1655/1742 cm⁻¹ differed across oils (ANOVA p < …).”
+
+### Peak & ratio summary tables
+- Generate mean ± std of key peak positions/intensities and ratios by oil_type for supplementary tables.
+- Example: use `compute_peak_stats` and `compute_ratio_table` on extracted features; report which bands/ratios differ most across oils (with p-values/effect sizes).
+- Reviewer phrasing: “Table 1 summarizes unsaturation/carbonyl ratios by oil type (mean ± SD); Games–Howell indicates oil A > oil B (p_adj < …).”
+
 ## Summary
 - Baseline + smoothing + normalization + crop → peak/ratio features → RF/SVM/PLS-DA → CV metrics and confusion matrix.
 - Use stratified CV; report macro metrics; tie discriminative bands back to chemistry.
@@ -116,8 +126,11 @@ try:
     print(tukey.head())
 except ImportError:
     pass
+# Robust post-hoc if variances/group sizes differ
+gh = games_howell(ratio_series, fs.metadata["oil_type"])
+print(gh.head())
 ```
-- **Interpretation:** ANOVA p-value < 0.05 suggests at least one oil type differs in the ratio; Tukey identifies which pairs. Report effect size where possible.
+- **Interpretation:** ANOVA p-value < 0.05 suggests at least one oil type differs in the ratio; Tukey or Games–Howell identifies which pairs. Report effect size where possible.
 See theory: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [ANOVA](../stats/anova_and_manova.md).
 
 ## Further reading

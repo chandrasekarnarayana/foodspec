@@ -2,6 +2,8 @@
 
 Metrics tell you how well a workflow answers a scientific or QC question. Different food spectroscopy tasks (authentication, adulteration detection, spoilage monitoring, calibration) demand different metrics and plots. This chapter explains what to use, why, and how to interpret results in practice.
 
+> For notation and symbols, see the [Glossary](../glossary.md).
+
 ## 1. Why evaluation metrics matter
 - Accuracy alone can mislead (class imbalance, asymmetric costs).
 - Authentication/adulteration often prioritizes sensitivity/specificity or precision–recall.
@@ -24,6 +26,11 @@ Confusion matrix: counts per true/pred class; shows where errors occur.
 ROC curve (FPR vs TPR); AUC summarizes ranking ability.  
 Precision–Recall curve: better for rare positives.
 
+> **Math box (key classification metrics)**  
+> Specificity \(= \\frac{TN}{TN+FP}\); Sensitivity/Recall \(= \\frac{TP}{TP+FN}\)  
+> MCC \(= \\frac{TP\\times TN - FP\\times FN}{\\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}\)  
+> F1 \(= 2 \\cdot \\frac{\\text{precision}\\cdot\\text{recall}}{\\text{precision}+\\text{recall}}\)
+
 **Food task → best metrics**
 | Task | Metrics | Reason |
 | --- | --- | --- |
@@ -44,6 +51,10 @@ if "roc_curve" in res:
     fpr, tpr = res["roc_curve"]
     plot_roc_curve(fpr, tpr, res.get("auc"))
 ```
+
+![Confusion matrix example](../assets/confusion_matrix_example.png)
+
+*Figure: Synthetic confusion matrix illustrating per-class errors and supports.*
 
 ### Metrics selection flowchart
 ```mermaid
@@ -74,6 +85,11 @@ For practical examples with real models, see [Machine Learning & Deep Learning M
 Diagnostics: predicted vs true, residual plots, calibration (bias/slope).  
 Use RMSE/MAE for magnitude; R² for proportion explained; MAPE for relative comparisons.
 
+> **Math box (key regression metrics)**  
+> RMSE \(= \\sqrt{\\frac{1}{n}\\sum (y-\\hat y)^2}\); MAE \(= \\frac{1}{n}\\sum |y-\\hat y|\)  
+> \(R^2 = 1 - \\frac{\\sum (y-\\hat y)^2}{\\sum (y-\\bar y)^2}\\); Adjusted \(R^2 = 1 - (1-R^2)\\frac{n-1}{n-p-1}\)  
+> MAPE \(= \\frac{100}{n}\\sum \\left|\\frac{y-\\hat y}{y}\\right|\) (beware near zero targets)
+
 ### Code example
 ```python
 from foodspec.metrics import compute_regression_metrics
@@ -90,7 +106,61 @@ plot_residuals(y_true, y_pred)
 - Confidence intervals and standard errors contextualize magnitude.
 - ANOVA outputs (F, p) should be paired with effect sizes and post-hoc tests.
 
-## 5. Visualization & diagnostic plots
+## 5. Quantifying structure in embeddings (PCA/t-SNE)
+- **Silhouette score:** Measures how similar a sample is to its own class vs other classes (range -1 to 1). Higher = better separation.
+- **Between/within scatter ratio:** Ratio of average distances between class centroids to average within-class variance. >1 suggests separation; ~1 suggests overlap.
+- **F-like statistic & permutation p-value:** Between/within is analogous to an ANOVA F on the embedding. A permutation p-value (p_perm) tests whether the observed ratio is larger than random labelings.
+
+```python
+from foodspec.metrics import (
+    compute_embedding_silhouette,
+    compute_between_within_ratio,
+    compute_between_within_stats,
+)
+
+# Assume scores from PCA or t-SNE and integer labels
+sil = compute_embedding_silhouette(scores[:, :2], labels)
+bw = compute_between_within_ratio(scores[:, :2], labels)
+stats = compute_between_within_stats(scores[:, :2], labels, n_permutations=200, random_state=0)
+print(f"silhouette={sil:.2f}, bw={bw:.2f}, f={stats['f_stat']:.2f}, p_perm={stats['p_perm']:.3f}")
+```
+
+When to use: pair these metrics with PCA/t-SNE plots to avoid over-interpreting visuals; low silhouette or high p_perm suggests weak separation. For visuals (PCA scores/loadings and t-SNE) and reproducible figures, run
+`python docs/examples/visualization/generate_embedding_figures.py`, which saves
+`pca_scores.png`, `pca_loadings.png`, and `tsne_scores.png` using synthetic spectra.
+
+## 6. Robustness (bootstrap/permutation)
+```python
+from foodspec.stats.robustness import bootstrap_metric
+from foodspec.metrics import compute_classification_metrics
+
+def f1_metric(y_true, y_pred):
+    return compute_classification_metrics(y_true, y_pred)["f1"]
+
+obs, ci = bootstrap_metric(f1_metric, y_true, y_pred, n_bootstrap=200, random_state=0)
+print(\"Observed F1\", obs, \"CI\", ci)
+```
+Bootstraps (or permutation tests) provide uncertainty around metrics; use them when sample sizes are small or decisions are high-stakes.
+
+### Bootstrap confidence intervals for metrics
+```python
+from foodspec.metrics import bootstrap_metric_ci, compute_regression_metrics
+
+rmse_fn = lambda yt, yp: compute_regression_metrics(yt, yp)["rmse"]
+ci = bootstrap_metric_ci(y_true, y_pred, rmse_fn, n_bootstrap=500, alpha=0.05, random_state=0)
+print(ci["metric"], ci["ci_low"], ci["ci_high"])
+```
+Use for accuracy/F1 or regression errors; CIs help communicate uncertainty around performance.
+
+### Agreement plots (Bland–Altman)
+When comparing methods (e.g., model vs lab reference), use a Bland–Altman plot to show bias and limits of agreement:
+```python
+from foodspec.viz import plot_bland_altman
+ax = plot_bland_altman(y_true, y_pred)
+```
+Interpret bias (mean diff) and limits (mean ± 1.96 SD). Systematic trends in diff vs mean indicate scale/offset issues.
+
+## 7. Visualization & diagnostic plots
 - **Confusion matrix**: where classification fails; interpret per-class errors.
 - **ROC curve/AUC**: ranking ability; use for balanced/varied thresholds.
 - **Precision–Recall curve**: rare positives/adulteration.
@@ -98,7 +168,7 @@ plot_residuals(y_true, y_pred)
 - **Correlation heatmap**: associations among ratios/PCs/quality metrics.
 - **PCA scores/loadings**: structure and band importance (contextual).
 
-## 6. Metrics in workflows
+## 8. Metrics in workflows
 - **Oil authentication**: F1_macro, balanced accuracy; confusion matrix; ROC if binary; ANOVA/Tukey on key ratios.
 - **Adulteration (rare)**: precision–recall, F1, PR curve; confusion matrix with class counts.
 - **Heating degradation (regression/time)**: RMSE/MAE/R²; correlation of ratios vs time; residual plots.
@@ -106,11 +176,17 @@ plot_residuals(y_true, y_pred)
 - **Batch QC**: confusion matrix for in/ out-of-distribution labels; specificity/sensitivity for QC thresholds.
 For practical model choices and troubleshooting, see [ML & DL models](../ml/models_and_best_practices.md) and [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
 
-## 7. Practical guidance
+## 9. Practical guidance
 - Always report class supports and per-class metrics.
 - Use PR curves for rare events; ROC for balanced classification.
 - Pair p-values with effect sizes; pair metrics with uncertainty (CI/bootstrap).
 - Show diagnostic plots alongside headline numbers.
+
+## 10. Group-difference validation
+When comparing spectral features (ratios/peaks) across groups, complement metrics with statistical tests:
+- **MANOVA** to test multivariate group differences across several ratios/PCs.
+- **Games–Howell** post-hoc after ANOVA/Kruskal when variances/group sizes differ; safer for many spectroscopic datasets.
+See [ANOVA & MANOVA](../stats/anova_and_manova.md) for theory and code.
 
 ## See also
 - [Visualization with FoodSpec](../visualization/plotting_with_foodspec.md)

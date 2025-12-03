@@ -32,7 +32,13 @@ from foodspec.chemometrics.validation import cross_validate_pipeline
 cv = cross_validate_pipeline(pipeline, X_feat, y_labels, cv_splits=5, scoring="f1_macro")
 print(cv["mean"], cv["std"])
 ```
-> TODO: Add convenience plotting for confusion matrices/residuals linked to CV folds.
+> CV plotting pattern: after CV, collect per-fold predictions, then use `foodspec.viz.plot_confusion_matrix` for classification or `plot_residuals`/`plot_regression_calibration` for regression. Example:
+> ```python
+> from foodspec.viz import plot_confusion_matrix
+> cms = cv["confusion_matrices"]  # if returned; else recompute per fold
+> fig, ax = plt.subplots()
+> plot_confusion_matrix(cms[-1], class_labels=class_names, ax=ax)  # visualize last fold or mean cm
+> ```
 
 ## 6. Sanity checks and pitfalls
 - Very high scores with tiny datasets → likely overfitting or leakage.
@@ -52,6 +58,6 @@ print(cv["mean"], cv["std"])
 
 ## Further reading
 - [Classification & regression](classification_regression.md)
-- [Metrics interpretation](../metrics_interpretation.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
 - [Reproducibility checklist](../protocols/reproducibility_checklist.md)
 - [Workflows](../workflows/oil_authentication.md)

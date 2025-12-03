@@ -2,6 +2,11 @@
 
 Supervised learning connects spectral features to labels (oil_type, species) or continuous targets (mixture fraction, heating time proxies). This chapter explains model choices, when to use them, and practical concerns in food spectroscopy.
 
+## Why this matters in food spectroscopy
+- Authentication/adulteration: classification with balanced or imbalanced classes.
+- QC/novelty: one-class or binary detection with emphasis on sensitivity/specificity.
+- Calibration: regression for continuous properties (mixture fraction, moisture, quality indices).
+
 ## 1. Model families
 - **Linear models:** Logistic Regression, Linear SVM, PLS-DA. Good for linearly separable data, interpretable loadings/weights, smaller datasets.
 - **Non-linear kernels:** RBF SVM captures curved boundaries; tune C and gamma carefully. k-NN is simple but sensitive to scale and noise.
@@ -15,8 +20,9 @@ Supervised learning connects spectral features to labels (oil_type, species) or 
 
 ## 3. Cross-validation and metrics
 - **CV design:** Stratified k-fold for classification; grouped CV if batches exist. Small datasets: fewer folds to keep enough training data.
-- **Metrics:** Accuracy, macro F1 for imbalance; confusion matrix for per-class errors. Regression: RMSE, MAE, R², residual plots.
+- **Metrics:** Accuracy/F1_macro for imbalance; confusion matrix for per-class errors; ROC/PR for rare positives. Regression: RMSE, MAE, R², calibration/residual plots.
 - **Pitfalls:** Data leakage (normalize per fold), tuning on test sets, over-interpreting small performance gaps.
+- See [Metrics & evaluation](../metrics/metrics_and_evaluation.md) and Stats ([hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [effect sizes](../stats/t_tests_effect_sizes_and_power.md)) when comparing models.
 
 ## 4. Example (high level)
 ```python
@@ -53,9 +59,15 @@ print(metrics)  # reports RMSE, MAE, R^2
 - **Interpretation:** Link model importance/loadings back to wavenumbers (e.g., unsaturation bands) for scientific insight.
 
 ## 6. Visuals to include
-- Confusion matrix (classification).
-- Predicted vs true plots (regression).
-- Feature importance or model coefficients for interpretability.
+- Confusion matrix (classification), ROC/PR curves for imbalance (use `plot_confusion_matrix`, `plot_roc_curve`).
+- Predicted vs true plots (regression) and residuals; calibration curve (bias/slope) (use `plot_regression_calibration`, `plot_residuals`).
+- For regression/calibration, pair curves with uncertainty: use `plot_calibration_with_ci` for confidence bands and, when comparing methods, consider Bland–Altman plots (see [Metrics & evaluation](../metrics/metrics_and_evaluation.md)).
+- Feature importance or model coefficients/loadings for interpretability.
+
+## Reproducible figure generation
+- Classification: run a simple PCA+SVM on example oils, then call `plot_confusion_matrix` (optionally ROC/PR if scores are available).
+- Regression: use the PLS example above and generate calibration/residual plots via `foodspec.viz`.
+- For agreement assessment, add Bland–Altman when comparing model vs reference lab values.
 
 ## Summary
 - Choose linear/PLS-DA for interpretability and smaller datasets; non-linear models for complex boundaries.
@@ -67,3 +79,5 @@ print(metrics)  # reports RMSE, MAE, R^2
 - [Mixture models & fingerprinting](mixture_models.md)
 - [Model evaluation & validation](model_evaluation_and_validation.md)
 - [Workflows](../workflows/oil_authentication.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
+- [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)

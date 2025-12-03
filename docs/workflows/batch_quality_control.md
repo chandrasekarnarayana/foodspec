@@ -59,6 +59,11 @@ Outputs: `qc_scores.csv` with scores and predicted labels, summary.json.
 - Investigate suspects with additional tests (chemical assays, microscopy) to confirm.
 - Main reporting: counts of authentic/suspect; optional histograms of scores. Supplement: parameters/thresholds.
 
+### Qualitative & quantitative interpretation
+- **Qualitative:** Score histograms show separation between reference and new batches; PCA scores (optional) can highlight outliers.
+- **Quantitative:** Report counts of authentic/suspect; if labels exist, compute specificity/sensitivity and a confusion matrix. Silhouette on PCA scores (if used) can quantify structure; two-sample tests on key ratios can support suspicion (link to [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)).
+- **Reviewer phrasing:** “Most evaluation samples score above the QC threshold; suspects (n=…) are supported by lower ratio values (t-test p < …) and lower PCA silhouette.”
+
 ## Summary
 - Train a one-class model on authentic references; score new batches with identical preprocessing.
 - Tune threshold to balance sensitivity/specificity; document settings for audits.

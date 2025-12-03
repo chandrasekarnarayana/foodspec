@@ -1,6 +1,7 @@
-# API reference hub
+# API reference hub (legacy)
 
-This section lists the main public classes and functions in foodspec via mkdocstrings. Use the keyword index for concept-based lookup, and the CLI page for command usage.
+> **Status: Legacy / Archived**  
+> Superseded by the mkdocstrings API hub at [api/index.md](../api/index.md) and module pages. Kept for reference only. Use the keyword index for concept-based lookup and the CLI page for command usage.
 
 ## Core data structures
 ::: foodspec.core.dataset.FoodSpectrumSet

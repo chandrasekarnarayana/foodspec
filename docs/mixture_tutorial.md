@@ -50,12 +50,27 @@ print("RMSE:", np.sqrt(mean_squared_error(mixture_spectrum, pred)))
 ```
 Interpretation: small RMSE and high R² indicate good reconstruction; inspect residuals for bias.
 
+### Minimal workflow (Python)
+```python
+from foodspec.data import load_example_oils
+from foodspec.apps.protocol_validation import run_protocol_benchmarks
+
+# For a quick synthetic calibration/mixture check, use protocol benchmarks or build your own:
+fs_mix = load_example_oils()  # replace with actual mixtures; ensure pure spectra are available
+# Extract features or use raw spectra, then apply nnls_mixture/mcr_als as above
+```
+
+Recommended plots: predicted vs true fraction, residuals, recovered pure spectra overlays.  
+Preprocessing links: [Baseline](preprocessing/baseline_correction.md), [Normalization](preprocessing/normalization_smoothing.md).  
+Stats links: [ANOVA/hypothesis testing](stats/hypothesis_testing_in_food_spectroscopy.md) for group comparisons; [Nonparametric](stats/nonparametric_methods_and_robustness.md) if assumptions fail.  
+Reproducibility: [Checklist](protocols/reproducibility_checklist.md), [Reporting](reporting_guidelines.md).
+
 ## Reporting guidance
 - **Main figures**: predicted vs true fraction plot; residual plot.  
 - **Supplementary**: recovered pure spectra (S), concentration profiles (C), detailed RMSE/MAE tables.  
 - State assumptions (linear mixing, non-negativity) and wavenumber range used; include any calibration/validation split details.
 
 See also
-- [metrics_interpretation.md](metrics_interpretation.md)
-- [stats_tests.md](stats_tests.md)
-- [api_reference.md](api_reference.md)
+- [Metrics & evaluation](metrics/metrics_and_evaluation.md)
+- [Nonparametric & robustness](stats/nonparametric_methods_and_robustness.md)
+- [API index](api/index.md)

@@ -61,6 +61,6 @@ To apply the saved model, load it in Python (as above) and predict on a new HDF5
 
 See also
 - `cli.md`
-- `metrics_interpretation.md`
+- `metrics/metrics_and_evaluation.md`
 - `methodsx_protocol.md`
 - `oil_auth_tutorial.md`

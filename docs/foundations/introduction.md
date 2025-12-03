@@ -8,6 +8,17 @@ FoodSpec is a headless, research-grade toolkit for Raman, FTIR, and NIR spectros
 - How to navigate Parts I–VI and the appendices.
 - The data and metadata assumptions baked into the library.
 
+## Mathematical background & prerequisites
+- **Linear algebra:** covariance matrices, eigenvalues/eigenvectors (for PCA/PLS), vector norms.
+- **Statistics:** basic probability, p-values, confidence intervals, effect sizes.
+- **Signals:** smoothing/derivatives, baseline drift notions.
+- The docs keep math light; every concept has code examples and defaults. You can follow workflows without deep math; cross-links point to theory sections for more detail.
+
+See also:
+- PCA/PLS math sketch in [PCA & dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)
+- Baseline/normalization math boxes in [Preprocessing](../preprocessing/baseline_correction.md) and [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
+- Stats assumptions and tests in [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md) and [Nonparametric methods](../stats/nonparametric_methods_and_robustness.md)
+
 ## How to use this book
 1. **If you are new to vibrational spectroscopy:** Start with Part I (Foundations), especially [Spectroscopy basics](spectroscopy_basics.md), then skim Part II on preprocessing.
 2. **If you are an ML/DS practitioner:** Skim Part I for units/conventions, focus on Parts II–III, then jump to workflows in Part IV.

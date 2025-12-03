@@ -1,5 +1,4 @@
-"""
-High-level plotting helpers for common FoodSpec visualizations.
+"""High-level plotting helpers for common FoodSpec visualizations.
 
 All functions return a Matplotlib Axes for further customization.
 """
@@ -260,3 +259,99 @@ def plot_residuals(y_true: np.ndarray, y_pred: np.ndarray, ax=None):
     ax.set_xlabel("Predicted")
     ax.set_ylabel("Residual (true - pred)")
     return ax
+
+
+def plot_calibration_with_ci(
+    y_true,
+    y_pred,
+    ax=None,
+    *,
+    n_bootstrap: int = 500,
+    alpha: float = 0.05,
+    random_state: int | None = None,
+    title: Optional[str] = None,
+):
+    """Plot predicted vs true with a bootstrap confidence band around a linear fit.
+
+    Appropriate for calibration/regression to visualize bias and uncertainty.
+    """
+
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    ax = _get_ax(ax)
+
+    ax.scatter(y_true, y_pred, alpha=0.7, edgecolor="k", linewidth=0.5)
+    lims = [min(y_true.min(), y_pred.min()), max(y_true.max(), y_pred.max())]
+    ax.plot(lims, lims, "k--", label="1:1")
+
+    # Fit simple linear regression for trend
+    A = np.vstack([y_true, np.ones_like(y_true)]).T
+    coef, intercept = np.linalg.lstsq(A, y_pred, rcond=None)[0]
+    xx = np.linspace(*lims, 100)
+    yy = coef * xx + intercept
+
+    rng = np.random.default_rng(random_state)
+    n = len(y_true)
+    band = []
+    for _ in range(n_bootstrap):
+        idx = rng.integers(0, n, size=n)
+        coef_b, intercept_b = np.linalg.lstsq(A[idx], y_pred[idx], rcond=None)[0]
+        band.append(coef_b * xx + intercept_b)
+    band = np.asarray(band)
+    lo = np.quantile(band, alpha / 2, axis=0)
+    hi = np.quantile(band, 1 - alpha / 2, axis=0)
+
+    ax.plot(xx, yy, color="C1", label="Fit")
+    ax.fill_between(xx, lo, hi, color="C1", alpha=0.2, label=f"{int((1-alpha)*100)}% CI")
+    ax.set_xlabel("True")
+    ax.set_ylabel("Predicted")
+    ax.set_title(title or "Calibration with confidence band")
+    ax.legend()
+    ax.set_xlim(lims)
+    ax.set_ylim(lims)
+    return ax
+
+
+def plot_bland_altman(
+    y_true,
+    y_pred,
+    ax=None,
+    *,
+    ci_limits: bool = True,
+    alpha: float = 0.05,
+    title: Optional[str] = None,
+):
+    """Bland–Altman plot for agreement between predicted and reference values.
+
+    Appropriate for method comparison/agreement studies in analytical chemistry.
+    """
+
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    mean_vals = (y_true + y_pred) / 2
+    diff = y_pred - y_true
+    bias = diff.mean()
+    sd = diff.std(ddof=1)
+    loa_low = bias - 1.96 * sd
+    loa_high = bias + 1.96 * sd
+
+    ax = _get_ax(ax)
+    ax.scatter(mean_vals, diff, alpha=0.7, edgecolor="k", linewidth=0.5)
+    ax.axhline(bias, color="C1", label=f"Bias = {bias:.3f}")
+    if ci_limits:
+        ax.axhline(loa_low, color="C2", linestyle="--", label="Limits of agreement")
+        ax.axhline(loa_high, color="C2", linestyle="--")
+    ax.set_xlabel("Mean of methods")
+    ax.set_ylabel("Predicted - True")
+    ax.set_title(title or "Bland–Altman plot")
+    ax.legend()
+    return ax
+__all__ = [
+    "plot_spectra_overlay",
+    "plot_mean_with_ci",
+    "plot_correlation_heatmap",
+    "plot_regression_calibration",
+    "plot_residuals",
+    "plot_calibration_with_ci",
+    "plot_bland_altman",
+]

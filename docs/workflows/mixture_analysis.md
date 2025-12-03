@@ -58,6 +58,11 @@ Outputs: coefficients CSV, residuals, optional reconstruction plots.
 - Inspect residuals; large or structured residuals may indicate missing components or misalignment.
 - Main figure: predicted vs true scatter; Supplement: residual plots, spectra overlays.
 
+### Qualitative & quantitative interpretation
+- **Qualitative:** Overlay observed mixture vs NNLS reconstruction; residual should look like noise, not structured bands. Predicted vs true fractions plot should follow 1:1 line.
+- **Quantitative:** Report reconstruction RMSE/R²; residual norm from NNLS; optional permutation p_perm on between/within separation if visualizing embeddings of fractions/components. Link to [Metrics](../metrics/metrics_and_evaluation.md) and [Stats](../stats/overview.md) for regression diagnostics.
+- **Reviewer phrasing:** “NNLS reconstruction overlays the observed spectrum with RMSE = …; predicted fractions track true values (R² = …); residuals show no systematic misfit.”
+
 ## Summary
 - Use NNLS when pure references are available; otherwise MCR-ALS with chosen n_components.
 - Align wavenumbers and preprocess consistently before solving.

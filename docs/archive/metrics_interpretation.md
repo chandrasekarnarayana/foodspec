@@ -58,6 +58,9 @@ Interpretation: relate RMSE/MAE to allowable error; R² near 1 is good but inspe
 
 See also
 - [stats_tests.md](stats_tests.md)
-- [oil_auth_tutorial.md](oil_auth_tutorial.md)
-- [methodsx_protocol.md](methodsx_protocol.md)
-- [api_reference.md](api_reference.md)
+- [Oil authentication tutorial](../oil_auth_tutorial.md)
+- [MethodsX protocol](../protocols/methodsx_protocol.md)
+- [API index](../api/index.md)
+# Metrics interpretation (legacy)
+
+> **Status:** Legacy/archived. Superseded by the maintained page at `../metrics/metrics_and_evaluation.md`. Kept only for historical reference; use the main metrics chapter for current guidance.

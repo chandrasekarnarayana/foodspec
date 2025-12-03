@@ -13,6 +13,7 @@ Nonparametric tests and robustness checks help when normality or variance assump
 - **Wilcoxon signed-rank** (`run_wilcoxon_signed_rank`): paired samples, alternative to paired t-test.
 - **Kruskal–Wallis** (`run_kruskal_wallis`): >2 independent groups, alternative to one-way ANOVA.
 - **Friedman** (`run_friedman_test`): repeated measures across conditions (nonparametric ANOVA analogue).
+- **Games–Howell post-hoc** (`games_howell`): pairwise comparisons robust to unequal variances/sizes after ANOVA/Kruskal–Wallis.
 
 ### Example: Mann–Whitney U and Kruskal–Wallis
 ```python
@@ -86,5 +87,5 @@ Use cases:
 ## See also
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [Study design](study_design_and_data_requirements.md)
-- [Metrics & interpretation](../metrics_interpretation.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
 - [Stats API](../api/stats.md)

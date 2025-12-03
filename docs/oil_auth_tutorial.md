@@ -9,6 +9,8 @@ Questions this page answers
 ## Scientific question
 Determine oil type and detect adulteration using vibrational spectra.
 
+**Using vendor data?** If your spectra come from SPC/OPUS/JCAMP exports, ingest them first via `read_spectra` (see [Instrument & File Formats](user_guide/instrument_file_formats.md)), then run the same workflow steps below on the normalized `FoodSpectrumSet`.
+
 ## End-to-end example
 ### CLI path
 1) Convert CSV to library (wide format example):
@@ -48,11 +50,13 @@ print(result.cv_metrics.head())
 - Accuracy/macro F1 reflect overall performance; use stratified CV (default).  
 - Good accuracy is dataset-dependent; for clean lab spectra expect higher scores; for challenging/adulterated sets, report limitations.
 - Cross-validation reduces optimistic bias and shows variance across folds.
+- For metric definitions and model choices, see [Metrics & Evaluation](metrics/metrics_and_evaluation.md) and [ML & DL models](ml/models_and_best_practices.md). For data-quality issues (imbalance, low SNR, outliers), see [Troubleshooting](troubleshooting/common_problems_and_solutions.md).
 
 ## Reporting
 - Main text: overall accuracy/macro F1, confusion matrix figure, brief preprocessing/model description.  
 - Supplementary: per-class precision/recall/F1, feature importances/ratios, spectra examples, run metadata/configs.
 - For MethodsX/FAIR: include preprocessing steps (baseline, smoothing, normalization, crop), classifier choice, CV design, and dataset provenance.
+- See also: [Reproducibility checklist](protocols/reproducibility_checklist.md) and [Reporting guidelines](reporting_guidelines.md) for what to include in papers/reports.
 
 ## Optional: comparing ratios between oil types with statistical tests
 You can test whether a specific band ratio differs across oil types (useful for interpretation/papers).
@@ -74,6 +78,6 @@ Interpretation: a small p-value suggests at least one oil type has a different r
 
 See also
 - [csv_to_library.md](csv_to_library.md)
-- [metrics_interpretation.md](metrics_interpretation.md)
+- [Metrics & evaluation](metrics/metrics_and_evaluation.md)
 - [keyword_index.md](keyword_index.md)
 - [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)

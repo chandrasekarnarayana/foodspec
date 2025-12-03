@@ -2,6 +2,8 @@
 
 Baselines drift because of fluorescence, scattering, ATR contact, and instrument response. Poor baselines distort peak heights/areas and ratios. This chapter explains when and how to correct baselines in Raman/FTIR/NIR spectra.
 
+> For notation and symbols used below, see the [Glossary](../glossary.md).
+
 ## 1. Why baselines drift
 - **Fluorescence (Raman):** Broad background that can dwarf weak peaks.
 - **Scattering/contact (FTIR ATR):** Sloping backgrounds from poor contact or refractive-index mismatches.
@@ -15,7 +17,10 @@ Baselines drift because of fluorescence, scattering, ATR contact, and instrument
 
 ## 3. Methods in FoodSpec
 ### 3.1 Asymmetric Least Squares (ALS)
-- **Concept:** Fit a smooth baseline \( b \) minimizing \( \sum w_i (y_i - b_i)^2 + \lambda \sum (\Delta^2 b_i)^2 \) with asymmetric weights \( w_i \) to downweight peaks.
+> **Math box (ALS objective)**  
+> Minimize \( \sum_i w_i (y_i - b_i)^2 + \lambda \sum_i (\Delta^2 b_i)^2 \)  
+> with asymmetric weights \( w_i \) that down-weight peaks (controlled by \( p \)).
+- **Concept:** Fit a smooth baseline \( b \) minimizing the above objective with asymmetric weights to downweight peaks.
 - **Parameters:** `lambda_` (smoothness), `p` (asymmetry), `max_iter`.
 - **When to use:** Moderate to strong curvature; mixed peaks/baseline; widely used default.
 - **Pitfalls:** Over-smoothing if `lambda_` too large; peak clipping if `p` too small.
@@ -45,12 +50,17 @@ X_corr = als.transform(X_raw)
 ```
 
 ## 6. Visuals to include
-- Figure: Raw spectrum with fluorescence vs ALS-corrected and rubberband-corrected overlays.
-- Figure: Effect of polynomial degree on mild curvature.
+- **Baseline before/after (synthetic):** One spectrum with quadratic drift + noise. Show raw (with drift), true baseline, and corrected signal (e.g., subtract known baseline). Axes: wavenumber (cm⁻¹) vs intensity. Purpose: illustrate what a successful correction looks like. See `docs/examples/visualization/generate_baseline_before_after.py`.
+
+![Baseline before/after](../assets/baseline_before_after.png)
+
+- **Drift/noise illustration:** Overlay ideal spectrum, noisy spectrum, and drifted spectrum to show why correction is needed. Axes: wavenumber vs intensity. Generated via `docs/examples/stats/generate_spectral_artifacts_figures.py`.
 
 ![Illustrative spectra with baseline drift and noise](../assets/spectra_artifacts.png)
 
-*Figure: Synthetic spectra showing an ideal trace (blue), added noise (orange), and baseline drift (green). Baseline methods (ALS, rubberband, polynomial) aim to recover the underlying signal from the drifted/noisy observations. Generated via `docs/examples/stats/generate_spectral_artifacts_figures.py`.*
+## Reproducible figure generation
+- Run `python docs/examples/visualization/generate_baseline_before_after.py` for baseline before/after.
+- Run `python docs/examples/stats/generate_spectral_artifacts_figures.py` for drift/noise illustration.
 
 ## Summary
 - Baseline correction removes broad backgrounds that bias peak-based features.

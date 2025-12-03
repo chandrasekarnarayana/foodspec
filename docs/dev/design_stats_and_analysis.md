@@ -8,15 +8,20 @@ This document outlines the planned architecture, APIs, and documentation for a c
 - Offer clear, documented APIs with reproducibility in mind (configurable, metadata-aware).
 - Map methods to documentation chapters and figures for a textbook + protocol presentation.
 
+### Current implementation status
+- Implemented: t-tests (one/two-sample, paired), one-way ANOVA, MANOVA (with optional statsmodels), Tukey HSD, nonparametric (Kruskal–Wallis, Mann–Whitney U, Wilcoxon, Friedman), correlations (Pearson/Spearman, cross-correlation), effect sizes (Cohen’s d, eta/partial eta), robustness helpers (bootstrap/permutation), study design summaries.
+- Documented: stats theory chapters, nonparametric/robustness, metrics integration, workflow examples calling stats functions.
+- Future work: two-way ANOVA support and additional post-hoc corrections (Bonferroni/FDR) beyond Tukey; richer MANOVA diagnostics; more real-data examples for vendor-specific datasets.
+
 ## 2. Proposed package architecture
 - New subpackage: `foodspec.stats` with submodules:
-  - `hypothesis_tests`: t-tests (one-sample, two-sample, paired), ANOVA (one-way, two-way if feasible), MANOVA (via statsmodels if available), post-hoc (Tukey HSD). Nonparametric (Kruskal–Wallis) as optional/TODO.
+  - `hypothesis_tests`: t-tests (one-sample, two-sample, paired), ANOVA (one-way; two-way remains future work), MANOVA (via statsmodels if available), post-hoc (Tukey HSD). Nonparametric (Kruskal–Wallis, Mann–Whitney U, Wilcoxon, Friedman) implemented.
   - `correlations`: Pearson, Spearman, Kendall (optional), cross-correlation for sequences/time series (synchronous/asynchronous mapping), correlation heatmaps.
   - `effects`: Effect sizes (Cohen’s d, eta-squared, partial eta-squared), simple confidence intervals.
   - `design`: Study design summaries (group sizes, balance check, missingness), utility to warn when design is unsuitable for ANOVA/MANOVA.
 - Dependencies:
   - Prefer SciPy for basic tests (ttest, anova/KW).
-  - Statsmodels for MANOVA/Tukey HSD if available; otherwise provide informative ImportError/TODO.
+  - Statsmodels for MANOVA/Tukey HSD if available; otherwise emit clear ImportErrors explaining the optional dependency.
   - pandas/NumPy for data handling. Avoid heavy new deps.
 - API style:
   - Functions accept either raw arrays/Series/DataFrames **and** `FoodSpectrumSet` (using metadata columns for grouping).
@@ -28,10 +33,10 @@ This document outlines the planned architecture, APIs, and documentation for a c
 - Two-sample t-test (independent)
 - Paired t-test
 - One-way ANOVA
-- Two-way ANOVA (if design info is provided; otherwise TODO)
+- Two-way ANOVA (future work; design info needed)
 - MANOVA (via statsmodels MANOVA; optional if dependency present)
-- Post-hoc: Tukey HSD (via statsmodels); Bonferroni/FDR as TODO
-- Nonparametric: Kruskal–Wallis (baseline; extend with Wilcoxon/Friedman as TODO)
+- Post-hoc: Tukey HSD (via statsmodels); Bonferroni/FDR (future work)
+- Nonparametric: Kruskal–Wallis, Mann–Whitney U, Wilcoxon, Friedman implemented
 
 ### Correlations & mapping
 - Pearson, Spearman; Kendall optional.
@@ -57,7 +62,7 @@ This document outlines the planned architecture, APIs, and documentation for a c
 - `docs/stats/t_tests_effect_sizes_and_power.md`: t-tests, Cohen’s d, power considerations (outline).
 - `docs/stats/correlation_and_mapping.md`: Pearson/Spearman, cross-correlation for time series, interpretation in food contexts.
 - `docs/stats/study_design_and_data_requirements.md`: replication, balance vs unbalance, randomization, link to instrument noise/drift.
-- `docs/stats/nonparametric_methods_and_robustness.md`: outline/TODO for Kruskal–Wallis, Wilcoxon, robustness to outliers.
+- `docs/stats/nonparametric_methods_and_robustness.md`: covers Kruskal–Wallis, Wilcoxon, Mann–Whitney U, Friedman, and robustness via bootstrap/permutation.
 - Add a short “How to explore the API” section (API hub + keyword index) referencing `foodspec.stats`.
 
 ## 6. Data acquisition & study design chapter
@@ -72,7 +77,7 @@ This document outlines the planned architecture, APIs, and documentation for a c
 
 ## 8. Minimal scaffolding (code)
 - Add `src/foodspec/stats/__init__.py` as a placeholder.
-- Add stubs: `hypothesis_tests.py`, `correlations.py`, `effects.py`, `design.py` with module docstrings and TODO markers. No heavy logic yet.
+- Core modules implemented (`hypothesis_tests.py`, `correlations.py`, `effects.py`, `design.py`, robustness helpers) with documented APIs; future extensions limited to two-way ANOVA and additional post-hoc corrections.
 
 ## 9. Integration points
 - Functions should accept `FoodSpectrumSet` and group columns; use metadata to subset/group.

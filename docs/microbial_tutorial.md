@@ -48,6 +48,6 @@ print(res.cv_metrics.head())
 
 See also
 - [domains_overview.md](domains_overview.md)
-- [metrics_interpretation.md](metrics_interpretation.md)
+- [Metrics & evaluation](metrics/metrics_and_evaluation.md)
 - [oil_auth_tutorial.md](oil_auth_tutorial.md)
-- [methodsx_protocol.md](methodsx_protocol.md)
+- [methodsx_protocol.md](protocols/methodsx_protocol.md)

@@ -1,5 +1,7 @@
 # Machine learning models in foodspec
 
+> **Status:** Legacy/archived. This page is superseded by `../ml/models_and_best_practices.md` and the mkdocstrings API pages. Retained here for historical reference.
+
 Questions this page answers
 - Which models are available and when to use them?
 - How do I invoke them via foodspec (classifier_name/run_pca)?
@@ -57,7 +59,11 @@ Questions this page answers
 - Mention preprocessing and features (baseline/smoothing/normalization, peaks/ratios).
 
 See also
-- [metrics_interpretation.md](metrics_interpretation.md)
-- [oil_auth_tutorial.md](oil_auth_tutorial.md)
-- [methodsx_protocol.md](methodsx_protocol.md)
-- [api_reference.md](api_reference.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
+- [Oil authentication tutorial](../oil_auth_tutorial.md)
+- [MethodsX protocol](../protocols/methodsx_protocol.md)
+- [API index](../api/index.md)
+# ML models (legacy)
+
+> **Status: Legacy / Archived**  
+> This page has been superseded by [Models & best practices](../ml/models_and_best_practices.md) and [Classification & regression](../ml/classification_regression.md). It is kept for historical reference.

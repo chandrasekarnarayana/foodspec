@@ -9,7 +9,7 @@ Uses SciPy/statsmodels under the hood to avoid reimplementing core statistics.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -19,10 +19,12 @@ try:
     import statsmodels.api as sm
     from statsmodels.multivariate.manova import MANOVA
     from statsmodels.stats.multicomp import pairwise_tukeyhsd
+    from statsmodels.stats.multicomp import pairwise_gameshowell
 except ImportError:  # pragma: no cover
     sm = None
     MANOVA = None
     pairwise_tukeyhsd = None
+    pairwise_gameshowell = None
 
 from foodspec.core.dataset import FoodSpectrumSet
 
@@ -204,6 +206,80 @@ def run_tukey_hsd(values, groups, alpha: float = 0.05) -> pd.DataFrame:
         }
     )
     return tbl
+
+
+def games_howell(values, groups, alpha: float = 0.05) -> pd.DataFrame:
+    """
+    Run Games–Howell post-hoc comparisons (robust to unequal variances/sizes).
+
+    Parameters
+    ----------
+    values : array-like
+        Numeric observations (e.g., ratios or peak intensities).
+    groups : array-like
+        Group labels of the same length as ``values`` (>=2 groups).
+    alpha : float, optional
+        Significance level, by default 0.05.
+
+    Returns
+    -------
+    pd.DataFrame
+        Pairwise comparisons with mean difference, adjusted p-value, confidence
+        intervals, and reject flag. Falls back to a Welch-style computation if
+        statsmodels' ``pairwise_gameshowell`` is unavailable.
+    """
+
+    vals = np.asarray(values)
+    grps = np.asarray(groups)
+    if vals.shape[0] != grps.shape[0]:
+        raise ValueError("values and groups must have the same length")
+
+    if pairwise_gameshowell is not None:
+        res = pairwise_gameshowell(endog=vals, groups=grps, alpha=alpha)
+        tbl = pd.DataFrame(
+            {
+                "group1": res.groupsunique[res._multicomp.pairindices[0]],
+                "group2": res.groupsunique[res._multicomp.pairindices[1]],
+                "meandiff": res.meandiffs,
+                "p_adj": res.pvalues,
+                "lower": res.confint[:, 0],
+                "upper": res.confint[:, 1],
+                "reject": res.reject,
+            }
+        )
+        return tbl
+
+    # Fallback: Welch-style approximation using t distribution
+    results: list[Tuple[str, str, float, float, float, float, bool]] = []
+    for i, gi in enumerate(np.unique(grps)):
+        vi = vals[grps == gi]
+        ni = len(vi)
+        mi = np.mean(vi)
+        si2 = np.var(vi, ddof=1)
+        for gj in np.unique(grps)[i + 1 :]:
+            vj = vals[grps == gj]
+            nj = len(vj)
+            mj = np.mean(vj)
+            sj2 = np.var(vj, ddof=1)
+            diff = mi - mj
+            se = np.sqrt(si2 / ni + sj2 / nj)
+            t_stat = np.abs(diff) / se
+            df_num = (si2 / ni + sj2 / nj) ** 2
+            df_den = (si2**2) / (ni**2 * (ni - 1)) + (sj2**2) / (nj**2 * (nj - 1))
+            df = df_num / df_den
+            p_val = stats.t.sf(t_stat, df) * 2
+            # Simple CI using t critical
+            t_crit = stats.t.ppf(1 - alpha / 2, df)
+            half_width = t_crit * se
+            lower = diff - half_width
+            upper = diff + half_width
+            reject = p_val < alpha
+            results.append((gi, gj, diff, p_val, lower, upper, reject))
+
+    return pd.DataFrame(
+        results,
+        columns=["group1", "group2", "meandiff", "p_adj", "lower", "upper", "reject"],
+    )
 
 
 def run_mannwhitney_u(

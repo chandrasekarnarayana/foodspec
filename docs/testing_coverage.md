@@ -14,9 +14,14 @@ With coverage (if configured):
 pytest --cov=foodspec
 ```
 
-## Current status
-- Approximate coverage: ~91% (as of latest run).
-- Scope: core data models, preprocessing, features, chemometrics, apps, CLI workflows, IO, viz, and optional deep-path guards.
+## Current status (latest run)
+- Approximate coverage: **~90%** (`pytest --cov`, Python 3.12).
+- Well covered: core data models, preprocessing (baseline/smoothing/normalization/derivatives), features (peaks/bands/ratios), metrics, viz, CLI workflows, protocol validation, model registry, robustness helpers.
+- Partially covered but acceptable: chemometrics deep/MLP, vendor IO loaders (SPC/OPUS/JCAMP), some stats branches (hypothesis_tests/correlations edge cases), public data loaders for vendor formats.
+- Gaps / future work:
+  - Add mocks/fixtures to raise IO/base/core/text/vendor coverage.
+  - Exercise more branches in stats (alternative tails, assumption checks) and preprocess (baseline/normalization edge cases).
+  - Deep-learning paths beyond smoke tests only if DL becomes first-class.
 
 ## Why high coverage matters
 - Protocol-oriented library: small regressions can invalidate published pipelines.

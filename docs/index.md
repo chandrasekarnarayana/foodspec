@@ -2,6 +2,11 @@
 
 foodspec is a headless, research-grade Python toolkit for Raman and FTIR spectroscopy in food science. It provides unified data models for 1D spectra and hyperspectral cubes, reproducible preprocessing pipelines, feature extraction, chemometrics, and turnkey workflows such as oil authentication, heating degradation, and mixture modeling.
 
+### Why FoodSpec (short back-cover)
+Fragmented vendor formats, ad-hoc preprocessing, and irreproducible scripts slow down food spectroscopy. FoodSpec standardizes data into `FoodSpectrumSet`/HDF5 libraries, ships end-to-end workflows (oil, heating, QC), statistical tools, and reporting helpers. These docs serve both as teaching material and protocol-grade documentation.
+
+> **Version / stability:** Current release v0.2.x — core preprocessing/stats/workflows are stable; APIs are still expanding. Contributors: see [Developer Notes / Coding Standards](dev/developer_notes.md).
+
 ## Who is it for?
 - Food scientists and analytical chemists working with Raman/FTIR/NIR data.
 - Data scientists who want a clean, sklearn-style API for spectral analysis.
@@ -57,9 +62,10 @@ The development of **foodspec** draws upon the collective strength of interdisci
 - [Getting started](getting_started.md) – installation, basic examples, how to load data.  
 - [Libraries](libraries.md) – building and loading spectral libraries, public dataset loaders.  
 - [Validation & chemometrics](validation_chemometrics_oils.md) – PCA and oil-authentication workflows.  
-- [MethodsX protocol](methodsx_protocol.md) – mapping between foodspec commands and the MethodsX article.  
+- [MethodsX protocol](protocols/methodsx_protocol.md) – mapping between foodspec commands and the MethodsX article.  
 - [Citing foodspec](citing.md) – how to cite the software and the protocol paper.
  - [Instrument & file formats](user_guide/instrument_file_formats.md) – how to load CSV/JCAMP/SPC/OPUS exports into FoodSpec.
+- **If you are a reviewer/methods user:** follow the path → Foundations → IO/Preprocessing → Workflows → MethodsX protocol → Reproducibility checklist → Reporting guidelines; key API references are under `api/`.
 
 ## Project Intention & Philosophy
 - **Core principles**: open, clear, reproducible workflows; strong scientific grounding (physics + chemistry + statistics + ML); real-world usability in labs and QA/QC; interpretability and transparency; accessible to beginners and experts.

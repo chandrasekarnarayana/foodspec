@@ -23,6 +23,14 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
 - **Atmospheric lines:** Water/CO₂ in FTIR; remove or account for them in preprocessing.
 - **Noise & scatter:** Instrument noise, cosmic rays (Raman spikes), path-length/contact variation.
 
+## 3a. Vibrational modes and spectral signatures
+- **Stretching vs bending:** stretching changes bond length; bending changes bond angles. Raman favors polarizability changes (e.g., C=C), FTIR favors dipole changes (e.g., O–H).
+- **Food-relevant bands (cm⁻¹, illustrative):**
+  - **FTIR synthetic example (generated via `generate_synthetic_ftir_spectrum`):** O–H stretch (~3300), C–H stretches (2800–3000), ester C=O (~1740), CH₂ bend (~1450), C–O stretch (~1050), fingerprint 800–1500. Plot wavenumber vs absorbance and label each band with the mode and a food interpretation (e.g., ester C=O in lipids).
+  - **Raman synthetic example (generated via `generate_synthetic_raman_spectrum`):** discrete peaks at ~717 (C–C stretch), 1265 (cis =C–H bend), 1440 (CH₂ bend), 1655 (C=C stretch). Annotate peaks and note how intensity shifts relate to unsaturation/saturation.
+- **Interpretation:** shifts or intensity changes in these bands map to composition (unsaturation, ester content, moisture). Synthetic plots (see plotting helpers) mirror real bands observed in oils/fats.
+- For notation/abbreviations, see the [Glossary](../glossary.md). For a practical bands/ratios guide, see [Feature extraction](../preprocessing/feature_extraction.md#how-to-choose-bands-and-ratios-decision-mini-guide).
+
 ## 4. Sampling and instrument notes
 - Laser wavelength (Raman) affects fluorescence and penetration; ATR crystal choice (FTIR) affects depth of penetration.
 - Resolution: finer spacing yields more data points but may increase noise.

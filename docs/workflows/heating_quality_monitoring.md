@@ -65,6 +65,11 @@ Outputs: ratio CSV, optional ANOVA CSV, ratio_vs_time.png, report.md.
 - If groups (oil types) exist, compare trends or ANOVA at endpoints.
 - Main figure: ratio vs time with fitted line. Supplement: ANOVA table, spectra snapshots.
 
+### Qualitative & quantitative interpretation
+- **Qualitative:** Ratio vs time plots reveal whether degradation markers rise/fall; optional PCA scores can show separation of early vs late stages.
+- **Quantitative:** Report slope/p-value and R² from trend models; ANOVA/ANCOVA p-values and effect sizes for grouped stages (see [ANOVA/MANOVA](../stats/anova_and_manova.md)); silhouette on PCA (if used) for stage structure.
+- **Reviewer phrasing:** “The unsaturation ratio decreases with heating time (slope = …, p < …); grouped ANOVA confirms stage differences (p < …); PCA shows partial separation of early vs late stages (silhouette ≈ …).”
+
 ## Summary
 - Track unsaturation/oxidation markers via ratios over time/temperature.
 - Use simple linear models; verify significance and direction of trends.

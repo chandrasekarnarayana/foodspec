@@ -20,6 +20,7 @@
   - A minimal code example using realistic shapes/inputs.
 - Every concept should appear as: theory → code example → figure → workflow → API reference.
 - Narrative docs must explain the “why,” not just the “how,” and connect to food spectroscopy use cases.
+- **Docstring style:** Use NumPy or Google style consistently; include type hints. Add “See also” pointing to narrative chapters/workflows when useful.
 
 ## 4. Testing Standards
 - Use pytest; keep tests small, isolated, and fast.
@@ -60,7 +61,12 @@
   - `mkdocs build` to catch doc/link issues.
   - (Optional) `ruff` or other linters if configured.
 
-## 9. Developer Roadmap (High-Level)
+## 9. Architecture overview (high level)
+- **Data layer:** `FoodSpectrumSet` / `HyperSpectralCube`, HDF5 libraries, I/O (CSV/JCAMP/vendor) normalize all inputs to a common representation.
+- **Analysis layer:** preprocessing (baseline, smoothing, normalization, scatter/ATR/atmos), features (peaks/bands/ratios), stats (parametric/nonparametric/robustness), metrics, ML/chemometrics.
+- **Workflow/CLI layer:** domain apps (oils, heating, mixtures, QC, hyperspectral), CLI commands, reporting/export helpers, reproducibility configs.
+
+## 10. Developer Roadmap (High-Level)
 - Harden vendor IO: more mocks/fixtures and examples for SPC/OPUS/JCAMP; ensure graceful fallbacks remain.
 - Raise coverage on IO/stats edge branches and preprocessing corner cases; consider lightweight linting CI.
 - Enrich interpretability: RF importances, PLS loadings, and domain-focused visuals embedded in docs/workflows.

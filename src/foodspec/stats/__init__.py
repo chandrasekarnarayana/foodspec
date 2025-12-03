@@ -8,7 +8,13 @@ groups (e.g., oil types), assess correlations (e.g., ratios vs heating time),
 and summarize study design balance.
 """
 
-from foodspec.stats.hypothesis_tests import run_ttest, run_anova, run_manova, run_tukey_hsd
+from foodspec.stats.hypothesis_tests import (
+    run_ttest,
+    run_anova,
+    run_manova,
+    run_tukey_hsd,
+    games_howell,
+)
 from foodspec.stats.correlations import (
     compute_correlations,
     compute_correlation_matrix,
@@ -29,6 +35,7 @@ __all__ = [
     "run_anova",
     "run_manova",
     "run_tukey_hsd",
+    "games_howell",
     "compute_correlations",
     "compute_correlation_matrix",
     "compute_cross_correlation",

@@ -11,6 +11,8 @@ Questions this page answers:
 - Predictive models help with authentication, adulteration detection, spoilage identification, calibration of continuous properties, and QC flagging.
 - FoodSpec provides well-scoped classical models and an optional deep model, all evaluated via `foodspec.metrics` and visualized with `foodspec.viz`.
 
+> Working with CV, p-values, or effect sizes to compare models? See Stats: [Overview](../stats/overview.md), [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [Nonparametric methods](../stats/nonparametric_methods_and_robustness.md), [Effect sizes/power](../stats/t_tests_effect_sizes_and_power.md), and [Study design](../stats/study_design_and_data_requirements.md).
+
 See also:
 - Preprocessing & chemometrics: [baseline, normalization, PCA](../preprocessing/feature_extraction.md)
 - Metrics & evaluation: [metrics/metrics_and_evaluation.md](../metrics/metrics_and_evaluation.md)

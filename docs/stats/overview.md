@@ -2,6 +2,8 @@
 
 This page summarizes the statistical tools available in FoodSpec and where to use them. Use it as a quick map from common questions to recommended methods, functions, and workflows.
 
+> For notation and symbols, see the [Glossary](../glossary.md).
+
 ## Questions → Approaches
 | Question | Recommended approach | Functions | Example workflow |
 | --- | --- | --- | --- |

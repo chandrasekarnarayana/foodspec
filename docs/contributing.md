@@ -23,5 +23,6 @@ pytest
 - Follow existing type hints and sklearn-like patterns.
 - Keep tests deterministic (no network) and add coverage for new public APIs.
 - Update docs when adding user-facing features or CLI flags.
+- For coding standards and architecture, see [Developer Notes](dev/developer_notes.md).
 
 Contact: chandrasekarnarayana@gmail.com for coordination or questions.

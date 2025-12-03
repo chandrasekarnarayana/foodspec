@@ -12,7 +12,7 @@ This chapter revisits t-tests for two-group comparisons, introduces effect sizes
 - **Cohen’s d:** Standardized mean difference.
   - Pooled SD: \( d = (\bar{x}_1 - \bar{x}_2)/s_p \).
   - Interpret alongside p-values to gauge magnitude.
-- **Confidence intervals:** Provide uncertainty around d if needed (not yet implemented; TODO).
+- **Confidence intervals:** Not computed directly in FoodSpec; use bootstrap resampling (e.g., `bootstrap_metric` on Cohen’s d) to obtain empirical CIs, or rely on external stats libraries if analytic CIs are required.
 
 ## Power (qualitative)
 - Influenced by effect size, variance, sample size, and significance level.
