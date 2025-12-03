@@ -1,6 +1,6 @@
 # Developer Notes / Coding Standards
 
-![FoodSpec logo](../assets/foodspec_logo.png)
+<img src="../assets/foodspec_logo.png" alt="FoodSpec logo" width="200" />
 
 ## 1. Purpose of This Document
 - Provide clear guidance for contributors and maintainers on how to write, document, and test foodspec code.

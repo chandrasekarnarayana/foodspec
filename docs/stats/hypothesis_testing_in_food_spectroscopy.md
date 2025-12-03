@@ -36,7 +36,7 @@ Hypothesis tests answer questions like “Are mean ratios different across oil t
 
 ## Decision aid: Which test?
 ```mermaid
-flowchart TD
+flowchart LR
   A[Compare means?] --> B{Groups = 1?}
   B -->|Yes| C[One-sample t-test]
   B -->|No| D{Groups = 2?}

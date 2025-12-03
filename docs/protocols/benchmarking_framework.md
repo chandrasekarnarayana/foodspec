@@ -8,7 +8,7 @@ This framework standardizes how to compare preprocessing and modeling pipelines 
 - Produce sharable reports (metrics.json, confusion matrices, plots, run_metadata.json).
 
 ```mermaid
-flowchart TD
+flowchart LR
   A[Select datasets/tasks] --> B[Define pipelines (preproc+model variants)]
   B --> C[Run benchmarks (CLI/API)]
   C --> D[Collect artifacts (metrics, plots, metadata)]

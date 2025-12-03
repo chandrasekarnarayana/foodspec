@@ -1,6 +1,6 @@
 # foodspec
 
-![FoodSpec logo](docs/assets/foodspec_logo.png)
+<img src="docs/assets/foodspec_logo.png" alt="FoodSpec logo" width="200" />
 
 > **Headless, research-grade Python toolkit for Raman and FTIR spectroscopy in food science.**  
 > Built around clear data models, reproducible preprocessing, feature extraction, chemometrics, and domain workflows.

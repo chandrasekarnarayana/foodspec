@@ -42,7 +42,7 @@ See also:
 
 ### Model selection flowchart
 ```mermaid
-flowchart TD
+flowchart LR
     A[What is your task?] --> B[Classification]
     A --> C[Regression / Calibration]
 

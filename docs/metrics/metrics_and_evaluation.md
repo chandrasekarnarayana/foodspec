@@ -78,17 +78,18 @@ if "roc_curve" in res:
 
 ### Metrics selection flowchart
 ```mermaid
-flowchart TD
-    A[What type of task?] --> B[Classification]
+%%{init: {'theme':'neutral', 'themeVariables': { 'primaryColor': '#e8f0ff', 'secondaryColor': '#fbe9e7', 'lineColor': '#1f3044' }}}%%
+flowchart LR
+    A([❓ Task type]) --> B[Classification]
     A --> C[Regression]
 
-    B --> B1{Class imbalance?}
-    B1 -->|No| B2[Accuracy + F1 + Confusion Matrix]
-    B1 -->|Yes| B3[Precision–Recall, F1, ROC–AUC, Confusion Matrix]
+    B --> B1{{Class imbalance?}}
+    B1 -->|No| B2[👍 Accuracy + F1 + Confusion Matrix]
+    B1 -->|Yes| B3[⚖️ Precision–Recall, F1, ROC–AUC, Confusion Matrix]
 
-    C --> C1{Calibration focus?}
-    C1 -->|Yes| C2[RMSE, R², Calibration plot, Residuals]
-    C1 -->|No| C3[MAE, MAPE, R²]
+    C --> C1{{Calibration focus?}}
+    C1 -->|Yes| C2[📈 RMSE, R², Calibration plot, Residuals]
+    C1 -->|No| C3[📊 MAE, MAPE, R²]
 ```
 
 For practical examples with real models, see [Machine Learning & Deep Learning Models](../ml/models_and_best_practices.md).

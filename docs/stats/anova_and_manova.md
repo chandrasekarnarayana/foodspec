@@ -112,12 +112,23 @@ print(mv_res.pvalue)
 
 ## Decision aid: Is ANOVA appropriate?
 ```mermaid
-flowchart TD
-  A[Groups >= 3?] --> B{Normality/homoscedasticity reasonable?}
-  B -->|Yes| C[ANOVA → Tukey]
-  B -->|No| D{Transform or nonparametric?}
-  D -->|Transform| E[Reassess assumptions]
-      D -->|Nonparametric| F[Kruskal–Wallis / Games–Howell (see Nonparametric methods)]
+%%{init: {'theme':'neutral', 'themeVariables': { 'primaryColor': '#e8f0ff', 'secondaryColor': '#fbe9e7', 'tertiaryColor': '#e8f5e9', 'lineColor': '#1f3044' }}}%%
+flowchart LR
+  subgraph Assess
+    A([📊 Groups ≥ 3?])
+    B{{Assumptions: normality & equal variances?}}
+  end
+  subgraph Parametric
+    C([✔️ ANOVA → Tukey HSD])
+  end
+  subgraph Robust
+    D{{Transform or nonparametric?}}
+    E([🔁 Transform & reassess])
+    F([🛡️ Kruskal–Wallis / Games–Howell])
+  end
+  A --> B --> C
+  B -->|No| D -->|Transform| E
+  D -->|Nonparametric| F
 ```
 
 ## Reporting (MethodsX tone)

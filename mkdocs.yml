@@ -26,6 +26,8 @@ plugins:
       enable_creation_date: false
       type: datetime
       timezone: UTC
+extra_css:
+  - assets/logo.css
 
 nav:
   - Overview:

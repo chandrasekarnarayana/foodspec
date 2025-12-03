@@ -4,7 +4,7 @@ Use these flowcharts to choose preprocessing and models based on spectral issues
 
 ## Preprocessing chooser
 ```mermaid
-flowchart TD
+flowchart LR
   A[Raw spectra] --> B{Baseline drift/fluorescence?}
   B -->|Yes| C[Apply baseline correction (ALS or rubberband)]
   B -->|No| D{High noise?}
@@ -18,7 +18,7 @@ flowchart TD
 
 ## Model chooser
 ```mermaid
-flowchart TD
+flowchart LR
   A[Features ready] --> B{Task?}
   B -->|Classification| C{Data size / separability}
   C -->|Small / linear-ish| D[PLS-DA or Logistic/Linear SVM]

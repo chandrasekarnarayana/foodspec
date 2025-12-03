@@ -26,7 +26,7 @@ Good statistical practice starts with good design. This chapter summarizes repli
 
 ## Design suitability for ANOVA/MANOVA
 ```mermaid
-flowchart TD
+flowchart LR
   A[Design check] --> B{>= 2-3 reps per group?}
   B -->|No| C[Increase replication or rethink test]
   B -->|Yes| D{Balanced groups?}

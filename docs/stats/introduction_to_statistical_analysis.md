@@ -36,7 +36,7 @@ print(res.summary)
 
 ## Decision aid: tests vs models
 ```mermaid
-flowchart TD
+flowchart LR
   A[Question] --> B{Compare means?}
   B -->|Yes| C{Groups > 2?}
   C -->|No| D[t-test]

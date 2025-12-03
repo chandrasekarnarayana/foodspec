@@ -58,7 +58,7 @@ plt.close(fig)
 
 ## Decision aid: Pearson vs Spearman
 ```mermaid
-flowchart TD
+flowchart LR
   A[Association?] --> B{Linear & continuous?}
   B -->|Yes| C[Pearson]
   B -->|No| D{Monotonic ranks?}
