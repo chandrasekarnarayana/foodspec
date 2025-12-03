@@ -30,6 +30,10 @@ __all__ = [
     "check_missing_metadata",
     "generate_synthetic_raman_spectrum",
     "generate_synthetic_ftir_spectrum",
+    "LOGO_BASE64",
+    "get_logo_bytes",
+    "get_logo_base64",
+    "save_logo",
 ]
 
 # Single source of truth for the package version.
@@ -37,6 +41,7 @@ __version__ = "0.2.0"
 
 from .core.dataset import FoodSpectrumSet
 from .core.hyperspectral import HyperSpectralCube
+from .logo import LOGO_BASE64, get_logo_base64, get_logo_bytes, save_logo
 from .io import (
     load_folder,
     load_library,
