@@ -44,6 +44,7 @@ gui = [
 web = [
   "fastapi>=0.110",
   "uvicorn[standard]>=0.23",
+  "httpx>=0.24",
 ]
 dev = [
   "black>=24.4.0",
@@ -54,6 +55,7 @@ dev = [
   "mkdocs-material>=9.5.0",
   "mkdocstrings-python>=1.10.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.0",
+  "httpx>=0.24",
 ]
 ml = [
   "xgboost>=1.7.0",

@@ -191,6 +191,10 @@ class RQAnalysisStep(Step):
             if feature_cols and label_col in df.columns:
                 X = df[feature_cols].astype(float).to_numpy()
                 y = df[label_col].astype(str).to_numpy()
+                class_counts = pd.Series(y).value_counts()
+                if (class_counts < 2).any():
+                    validation_metrics = None
+                    raise ValueError("Too few samples per class for CV; skipping validation metrics.")
                 groups = None
                 if self.cfg.get("validation_strategy") == "batch_aware" and self.cfg.get("batch_col") in df.columns:
                     groups = df[self.cfg.get("batch_col")].to_numpy()

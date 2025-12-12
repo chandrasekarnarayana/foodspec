@@ -202,10 +202,17 @@ class RatioQualityEngine:
         feature_cols = self._feature_columns(candidate_df=df)
         qc_context["n_samples"] = n_samples
         qc_context["n_features"] = len(feature_cols)
+        cv_allowed = True
         for label_col in [self.config.oil_col, self.config.matrix_col, self.config.heating_col]:
             if label_col in df.columns:
                 counts = df[label_col].value_counts(dropna=True)
                 qc_context[f"{label_col}_counts"] = counts
+                min_count = counts.min()
+                if pd.notna(min_count) and min_count < 2:
+                    cv_allowed = False
+                    warnings.append(
+                        f"Label '{label_col}' has <2 samples in a class; cross-validation metrics will be skipped."
+                    )
                 if counts.min() < max(2, self.config.n_splits):
                     warnings.append(f"Label '{label_col}' has very few samples in at least one class ({counts.min()}).")
                 if counts.nunique() < 2:
@@ -217,12 +224,29 @@ class RatioQualityEngine:
 
         df_ratios = self.compute_ratios(df)
         stability = self.compute_stability(df_ratios)
-        discrim, feat_imp = self.compute_discriminative_power(df_ratios)
+        discrim, feat_imp = (None, None)
+        if cv_allowed:
+            discrim, feat_imp = self.compute_discriminative_power(df_ratios)
         heating = self.compute_heating_trends(df_ratios)
         oil_vs_chips = self.compare_oil_vs_chips(df_ratios)
         norm_comp = self.compare_normalizations(df)
-        minimal_panel = self.compute_minimal_panel(df_ratios, feat_imp)
-        clustering = self.compute_clustering_metrics(df_ratios)
+        minimal_panel = self.compute_minimal_panel(df_ratios, feat_imp) if cv_allowed else None
+        clustering = self.compute_clustering_metrics(df_ratios) if cv_allowed else None
+        # normalize Nones to empty DataFrames for downstream text rendering
+        if discrim is None:
+            discrim = pd.DataFrame()
+        if feat_imp is None:
+            feat_imp = pd.DataFrame()
+        if norm_comp is None:
+            norm_comp = pd.DataFrame()
+        if heating is None:
+            heating = pd.DataFrame()
+        if oil_vs_chips is None:
+            oil_vs_chips = pd.DataFrame()
+        if minimal_panel is None:
+            minimal_panel = pd.DataFrame()
+        if clustering is None:
+            clustering = {}
         # Guardrails
         n_samples, n_features = df_ratios.shape
         if self.config.max_features and n_features > self.config.max_features:

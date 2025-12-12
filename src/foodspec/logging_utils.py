@@ -11,7 +11,7 @@ import logging
 import os
 import platform
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional
 
 
 def setup_logging(run_dir: Optional[Path] = None, level: int = logging.INFO) -> logging.Logger:
@@ -60,3 +60,26 @@ def setup_logging(run_dir: Optional[Path] = None, level: int = logging.INFO) -> 
         logger.info("psutil not available; memory snapshot skipped.")
 
     return logger
+
+
+def get_logger(logger_name: str | int = "foodspec", level: int = logging.INFO) -> logging.Logger:
+    """
+    Return the global FoodSpec logger, configuring it if needed.
+    """
+    if isinstance(logger_name, int):
+        level = logger_name
+        logger_name = "foodspec"
+    logger = logging.getLogger(logger_name)
+    if not logger.handlers:
+        setup_logging(level=level)
+    return logger
+
+
+def log_run_metadata(logger: logging.Logger, metadata: Dict) -> None:
+    """
+    Log key metadata for a run (protocol, inputs, etc.).
+    """
+    try:
+        logger.info("Run metadata: %s", metadata)
+    except Exception:
+        pass

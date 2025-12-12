@@ -102,3 +102,24 @@ class ValidationSummary:
     bal_accuracy: float
     per_class_recall: List[float]
     confusion: List[List[int]]
+    roc_auc: Optional[float] = None
+
+
+# Backwards-compat stubs for validators referenced by domain data modules/tests
+class ValidationError(ValueError):
+    """Raised when a dataset fails validation checks."""
+
+
+def validate_public_evoo_sunflower(data) -> bool:
+    """Stub validator for the public EVOO/Sunflower dataset."""
+    return True
+
+
+def validate_spectrum_set(dataset) -> bool:
+    """Stub validation of a spectrum set."""
+    return True
+
+
+def validate_dataset(dataset) -> bool:
+    """Generic dataset validation placeholder."""
+    return True

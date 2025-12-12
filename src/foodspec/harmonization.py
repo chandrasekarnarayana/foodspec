@@ -75,6 +75,8 @@ def harmonize_datasets_advanced(
         ds_h.spectra = interp
         ds_h.logs.append(f"advanced_harmonized_to_grid len={len(target_grid)}")
         ds_h.history.append({"step": "advanced_harmonize", "len_grid": len(target_grid)})
+        ds_h.instrument_meta.setdefault("harmonization_params", {})
+        ds_h.instrument_meta["harmonization_params"]["target_grid_len"] = len(target_grid)
         harmonized.append(ds_h)
 
     # Diagnostics: residual variation across instruments for overlapping samples
