@@ -117,7 +117,8 @@ def run_anova(data, groups) -> TestResult:
 
     Notes
     -----
-    Assumes normality and homogeneity of variance. For nonparametric, use Kruskal–Wallis (TODO).
+    Assumes normality and homogeneity of variance. For a nonparametric alternative, use
+    `run_kruskal(data, groups)`.
     """
 
     df = pd.DataFrame({"data": np.asarray(data), "group": np.asarray(groups)})

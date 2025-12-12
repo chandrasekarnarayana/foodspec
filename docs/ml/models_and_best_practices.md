@@ -40,6 +40,50 @@ See also:
 - **Conv1DSpectrumClassifier** (`foodspec.chemometrics.deep`): 1D CNN for spectra; optional extra dependency; useful when non-linear, local patterns matter. Use cautiously with limited data; cross-validate carefully. Normalize inputs and consider early stopping/dropout.
 - **MLP (conceptual)**: A fully connected network can approximate non-linear calibrations; benchmark against PLS and keep architectures small for limited datasets.
 
+## Plain-language guide to common models (for food scientists)
+
+- **Logistic regression (linear model)**  
+  What it does: fits a straight decision boundary using weighted sums of features (peaks/ratios/PCs).  
+  When to use: small datasets, roughly linear separation, need interpretable coefficients.  
+  When it struggles: highly non-linear class structure, unscaled features, severe imbalance.  
+  Math intuition: estimates \(p(y=1|x)=1/(1+e^{-(w^\top x+b)})\); weights \(w\) show band importance.  
+  Code: `make_classifier("logreg", class_weight="balanced")`.
+
+- **Support Vector Machines (SVM)**  
+  What it does: finds a maximum-margin boundary; RBF kernel bends that boundary for non-linearity.  
+  When to use: high-dimensional spectra, moderate samples, need strong baselines.  
+  When it struggles: extreme imbalance (without class weights), poor scaling, many overlapping classes.  
+  Math intuition: solves a margin optimization; kernel maps features to a higher-dimensional space.  
+  Code: `make_classifier("svm_linear")` or `make_classifier("svm_rbf", C=1.0, gamma="scale")`.
+
+- **Random Forest / Gradient Boosting / XGBoost / LightGBM (tree ensembles)**  
+  What they do: build many decision trees and average/boost them to capture non-linear interactions between bands/ratios.  
+  When to use: non-linear relationships, mixed feature types, need variable importance.  
+  When they struggle: extremely small datasets (risk of overfitting), very high noise without tuning.  
+  Math intuition: recursive splits that maximize class separation or reduce variance; boosting corrects previous errors.  
+  Code: `make_classifier("rf", n_estimators=300)`, `make_classifier("gboost")`, or optional `make_classifier("xgb")` / `"lgbm"` after `pip install foodspec[ml]`.
+
+- **PLS / PLS-DA (latent-factor models)**  
+  What it does: projects spectra into latent components that maximize covariance with target (continuous or class).  
+  When to use: calibration/regression, discriminant analysis with correlated bands.  
+  When it struggles: strong non-linear effects not captured by few components.  
+  Math intuition: decomposes \(X \approx T P^\top\) with scores \(T\) that align with response; components are orthogonal and capture shared variance.  
+  Code: `make_pls_regression(n_components=8)` or `make_pls_da(n_components=5)`.
+
+- **k-NN**  
+  What it does: compares each spectrum to its nearest neighbors in feature space.  
+  When to use: quick baseline, small datasets, intuitive behavior.  
+  When it struggles: high dimensionality without PCA, different scales, class imbalance.  
+  Math intuition: majority vote (classification) or average (regression) among k closest points.  
+  Code: `make_classifier("knn", n_neighbors=5)`.
+
+- **Deep models (Conv1D/MLP)**  
+  What they do: learn non-linear transformations directly from spectra.  
+  When to use: larger datasets, local spectral patterns expected.  
+  When they struggle: small datasets (overfit), limited interpretability, heavier tuning needs.  
+  Math intuition: stacked linear filters + non-linearities approximate complex functions.  
+  Code: see DL examples below; always benchmark vs classical models and report caution.
+
 ## 3. Choosing the right model
 
 ### Model selection flowchart

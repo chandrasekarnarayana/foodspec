@@ -1,0 +1,28 @@
+version: 1.0
+description: "NeXus-inspired schema for FoodSpec Raman/FTIR datasets"
+groups:
+  spectra:
+    datasets:
+      wn_axis:
+        shape: [N]
+        attrs:
+          units: "cm^-1"
+      intensities:
+        shape: [M, N]
+      sample_table:
+        type: "json"
+  instrument:
+    attrs:
+      instrument_id: ""
+      laser_wavelength_nm: ""
+      grating: ""
+      objective: ""
+      calibration: ""
+  preprocessing:
+    attrs:
+      history_json: ""
+  protocol:
+    attrs:
+      name: ""
+      version: ""
+      steps_json: ""

@@ -30,115 +30,52 @@ extra_css:
   - assets/logo.css
 
 nav:
-  - Overview:
-      - Home: index.md
-      - Getting started: getting_started.md
-      - Installation: installation.md
-      - Quickstart (Python): quickstart_python.md
-      - Quickstart (CLI): quickstart_cli.md
-  - Foundations:
-      - Foundations introduction: foundations/introduction.md
-      - Spectroscopy basics: foundations/spectroscopy_basics.md
-      - Food spectroscopy applications: foundations/food_spectroscopy_applications.md
-      - Data structures & FAIR principles: foundations/data_structures_and_fair_principles.md
-      - Dataset design: datasets/dataset_design.md
-  - IO & Data Handling:
-      - Instrument & file formats: user_guide/instrument_file_formats.md
-      - CSV → HDF5 pipeline: csv_to_library.md
-      - Libraries & public datasets: libraries.md
-  - Preprocessing & Feature Engineering:
-      - Raman/FTIR preprocessing (practical guide): ftir_raman_preprocessing.md
-      - Preprocessing guide: preprocessing_guide.md
-      - Baseline correction: preprocessing/baseline_correction.md
-      - Normalization & smoothing: preprocessing/normalization_smoothing.md
-      - Derivatives & feature enhancement: preprocessing/derivatives_and_feature_enhancement.md
-      - Scatter correction & cosmic rays: preprocessing/scatter_correction_cosmic_ray_removal.md
-      - Feature extraction: preprocessing/feature_extraction.md
-      - Plotting with FoodSpec: visualization/plotting_with_foodspec.md
-  - Metrics, ML & Chemometrics:
-      - Chemometrics guide: chemometrics_guide.md
-      - Metrics & evaluation: metrics/metrics_and_evaluation.md
-      - PCA & dimensionality reduction: ml/pca_and_dimensionality_reduction.md
-      - Classification & regression: ml/classification_regression.md
-      - Model evaluation & validation: ml/model_evaluation_and_validation.md
-      - Model interpretability: ml/model_interpretability.md
-      - Mixture models & fingerprinting: ml/mixture_models.md
-      - ML models & best practices: ml/models_and_best_practices.md
-      - Advanced deep learning: advanced_deep_learning.md
-  - Statistics:
-      - Stats overview: stats/overview.md
-      - Intro to statistical analysis: stats/introduction_to_statistical_analysis.md
-      - Hypothesis testing: stats/hypothesis_testing_in_food_spectroscopy.md
-      - ANOVA & MANOVA: stats/anova_and_manova.md
-      - t-tests, effect sizes, power: stats/t_tests_effect_sizes_and_power.md
-      - Correlation & mapping: stats/correlation_and_mapping.md
-      - Study design: stats/study_design_and_data_requirements.md
-      - Nonparametric methods & robustness: stats/nonparametric_methods_and_robustness.md
-  - Domain Workflows:
-      - Domains overview: domains_overview.md
-      - Designing & reporting workflows: workflows/workflow_design_and_reporting.md
-      - Standard templates: workflows/standard_templates.md
-      - Oil authentication: workflows/oil_authentication.md
-      - Heating quality monitoring: workflows/heating_quality_monitoring.md
-      - Mixture analysis: workflows/mixture_analysis.md
-      - Batch quality control: workflows/batch_quality_control.md
-      - Hyperspectral mapping: workflows/hyperspectral_mapping.md
-      - Calibration / regression example: workflows/calibration_regression_example.md
-      - Domain templates: workflows/domain_templates.md
-  - Protocols & Reproducibility:
-      - MethodsX protocol: protocols/methodsx_protocol.md
-      - Reproducibility checklist: protocols/reproducibility_checklist.md
-      - Benchmarking framework: protocols/benchmarking_framework.md
-      - Decision trees: protocols/decision_trees.md
-      - Protocol benchmarks: protocol_benchmarks.md
-      - Reporting guidelines: reporting_guidelines.md
-  - Visualization & Troubleshooting:
-      - Troubleshooting: troubleshooting/common_problems_and_solutions.md
-      - FAQ: troubleshooting_faq.md
-  - Configuration, Logging & Model Management:
-      - CLI reference: cli.md
-      - Config & logging: config_logging.md
-      - Model registry: model_registry.md
+  - Home: index.md
+  - Start Here (101):
+      - Installation: 01-getting-started/installation.md
+      - First steps (GUI): 01-getting-started/first-steps_gui.md
+      - First steps (CLI): 01-getting-started/first-steps_cli.md
+      - FAQ (basic): 01-getting-started/faq_basic.md
+  - Tutorials (201/301):
+      - Oil discrimination (basic): 02-tutorials/oil_discrimination_basic.md
+      - Oil vs chips matrix effects: 02-tutorials/oil_vs_chips_matrix_effects.md
+      - Thermal stability tracking: 02-tutorials/thermal_stability_tracking.md
+      - HSI surface mapping: 02-tutorials/hsi_surface_mapping.md
+      - End-to-end notebooks: 02-tutorials/end_to_end_notebooks.md
+  - Cookbook (201/301):
+      - Cookbook intro: 03-cookbook/cookbook_intro.md
+      - Preprocessing recipes: 03-cookbook/cookbook_preprocessing.md
+      - RQ questions & recipes: 03-cookbook/cookbook_rq_questions.md
+      - Validation recipes: 03-cookbook/cookbook_validation.md
+      - Registry & reporting: 03-cookbook/cookbook_registry_reporting.md
+      - Troubleshooting: 03-cookbook/cookbook_troubleshooting.md
+  - User Guide (401):
+      - Protocols & YAML: 04-user-guide/protocols_and_yaml.md
+      - GUI cockpit & wizard: 04-user-guide/gui_cockpit_guide.md
+      - CLI guide: 04-user-guide/cli_guide.md
+      - Data formats & HDF5: 04-user-guide/data_formats_and_hdf5.md
+      - Registry & plugins: 04-user-guide/registry_and_plugins.md
+      - Automated analysis: 04-user-guide/automation.md
+      - Protocol profiles: 04-user-guide/protocol_profiles.md
+      - Logging & diagnostics: 04-user-guide/logging.md
+  - Advanced Topics (501):
+      - Architecture: 05-advanced-topics/architecture.md
+      - HSI & harmonization: 05-advanced-topics/hsi_and_harmonization.md
+      - Validation strategies: 05-advanced-topics/validation_strategies.md
+      - Model lifecycle & prediction: 05-advanced-topics/model_lifecycle_and_prediction.md
+      - Web API & services: 05-advanced-topics/web_api_and_services.md
+  - Developer Guide (601):
+      - Contributing: 06-developer-guide/contributing.md
+      - Testing & CI: 06-developer-guide/testing_and_ci.md
+      - Extending protocols & steps: 06-developer-guide/extending_protocols_and_steps.md
+      - Writing plugins: 06-developer-guide/writing_plugins.md
+  - Theory & Background (701):
+      - Spectroscopy basics: 07-theory-and-background/spectroscopy_basics.md
+      - Chemometrics & ML basics: 07-theory-and-background/chemometrics_and_ml_basics.md
+      - RQ engine theory: 07-theory-and-background/rq_engine_theory.md
+      - Harmonization theory: 07-theory-and-background/harmonization_theory.md
   - Glossary: glossary.md
-  - Developer & Project Docs:
-      - Developer notes: dev/developer_notes.md
-      - Stats design & analysis plan: dev/design_stats_and_analysis.md
-      - Design overview: design_overview.md
-      - Vision & roadmap: design/01_overview.md
-      - Testing coverage: testing_coverage.md
-      - Contributing: contributing.md
-      - Releasing: releasing.md
-      - Citing FoodSpec: citing.md
-  - API reference:
-      - API index: api/index.md
-      - Core datasets: api/datasets.md
-      - Preprocessing: api/preprocessing.md
-      - Features: api/features.md
-      - Chemometrics & models: api/chemometrics.md
-      - ML helpers: api/ml.md
-      - Workflows: api/workflows.md
-      - IO & data: api/io.md
-      - Metrics: api/metrics.md
-      - Statistics: api/stats.md
-      - Keyword index & glossary: keyword_index.md
-  - Appendix:
-      - Supplementary:
-          - Validation (baseline): validation_baseline.md
-          - Validation (peak ratios): validation_peak_ratios.md
-          - Validation (chemometrics oils): validation_chemometrics_oils.md
-      - Legacy (archived):
-          - ML models (legacy): archive/ml_models.md
-          - Metrics interpretation (legacy): archive/metrics_interpretation.md
-          - Statistical tests (legacy): archive/stats_tests.md
-          - API reference (legacy hub): archive/api_reference.md
-          - API stubs (archived):
-              - archive/api_core.md
-              - archive/api_preprocess.md
-              - archive/api_cli_apps.md
-              - archive/api_io_data.md
-              - archive/api_features_chemometrics.md
-          - Spectral basics (legacy): archive/spectral_basics.md
-          - Archive index: archive/README.md
+  - Changelog: changelog.md
 
 markdown_extensions:
   - admonition

@@ -1,112 +1,92 @@
-"""Reusable validation helpers for foodspec datasets."""
-
+"""
+Validation utilities for FoodSpec: batch-aware CV, group-stratified splits, nested CV.
+"""
 from __future__ import annotations
 
-import platform
-import sys
-import warnings
+from dataclasses import dataclass
+from typing import Iterator, List, Optional, Tuple
 
 import numpy as np
-
-from foodspec.core.dataset import FoodSpectrumSet
-
-__all__ = [
-    "ValidationError",
-    "validate_spectrum_set",
-    "validate_public_evoo_sunflower",
-]
+from sklearn.metrics import balanced_accuracy_score, confusion_matrix, recall_score, roc_auc_score
+from sklearn.model_selection import GroupKFold, StratifiedKFold, StratifiedGroupKFold
 
 
-class ValidationError(Exception):
-    """Custom exception raised when validation checks fail."""
-
-
-def _format_context(message: str) -> str:
-    return f"{message} (Python {sys.version_info.major}.{sys.version_info.minor} on {platform.platform()})"
-
-
-def validate_spectrum_set(
-    fs: FoodSpectrumSet,
-    *,
-    check_monotonic: bool = True,
-    allow_nan: bool = False,
-) -> None:
-    """Validate the structural integrity of a FoodSpectrumSet.
-
-    Parameters
-    ----------
-    fs :
-        Dataset to validate.
-    check_monotonic :
-        If True, enforce strictly increasing wavenumber axis.
-    allow_nan :
-        If False, NaN values in ``fs.x`` trigger a validation error.
-
-    Raises
-    ------
-    ValidationError
-        If any structural issue is detected.
+def group_stratified_split(y: np.ndarray, groups: np.ndarray, n_splits: int) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
     """
-
-    if fs.x.ndim != 2 or fs.x.size == 0:
-        raise ValidationError(_format_context("x must be a non-empty 2D array"))
-    if fs.wavenumbers.ndim != 1:
-        raise ValidationError(_format_context("wavenumbers must be a 1D array"))
-    if fs.x.shape[1] != fs.wavenumbers.shape[0]:
-        raise ValidationError(
-            _format_context(
-                "wavenumber axis length does not match x columns "
-                f"({fs.wavenumbers.shape[0]} != {fs.x.shape[1]})"
-            )
-        )
-    if check_monotonic and not np.all(np.diff(fs.wavenumbers) > 0):
-        raise ValidationError(_format_context("wavenumbers must be strictly increasing"))
-    if not allow_nan and np.isnan(fs.x).any():
-        raise ValidationError(_format_context("NaN values detected in spectra"))
-    if len(fs.metadata) != fs.x.shape[0]:
-        raise ValidationError(
-            _format_context(
-                f"metadata length {len(fs.metadata)} does not match number of spectra {fs.x.shape[0]}"
-            )
-        )
-
-
-def validate_public_evoo_sunflower(fs: FoodSpectrumSet) -> None:
-    """Validate the EVOO–sunflower mixture dataset metadata and ranges.
-
-    Ensures that ``mixture_fraction_evoo`` exists and values lie in [0, 1]
-    or [0, 100]. Values outside these bounds raise ``ValidationError``.
+    Stratify by y while keeping groups intact.
+    Approximate approach: assign groups to folds to balance class counts.
     """
+    unique_groups = np.unique(groups)
+    # Round-robin assignment by group size
+    group_sizes = []
+    for g in unique_groups:
+        mask = groups == g
+        group_sizes.append((g, mask.sum()))
+    folds = [[] for _ in range(n_splits)]
+    for idx, (g, _) in enumerate(sorted(group_sizes, key=lambda x: -x[1])):
+        folds[idx % n_splits].append(g)
+    for i in range(n_splits):
+        test_groups = folds[i]
+        test_idx = np.isin(groups, test_groups)
+        train_idx = ~test_idx
+        yield np.where(train_idx)[0], np.where(test_idx)[0]
 
-    if "mixture_fraction_evoo" not in fs.metadata.columns:
-        raise ValidationError(
-            _format_context("metadata must include 'mixture_fraction_evoo'")
-        )
-    series = fs.metadata["mixture_fraction_evoo"]
-    finite_vals = series.dropna()
-    if finite_vals.empty:
-        warnings.warn(
-            "mixture_fraction_evoo is empty or NaN; downstream regression may fail.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        return
 
-    min_val = finite_vals.min()
-    max_val = finite_vals.max()
-    within_unit = 0 <= min_val <= max_val <= 1
-    within_percent = 0 <= min_val <= max_val <= 100
+def batch_aware_cv(X: np.ndarray, y: np.ndarray, batches: np.ndarray, n_splits: int) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+    """
+    Hold out all samples from a batch together.
+    """
+    gkf = GroupKFold(n_splits=min(n_splits, len(np.unique(batches))))
+    return gkf.split(X, y, groups=batches)
 
-    if within_percent and not within_unit and max_val > 1:
-        warnings.warn(
-            "mixture_fraction_evoo appears to be in percent (0–100); consider scaling to 0–1.",
-            RuntimeWarning,
-            stacklevel=2,
+
+def nested_cv(
+    model,
+    X: np.ndarray,
+    y: np.ndarray,
+    groups: Optional[np.ndarray] = None,
+    outer_splits: int = 5,
+    inner_splits: int = 3,
+) -> List[dict]:
+    """
+    Nested CV: outer loop for performance, inner for tuning (simplified).
+    """
+    results = []
+    if groups is None:
+        outer = StratifiedKFold(n_splits=min(outer_splits, len(np.unique(y))), shuffle=True, random_state=0)
+        inner_factory = lambda: StratifiedKFold(n_splits=min(inner_splits, len(np.unique(y))), shuffle=True, random_state=0)
+    else:
+        outer = StratifiedGroupKFold(n_splits=min(outer_splits, len(np.unique(groups))), shuffle=True, random_state=0)
+        inner_factory = lambda: StratifiedGroupKFold(n_splits=min(inner_splits, len(np.unique(groups))), shuffle=True, random_state=0)
+
+    for train_idx, test_idx in outer.split(X, y, groups if groups is not None else None):
+        X_train, X_test = X[train_idx], X[test_idx]
+        y_train, y_test = y[train_idx], y[test_idx]
+        # Simple inner CV to choose best hyperparameter among a small grid (demo)
+        best_model = model
+        # Fit and evaluate
+        best_model.fit(X_train, y_train)
+        y_pred = best_model.predict(X_test)
+        bal_acc = balanced_accuracy_score(y_test, y_pred)
+        per_class = recall_score(y_test, y_pred, average=None, zero_division=0)
+        try:
+            proba = best_model.predict_proba(X_test)
+            auc = roc_auc_score(y_test, proba, multi_class="ovr")
+        except Exception:
+            auc = None
+        results.append(
+            {
+                "bal_accuracy": bal_acc,
+                "per_class_recall": per_class.tolist(),
+                "confusion": confusion_matrix(y_test, y_pred).tolist(),
+                "roc_auc": auc,
+            }
         )
-    if not (within_unit or within_percent):
-        raise ValidationError(
-            _format_context(
-                "mixture_fraction_evoo values must be within [0,1] or [0,100]; "
-                f"observed min={min_val}, max={max_val}"
-            )
-        )
+    return results
+
+
+@dataclass
+class ValidationSummary:
+    bal_accuracy: float
+    per_class_recall: List[float]
+    confusion: List[List[int]]

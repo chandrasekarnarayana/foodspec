@@ -76,7 +76,7 @@ This document outlines the planned architecture, APIs, and documentation for a c
   - “Is my design sufficient for ANOVA/MANOVA?” (balance, replication, missingness).
 
 ## 8. Minimal scaffolding (code)
-- Add `src/foodspec/stats/__init__.py` as a placeholder.
+- Ensure `src/foodspec/stats/__init__.py` exposes the public API (no placeholders).
 - Core modules implemented (`hypothesis_tests.py`, `correlations.py`, `effects.py`, `design.py`, robustness helpers) with documented APIs; future extensions limited to two-way ANOVA and additional post-hoc corrections.
 
 ## 9. Integration points

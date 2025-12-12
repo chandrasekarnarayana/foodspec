@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "foodspec"
-version = "0.2.0"
+version = "0.2.1"
 description = "Gold-standard Raman and FTIR spectroscopy toolkit for food science."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -37,6 +37,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+gui = [
+  "PyQt5>=5.15",
+  "pyqt5-plugins; platform_system=='Windows'",
+]
+web = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.23",
+]
 dev = [
   "black>=24.4.0",
   "ruff>=0.5.0",
@@ -58,6 +66,11 @@ viz = [
 
 [project.scripts]
 foodspec = "foodspec.cli:app"
+foodspec-run-protocol = "foodspec.cli_protocol:main"
+foodspec-predict = "foodspec.cli_predict:main"
+foodspec-registry = "foodspec.cli_registry:main"
+foodspec-publish = "foodspec.cli_publish:main"
+foodspec-plugin = "foodspec.cli_plugin:main"
 
 [project.urls]
 Homepage = "https://github.com/chandrasekarnarayana/foodspec"

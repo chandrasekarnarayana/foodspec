@@ -1,0 +1,49 @@
+# Tutorial: Thermal Stability Tracking
+
+- Data: oil/chips synthetic (or your own heating series)
+- Protocol: `examples/protocols/EdibleOil_Heating_Stability_v1.yml`
+- Outputs: Heating trend tables/plots, stability rankings, interpretation tables.
+# Tutorial – Thermal stability tracking
+
+### What this tutorial covers
+- **Problem:** Thermal degradation across heating stages; find heating-sensitive markers.  
+- **Dataset:** `examples/data/oils.csv` (or chips) with `heating_stage`.  
+- **Protocol:** `examples/protocols/oil_heating.yaml` (trend analysis, monotonicity).
+
+## Why it matters (theory)
+Heating alters oxidation/unsaturation signatures. Trend analysis (linear slopes, Spearman ρ) shows whether ratios increase/decrease with heating. See [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md).
+
+## GUI workflow
+1) Launch `foodspec-gui`.  
+2) Load `oils.csv` (or chips) and map `heating_stage` in **Data & Mapping**.  
+3) Select protocol: **“Thermal stability tracking”**.  
+4) Validate, then Run (batch-aware CV applies if batches exist).  
+5) Inspect tabs:  
+   - **Heating Trends**: slopes, Spearman ρ, FDR-corrected p-values, monotonicity flags; stability ranking (abs(slope)).  
+   - **Stability/Discriminative**: optional context.  
+   - Run history → run folder link.
+
+## CLI workflow
+```bash
+foodspec-run-protocol \
+  --input examples/data/oils.csv \
+  --protocol examples/protocols/oil_heating.yaml \
+  --output-dir runs/oil_heating_demo
+
+foodspec-publish runs/oil_heating_demo/<timestamp> --fig-limit 6
+```
+Open `figures/trend_*` for ratio vs heating stage; `tables/heating_trend_summary.csv` for slopes/ρ/p-values/monotonicity.
+
+## Example figures (from run bundle)
+![Heating trends](../assets/figures/heating_trend.png)
+
+## How to read the results
+- **Slopes (p < 0.05 FDR):** heating-sensitive markers.  
+- **Spearman ρ:** near ±1 indicates monotonic change.  
+- **Stability ranking:** lower abs(slope) = more stable spectral fingerprint.  
+- Choose markers with consistent trend direction across replicates/batches for QA.
+
+## Cross-links
+- Getting started: [first-steps_gui.md](../01-getting-started/first-steps_gui.md)  
+- Cookbook: [cookbook_rq_questions.md](../03-cookbook/cookbook_rq_questions.md)  
+- Theory: [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md)

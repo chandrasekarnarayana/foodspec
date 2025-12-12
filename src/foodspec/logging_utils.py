@@ -1,53 +1,61 @@
-"""Lightweight logging helpers for foodspec."""
+"""
+Central logging setup for FoodSpec.
 
+Provides a single entry point to configure console + file logging with
+timestamps and optional resource snapshots (psutil if available).
+"""
 from __future__ import annotations
 
 import logging
+import os
 import platform
-import sys
-from datetime import datetime, timezone
-from typing import Dict, Optional
-
-try:
-    from foodspec import __version__ as _FOODSPEC_VERSION
-except Exception:  # pragma: no cover
-    _FOODSPEC_VERSION = "unknown"
+from pathlib import Path
+from typing import Optional
 
 
-def get_logger(name: str) -> logging.Logger:
-    """Return a configured logger with a concise formatter, avoiding duplicate handlers."""
+def setup_logging(run_dir: Optional[Path] = None, level: int = logging.INFO) -> logging.Logger:
+    """
+    Configure a root logger with console and optional file handler.
 
-    logger = logging.getLogger(name)
-    if logger.handlers:
-        return logger
+    Parameters
+    ----------
+    run_dir : Path, optional
+        If provided, logs will also be written to run_dir/run.log.
+    level : int
+        Logging level (e.g., logging.INFO).
 
-    logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.propagate = False
+    Returns
+    -------
+    logging.Logger
+        Configured logger.
+    """
+    logger = logging.getLogger("foodspec")
+    logger.setLevel(level)
+    logger.handlers = []  # reset
+
+    fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    ch = logging.StreamHandler()
+    ch.setFormatter(fmt)
+    ch.setLevel(level)
+    logger.addHandler(ch)
+
+    if run_dir:
+        run_dir = Path(run_dir)
+        run_dir.mkdir(parents=True, exist_ok=True)
+        fh = logging.FileHandler(run_dir / "run.log", encoding="utf-8")
+        fh.setFormatter(fmt)
+        fh.setLevel(level)
+        logger.addHandler(fh)
+
+    logger.info("=== FoodSpec logging initialized ===")
+    logger.info("OS: %s | Python: %s | FoodSpec PID: %s", platform.platform(), platform.python_version(), os.getpid())
+    try:
+        import psutil
+
+        p = psutil.Process(os.getpid())
+        mem_mb = p.memory_info().rss / (1024 * 1024)
+        logger.info("Initial memory usage: %.2f MB", mem_mb)
+    except Exception:
+        logger.info("psutil not available; memory snapshot skipped.")
+
     return logger
-
-
-def log_run_metadata(logger: logging.Logger, extra: Optional[Dict] = None) -> Dict:
-    """Build and log a run metadata dict."""
-
-    meta = {
-        "foodspec_version": _FOODSPEC_VERSION,
-        "python_version": sys.version,
-        "platform": platform.platform(),
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-    }
-    if extra:
-        meta.update(extra)
-    logger.info(
-        "Run metadata: foodspec=%s python=%s platform=%s",
-        meta["foodspec_version"],
-        meta["python_version"].split()[0],
-        meta["platform"],
-    )
-    return meta

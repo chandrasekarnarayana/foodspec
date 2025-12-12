@@ -1,0 +1,20 @@
+name: "Feature request (protocol/plugin)"
+description: "Request a new protocol template or plugin (vendor loader, harmonization)."
+labels: ["enhancement"]
+body:
+  - type: textarea
+    attributes:
+      label: Use case
+      description: "Describe the food science question (oil authentication, matrix effects, HSI, etc.)."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Desired protocol/plugin behavior
+      description: "Steps, expected inputs/outputs, vendor formats if relevant."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sample data availability
+      description: "Link to sample files or describe format."

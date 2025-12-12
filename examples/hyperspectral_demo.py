@@ -1,53 +1,49 @@
-"""Synthetic hyperspectral demo for foodspec."""
-
-import matplotlib
-
-matplotlib.use("Agg")
-
-import matplotlib.pyplot as plt
+"""
+Hyperspectral demo: load cube, preprocess, segment, extract ROI spectra, run RQ.
+"""
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
-from foodspec.core.hyperspectral import HyperSpectralCube
-from foodspec.viz.hyperspectral import plot_hyperspectral_intensity_map
+from foodspec.spectral_dataset import HyperspectralDataset, PreprocessOptions
+from foodspec.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
 
 
-def main() -> None:
-    height, width = 5, 5
-    wn = np.linspace(1500, 1800, 50)
+def main():
+    # Synthetic cube (y=5, x=4, wn=3 for brevity)
+    y, x, wn_len = 5, 4, 3
+    wn = np.array([1000, 1100, 1200], dtype=float)
+    cube = np.random.rand(y, x, wn_len)
+    meta = pd.DataFrame({"y": np.repeat(np.arange(y), x), "x": np.tile(np.arange(x), y)})
+    hsi = HyperspectralDataset.from_cube(cube, wn, metadata=meta)
 
-    # Spectral peak around 1655 cm^-1
-    spectral_peak = np.exp(-0.5 * ((wn - 1655) / 5) ** 2)
+    # Preprocess
+    hsi_proc = hsi.preprocess(PreprocessOptions(normalization="vector", smoothing_method="moving_average", smoothing_window=3))
 
-    # Spatial 2D Gaussian pattern
-    xs, ys = np.meshgrid(np.arange(height), np.arange(width), indexing="ij")
-    spatial = np.exp(-((xs - 2) ** 2 + (ys - 2) ** 2) / (2 * 1.0**2))
+    # Segment
+    labels = hsi_proc.segment(method="kmeans", n_clusters=2)
 
-    rng = np.random.default_rng(0)
-    cube = np.zeros((height, width, wn.size))
-    for i in range(height):
-        for j in range(width):
-            cube[i, j, :] = spatial[i, j] * spectral_peak + rng.normal(0, 0.01, size=wn.size)
+    # Extract ROI spectra per label
+    roi_spectra = []
+    for k in np.unique(labels):
+        mask = (labels == k)
+        roi_ds = hsi_proc.roi_spectrum(mask)
+        roi_spectra.append(roi_ds)
 
-    meta = pd.DataFrame({"sample_id": [f"p{k}" for k in range(height * width)]})
-    hyper = HyperSpectralCube(cube=cube, wavenumbers=wn, metadata=meta, image_shape=(height, width))
+    # Combine ROI spectra into a peak table
+    peaks = [PeakDefinition(name=f"I_{int(wn_i)}", column=f"I_{int(wn_i)}", wavenumber=float(wn_i)) for wn_i in wn]
+    ratios = [RatioDefinition(name=f"I_{int(wn[0])}/I_{int(wn[1])}", numerator=f"I_{int(wn[0])}", denominator=f"I_{int(wn[1])}")]
 
-    # Round-trip through FoodSpectrumSet
-    spectra_flat = hyper.to_spectrum_set(modality="raman")
-    hyper_roundtrip = HyperSpectralCube.from_spectrum_set(spectra_flat, image_shape=(height, width))
+    dfs = []
+    for idx, roi_ds in enumerate(roi_spectra):
+        df_peaks = roi_ds.to_peaks(peaks)
+        df_peaks["oil_type"] = f"segment_{idx}"
+        dfs.append(df_peaks)
+    peak_df = pd.concat(dfs, ignore_index=True)
 
-    print(f"Cube shape: {hyper.cube.shape}, round-trip cube shape: {hyper_roundtrip.cube.shape}")
-    print(f"Wavenumbers length: {hyper.wavenumbers.size}")
-
-    # Plot intensity map around 1655 cm^-1
-    fig, ax = plt.subplots(figsize=(4, 4))
-    plot_hyperspectral_intensity_map(hyper, target_wavenumber=1655, window=5, ax=ax)
-    fig.tight_layout()
-    plt.savefig("hyperspectral_intensity.png", dpi=150)
-    plt.close(fig)
-
-    print("Saved hyperspectral_intensity.png")
+    cfg = RQConfig(oil_col="oil_type", matrix_col="matrix", heating_col="heating_stage")
+    res = RatioQualityEngine(peaks=peaks, ratios=ratios, config=cfg).run_all(peak_df)
+    print("=== ROI RQ report (truncated) ===")
+    print("\n".join(res.text_report.splitlines()[:20]))
 
 
 if __name__ == "__main__":

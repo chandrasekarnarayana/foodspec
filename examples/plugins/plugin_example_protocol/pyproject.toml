@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plugin_example_protocol"
+version = "0.0.1"
+dependencies = ["foodspec"]
+
+[project.entry-points."foodspec.plugins"]
+plugin_example_protocol = "plugin_example_protocol:plugin_main"

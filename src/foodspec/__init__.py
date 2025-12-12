@@ -34,6 +34,11 @@ __all__ = [
     "get_logo_bytes",
     "get_logo_base64",
     "save_logo",
+    "PeakDefinition",
+    "RatioDefinition",
+    "RQConfig",
+    "RatioQualityEngine",
+    "RatioQualityResult",
 ]
 
 # Single source of truth for the package version.
@@ -71,6 +76,13 @@ from .stats import (
 from .synthetic import (
     generate_synthetic_ftir_spectrum,
     generate_synthetic_raman_spectrum,
+)
+from .rq import (
+    PeakDefinition,
+    RatioDefinition,
+    RQConfig,
+    RatioQualityEngine,
+    RatioQualityResult,
 )
 from .utils.troubleshooting import (
     check_missing_metadata,

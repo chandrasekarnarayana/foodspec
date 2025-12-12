@@ -56,7 +56,7 @@ def load_public_mendeley_oils(root: PathLike | None = None) -> FoodSpectrumSet:
     if not csv_files:
         raise FileNotFoundError(
             f"No CSV files found under {data_root}. "
-            "Download the Mendeley oils dataset (DOI placeholder) and place CSVs here."
+            "Download the Mendeley oils dataset (see project README/DOI) and place CSVs here."
         )
 
     spectra_list = []
@@ -121,7 +121,7 @@ def load_public_evoo_sunflower_raman(root: PathLike | None = None) -> FoodSpectr
     if not csv_files:
         raise FileNotFoundError(
             f"No CSV files found under {data_root}. "
-            "Download the EVOO–sunflower Raman dataset (DOI placeholder) and place CSVs here."
+            "Download the EVOO–sunflower Raman dataset (see project README/DOI) and place CSVs here."
         )
 
     spectra = []
@@ -180,7 +180,7 @@ def load_public_ftir_oils(root: PathLike | None = None) -> FoodSpectrumSet:
     - oil_type (from filename prefix)
     - modality = "ftir"
     - source = "public"
-    - doi = "10.5281/zenodo.<record_id>" (replace with actual)
+    - doi = "10.5281/zenodo.<record_id>" (update to actual if known)
 
     Notes
     -----
@@ -193,7 +193,7 @@ def load_public_ftir_oils(root: PathLike | None = None) -> FoodSpectrumSet:
     if not csv_files:
         raise FileNotFoundError(
             f"No CSV files found under {data_root}. "
-            "Download the public FTIR oils dataset (DOI placeholder) and place CSVs here."
+            "Download the public FTIR oils dataset (see project README/DOI) and place CSVs here."
         )
 
     spectra_list = []

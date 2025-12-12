@@ -40,3 +40,46 @@ This glossary centralizes notation and acronyms used across FoodSpec. Refer here
 - **ROC**: Receiver Operating Characteristic.
 - **SNR**: Signal-to-Noise Ratio.
 - **t-SNE**: t-distributed Stochastic Neighbor Embedding (visualization only).
+# Glossary
+
+**Spectrum / Spectra**  
+An array of intensities measured across wavenumbers (Raman/FTIR).
+
+**Peak / Band**  
+A local maximum or defined region in a spectrum (e.g., 1740 cm⁻¹ carbonyl band).
+
+**Ratio**  
+Intensity or area of one peak divided by another (e.g., I\_1742 / I\_2720) to reduce illumination variability.
+
+**RQ (Ratio-Quality) Engine**  
+FoodSpec module that computes stability, discriminative power, trends, divergence, minimal panels, and clustering on peaks/ratios.
+
+**CV (Coefficient of Variation)**  
+Standard deviation divided by mean (often expressed as %). Used for stability/reproducibility.
+
+**MAD (Median Absolute Deviation)**  
+Robust dispersion measure, less sensitive to outliers than standard deviation.
+
+**FDR (False Discovery Rate)**  
+Multiple-testing correction controlling expected proportion of false positives across many p-values.
+
+**Effect size**  
+Quantifies the magnitude of a difference (e.g., Cohen’s d, slope delta), complementing p-values.
+
+**Batch / Group**  
+Set of samples sharing an instrument/run/lot; kept intact in batch-aware validation to avoid leakage.
+
+**Harmonization**  
+Aligning spectra from different instruments/runs (wavenumber calibration, power normalization) to make them comparable.
+
+**HSI (Hyperspectral Imaging)**  
+3D data (x, y, wavenumber) capturing spatially resolved spectra; often segmented into regions of interest (ROIs).
+
+**Frozen model**  
+Serialized model package containing preprocessing, feature definitions, weights, and metadata for prediction reuse.
+
+**Protocol**  
+YAML/JSON recipe defining steps (preprocess, harmonize, QC, HSI, RQ, output), expected columns, and validation strategy.
+
+**Bundle**  
+Run folder with report(s), figures, tables, metadata.json, index.json, logs, and models (if trained).

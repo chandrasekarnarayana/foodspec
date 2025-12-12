@@ -1,0 +1,25 @@
+name: "Bug report (food dataset)"
+description: "File a bug when running FoodSpec on food datasets."
+labels: ["bug"]
+body:
+  - type: textarea
+    attributes:
+      label: Dataset description
+      description: "Oil/chips/HSI? Synthetic or real? Include size (#samples, #features)."
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Protocol used
+      description: "Protocol name/path and version."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Error logs / stacktrace
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sample file link
+      description: "Link to HDF5/CSV if shareable, or minimal reproducible snippet."
