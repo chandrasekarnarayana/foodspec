@@ -64,11 +64,22 @@ class ProtocolWizard(QtWidgets.QWidget):
 
         self.stack = QtWidgets.QStackedWidget()
         self.page_load = self._page_load()
-        self.page_validate = self._page_message("Validate", "Run validation to check required columns, class counts, and protocol/library compatibility.")
-        self.page_config = self._page_message("Configure", "Review preprocessing/validation choices. Defaults are safe; advanced overrides live in the cockpit.")
-        self.page_estimate = self._page_message("Estimate runtime", "Small CSVs run in seconds; HSI or multi-input runs may take longer.")
-        self.page_execute = self._page_message("Execute", "Click Run to execute the protocol. Progress and cancel controls are in the cockpit.")
-        self.page_review = self._page_message("Review outputs", "Open the run folder for report.txt/html, figures/, tables/, metadata.json, index.json.")
+        self.page_validate = self._page_message(
+            "Validate", "Run validation to check required columns, class counts, and protocol/library compatibility."
+        )
+        self.page_config = self._page_message(
+            "Configure",
+            "Review preprocessing/validation choices. Defaults are safe; advanced overrides live in the cockpit.",
+        )
+        self.page_estimate = self._page_message(
+            "Estimate runtime", "Small CSVs run in seconds; HSI or multi-input runs may take longer."
+        )
+        self.page_execute = self._page_message(
+            "Execute", "Click Run to execute the protocol. Progress and cancel controls are in the cockpit."
+        )
+        self.page_review = self._page_message(
+            "Review outputs", "Open the run folder for report.txt/html, figures/, tables/, metadata.json, index.json."
+        )
         for page in [
             self.page_load,
             self.page_validate,

@@ -247,7 +247,15 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
 
     def append_history(self, protocol: str, status: str, run_dir: str):
         hist = load_history()
-        hist.insert(0, {"ts": QtCore.QDateTime.currentDateTime().toString(QtCore.Qt.ISODate), "protocol": protocol, "status": status, "run_dir": run_dir})
+        hist.insert(
+            0,
+            {
+                "ts": QtCore.QDateTime.currentDateTime().toString(QtCore.Qt.ISODate),
+                "protocol": protocol,
+                "status": status,
+                "run_dir": run_dir,
+            },
+        )
         save_history(hist[:50])
         self.load_history_ui()
 
@@ -273,18 +281,28 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
                 f"Protocol: {cfg.name} (v{cfg.version})\n\nPreprocessing: {pp_summary or 'n/a'}\n\nSteps:\n{steps}\n\nTip: keep defaults for a defensible starting analysis."
             )
         except Exception as exc:
-            QtWidgets.QMessageBox.critical(self, "Protocol load error", f"Could not load protocol.\n\n{exc}\n\nCheck expected columns in quickstart_protocol.md.")
+            QtWidgets.QMessageBox.critical(
+                self,
+                "Protocol load error",
+                f"Could not load protocol.\n\n{exc}\n\nCheck expected columns in quickstart_protocol.md.",
+            )
             self.plan_box.setPlainText(f"Failed to load protocol.")
 
     def choose_data(self):
-        fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Select CSV/HDF5", str(Path.cwd()), "Data (*.csv *.h5 *.hdf5)")
+        fname, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Select CSV/HDF5", str(Path.cwd()), "Data (*.csv *.h5 *.hdf5)"
+        )
         if fname:
             self.data_field.setText(fname)
 
     # --------- Validation ----------
     def validate_protocol_dialog(self):
         if not self.protocol_path or not self.data_field.text():
-            QtWidgets.QMessageBox.warning(self, "Missing input", "Select protocol and data first. See quickstart_protocol.md for expected columns.")
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Missing input",
+                "Select protocol and data first. See quickstart_protocol.md for expected columns.",
+            )
             return
         cfg = ProtocolConfig.from_file(self.protocol_path)
         df = pd.read_csv(self.data_field.text())
@@ -306,7 +324,11 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
     # --------- Run ----------
     def run_protocol(self):
         if not self.protocol_path or (not self.data_field.text() and not self.project.entries):
-            QtWidgets.QMessageBox.warning(self, "Missing input", "Select protocol and data or add project datasets. See quickstart_protocol.md for guidance.")
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Missing input",
+                "Select protocol and data or add project datasets. See quickstart_protocol.md for guidance.",
+            )
             return
         cfg = ProtocolConfig.from_file(self.protocol_path)
         cfg.validation_strategy = self.validation_combo.currentText()
@@ -358,7 +380,9 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
         self.cancel_btn.setEnabled(False)
         self.status.setText("Done")
         self.progress.setVisible(False)
-        run_dir = getattr(result, "run_dir", None) or str(Path("protocol_runs_gui") / f"{runner.config.name}_{Path(self.data_field.text()).stem}")
+        run_dir = getattr(result, "run_dir", None) or str(
+            Path("protocol_runs_gui") / f"{runner.config.name}_{Path(self.data_field.text()).stem}"
+        )
         self.append_history(self.protocol_path.name if self.protocol_path else "unknown", "success", str(run_dir))
         # Show summary with report/publish links
         publish_dir = Path(run_dir) / "publish"
@@ -387,9 +411,11 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
         if label_path.exists():
             try:
                 import numpy as np
+
                 labels = np.load(label_path)
                 import matplotlib.pyplot as plt
                 import io
+
                 fig, ax = plt.subplots()
                 im = ax.imshow(labels, cmap="tab20")
                 ax.axis("off")
@@ -407,6 +433,7 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
             for npy in roi_dir.glob("label_*.npy"):
                 try:
                     import numpy as np
+
                     mask = np.load(npy)
                     rows.append((npy.stem, mask.sum(), ""))
                 except Exception:
@@ -432,6 +459,7 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
             return
         try:
             from foodspec.model_lifecycle import FrozenModel
+
             model = FrozenModel.load(Path(self.model_path_field.text()))
             df = pd.read_csv(self.project.entries[0].path)
             preds = model.predict(df)
@@ -443,7 +471,9 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
 
     # --------- Project helpers ----------
     def add_project_entry(self):
-        fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Add dataset", str(Path.cwd()), "Data (*.csv *.h5 *.hdf5)")
+        fname, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Add dataset", str(Path.cwd()), "Data (*.csv *.h5 *.hdf5)"
+        )
         if not fname:
             return
         entry = ProjectEntry(path=fname)
@@ -453,10 +483,14 @@ class FoodSpecProtocolCockpit(QtWidgets.QWidget):
     def refresh_project_list(self):
         self.project_list.clear()
         for e in self.project.entries:
-            self.project_list.addItem(f"{e.path} | instr={e.instrument} | batch={e.batch} | matrix={e.matrix} | role={e.role}")
+            self.project_list.addItem(
+                f"{e.path} | instr={e.instrument} | batch={e.batch} | matrix={e.matrix} | role={e.role}"
+            )
 
     def save_project(self):
-        fname, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save project", str(Path.home() / "foodspec_project.json"), "JSON (*.json)")
+        fname, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Save project", str(Path.home() / "foodspec_project.json"), "JSON (*.json)"
+        )
         if not fname:
             return
         self.project.save(Path(fname))

@@ -86,6 +86,7 @@ FEATURE_INVENTORY: Dict[str, List[str]] = {
 # Helpers (non-invasive; they sit on top of the workflow without altering package code)
 # --------------------------------------------------------------------------------------
 
+
 def get_default_config() -> wf.Config:
     cfg = wf.Config()
     cfg.input_csv = ""  # set later by GUI
@@ -128,9 +129,7 @@ def train_and_save_models(
     if oil_col in df_ratios.columns and ratio_cols:
         y = df_ratios[oil_col].astype(str)
         X = df_ratios[ratio_cols]
-        clf = RandomForestClassifier(
-            n_estimators=300, random_state=random_seed, n_jobs=-1
-        )
+        clf = RandomForestClassifier(n_estimators=300, random_state=random_seed, n_jobs=-1)
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_seed)
         scores = cross_val_score(clf, X, y, cv=cv)
         clf.fit(X, y)
@@ -143,9 +142,7 @@ def train_and_save_models(
         if mask.sum() > 10:
             Xh = df_ratios.loc[mask, ratio_cols]
             yh = heating.loc[mask]
-            reg = RandomForestRegressor(
-                n_estimators=300, random_state=random_seed, n_jobs=-1
-            )
+            reg = RandomForestRegressor(n_estimators=300, random_state=random_seed, n_jobs=-1)
             cv = KFold(n_splits=5, shuffle=True, random_state=random_seed)
             scores = cross_val_score(reg, Xh, yh, cv=cv, scoring="r2")
             reg.fit(Xh, yh)
@@ -203,9 +200,7 @@ def build_research_prompts(results_dir: Path) -> List[str]:
         if not df_peak.empty:
             strongest = df_peak.sort_values("p_corr").head(1)
             peak = float(strongest["peak"].iloc[0])
-            prompts.append(
-                f"Structural change: peak {peak:.0f} cm-1 shifts with heating; link to bond changes."
-            )
+            prompts.append(f"Structural change: peak {peak:.0f} cm-1 shifts with heating; link to bond changes.")
     return prompts
 
 
@@ -260,9 +255,7 @@ with st.sidebar:
     savgol_window = st.number_input("Savitzky-Golay window", value=default_cfg.savgol_window, step=2)
     norm_primary = st.selectbox("Primary normalization", default_cfg.norm_methods, index=0)
     auto_run = st.button("Run fully automated workflow", use_container_width=True, type="primary")
-    st.markdown(
-        "Tip: leave defaults for a turnkey run. All outputs are written under `results/<run_name>`."
-    )
+    st.markdown("Tip: leave defaults for a turnkey run. All outputs are written under `results/<run_name>`.")
 
 
 results_dir: Optional[Path] = None
@@ -309,9 +302,7 @@ if auto_run:
             results_dir = run_pipeline(cfg, input_file, chips_path=chips_file)
             tables_dir = results_dir / "tables"
             figures_dir = results_dir / "figures"
-            last_metrics = train_and_save_models(
-                tables_dir, results_dir, cfg.oil_col, cfg.heating_col, cfg.random_seed
-            )
+            last_metrics = train_and_save_models(tables_dir, results_dir, cfg.oil_col, cfg.heating_col, cfg.random_seed)
             write_run_metadata(
                 results_dir,
                 cfg,

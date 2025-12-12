@@ -112,9 +112,23 @@ def main():
     run_protocol([DATA / "oils.csv"], PROT / "oil_basic.yaml", oil_run)
     copy_existing_fig(oil_run, "*confusion*.png", "oil_confusion.png")
     if (oil_run / "tables" / "discriminative_summary.csv").exists():
-        plot_bar_from_csv(oil_run / "tables" / "discriminative_summary.csv", "rf_importance", "feature", "oil_discriminative.png", "Top discriminative ratios", ascending=False)
+        plot_bar_from_csv(
+            oil_run / "tables" / "discriminative_summary.csv",
+            "rf_importance",
+            "feature",
+            "oil_discriminative.png",
+            "Top discriminative ratios",
+            ascending=False,
+        )
     if (oil_run / "tables" / "stability_summary.csv").exists():
-        plot_bar_from_csv(oil_run / "tables" / "stability_summary.csv", "cv", "feature", "oil_stability.png", "Top stable ratios", ascending=True)
+        plot_bar_from_csv(
+            oil_run / "tables" / "stability_summary.csv",
+            "cv",
+            "feature",
+            "oil_stability.png",
+            "Top stable ratios",
+            ascending=True,
+        )
     if (oil_run / "tables" / "minimal_panel.csv").exists():
         plot_minimal_panel(oil_run / "tables" / "minimal_panel.csv", "oil_minimal_panel.png")
 
@@ -127,7 +141,14 @@ def main():
     ovsc_run = ROOT / "runs" / "doc_oil_vs_chips"
     run_protocol([DATA / "oils.csv", DATA / "chips.csv"], PROT / "oil_vs_chips.yaml", ovsc_run)
     if (ovsc_run / "tables" / "oil_vs_chips_summary.csv").exists():
-        plot_bar_from_csv(ovsc_run / "tables" / "oil_vs_chips_summary.csv", "effect_size", "feature", "oil_vs_chips_divergence.png", "Top matrix divergences", ascending=False)
+        plot_bar_from_csv(
+            ovsc_run / "tables" / "oil_vs_chips_summary.csv",
+            "effect_size",
+            "feature",
+            "oil_vs_chips_divergence.png",
+            "Top matrix divergences",
+            ascending=False,
+        )
 
     # HSI
     hsi_run = ROOT / "runs" / "doc_hsi"

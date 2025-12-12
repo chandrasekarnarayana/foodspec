@@ -75,6 +75,7 @@ FEATURE_INVENTORY: Dict[str, List[str]] = {
 # Helpers
 # --------------------------------------------------------------------------------------
 
+
 def parse_meta_list(raw: str) -> List[str]:
     if not raw.strip():
         return []
@@ -115,7 +116,9 @@ def ensure_valid(fs: FoodSpectrumSet) -> FoodSpectrumSet:
 
 st.set_page_config(page_title="FoodSpec GUI (Full Package)", layout="wide")
 st.title("FoodSpec GUI (Full Package)")
-st.caption("Covers oil authentication, heating, QC/novelty, and the Raman RQ1-RQ14 template. Defaults are set for non-experts.")
+st.caption(
+    "Covers oil authentication, heating, QC/novelty, and the Raman RQ1-RQ14 template. Defaults are set for non-experts."
+)
 
 with st.sidebar:
     st.header("Data source")
@@ -197,7 +200,7 @@ with tab_heat:
             st.markdown("**Ratio table (head)**")
             st.dataframe(res.ratio_table.head(30))
             st.markdown("**Trend slopes (per ratio)**")
-            st.json({k: float(v.coef_[0]) if hasattr(v, \"coef_\") else None for k, v in res.trend_models.items()})
+            st.json({k: float(v.coef_[0]) if hasattr(v, "coef_") else None for k, v in res.trend_models.items()})
             if res.anova_table is not None:
                 st.markdown("**ANOVA (if groups present)**")
                 st.dataframe(res.anova_table)
@@ -254,4 +257,6 @@ with tab_raman:
             )
 
 st.write("---")
-st.caption("The GUI is a thin orchestration layer; all computations are delegated to FoodSpec workflows to stay aligned with package behavior.")
+st.caption(
+    "The GUI is a thin orchestration layer; all computations are delegated to FoodSpec workflows to stay aligned with package behavior."
+)

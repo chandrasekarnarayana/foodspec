@@ -64,10 +64,7 @@ from typing import List, Optional
 
 warnings.filterwarnings("ignore")
 
-required = [
-    "numpy", "pandas", "matplotlib", "scipy",
-    "sklearn", "statsmodels", "tqdm", "seaborn"
-]
+required = ["numpy", "pandas", "matplotlib", "scipy", "sklearn", "statsmodels", "tqdm", "seaborn"]
 
 for pkg in required:
     try:
@@ -128,6 +125,7 @@ class Config:
     Lightweight configuration for GUI/CLI runs.
     All paths will be rewritten under output_root/run_name when provided.
     """
+
     input_csv: str = ""
     chips_csv: Optional[str] = None
     run_name: str = "raman_gui_run"
@@ -221,10 +219,7 @@ def games_howell(df, group_col, value_col):
     Welch-style t-test with Holm correction.
     Returns dataframe with pairwise group comparisons.
     """
-    groups = {
-        g: np.asarray(vals, dtype=float)
-        for g, vals in df.groupby(group_col)[value_col]
-    }
+    groups = {g: np.asarray(vals, dtype=float) for g, vals in df.groupby(group_col)[value_col]}
 
     pairs, tvals, dfs, pvals = [], [], [], []
 
@@ -240,12 +235,12 @@ def games_howell(df, group_col, value_col):
             mi, mj = xi.mean(), xj.mean()
             si2, sj2 = xi.var(ddof=1), xj.var(ddof=1)
 
-            denom = np.sqrt(si2/ni + sj2/nj + 1e-12)
+            denom = np.sqrt(si2 / ni + sj2 / nj + 1e-12)
             t_stat = (mi - mj) / denom
 
             # Welch-Satterthwaite df
-            df_denom = (si2/ni + sj2/nj)**2
-            df_num = (si2**2)/(ni**2*(ni-1)) + (sj2**2)/(nj**2*(nj-1))
+            df_denom = (si2 / ni + sj2 / nj) ** 2
+            df_num = (si2**2) / (ni**2 * (ni - 1)) + (sj2**2) / (nj**2 * (nj - 1))
             df_welch = df_denom / (df_num + 1e-12)
 
             p_val = 2 * stats.t.sf(np.abs(t_stat), df_welch)
@@ -255,7 +250,7 @@ def games_howell(df, group_col, value_col):
             dfs.append(df_welch)
             pvals.append(p_val)
 
-    reject, p_adj, _, _ = multipletests(pvals, method='holm')
+    reject, p_adj, _, _ = multipletests(pvals, method="holm")
 
     out = pd.DataFrame(pairs, columns=["group1", "group2"])
     out["t"] = tvals
@@ -276,10 +271,7 @@ def compute_pca_metrics(X, labels, n_components=5, random_state=0):
     """
     Xz = StandardScaler().fit_transform(X)
 
-    pca = PCA(
-        n_components=min(n_components, Xz.shape[1]),
-        random_state=random_state
-    )
+    pca = PCA(n_components=min(n_components, Xz.shape[1]), random_state=random_state)
     scores = pca.fit_transform(Xz)
     exp_var = pca.explained_variance_ratio_
 
@@ -318,21 +310,12 @@ def compute_pca_metrics(X, labels, n_components=5, random_state=0):
             Sb_p += Xc.shape[0] * (mu - overall).T.dot(mu - overall)
             Xc_centered = Xc - mu
             Sw_p += Xc_centered.T.dot(Xc_centered)
-        perm_ratios.append(
-            np.trace(Sb_p) / (np.trace(Sw_p) + 1e-12)
-        )
+        perm_ratios.append(np.trace(Sb_p) / (np.trace(Sw_p) + 1e-12))
 
     perm_ratios = np.asarray(perm_ratios)
     p_perm = (np.sum(perm_ratios >= bw_ratio) + 1) / (len(perm_ratios) + 1)
 
-    return {
-        "pca": pca,
-        "scores": scores,
-        "exp_var": exp_var,
-        "silhouette": sil,
-        "bw_ratio": bw_ratio,
-        "p_perm": p_perm
-    }
+    return {"pca": pca, "scores": scores, "exp_var": exp_var, "silhouette": sil, "bw_ratio": bw_ratio, "p_perm": p_perm}
 
 
 # ============================================================
@@ -365,9 +348,7 @@ def extract_oil_peaks_and_ratios(cfg: Optional[Config] = None):
     os.makedirs(SUPP_OIL_STATS_DIR, exist_ok=True)
 
     if not RAW_OIL_CSV or not os.path.exists(RAW_OIL_CSV):
-        raise FileNotFoundError(
-            f"Oil CSV not found: {RAW_OIL_CSV}. Provide a valid path via Config.input_csv."
-        )
+        raise FileNotFoundError(f"Oil CSV not found: {RAW_OIL_CSV}. Provide a valid path via Config.input_csv.")
 
     data = pd.read_csv(RAW_OIL_CSV)
 
@@ -378,7 +359,7 @@ def extract_oil_peaks_and_ratios(cfg: Optional[Config] = None):
         1652: (1652 - 15, 1652 + 15),
         1434: (1434 - 15, 1434 + 15),
         1259: (1259 - 15, 1259 + 15),
-        1296: (1296 - 15, 1296 + 15)
+        1296: (1296 - 15, 1296 + 15),
     }
 
     # Split metadata vs numeric wavenumber columns
@@ -444,23 +425,21 @@ def extract_oil_peaks_and_ratios(cfg: Optional[Config] = None):
     if cfg and cfg.oil_col in data.columns:
         df_results["Oil_Name"] = data[cfg.oil_col].values
     if cfg and cfg.heating_col in data.columns:
-        df_results["Heating_Stage"] = pd.to_numeric(
-            data[cfg.heating_col].values, errors="coerce"
-        )
+        df_results["Heating_Stage"] = pd.to_numeric(data[cfg.heating_col].values, errors="coerce")
 
     # Fallback: parse Oil_Name + Heating_Stage from Sample (e.g., "SO 0", "VO 9")
     if "Oil_Name" not in df_results.columns or df_results["Oil_Name"].isna().all():
-        df_results[["Oil_Name", "Heating_Stage"]] = df_results["Sample"].astype(str).str.extract(
-            r'([A-Za-z]+\s*[Cc]?)\s*(\d*)'
+        df_results[["Oil_Name", "Heating_Stage"]] = (
+            df_results["Sample"].astype(str).str.extract(r"([A-Za-z]+\s*[Cc]?)\s*(\d*)")
         )
 
     # Reorder columns
     cols = list(df_results.columns)
     sample_index = cols.index("Sample")
     reordered_cols = (
-        cols[:sample_index + 1]
+        cols[: sample_index + 1]
         + ["Oil_Name", "Heating_Stage"]
-        + [c for c in cols if c not in ["Oil_Name", "Heating_Stage"] and c not in cols[:sample_index + 1]]
+        + [c for c in cols if c not in ["Oil_Name", "Heating_Stage"] and c not in cols[: sample_index + 1]]
     )
     df_results = df_results[reordered_cols]
 
@@ -486,7 +465,7 @@ def extract_oil_peaks_and_ratios(cfg: Optional[Config] = None):
         cv = (std / mean) * 100 if mean != 0 else None
         cv_norm[col] = round(cv, 2) if cv is not None else None
 
-    cv_results = pd.DataFrame(list(cv_norm.items()), columns=['Peak', 'cv(%)'])
+    cv_results = pd.DataFrame(list(cv_norm.items()), columns=["Peak", "cv(%)"])
     Path(OIL_RATIO_NORM_CV_CSV).parent.mkdir(parents=True, exist_ok=True)
     cv_results.to_csv(OIL_RATIO_NORM_CV_CSV, index=False)
     print(f"Saved normalized CV table to: {OIL_RATIO_NORM_CV_CSV}")
@@ -508,32 +487,23 @@ def oil_anova_and_tukey():
 
     # Normalized ratio columns (I / I2720)
     norm_cols = [
-        'Peak Int 1742_norm2720',
-        'Peak Int 1652_norm2720',
-        'Peak Int 1434_norm2720',
-        'Peak Int 1259_norm2720',
-        'Peak Int 1296_norm2720'
+        "Peak Int 1742_norm2720",
+        "Peak Int 1652_norm2720",
+        "Peak Int 1434_norm2720",
+        "Peak Int 1259_norm2720",
+        "Peak Int 1296_norm2720",
     ]
 
     # ==== Q1. One-way ANOVA across Oil_Name ====
     anova_results = {}
     for col in norm_cols:
-        groups = [group[col].values for _, group in sorted(df.groupby('Oil_Name'))]
+        groups = [group[col].values for _, group in sorted(df.groupby("Oil_Name"))]
         f_stat, p_val = stats.f_oneway(*groups)
-        anova_results[col] = {
-            'F_statistic': round(f_stat, 3),
-            'p_value': p_val  # keep full precision for saving
-        }
+        anova_results[col] = {"F_statistic": round(f_stat, 3), "p_value": p_val}  # keep full precision for saving
 
     # ==== Mean and Std per oil per ratio ====
-    group_stats = (
-        df.groupby('Oil_Name')[norm_cols]
-          .agg(['mean', 'std'])
-    )
-    group_stats.columns = [
-        f"{col}_{stat}"
-        for col, stat in group_stats.columns
-    ]
+    group_stats = df.groupby("Oil_Name")[norm_cols].agg(["mean", "std"])
+    group_stats.columns = [f"{col}_{stat}" for col, stat in group_stats.columns]
     group_stats = group_stats.reset_index()
 
     stats_path = os.path.join(SUPP_OIL_STATS_DIR, "Supplementary_Table_GroupMeanStd.csv")
@@ -542,7 +512,7 @@ def oil_anova_and_tukey():
 
     # ==== ANOVA table ====
     anova_df = pd.DataFrame(anova_results).T.reset_index()
-    anova_df.columns = ['Peak_Ratio', 'F_statistic', 'p_value']
+    anova_df.columns = ["Peak_Ratio", "F_statistic", "p_value"]
 
     anova_path = os.path.join(SUPP_OIL_STATS_DIR, "Supplementary_Table_ANOVA.csv")
     anova_df.to_csv(anova_path, index=False)
@@ -552,19 +522,13 @@ def oil_anova_and_tukey():
     tukey_tables = {}
 
     for col in norm_cols:
-        if anova_results[col]['p_value'] < 0.05:
-            tukey = pairwise_tukeyhsd(df[col], df['Oil_Name'])
-            tukey_df = pd.DataFrame(
-                tukey.summary().data[1:],
-                columns=tukey.summary().data[0]
-            )
+        if anova_results[col]["p_value"] < 0.05:
+            tukey = pairwise_tukeyhsd(df[col], df["Oil_Name"])
+            tukey_df = pd.DataFrame(tukey.summary().data[1:], columns=tukey.summary().data[0])
             tukey_tables[col] = tukey_df
 
             safe_colname = col.replace(" ", "_").replace("/", "_")
-            tukey_path = os.path.join(
-                SUPP_OIL_STATS_DIR,
-                f"Supplementary_Table_Tukey_{safe_colname}.csv"
-            )
+            tukey_path = os.path.join(SUPP_OIL_STATS_DIR, f"Supplementary_Table_Tukey_{safe_colname}.csv")
             tukey_df.to_csv(tukey_path, index=False)
             print(f"Saved Tukey HSD for {col} to: {tukey_path}")
 
@@ -607,11 +571,7 @@ def main_norm2720(input_csv, output_dir):
     oils_sorted = sorted(df[oil_col].unique())
 
     # 1. Replicate depth per oil
-    counts = (
-        df.groupby(oil_col)
-          .size()
-          .reset_index(name="n")
-    )
+    counts = df.groupby(oil_col).size().reset_index(name="n")
     counts.to_csv(save_dir / "counts_per_oil.csv", index=False)
 
     print("\n=== REPLICATE DEPTH PER OIL (counts_per_oil.csv) ===")
@@ -624,45 +584,34 @@ def main_norm2720(input_csv, output_dir):
             vals = df.loc[df[oil_col] == oil, feat].dropna().values
             if len(vals) == 0:
                 continue
-            desc_rows.append({
-                oil_col: oil,
-                "feature": feat,
-                "mean": float(np.mean(vals)),
-                "std": float(np.std(vals, ddof=1)),
-                "n": int(len(vals))
-            })
+            desc_rows.append(
+                {
+                    oil_col: oil,
+                    "feature": feat,
+                    "mean": float(np.mean(vals)),
+                    "std": float(np.std(vals, ddof=1)),
+                    "n": int(len(vals)),
+                }
+            )
     desc_df = pd.DataFrame(desc_rows)
     desc_df.to_csv(save_dir / "norm2720_mean_std_by_oil.csv", index=False)
 
     print("\n=== PER-OIL MEAN ± STD FOR EACH FEATURE (norm2720_mean_std_by_oil.csv) ===")
-    preview_desc = (
-        desc_df
-        .sort_values(["feature", oil_col])
-        .groupby("feature")
-        .head(5)
-    )
+    preview_desc = desc_df.sort_values(["feature", oil_col]).groupby("feature").head(5)
     print(preview_desc.to_string(index=False))
 
     # 3. PCA + metrics
     X = df[feat_cols_safe].astype(float).values
     labels = df[oil_col].astype(str).values
 
-    pca_stats = compute_pca_metrics(
-        X,
-        labels,
-        n_components=min(5, X.shape[1])
-    )
+    pca_stats = compute_pca_metrics(X, labels, n_components=min(5, X.shape[1]))
 
-    np.savetxt(
-        save_dir / "pca_exp_var_norm2720.csv",
-        pca_stats["exp_var"],
-        delimiter=','
-    )
+    np.savetxt(save_dir / "pca_exp_var_norm2720.csv", pca_stats["exp_var"], delimiter=",")
 
     pca_summary_payload = {
         "silhouette": pca_stats["silhouette"],
         "between_within_ratio": pca_stats["bw_ratio"],
-        "p_perm": pca_stats["p_perm"]
+        "p_perm": pca_stats["p_perm"],
     }
     with open(save_dir / "pca_summary_norm2720.json", "w") as f:
         json.dump(pca_summary_payload, f, indent=2)
@@ -670,7 +619,7 @@ def main_norm2720(input_csv, output_dir):
     scores = pca_stats["scores"]
     fig = plt.figure(figsize=(6, 5))
     for oil in oils_sorted:
-        mask = (labels == oil)
+        mask = labels == oil
         plt.scatter(scores[mask, 0], scores[mask, 1], s=15, label=str(oil))
     plt.xlabel("PC1")
     plt.ylabel("PC2")
@@ -717,30 +666,17 @@ def main_norm2720(input_csv, output_dir):
     # 5. Feature-level ANOVA / Kruskal
     rows_anova = []
     for feat in feat_cols_safe:
-        group_vectors = [
-            df.loc[df[oil_col] == oil, feat].dropna().values
-            for oil in oils_sorted
-        ]
+        group_vectors = [df.loc[df[oil_col] == oil, feat].dropna().values for oil in oils_sorted]
         group_vectors_valid = [g for g in group_vectors if len(g) > 1]
         if len(group_vectors_valid) < 2:
             continue
         try:
             F, p = stats.f_oneway(*group_vectors_valid)
-            rows_anova.append({
-                "feature": feat,
-                "test": "ANOVA",
-                "stat": float(F),
-                "p": float(p)
-            })
+            rows_anova.append({"feature": feat, "test": "ANOVA", "stat": float(F), "p": float(p)})
         except Exception:
             try:
                 H, p = stats.kruskal(*group_vectors_valid)
-                rows_anova.append({
-                    "feature": feat,
-                    "test": "Kruskal",
-                    "stat": float(H),
-                    "p": float(p)
-                })
+                rows_anova.append({"feature": feat, "test": "Kruskal", "stat": float(H), "p": float(p)})
             except Exception:
                 pass
 
@@ -757,11 +693,7 @@ def main_norm2720(input_csv, output_dir):
     # 6. Games–Howell post-hoc (pairwise oil-vs-oil per feature)
     gh_all = []
     for feat in feat_cols_safe:
-        gh = games_howell(
-            df[[oil_col, feat]].dropna(),
-            group_col=oil_col,
-            value_col=feat
-        )
+        gh = games_howell(df[[oil_col, feat]].dropna(), group_col=oil_col, value_col=feat)
         gh["feature"] = feat
         gh_all.append(gh)
 
@@ -769,26 +701,14 @@ def main_norm2720(input_csv, output_dir):
     gh_df.to_csv(save_dir / "games_howell_norm2720.csv", index=False)
 
     print("\n=== PAIRWISE DIFFERENCES (games_howell_norm2720.csv) ===")
-    sig_pairs_preview = (
-        gh_df.sort_values("p_holm")
-             .groupby("feature")
-             .head(1)
-             .reset_index(drop=True)
-    )
+    sig_pairs_preview = gh_df.sort_values("p_holm").groupby("feature").head(1).reset_index(drop=True)
     print(sig_pairs_preview.to_string(index=False))
 
     # 7. Boxplots saved
     for feat in feat_cols_safe:
         fig = plt.figure(figsize=(6, 4))
-        data_to_plot = [
-            df.loc[df[oil_col] == oil, feat].dropna().values
-            for oil in oils_sorted
-        ]
-        plt.boxplot(
-            data_to_plot,
-            labels=oils_sorted,
-            showfliers=False
-        )
+        data_to_plot = [df.loc[df[oil_col] == oil, feat].dropna().values for oil in oils_sorted]
+        plt.boxplot(data_to_plot, labels=oils_sorted, showfliers=False)
         plt.ylabel(feat)
         plt.title(f"{feat} by oil type")
         fig.savefig(save_dir / f"{feat}_boxplot.png", dpi=200)
@@ -829,42 +749,34 @@ def run_chips_heating_stats():
         return
 
     norm_cols = [
-        'Peak Int 1742_norm2720',
-        'Peak Int 1652_norm2720',
-        'Peak Int 1434_norm2720',
-        'Peak Int 1259_norm2720',
-        'Peak Int 1296_norm2720'
+        "Peak Int 1742_norm2720",
+        "Peak Int 1652_norm2720",
+        "Peak Int 1434_norm2720",
+        "Peak Int 1259_norm2720",
+        "Peak Int 1296_norm2720",
     ]
 
-    df['Heating_Stage'] = pd.to_numeric(df['Heating_Stage'], errors='coerce')
+    df["Heating_Stage"] = pd.to_numeric(df["Heating_Stage"], errors="coerce")
 
     # 1. Global ANOVA across Heating_Stage + Pearson trend
     anova_stage_results = {}
     trend_results = {}
 
     for col in norm_cols:
-        groups = [group[col].values for _, group in df.groupby('Heating_Stage')]
+        groups = [group[col].values for _, group in df.groupby("Heating_Stage")]
         f_stat, p_val = stats.f_oneway(*groups)
-        anova_stage_results[col] = {
-            'F_statistic_heating': round(f_stat, 3),
-            'p_ANOVA_heating': p_val
-        }
+        anova_stage_results[col] = {"F_statistic_heating": round(f_stat, 3), "p_ANOVA_heating": p_val}
 
-        r, p_corr = stats.pearsonr(df['Heating_Stage'], df[col])
-        trend_results[col] = {
-            'r_trend': round(r, 3),
-            'p_trend': p_corr
-        }
+        r, p_corr = stats.pearsonr(df["Heating_Stage"], df[col])
+        trend_results[col] = {"r_trend": round(r, 3), "p_trend": p_corr}
 
     anova_stage_df = pd.DataFrame(anova_stage_results).T
     trend_df = pd.DataFrame(trend_results).T
     summary_global = pd.concat([anova_stage_df, trend_df], axis=1)
 
-    summary_global['significant_by_ANOVA'] = summary_global['p_ANOVA_heating'] < 0.05
-    summary_global['direction_if_trend'] = summary_global['r_trend'].apply(
-        lambda x: 'increases with heating' if x > 0
-        else 'decreases with heating' if x < 0
-        else 'no clear direction'
+    summary_global["significant_by_ANOVA"] = summary_global["p_ANOVA_heating"] < 0.05
+    summary_global["direction_if_trend"] = summary_global["r_trend"].apply(
+        lambda x: "increases with heating" if x > 0 else "decreases with heating" if x < 0 else "no clear direction"
     )
 
     summary_global_path = os.path.join(output_dir, "Table_Global_RatioSignificance_vs_HeatingStage.csv")
@@ -875,33 +787,35 @@ def run_chips_heating_stats():
 
     # 2. Per-chips slope analysis
     rows = []
-    for oil, sub_oil in df.groupby('Chips_Name'):
+    for oil, sub_oil in df.groupby("Chips_Name"):
         for col in norm_cols:
-            slope, intercept, r_val, p_val, stderr = linregress(sub_oil['Heating_Stage'], sub_oil[col])
-            rows.append({
-                'Chips_Name': oil,
-                'Ratio': col,
-                'slope_per_stage': slope,
-                'p_slope': p_val,
-                'r_squared': r_val**2,
-                'abs_slope_magnitude': abs(slope)
-            })
+            slope, intercept, r_val, p_val, stderr = linregress(sub_oil["Heating_Stage"], sub_oil[col])
+            rows.append(
+                {
+                    "Chips_Name": oil,
+                    "Ratio": col,
+                    "slope_per_stage": slope,
+                    "p_slope": p_val,
+                    "r_squared": r_val**2,
+                    "abs_slope_magnitude": abs(slope),
+                }
+            )
 
     oil_stability_df = pd.DataFrame(rows)
-    oil_stability_df['stability_rank_within_ratio'] = oil_stability_df.groupby('Ratio')['abs_slope_magnitude'].rank(
-        method='dense', ascending=True
+    oil_stability_df["stability_rank_within_ratio"] = oil_stability_df.groupby("Ratio")["abs_slope_magnitude"].rank(
+        method="dense", ascending=True
     )
 
     overall_stability = (
-        oil_stability_df.groupby('Chips_Name')['abs_slope_magnitude']
+        oil_stability_df.groupby("Chips_Name")["abs_slope_magnitude"]
         .mean()
         .sort_values(ascending=True)
         .reset_index()
-        .rename(columns={'abs_slope_magnitude': 'mean_abs_slope_across_ratios'})
+        .rename(columns={"abs_slope_magnitude": "mean_abs_slope_across_ratios"})
     )
 
-    overall_stability['stability_rank_overall'] = overall_stability['mean_abs_slope_across_ratios'].rank(
-        method='dense', ascending=True
+    overall_stability["stability_rank_overall"] = overall_stability["mean_abs_slope_across_ratios"].rank(
+        method="dense", ascending=True
     )
 
     oil_stability_path = os.path.join(output_dir, "Table_OilWise_SlopeAnalysis.csv")
@@ -919,32 +833,28 @@ def run_chips_heating_stats():
     sns.set(style="whitegrid", context="talk")
 
     for col in norm_cols:
-        stats_summary = (
-            df.groupby(['Chips_Name', 'Heating_Stage'])[col]
-              .agg(['mean', 'std', 'count'])
-              .reset_index()
-        )
+        stats_summary = df.groupby(["Chips_Name", "Heating_Stage"])[col].agg(["mean", "std", "count"]).reset_index()
 
         plt.figure(figsize=(8, 5))
 
-        for oil in stats_summary['Chips_Name'].unique():
-            sub = stats_summary[stats_summary['Chips_Name'] == oil].sort_values('Heating_Stage')
+        for oil in stats_summary["Chips_Name"].unique():
+            sub = stats_summary[stats_summary["Chips_Name"] == oil].sort_values("Heating_Stage")
 
             plt.errorbar(
-                x=sub['Heating_Stage'],
-                y=sub['mean'],
-                yerr=sub['std'],
-                marker='o',
-                linestyle='-',
+                x=sub["Heating_Stage"],
+                y=sub["mean"],
+                yerr=sub["std"],
+                marker="o",
+                linestyle="-",
                 label=oil,
                 capsize=4,
-                linewidth=2
+                linewidth=2,
             )
 
         plt.title(f"{col} \nvs Heating Stage per oil in Chips")
         plt.xlabel("Heating Stage")
         plt.ylabel(f"{col}")
-        plt.legend(title="Oil Type/ Chips_Name", bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.legend(title="Oil Type/ Chips_Name", bbox_to_anchor=(1.05, 1), loc="upper left")
         plt.tight_layout()
 
         fig_path = os.path.join(output_dir, f"Fig_{col.replace(' ', '_')}_MeanSD_vs_HeatingStage.png")
@@ -956,15 +866,17 @@ def run_chips_heating_stats():
     # 4. Interpretation table
     interpret_rows = []
     for col in norm_cols:
-        sig = summary_global.loc[col, 'significant_by_ANOVA']
-        direction = summary_global.loc[col, 'direction_if_trend']
-        pval = summary_global.loc[col, 'p_ANOVA_heating']
-        interpret_rows.append({
-            'Ratio': col,
-            'Heating sensitivity? (ANOVA p<0.05)': "YES" if sig else "NO",
-            'Direction of change with heating': direction,
-            'ANOVA p': pval
-        })
+        sig = summary_global.loc[col, "significant_by_ANOVA"]
+        direction = summary_global.loc[col, "direction_if_trend"]
+        pval = summary_global.loc[col, "p_ANOVA_heating"]
+        interpret_rows.append(
+            {
+                "Ratio": col,
+                "Heating sensitivity? (ANOVA p<0.05)": "YES" if sig else "NO",
+                "Direction of change with heating": direction,
+                "ANOVA p": pval,
+            }
+        )
 
     interpret_df = pd.DataFrame(interpret_rows)
     interpret_path = os.path.join(output_dir, "Table_RatioInterpretation_ForManuscript.csv")
@@ -992,42 +904,34 @@ def run_oil_heating_stats():
         return
 
     norm_cols = [
-        'Peak Int 1742_norm2720',
-        'Peak Int 1652_norm2720',
-        'Peak Int 1434_norm2720',
-        'Peak Int 1259_norm2720',
-        'Peak Int 1296_norm2720'
+        "Peak Int 1742_norm2720",
+        "Peak Int 1652_norm2720",
+        "Peak Int 1434_norm2720",
+        "Peak Int 1259_norm2720",
+        "Peak Int 1296_norm2720",
     ]
 
-    df['Heating_Stage'] = pd.to_numeric(df['Heating_Stage'], errors='coerce')
+    df["Heating_Stage"] = pd.to_numeric(df["Heating_Stage"], errors="coerce")
 
     # 1. Global ANOVA across Heating_Stage + Pearson trend
     anova_stage_results = {}
     trend_results = {}
 
     for col in norm_cols:
-        groups = [group[col].values for _, group in df.groupby('Heating_Stage')]
+        groups = [group[col].values for _, group in df.groupby("Heating_Stage")]
         f_stat, p_val = stats.f_oneway(*groups)
-        anova_stage_results[col] = {
-            'F_statistic_heating': round(f_stat, 3),
-            'p_ANOVA_heating': p_val
-        }
+        anova_stage_results[col] = {"F_statistic_heating": round(f_stat, 3), "p_ANOVA_heating": p_val}
 
-        r, p_corr = stats.pearsonr(df['Heating_Stage'], df[col])
-        trend_results[col] = {
-            'r_trend': round(r, 3),
-            'p_trend': p_corr
-        }
+        r, p_corr = stats.pearsonr(df["Heating_Stage"], df[col])
+        trend_results[col] = {"r_trend": round(r, 3), "p_trend": p_corr}
 
     anova_stage_df = pd.DataFrame(anova_stage_results).T
     trend_df = pd.DataFrame(trend_results).T
     summary_global = pd.concat([anova_stage_df, trend_df], axis=1)
 
-    summary_global['significant_by_ANOVA'] = summary_global['p_ANOVA_heating'] < 0.05
-    summary_global['direction_if_trend'] = summary_global['r_trend'].apply(
-        lambda x: 'increases with heating' if x > 0
-        else 'decreases with heating' if x < 0
-        else 'no clear direction'
+    summary_global["significant_by_ANOVA"] = summary_global["p_ANOVA_heating"] < 0.05
+    summary_global["direction_if_trend"] = summary_global["r_trend"].apply(
+        lambda x: "increases with heating" if x > 0 else "decreases with heating" if x < 0 else "no clear direction"
     )
 
     summary_global_path = os.path.join(output_dir, "Table_Global_RatioSignificance_vs_HeatingStage.csv")
@@ -1039,34 +943,36 @@ def run_oil_heating_stats():
 
     # 2. Per-oil slope analysis
     rows = []
-    for oil, sub_oil in df.groupby('Oil_Name'):
+    for oil, sub_oil in df.groupby("Oil_Name"):
         for col in norm_cols:
-            slope, intercept, r_val, p_val, stderr = linregress(sub_oil['Heating_Stage'], sub_oil[col])
+            slope, intercept, r_val, p_val, stderr = linregress(sub_oil["Heating_Stage"], sub_oil[col])
 
-            rows.append({
-                'Oil_Name': oil,
-                'Ratio': col,
-                'slope_per_stage': slope,
-                'p_slope': p_val,
-                'r_squared': r_val**2,
-                'abs_slope_magnitude': abs(slope)
-            })
+            rows.append(
+                {
+                    "Oil_Name": oil,
+                    "Ratio": col,
+                    "slope_per_stage": slope,
+                    "p_slope": p_val,
+                    "r_squared": r_val**2,
+                    "abs_slope_magnitude": abs(slope),
+                }
+            )
 
     oil_stability_df = pd.DataFrame(rows)
-    oil_stability_df['stability_rank_within_ratio'] = oil_stability_df.groupby('Ratio')['abs_slope_magnitude'].rank(
-        method='dense', ascending=True
+    oil_stability_df["stability_rank_within_ratio"] = oil_stability_df.groupby("Ratio")["abs_slope_magnitude"].rank(
+        method="dense", ascending=True
     )
 
     overall_stability = (
-        oil_stability_df.groupby('Oil_Name')['abs_slope_magnitude']
+        oil_stability_df.groupby("Oil_Name")["abs_slope_magnitude"]
         .mean()
         .sort_values(ascending=True)
         .reset_index()
-        .rename(columns={'abs_slope_magnitude': 'mean_abs_slope_across_ratios'})
+        .rename(columns={"abs_slope_magnitude": "mean_abs_slope_across_ratios"})
     )
 
-    overall_stability['stability_rank_overall'] = overall_stability['mean_abs_slope_across_ratios'].rank(
-        method='dense', ascending=True
+    overall_stability["stability_rank_overall"] = overall_stability["mean_abs_slope_across_ratios"].rank(
+        method="dense", ascending=True
     )
 
     oil_stability_path = os.path.join(output_dir, "Table_OilWise_SlopeAnalysis.csv")
@@ -1084,32 +990,28 @@ def run_oil_heating_stats():
     sns.set(style="whitegrid", context="talk")
 
     for col in norm_cols:
-        stats_summary = (
-            df.groupby(['Oil_Name', 'Heating_Stage'])[col]
-              .agg(['mean', 'std', 'count'])
-              .reset_index()
-        )
+        stats_summary = df.groupby(["Oil_Name", "Heating_Stage"])[col].agg(["mean", "std", "count"]).reset_index()
 
         plt.figure(figsize=(8, 5))
 
-        for oil in stats_summary['Oil_Name'].unique():
-            sub = stats_summary[stats_summary['Oil_Name'] == oil].sort_values('Heating_Stage')
+        for oil in stats_summary["Oil_Name"].unique():
+            sub = stats_summary[stats_summary["Oil_Name"] == oil].sort_values("Heating_Stage")
 
             plt.errorbar(
-                x=sub['Heating_Stage'],
-                y=sub['mean'],
-                yerr=sub['std'],
-                marker='o',
-                linestyle='-',
+                x=sub["Heating_Stage"],
+                y=sub["mean"],
+                yerr=sub["std"],
+                marker="o",
+                linestyle="-",
                 label=oil,
                 capsize=4,
-                linewidth=2
+                linewidth=2,
             )
 
         plt.title(f"{col} \nvs Heating Stage per oil")
         plt.xlabel("Heating Stage")
         plt.ylabel(f"{col}")
-        plt.legend(title="Oil Type/ Oil_Name", bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.legend(title="Oil Type/ Oil_Name", bbox_to_anchor=(1.05, 1), loc="upper left")
         plt.tight_layout()
 
         fig_path = os.path.join(output_dir, f"Fig_{col.replace(' ', '_')}_MeanSD_vs_HeatingStage.png")
@@ -1121,15 +1023,17 @@ def run_oil_heating_stats():
     # 4. Interpretation table
     interpret_rows = []
     for col in norm_cols:
-        sig = summary_global.loc[col, 'significant_by_ANOVA']
-        direction = summary_global.loc[col, 'direction_if_trend']
-        pval = summary_global.loc[col, 'p_ANOVA_heating']
-        interpret_rows.append({
-            'Ratio': col,
-            'Heating sensitivity? (ANOVA p<0.05)': "YES" if sig else "NO",
-            'Direction of change with heating': direction,
-            'ANOVA p': pval
-        })
+        sig = summary_global.loc[col, "significant_by_ANOVA"]
+        direction = summary_global.loc[col, "direction_if_trend"]
+        pval = summary_global.loc[col, "p_ANOVA_heating"]
+        interpret_rows.append(
+            {
+                "Ratio": col,
+                "Heating sensitivity? (ANOVA p<0.05)": "YES" if sig else "NO",
+                "Direction of change with heating": direction,
+                "ANOVA p": pval,
+            }
+        )
 
     interpret_df = pd.DataFrame(interpret_rows)
     interpret_path = os.path.join(output_dir, "Table_RatioInterpretation_ForManuscript.csv")
@@ -1154,7 +1058,7 @@ def get_functional_band_mapping():
         1652: ("C=C (unsaturation)", "C=C stretching band, sensitive to unsaturation level"),
         1434: ("CH2 bending", "CH2 scissoring/bending, relates to chain packing"),
         1259: ("fingerprint band", "C–O and C–C modes in triglyceride backbone"),
-        1296: ("CH2 twisting", "CH2 twisting/rocking, linked to chain conformation")
+        1296: ("CH2 twisting", "CH2 twisting/rocking, linked to chain conformation"),
     }
 
 
@@ -1169,31 +1073,22 @@ def compute_classification_and_feature_importance(df, feature_cols, label_col):
     Xz = scaler.fit_transform(X)
 
     # RandomForest classifier
-    rf = RandomForestClassifier(
-        n_estimators=300,
-        random_state=0,
-        n_jobs=-1
-    )
+    rf = RandomForestClassifier(n_estimators=300, random_state=0, n_jobs=-1)
     skf = StratifiedKFold(n_splits=min(5, len(np.unique(y))), shuffle=True, random_state=0)
     rf_scores = cross_val_score(rf, Xz, y, cv=skf, scoring="accuracy")
     rf.fit(Xz, y)
     rf_importances = rf.feature_importances_
 
     # Logistic regression (linear baseline)
-    lr = LogisticRegression(
-        max_iter=5000,
-        multi_class="auto",
-        solver="lbfgs"
-    )
+    lr = LogisticRegression(max_iter=5000, multi_class="auto", solver="lbfgs")
     lr_scores = cross_val_score(lr, Xz, y, cv=skf, scoring="accuracy")
 
     # PCA metrics
     pca_stats = compute_pca_metrics(X, y, n_components=min(5, X.shape[1]))
 
-    importance_df = pd.DataFrame({
-        "feature": feature_cols,
-        "rf_importance": rf_importances
-    }).sort_values("rf_importance", ascending=False)
+    importance_df = pd.DataFrame({"feature": feature_cols, "rf_importance": rf_importances}).sort_values(
+        "rf_importance", ascending=False
+    )
 
     return {
         "rf_mean_acc": float(rf_scores.mean()),
@@ -1201,7 +1096,7 @@ def compute_classification_and_feature_importance(df, feature_cols, label_col):
         "lr_mean_acc": float(lr_scores.mean()),
         "lr_std_acc": float(lr_scores.std()),
         "importance_df": importance_df,
-        "pca_stats": pca_stats
+        "pca_stats": pca_stats,
     }
 
 
@@ -1220,11 +1115,7 @@ def compute_minimal_feature_panel(df, feature_cols, label_col, importance_df, to
 
     skf = StratifiedKFold(n_splits=min(5, len(np.unique(y))), shuffle=True, random_state=0)
 
-    rf_full = RandomForestClassifier(
-        n_estimators=300,
-        random_state=0,
-        n_jobs=-1
-    )
+    rf_full = RandomForestClassifier(n_estimators=300, random_state=0, n_jobs=-1)
     full_scores = cross_val_score(rf_full, Xz_all, y, cv=skf, scoring="accuracy")
     best_acc = full_scores.mean()
 
@@ -1236,18 +1127,11 @@ def compute_minimal_feature_panel(df, feature_cols, label_col, importance_df, to
         Xk = df[subset].astype(float).values
         Xkz = scaler.fit_transform(Xk)
 
-        rf_k = RandomForestClassifier(
-            n_estimators=300,
-            random_state=0,
-            n_jobs=-1
-        )
+        rf_k = RandomForestClassifier(n_estimators=300, random_state=0, n_jobs=-1)
         scores_k = cross_val_score(rf_k, Xkz, y, cv=skf, scoring="accuracy")
-        panel_results.append({
-            "k": k,
-            "features": subset,
-            "mean_acc": float(scores_k.mean()),
-            "std_acc": float(scores_k.std())
-        })
+        panel_results.append(
+            {"k": k, "features": subset, "mean_acc": float(scores_k.mean()), "std_acc": float(scores_k.std())}
+        )
 
     # choose smallest k with acc >= best_acc - tolerance
     panel_df = pd.DataFrame(panel_results)
@@ -1263,7 +1147,7 @@ def compute_minimal_feature_panel(df, feature_cols, label_col, importance_df, to
         "chosen_k": int(chosen["k"]),
         "chosen_features": list(chosen["features"]),
         "chosen_mean_acc": float(chosen["mean_acc"]),
-        "chosen_std_acc": float(chosen["std_acc"])
+        "chosen_std_acc": float(chosen["std_acc"]),
     }
 
 
@@ -1283,21 +1167,13 @@ def compute_unsupervised_clustering(df, feature_cols, label_col):
     if n_clusters < 2:
         return None
 
-    kmeans = KMeans(
-        n_clusters=n_clusters,
-        random_state=0,
-        n_init=10
-    )
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0, n_init=10)
     cluster_labels = kmeans.fit_predict(Xz)
 
     sil = silhouette_score(Xz, cluster_labels) if n_clusters > 1 else np.nan
     ari = adjusted_rand_score(y, cluster_labels)
 
-    return {
-        "silhouette": float(sil),
-        "ari": float(ari),
-        "cluster_labels": cluster_labels
-    }
+    return {"silhouette": float(sil), "ari": float(ari), "cluster_labels": cluster_labels}
 
 
 def compute_mds_map(df, feature_cols, label_col, out_dir: Path):
@@ -1310,31 +1186,17 @@ def compute_mds_map(df, feature_cols, label_col, out_dir: Path):
     scaler = StandardScaler()
     Xz = scaler.fit_transform(X)
 
-    mds = MDS(
-        n_components=2,
-        random_state=0,
-        dissimilarity="euclidean",
-        n_init=4
-    )
+    mds = MDS(n_components=2, random_state=0, dissimilarity="euclidean", n_init=4)
     coords = mds.fit_transform(Xz)
 
-    mds_df = pd.DataFrame({
-        "MDS1": coords[:, 0],
-        "MDS2": coords[:, 1],
-        label_col: y
-    })
+    mds_df = pd.DataFrame({"MDS1": coords[:, 0], "MDS2": coords[:, 1], label_col: y})
 
     mds_df.to_csv(out_dir / "mds_2D_oils.csv", index=False)
 
     plt.figure(figsize=(6, 5))
     for oil in sorted(np.unique(y)):
-        mask = (y == oil)
-        plt.scatter(
-            coords[mask, 0],
-            coords[mask, 1],
-            label=str(oil),
-            s=20
-        )
+        mask = y == oil
+        plt.scatter(coords[mask, 0], coords[mask, 1], label=str(oil), s=20)
     plt.xlabel("MDS1")
     plt.ylabel("MDS2")
     plt.title("Global chemometric map (MDS) – oil spectra")
@@ -1355,12 +1217,14 @@ def compute_intra_class_variability(df, feature_cols, label_col):
         X = sub[feature_cols].astype(float).values
         mean_vec = X.mean(axis=0)
         std_vec = X.std(axis=0, ddof=1)
-        rows.append({
-            label_col: oil,
-            "mean_feature_mean": float(mean_vec.mean()),
-            "mean_feature_std": float(std_vec.mean()),
-            "mean_cv_percent": float((std_vec / (mean_vec + 1e-12)).mean() * 100)
-        })
+        rows.append(
+            {
+                label_col: oil,
+                "mean_feature_mean": float(mean_vec.mean()),
+                "mean_feature_std": float(std_vec.mean()),
+                "mean_cv_percent": float((std_vec / (mean_vec + 1e-12)).mean() * 100),
+            }
+        )
 
     intr_df = pd.DataFrame(rows)
     return intr_df.sort_values("mean_cv_percent")
@@ -1385,17 +1249,17 @@ def compute_peak_position_shifts():
         for col in peak_pos_cols:
             if sub[col].notna().sum() < 3:
                 continue
-            slope, intercept, r_val, p_val, stderr = linregress(
-                sub["Heating_Stage"], sub[col]
+            slope, intercept, r_val, p_val, stderr = linregress(sub["Heating_Stage"], sub[col])
+            rows.append(
+                {
+                    "Oil_Name": oil,
+                    "Peak_Pos_Col": col,
+                    "slope_cm1_per_stage": slope,
+                    "p_slope": p_val,
+                    "r_squared": r_val**2,
+                    "abs_slope": abs(slope),
+                }
             )
-            rows.append({
-                "Oil_Name": oil,
-                "Peak_Pos_Col": col,
-                "slope_cm1_per_stage": slope,
-                "p_slope": p_val,
-                "r_squared": r_val**2,
-                "abs_slope": abs(slope)
-            })
 
     if not rows:
         return None
@@ -1431,11 +1295,7 @@ def compute_thermal_stability_index(df, feature_cols, oil_col="Oil_Name"):
         X_heated = heated[feature_cols].astype(float).values
 
         dists = np.linalg.norm(X_heated - base_vec, axis=1)
-        tsi_rows.append({
-            oil_col: oil,
-            "thermal_stability_index": float(dists.mean()),
-            "n_heated": int(len(dists))
-        })
+        tsi_rows.append({oil_col: oil, "thermal_stability_index": float(dists.mean()), "n_heated": int(len(dists))})
 
     if not tsi_rows:
         return None
@@ -1466,11 +1326,7 @@ def compute_heating_stage_prediction(df, feature_cols, stage_col="Heating_Stage"
     Xz = scaler.fit_transform(X)
 
     kf = KFold(n_splits=min(5, len(np.unique(y))), shuffle=True, random_state=0)
-    rf = RandomForestRegressor(
-        n_estimators=300,
-        random_state=0,
-        n_jobs=-1
-    )
+    rf = RandomForestRegressor(n_estimators=300, random_state=0, n_jobs=-1)
 
     r2_scores = cross_val_score(rf, Xz, y, cv=kf, scoring="r2")
     # For RMSE we compute manually
@@ -1485,7 +1341,7 @@ def compute_heating_stage_prediction(df, feature_cols, stage_col="Heating_Stage"
         "r2_mean": float(np.mean(r2_scores)),
         "r2_std": float(np.std(r2_scores)),
         "rmse_mean": float(np.mean(rmse_list)),
-        "rmse_std": float(np.std(rmse_list))
+        "rmse_std": float(np.std(rmse_list)),
     }
 
 
@@ -1497,55 +1353,31 @@ def compute_normalization_robustness(oil_df):
     """
     # Reference-peak features
     ref_cols = [
-        'Peak Int 1742_norm2720',
-        'Peak Int 1652_norm2720',
-        'Peak Int 1434_norm2720',
-        'Peak Int 1259_norm2720',
-        'Peak Int 1296_norm2720'
+        "Peak Int 1742_norm2720",
+        "Peak Int 1652_norm2720",
+        "Peak Int 1434_norm2720",
+        "Peak Int 1259_norm2720",
+        "Peak Int 1296_norm2720",
     ]
-    oil_df = oil_df.dropna(subset=ref_cols + ['Oil_Name']).copy()
+    oil_df = oil_df.dropna(subset=ref_cols + ["Oil_Name"]).copy()
 
     # (i) existing reference-peak normalization
-    ref_metrics = compute_classification_and_feature_importance(
-        oil_df,
-        ref_cols,
-        label_col="Oil_Name"
-    )
+    ref_metrics = compute_classification_and_feature_importance(oil_df, ref_cols, label_col="Oil_Name")
 
     # (ii) vector normalization over raw peak intensities
-    raw_cols = [
-        'Peak Int 1742',
-        'Peak Int 1652',
-        'Peak Int 1434',
-        'Peak Int 1259',
-        'Peak Int 1296'
-    ]
+    raw_cols = ["Peak Int 1742", "Peak Int 1652", "Peak Int 1434", "Peak Int 1259", "Peak Int 1296"]
     available_raw = [c for c in raw_cols if c in oil_df.columns]
     if len(available_raw) == 0:
-        return {
-            "ref": ref_metrics,
-            "vector": None
-        }
+        return {"ref": ref_metrics, "vector": None}
 
     raw_mat = oil_df[available_raw].astype(float).values
     vec_norm = normalize(raw_mat, norm="l2", axis=1)
-    vec_df = pd.DataFrame(
-        vec_norm,
-        columns=[f"{c}_vecNorm" for c in available_raw],
-        index=oil_df.index
-    )
-    tmp_df = pd.concat([oil_df[['Oil_Name']], vec_df], axis=1)
+    vec_df = pd.DataFrame(vec_norm, columns=[f"{c}_vecNorm" for c in available_raw], index=oil_df.index)
+    tmp_df = pd.concat([oil_df[["Oil_Name"]], vec_df], axis=1)
 
-    vector_metrics = compute_classification_and_feature_importance(
-        tmp_df,
-        list(vec_df.columns),
-        label_col="Oil_Name"
-    )
+    vector_metrics = compute_classification_and_feature_importance(tmp_df, list(vec_df.columns), label_col="Oil_Name")
 
-    return {
-        "ref": ref_metrics,
-        "vector": vector_metrics
-    }
+    return {"ref": ref_metrics, "vector": vector_metrics}
 
 
 def generate_rq_summaries(norm_output_dir: str, cfg: Optional[Config] = None):
@@ -1560,72 +1392,51 @@ def generate_rq_summaries(norm_output_dir: str, cfg: Optional[Config] = None):
 
     # Features of interest (ratios)
     ratio_cols = [
-        'Peak Int 1742_norm2720',
-        'Peak Int 1652_norm2720',
-        'Peak Int 1434_norm2720',
-        'Peak Int 1259_norm2720',
-        'Peak Int 1296_norm2720'
+        "Peak Int 1742_norm2720",
+        "Peak Int 1652_norm2720",
+        "Peak Int 1434_norm2720",
+        "Peak Int 1259_norm2720",
+        "Peak Int 1296_norm2720",
     ]
     ratio_cols = [c for c in ratio_cols if c in oil_df.columns]
 
     # 1) Supervised discrimination + feature importance (RQ1, RQ3, RQ5, RQ6 partially)
     clf_metrics = compute_classification_and_feature_importance(
-        oil_df.dropna(subset=ratio_cols + ['Oil_Name']),
-        ratio_cols,
-        label_col="Oil_Name"
+        oil_df.dropna(subset=ratio_cols + ["Oil_Name"]), ratio_cols, label_col="Oil_Name"
     )
 
     minimal_panel = compute_minimal_feature_panel(
-        oil_df.dropna(subset=ratio_cols + ['Oil_Name']),
+        oil_df.dropna(subset=ratio_cols + ["Oil_Name"]),
         ratio_cols,
         label_col="Oil_Name",
         importance_df=clf_metrics["importance_df"],
-        tolerance=0.02
+        tolerance=0.02,
     )
 
     # 2) Unsupervised clustering & chemometric map (RQ6, RQ13)
     clustering_metrics = compute_unsupervised_clustering(
-        oil_df.dropna(subset=ratio_cols + ['Oil_Name']),
-        ratio_cols,
-        label_col="Oil_Name"
+        oil_df.dropna(subset=ratio_cols + ["Oil_Name"]), ratio_cols, label_col="Oil_Name"
     )
 
     norm_out_dir = Path(norm_output_dir)
     ensure_dir(norm_out_dir)
     mds_df = compute_mds_map(
-        oil_df.dropna(subset=ratio_cols + ['Oil_Name']),
-        ratio_cols,
-        label_col="Oil_Name",
-        out_dir=norm_out_dir
+        oil_df.dropna(subset=ratio_cols + ["Oil_Name"]), ratio_cols, label_col="Oil_Name", out_dir=norm_out_dir
     )
 
     # 3) Intra-class variability (RQ2, RQ8)
     intraclass_df = compute_intra_class_variability(
-        oil_df.dropna(subset=ratio_cols + ['Oil_Name']),
-        ratio_cols,
-        label_col="Oil_Name"
+        oil_df.dropna(subset=ratio_cols + ["Oil_Name"]), ratio_cols, label_col="Oil_Name"
     )
 
     # 4) Thermal stability index & heating-stage prediction (RQ4, RQ11, RQ12)
-    tsi_df = compute_thermal_stability_index(
-        oil_df.copy(),
-        ratio_cols,
-        oil_col="Oil_Name"
-    )
+    tsi_df = compute_thermal_stability_index(oil_df.copy(), ratio_cols, oil_col="Oil_Name")
 
-    heating_pred_oil = compute_heating_stage_prediction(
-        oil_df.copy(),
-        ratio_cols,
-        stage_col="Heating_Stage"
-    )
+    heating_pred_oil = compute_heating_stage_prediction(oil_df.copy(), ratio_cols, stage_col="Heating_Stage")
 
     heating_pred_chips = None
     if chips_df is not None:
-        heating_pred_chips = compute_heating_stage_prediction(
-            chips_df.copy(),
-            ratio_cols,
-            stage_col="Heating_Stage"
-        )
+        heating_pred_chips = compute_heating_stage_prediction(chips_df.copy(), ratio_cols, stage_col="Heating_Stage")
 
     # 5) Peak position shifts with heating (RQ10)
     peak_shift_df = compute_peak_position_shifts()
@@ -1675,15 +1486,14 @@ in the low-dimensional chemometric space, consistently with their labelled ident
 Overall, RQ1 is answered positively: Raman ratiometric signatures alone provide high discrimination performance between the studied edible oils.
     """
     add("RQ1 – Oil discrimination", rq1_text)
-    brief_lines.append(f"RQ1 – Oil discrimination: RF accuracy ≈ {rf_mean:.2f} (±{rf_std:.2f}); oils are strongly separable in ratiometric Raman space.")
+    brief_lines.append(
+        f"RQ1 – Oil discrimination: RF accuracy ≈ {rf_mean:.2f} (±{rf_std:.2f}); oils are strongly separable in ratiometric Raman space."
+    )
 
     # RQ2 – Reproducibility & stability
     if cv_int_df is not None:
         low_cv = cv_int_df.sort_values("cv(%)").head(5)
-        low_cv_list = ", ".join([
-            f"{row['Peak']} (CV {row['cv(%)']:.1f}%)"
-            for _, row in low_cv.iterrows()
-        ])
+        low_cv_list = ", ".join([f"{row['Peak']} (CV {row['cv(%)']:.1f}%)" for _, row in low_cv.iterrows()])
     else:
         low_cv_list = "CV table not available (no OIL_RATIO_NORM_CV_CSV)."
 
@@ -1710,21 +1520,19 @@ These results identify both robust features and oils with higher intrinsic spect
 for designing calibration sets.
     """
     add("RQ2 – Reproducibility & stability", rq2_text)
-    brief_lines.append("RQ2 – Reproducibility: specific normalized peaks show low CV; some oils are markedly more homogeneous than others.")
+    brief_lines.append(
+        "RQ2 – Reproducibility: specific normalized peaks show low CV; some oils are markedly more homogeneous than others."
+    )
 
     # RQ3 – Discriminative ratios (tests + model importance)
     top_importance = clf_metrics["importance_df"].head(5)
-    top_imp_str = ", ".join([
-        f"{row['feature']} (RF importance {row['rf_importance']:.3f})"
-        for _, row in top_importance.iterrows()
-    ])
+    top_imp_str = ", ".join(
+        [f"{row['feature']} (RF importance {row['rf_importance']:.3f})" for _, row in top_importance.iterrows()]
+    )
 
     if feat_anova_df is not None and not feat_anova_df.empty:
         feat_anova_sorted = feat_anova_df.sort_values("p").head(5)
-        top_anova_str = ", ".join([
-            f"{row['feature']} (p={row['p']:.2e})"
-            for _, row in feat_anova_sorted.iterrows()
-        ])
+        top_anova_str = ", ".join([f"{row['feature']} (p={row['p']:.2e})" for _, row in feat_anova_sorted.iterrows()])
     else:
         top_anova_str = "Per-feature ANOVA table not available."
 
@@ -1741,16 +1549,22 @@ Taken together, these results highlight a small number of chemically-meaningful 
 to oil discrimination. These same features form the core of the minimal marker panel identified in RQ5.
     """
     add("RQ3 – Discriminative ratios", rq3_text)
-    brief_lines.append("RQ3 – Discriminative ratios: a small subset of I_1742/I_2720, I_1652/I_2720, and related bands dominate RF importance and ANOVA significance.")
+    brief_lines.append(
+        "RQ3 – Discriminative ratios: a small subset of I_1742/I_2720, I_1652/I_2720, and related bands dominate RF importance and ANOVA significance."
+    )
 
     # RQ4 – Thermal degradation markers
-    oil_heat_global = pd.read_csv(
-        Path(SUPP_OIL_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv"
-    ) if (Path(SUPP_OIL_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv").exists() else None
+    oil_heat_global = (
+        pd.read_csv(Path(SUPP_OIL_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv")
+        if (Path(SUPP_OIL_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv").exists()
+        else None
+    )
 
-    chips_heat_global = pd.read_csv(
-        Path(SUPP_CHIPS_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv"
-    ) if (Path(SUPP_CHIPS_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv").exists() else None
+    chips_heat_global = (
+        pd.read_csv(Path(SUPP_CHIPS_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv")
+        if (Path(SUPP_CHIPS_HEAT_DIR) / "Table_Global_RatioSignificance_vs_HeatingStage.csv").exists()
+        else None
+    )
 
     def summarize_heating_global(df_glob, matrix_label):
         if df_glob is None:
@@ -1779,7 +1593,9 @@ these trajectories define candidate Raman markers for thermal load. The sign and
 in the per-oil / per-chips regression tables) quantify how strongly each ratio behaves as a degradation or processing marker.
     """
     add("RQ4 – Thermal degradation markers", rq4_text)
-    brief_lines.append("RQ4 – Thermal degradation: several ratios show significant monotonic changes with heating, in both oils and chips, usable as thermal load markers.")
+    brief_lines.append(
+        "RQ4 – Thermal degradation: several ratios show significant monotonic changes with heating, in both oils and chips, usable as thermal load markers."
+    )
 
     # RQ5 – Minimal feature set
     rq5_text = f"""
@@ -1797,7 +1613,9 @@ Thus, a compact marker panel of {minimal_panel['chosen_k']} ratios is sufficient
 offering a practical compromise between analytical complexity and performance.
     """
     add("RQ5 – Minimal feature set", rq5_text)
-    brief_lines.append(f"RQ5 – Minimal feature set: ≈{minimal_panel['chosen_k']} top ratios retain almost full discrimination performance (Δaccuracy ≤ 0.02).")
+    brief_lines.append(
+        f"RQ5 – Minimal feature set: ≈{minimal_panel['chosen_k']} top ratios retain almost full discrimination performance (Δaccuracy ≤ 0.02)."
+    )
 
     # RQ6 – Unsupervised clustering structure
     if clustering_metrics is not None:
@@ -1814,7 +1632,9 @@ Mis-clustered samples, if any, likely correspond to oils with borderline composi
 Clustering could not be reliably evaluated because there were fewer than two distinct oil classes with valid data.
         """
     add("RQ6 – Unsupervised clustering structure", rq6_text)
-    brief_lines.append("RQ6 – Clustering: K-means on ratiometric space reproduces oil labels with good silhouette and ARI, confirming natural clustering.")
+    brief_lines.append(
+        "RQ6 – Clustering: K-means on ratiometric space reproduces oil labels with good silhouette and ARI, confirming natural clustering."
+    )
 
     # RQ7 – Wavenumber / region importance
     band_summary_lines = []
@@ -1849,7 +1669,9 @@ Together, these regions form a chemically interpretable fingerprint that separat
 and chain packing.
     """
     add("RQ7 – Wavenumber / region importance", rq7_text)
-    brief_lines.append("RQ7 – Wavenumber importance: carbonyl (1742 cm⁻¹), unsaturation (1652 cm⁻¹) and CH₂ bands dominate the discriminative signal.")
+    brief_lines.append(
+        "RQ7 – Wavenumber importance: carbonyl (1742 cm⁻¹), unsaturation (1652 cm⁻¹) and CH₂ bands dominate the discriminative signal."
+    )
 
     # RQ8 – Intra-class spectral variability
     rq8_text = f"""
@@ -1865,7 +1687,9 @@ Oils with higher intra-class variability are expected to be more challenging to 
 heterogeneity (e.g. blended or less controlled products) or experimental factors (e.g. sampling, illumination, or matrix effects).
     """
     add("RQ8 – Intra-class spectral variability", rq8_text)
-    brief_lines.append("RQ8 – Intra-class variability: oils differ markedly in internal CV; more heterogeneous oils may require more replicates or tailored calibration.")
+    brief_lines.append(
+        "RQ8 – Intra-class variability: oils differ markedly in internal CV; more heterogeneous oils may require more replicates or tailored calibration."
+    )
 
     # RQ9 – Functional band behaviour
     # Use group means per oil per ratio from Supplementary_Table_GroupMeanStd.csv
@@ -1903,7 +1727,9 @@ CH₂ bending and twisting bands (1434, 1296 cm⁻¹) further differentiate chai
 information carried by carbonyl and C=C bands.
     """
     add("RQ9 – Functional band behaviour", rq9_text)
-    brief_lines.append("RQ9 – Functional bands: carbonyl and unsaturation ratios stratify oils in ways consistent with composition (richer vs more saturated profiles).")
+    brief_lines.append(
+        "RQ9 – Functional bands: carbonyl and unsaturation ratios stratify oils in ways consistent with composition (richer vs more saturated profiles)."
+    )
 
     # RQ10 – Peak position shifts with heating
     if peak_shift_df is not None and not peak_shift_df.empty:
@@ -1914,7 +1740,9 @@ information carried by carbonyl and C=C bands.
         else:
             sig_text = "No statistically significant (p<0.05) peak position shifts with heating were detected."
     else:
-        sig_text = "Peak-position shift analysis could not be performed (OIL_PEAK_CV_CSV unavailable or insufficient data)."
+        sig_text = (
+            "Peak-position shift analysis could not be performed (OIL_PEAK_CV_CSV unavailable or insufficient data)."
+        )
 
     rq10_text = f"""
 To probe structural and compositional changes beyond intensity variations, peak positions were regressed against heating stage
@@ -1929,7 +1757,9 @@ changes in local bonding environment, unsaturation, or hydrogen-bonding pattern.
 that (within the studied heating protocol) intensity-based markers may be more sensitive than position-based markers.
     """
     add("RQ10 – Peak position shifts with heating", rq10_text)
-    brief_lines.append("RQ10 – Peak shifts: peak position regressions vs heating generally show small or modest shifts; intensity changes are more prominent markers.")
+    brief_lines.append(
+        "RQ10 – Peak shifts: peak position regressions vs heating generally show small or modest shifts; intensity changes are more prominent markers."
+    )
 
     # RQ11 – Thermal stability index per oil
     if tsi_df is not None and not tsi_df.empty:
@@ -1949,7 +1779,9 @@ Oils with low TSI show spectra that remain close to their unheated fingerprint e
 oils drift further in chemometric space, indicating stronger structural or compositional changes under the same thermal load.
     """
     add("RQ11 – Thermal stability index per oil", rq11_text)
-    brief_lines.append("RQ11 – Thermal stability index: oils can be ranked by chemometric drift from their unheated fingerprint; low-TSI oils are more stable.")
+    brief_lines.append(
+        "RQ11 – Thermal stability index: oils can be ranked by chemometric drift from their unheated fingerprint; low-TSI oils are more stable."
+    )
 
     # RQ12 – Heating-stage prediction (“chemical clock”)
     if heating_pred_oil is not None:
@@ -1981,7 +1813,9 @@ These results indicate that, within the studied heating protocol, the ratiometri
 approximate the cumulative thermal load, although prediction errors on individual spectra should be interpreted with caution.
     """
     add("RQ12 – Heating-stage prediction (“chemical clock”)", rq12_text)
-    brief_lines.append("RQ12 – Chemical clock: RandomForest regression recovers heating stage with non-trivial R²; ratiometric spectra encode thermal history.")
+    brief_lines.append(
+        "RQ12 – Chemical clock: RandomForest regression recovers heating stage with non-trivial R²; ratiometric spectra encode thermal history."
+    )
 
     # RQ13 – Global chemometric map
     rq13_text = f"""
@@ -1996,7 +1830,9 @@ Taken together, these maps provide an intuitive visualization of global relation
 highlighting families, gradients, and potential outliers.
     """
     add("RQ13 – Global chemometric map", rq13_text)
-    brief_lines.append("RQ13 – Chemometric map: PCA and MDS reveal structured gradients and family clusters among oils, with clear outliers.")
+    brief_lines.append(
+        "RQ13 – Chemometric map: PCA and MDS reveal structured gradients and family clusters among oils, with clear outliers."
+    )
 
     # RQ14 – Normalization robustness
     if norm_robustness is not None and norm_robustness["vector"] is not None:
@@ -2028,7 +1864,9 @@ Normalization robustness could not be fully evaluated (vector normalization metr
 reference-peak normalization already supports the stability of the main conclusions.
         """
     add("RQ14 – Normalization robustness", rq14_text)
-    brief_lines.append("RQ14 – Normalization: both reference-peak and vector normalization preserve high discrimination and clustering; conclusions are robust.")
+    brief_lines.append(
+        "RQ14 – Normalization: both reference-peak and vector normalization preserve high discrimination and clustering; conclusions are robust."
+    )
 
     # ---------- Write files ----------
     detailed_path = PUBLICATION_SUMMARY_DIR / "RQ_detailed_answers.txt"
@@ -2063,7 +1901,9 @@ def run_workflow(cfg: Config) -> Path:
     if cfg.chips_csv and os.path.exists(cfg.chips_csv):
         run_chips_heating_stats()
     else:
-        print(f"\n[WARN] Chips file not found or not provided: {CHIPS_RATIOMETRIC_CSV} – skipping chips heating analysis.")
+        print(
+            f"\n[WARN] Chips file not found or not provided: {CHIPS_RATIOMETRIC_CSV} – skipping chips heating analysis."
+        )
 
     # Thermal stability – Oils
     run_oil_heating_stats()
@@ -2095,7 +1935,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the FoodSpec Raman workflow end-to-end.")
     parser.add_argument("--input_csv", required=True, help="Wide-format Raman CSV with metadata + wavenumber columns.")
     parser.add_argument("--chips_csv", default=None, help="Optional chips ratiometric CSV for heating analysis.")
-    parser.add_argument("--run_name", default="raman_cli_run", help="Name of the run (outputs under results/<run_name>).")
+    parser.add_argument(
+        "--run_name", default="raman_cli_run", help="Name of the run (outputs under results/<run_name>)."
+    )
     parser.add_argument("--output_root", default="results", help="Root directory for outputs.")
     parser.add_argument("--oil_col", default="Oil_Name", help="Column holding oil identity.")
     parser.add_argument("--heating_col", default="Heating_Stage", help="Column holding heating stage/time.")
