@@ -49,4 +49,3 @@ def plot_roc_curves(curves: Dict[str, Tuple[np.ndarray, np.ndarray]], ax=None):
     ax.set_ylabel("True Positive Rate")
     ax.legend()
     return ax
-

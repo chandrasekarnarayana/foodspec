@@ -1,7 +1,6 @@
 import pandas as pd
 from fastapi.testclient import TestClient
-
-from webapp.backend.main import app, MODELS_DIR
+from webapp.backend.main import MODELS_DIR, app
 
 
 def test_models_endpoint(tmp_path, monkeypatch):
@@ -19,7 +18,9 @@ def test_predict_endpoint(tmp_path, monkeypatch):
     # Create a fake model by saving empty json/pkl; use monkeypatch to point MODELS_DIR to tmp
     monkeypatch.setenv("FOODSPEC_MODELS_DIR", str(tmp_path))
     from importlib import reload
+
     from webapp.backend import main
+
     reload(main)
     mdl_prefix = tmp_path / "toy"
     (mdl_prefix.with_suffix(".json")).write_text("{}")

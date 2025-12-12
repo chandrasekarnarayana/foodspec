@@ -33,4 +33,3 @@ def correlation_similarity_matrix(X_ref: np.ndarray, X_query: np.ndarray) -> np.
     query_norm = np.maximum(query_norm, np.finfo(float).eps)
     sims = (X_ref_centered @ X_query_centered.T) / (ref_norm * query_norm.T)
     return sims
-

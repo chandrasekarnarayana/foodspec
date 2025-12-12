@@ -4,6 +4,7 @@ Provides access to a small PNG of the FoodSpec logo for GUI/reporting use cases
 without needing to ship an external asset path. The image is base64-encoded
 below; helper functions decode to bytes or save to disk.
 """
+
 from __future__ import annotations
 
 import base64
@@ -132,5 +133,6 @@ def save_logo(path: str | Path) -> Path:
     out = Path(path)
     out.write_bytes(get_logo_bytes())
     return out
+
 
 __all__ = ["LOGO_BASE64", "get_logo_bytes", "get_logo_base64", "save_logo"]

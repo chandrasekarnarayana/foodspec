@@ -32,9 +32,7 @@ def test_cli_protocol_batch_mode(tmp_path: Path):
                             "oil_col": "oil_type",
                             "matrix_col": "matrix",
                             "heating_col": "heating_stage",
-                            "ratios": [
-                                {"name": "1742/2720", "numerator": "I_1742", "denominator": "I_2720"}
-                            ],
+                            "ratios": [{"name": "1742/2720", "numerator": "I_1742", "denominator": "I_2720"}],
                         },
                     },
                     {"type": "output", "params": {"output_dir": str(tmp_path / "runs")}},

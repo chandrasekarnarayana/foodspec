@@ -182,10 +182,7 @@ def _stack_spectra_on_common_axis(
     """Build common axis; interpolate spectra if needed."""
 
     reference = w_axes[0]
-    identical = all(
-        wav.shape == reference.shape and np.allclose(wav, reference)
-        for wav in w_axes[1:]
-    )
+    identical = all(wav.shape == reference.shape and np.allclose(wav, reference) for wav in w_axes[1:])
     if identical:
         stacked = np.vstack(spectra)
         return reference, stacked
@@ -196,4 +193,3 @@ def _stack_spectra_on_common_axis(
         interpolated.append(interp)
     stacked = np.vstack(interpolated)
     return reference, stacked
-

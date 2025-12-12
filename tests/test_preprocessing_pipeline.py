@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from foodspec.preprocessing_pipeline import PreprocessingConfig, run_full_preprocessing, detect_input_mode
+from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
 
 
 def test_preprocess_raw_spectra_produces_peaks():
@@ -40,6 +40,7 @@ def test_preprocess_with_peaks_extracts_intensity():
         }
     )
     from foodspec.rq import PeakDefinition
+
     cfg = PreprocessingConfig(
         baseline_enabled=False,
         smooth_enabled=False,

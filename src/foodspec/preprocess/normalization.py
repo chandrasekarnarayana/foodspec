@@ -78,9 +78,7 @@ class InternalPeakNormalizer(BaseEstimator, TransformerMixin):
     ) -> "InternalPeakNormalizer":
         return self
 
-    def transform(
-        self, X: np.ndarray, wavenumbers: Optional[np.ndarray] = None
-    ) -> np.ndarray:
+    def transform(self, X: np.ndarray, wavenumbers: Optional[np.ndarray] = None) -> np.ndarray:
         X = np.asarray(X, dtype=float)
         if X.ndim != 2:
             raise ValueError("X must be 2D array of shape (n_samples, n_wavenumbers).")
@@ -96,9 +94,7 @@ class InternalPeakNormalizer(BaseEstimator, TransformerMixin):
             raise ValueError("window must be positive.")
 
         half = self.window / 2.0
-        mask = (wavenumbers >= self.target_wavenumber - half) & (
-            wavenumbers <= self.target_wavenumber + half
-        )
+        mask = (wavenumbers >= self.target_wavenumber - half) & (wavenumbers <= self.target_wavenumber + half)
         if not np.any(mask):
             raise ValueError("No points found within the specified window.")
 

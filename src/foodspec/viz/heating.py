@@ -25,4 +25,3 @@ def plot_ratio_vs_time(time, ratio, model: LinearRegression | None = None, ax=No
     if label or model is not None:
         ax.legend()
     return ax
-

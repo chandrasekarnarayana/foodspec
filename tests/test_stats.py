@@ -92,8 +92,10 @@ def test_nonparametric_tests_detect_difference():
 def test_bootstrap_and_permutation_metric():
     y_true = np.array([0, 1, 1, 0, 1, 0])
     y_pred = np.array([0, 1, 1, 0, 0, 0])
+
     def acc(a, b):
         return np.mean(a == b)
+
     boot = bootstrap_metric(acc, y_true, y_pred, n_bootstrap=100, random_state=0)
     assert "bootstrap_samples" in boot and len(boot["bootstrap_samples"]) == 100
     perm = permutation_test_metric(acc, y_true, y_pred, n_permutations=100, random_state=0)

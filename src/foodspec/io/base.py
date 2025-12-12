@@ -15,5 +15,4 @@ from foodspec.core.dataset import FoodSpectrumSet
 
 
 class SpectraLoader(Protocol):
-    def __call__(self, path: str, **kwargs) -> pd.DataFrame | FoodSpectrumSet:
-        ...
+    def __call__(self, path: str, **kwargs) -> pd.DataFrame | FoodSpectrumSet: ...

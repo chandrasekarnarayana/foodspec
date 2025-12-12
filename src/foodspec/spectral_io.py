@@ -2,6 +2,7 @@
 Simple loaders/savers for vendor-neutral spectra.
 Includes stubs for vendor formats (OPUS, WiRE, ENVI) that can be upgraded later.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -59,7 +60,9 @@ def load_opus(path: Union[str, Path]) -> SpectralDataset:
     try:
         return load_foodspec_csv(path)
     except Exception as exc:
-        raise ValueError(f"This file looks like OPUS but could not be parsed. Ensure you export as ASCII/CSV. Details: {exc}")
+        raise ValueError(
+            "This file looks like OPUS but could not be parsed. Ensure you export as ASCII/CSV. " f"Details: {exc}"
+        )
 
 
 def load_wire(path: Union[str, Path]) -> SpectralDataset:
@@ -69,7 +72,9 @@ def load_wire(path: Union[str, Path]) -> SpectralDataset:
     try:
         return load_foodspec_csv(path)
     except Exception as exc:
-        raise ValueError(f"This file looks like a WiRE export but could not be parsed. Try exporting as CSV. Details: {exc}")
+        raise ValueError(
+            "This file looks like a WiRE export but could not be parsed. Try exporting as CSV. " f"Details: {exc}"
+        )
 
 
 def load_envi(path_hdr: Union[str, Path], path_dat: Optional[Union[str, Path]] = None) -> SpectralDataset:
@@ -96,7 +101,11 @@ def detect_format(path: Union[str, Path]) -> str:
     return "csv"
 
 
-def align_wavenumbers(datasets: List[SpectralDataset], target_grid: Optional[np.ndarray] = None, method: str = "interp") -> List[SpectralDataset]:
+def align_wavenumbers(
+    datasets: List[SpectralDataset],
+    target_grid: Optional[np.ndarray] = None,
+    method: str = "interp",
+) -> List[SpectralDataset]:
     """
     Align multiple datasets to a common wavenumber grid via interpolation.
     """
@@ -121,4 +130,12 @@ def align_wavenumbers(datasets: List[SpectralDataset], target_grid: Optional[np.
     return out
 
 
-__all__ = ["load_any_spectra", "load_foodspec_csv", "load_opus", "load_wire", "load_envi", "align_wavenumbers", "detect_format"]
+__all__ = [
+    "load_any_spectra",
+    "load_foodspec_csv",
+    "load_opus",
+    "load_wire",
+    "load_envi",
+    "align_wavenumbers",
+    "detect_format",
+]

@@ -47,4 +47,3 @@ class CosmicRayRemover(BaseEstimator, TransformerMixin):
                 right = y_clean[i + 1] if i + 1 < len(y) else median
                 y_clean[i] = 0.5 * (left + right)
         return y_clean
-

@@ -3,7 +3,7 @@ import pytest
 
 def test_gui_wizard_smoke():
     try:
-        import PyQt5  # type: ignore
+        pass  # type: ignore
     except Exception:
         pytest.skip("PyQt5 not installed")
     try:

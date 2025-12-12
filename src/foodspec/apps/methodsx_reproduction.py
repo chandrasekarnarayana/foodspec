@@ -84,9 +84,7 @@ def run_methodsx_reproduction(output_dir: PathLike, random_state: int = 42) -> D
     # If values look like percentages, scale to 0-1
     if np.nanmax(y) > 1:
         y = y / 100.0
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=random_state, stratify=None
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=random_state, stratify=None)
     reg = Pipeline([("scaler", StandardScaler()), ("linreg", LinearRegression())])
     reg.fit(X_train, y_train)
     y_pred = reg.predict(X_test)
@@ -102,14 +100,8 @@ def run_methodsx_reproduction(output_dir: PathLike, random_state: int = 42) -> D
             "classification, PCA visualization, and EVOO–sunflower mixture regression."
         ),
         "Key metrics": summarize_metrics_for_markdown(metrics),
-        "Artifacts": (
-            "- oil_confusion_matrix.png\n"
-            "- oil_pca_scores.png\n"
-            "- metrics.json"
-        ),
-        "Assumptions": (
-            "Public datasets must be downloaded locally for the loaders to succeed."
-        ),
+        "Artifacts": ("- oil_confusion_matrix.png\n" "- oil_pca_scores.png\n" "- metrics.json"),
+        "Assumptions": ("Public datasets must be downloaded locally for the loaders to succeed."),
     }
     write_markdown_report(run_dir / "report.md", title="MethodsX Protocol Reproduction", sections=sections)
     return metrics

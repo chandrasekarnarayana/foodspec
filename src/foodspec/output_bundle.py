@@ -72,7 +72,13 @@ def append_log(run_dir: Path, message: str):
         f.write(message.strip() + "\n")
 
 
-def save_index(run_dir: Path, metadata: Dict, tables: Dict[str, object], figures: Dict[str, object], warnings: List[str]):
+def save_index(
+    run_dir: Path,
+    metadata: Dict,
+    tables: Dict[str, object],
+    figures: Dict[str, object],
+    warnings: List[str],
+):
     """
     Lightweight index.json for quick inspection of a run.
     Lists tables, figures, metadata, and warnings/notes.

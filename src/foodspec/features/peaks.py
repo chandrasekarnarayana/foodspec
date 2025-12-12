@@ -79,9 +79,7 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
         self._build_feature_names()
         return self
 
-    def transform(
-        self, X: np.ndarray, wavenumbers: Optional[np.ndarray] = None
-    ) -> np.ndarray:
+    def transform(self, X: np.ndarray, wavenumbers: Optional[np.ndarray] = None) -> np.ndarray:
         X = np.asarray(X, dtype=float)
         if X.ndim != 2:
             raise ValueError("X must be 2D with shape (n_samples, n_wavenumbers).")
@@ -98,9 +96,7 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
         for i, spectrum in enumerate(X):
             col = 0
             for peak_center in self.expected_peaks:
-                mask = (wavenumbers >= peak_center - self.tolerance) & (
-                    wavenumbers <= peak_center + self.tolerance
-                )
+                mask = (wavenumbers >= peak_center - self.tolerance) & (wavenumbers <= peak_center + self.tolerance)
                 if not np.any(mask):
                     area = np.nan
                     height = np.nan

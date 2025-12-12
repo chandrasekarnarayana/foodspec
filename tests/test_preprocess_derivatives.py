@@ -15,4 +15,3 @@ def test_derivative_transformer_smoke():
 
     assert X_der.shape == X.shape
     assert np.isfinite(X_der).all()
-

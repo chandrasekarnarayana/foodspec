@@ -1,6 +1,7 @@
 """
 Validation utilities for FoodSpec: batch-aware CV, group-stratified splits, nested CV.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,7 +9,7 @@ from typing import Iterator, List, Optional, Tuple
 
 import numpy as np
 from sklearn.metrics import balanced_accuracy_score, confusion_matrix, recall_score, roc_auc_score
-from sklearn.model_selection import GroupKFold, StratifiedKFold, StratifiedGroupKFold
+from sklearn.model_selection import GroupKFold, StratifiedGroupKFold, StratifiedKFold
 
 
 def group_stratified_split(y: np.ndarray, groups: np.ndarray, n_splits: int) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
@@ -32,7 +33,12 @@ def group_stratified_split(y: np.ndarray, groups: np.ndarray, n_splits: int) -> 
         yield np.where(train_idx)[0], np.where(test_idx)[0]
 
 
-def batch_aware_cv(X: np.ndarray, y: np.ndarray, batches: np.ndarray, n_splits: int) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+def batch_aware_cv(
+    X: np.ndarray,
+    y: np.ndarray,
+    batches: np.ndarray,
+    n_splits: int,
+) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
     """
     Hold out all samples from a batch together.
     """

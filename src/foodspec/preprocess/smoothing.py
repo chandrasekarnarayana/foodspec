@@ -31,9 +31,7 @@ class SavitzkyGolaySmoother(BaseEstimator, TransformerMixin):
         if self.window_length > X.shape[1]:
             raise ValueError("window_length cannot exceed number of wavenumbers.")
 
-        return savgol_filter(
-            X, window_length=self.window_length, polyorder=self.polyorder, axis=1
-        )
+        return savgol_filter(X, window_length=self.window_length, polyorder=self.polyorder, axis=1)
 
 
 class MovingAverageSmoother(BaseEstimator, TransformerMixin):

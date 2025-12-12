@@ -5,13 +5,15 @@ TrainablePipeline wraps preprocessing + feature construction (peaks/ratios) +
 an ML model (RF or LogisticRegression) and can produce a FrozenModel that
 embeds all transforms and metadata for reproducible prediction.
 """
+
 from __future__ import annotations
 
 import json
+import os
 import pickle
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
@@ -19,9 +21,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-from foodspec.preprocessing_pipeline import PreprocessingConfig, run_full_preprocessing, detect_input_mode
+from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
+from foodspec.registry import FeatureModelRegistry
 from foodspec.rq import PeakDefinition, RatioDefinition
-from foodspec.registry import FeatureModelRegistry, RegistryEntry
 
 
 def _compute_ratios(df: pd.DataFrame, ratios: List[RatioDefinition]) -> pd.DataFrame:

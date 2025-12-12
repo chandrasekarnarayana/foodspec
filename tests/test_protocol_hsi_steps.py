@@ -20,15 +20,15 @@ def test_protocol_hsi_segment_and_roi_to_1d():
         "name": "hsi_roi_demo",
         "steps": [
             {"type": "hsi_segment", "params": {"method": "kmeans", "n_clusters": 2}},
-                {
-                    "type": "hsi_roi_to_1d",
-                    "params": {
-                        "peaks": [
-                            {"name": "I_1000", "column": "I_1000", "wavenumber": 1000.0},
-                            {"name": "I_1100", "column": "I_1100", "wavenumber": 1100.0},
-                        ]
-                    },
+            {
+                "type": "hsi_roi_to_1d",
+                "params": {
+                    "peaks": [
+                        {"name": "I_1000", "column": "I_1000", "wavenumber": 1000.0},
+                        {"name": "I_1100", "column": "I_1100", "wavenumber": 1100.0},
+                    ]
                 },
+            },
         ],
     }
     cfg = ProtocolConfig.from_dict(proto)

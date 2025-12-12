@@ -4,10 +4,10 @@ Advanced harmonization utilities:
 - Intensity normalization using metadata (e.g., laser power).
 - Diagnostics (pre/post alignment metrics).
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -87,7 +87,8 @@ def harmonize_datasets_advanced(
 def plot_harmonization_diagnostics(datasets: List[SpectralDataset]):
     fig = plt.figure(figsize=(6, 4))
     for ds in datasets:
-        plt.plot(ds.wavenumbers, np.nanmean(ds.spectra, axis=0), alpha=0.5, label=ds.instrument_meta.get("instrument_id", "inst"))
+        label = ds.instrument_meta.get("instrument_id", "inst")
+        plt.plot(ds.wavenumbers, np.nanmean(ds.spectra, axis=0), alpha=0.5, label=label)
     plt.xlabel("Wavenumber (cm$^{-1}$)")
     plt.ylabel("Mean intensity (a.u.)")
     plt.legend()

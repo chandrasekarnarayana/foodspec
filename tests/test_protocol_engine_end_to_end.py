@@ -14,9 +14,7 @@ def test_protocol_engine_runs_toy():
                     "oil_col": "oil_type",
                     "matrix_col": "matrix",
                     "heating_col": "heating_stage",
-                    "ratios": [
-                        {"name": "1742/2720", "numerator": "I_1742", "denominator": "I_2720"}
-                    ],
+                    "ratios": [{"name": "1742/2720", "numerator": "I_1742", "denominator": "I_2720"}],
                 },
             },
             {"type": "output", "params": {"output_dir": "protocol_runs_test"}},

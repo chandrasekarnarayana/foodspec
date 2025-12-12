@@ -30,15 +30,9 @@ def compute_classification_metrics(
 
     results: dict[str, Any] = {
         "accuracy": metrics.accuracy_score(y_true, y_pred),
-        "precision": metrics.precision_score(
-            y_true, y_pred, zero_division=0, average=average, pos_label=pos_label
-        ),
-        "recall": metrics.recall_score(
-            y_true, y_pred, zero_division=0, average=average, pos_label=pos_label
-        ),
-        "f1": metrics.f1_score(
-            y_true, y_pred, zero_division=0, average=average, pos_label=pos_label
-        ),
+        "precision": metrics.precision_score(y_true, y_pred, zero_division=0, average=average, pos_label=pos_label),
+        "recall": metrics.recall_score(y_true, y_pred, zero_division=0, average=average, pos_label=pos_label),
+        "f1": metrics.f1_score(y_true, y_pred, zero_division=0, average=average, pos_label=pos_label),
     }
     if y_proba is not None and len(labels) == 2:
         y_proba = np.asarray(y_proba)

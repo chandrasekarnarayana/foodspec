@@ -29,9 +29,7 @@ def test_protocol_validation_benchmarks_full(tmp_path, monkeypatch):
     monkeypatch.setattr(
         pv,
         "train_test_split",
-        lambda *args, **kwargs: sk_split(
-            *args, test_size=0.5, stratify=args[1], random_state=0
-        ),
+        lambda *args, **kwargs: sk_split(*args, test_size=0.5, stratify=args[1], random_state=0),
     )
 
     summary = pv.run_protocol_benchmarks(output_dir=tmp_path, random_state=0)

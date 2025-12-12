@@ -29,6 +29,7 @@ def main(argv=None):
 
     if args.check_env:
         from foodspec.check_env import check_env
+
         print(check_env())
         return 0
 

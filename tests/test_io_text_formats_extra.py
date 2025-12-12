@@ -1,4 +1,3 @@
-
 import pytest
 
 from foodspec.io.core import detect_format, read_spectra

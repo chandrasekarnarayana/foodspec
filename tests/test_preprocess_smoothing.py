@@ -17,4 +17,3 @@ def test_moving_average_smoothing():
     out = ma.transform(X)
     assert out.shape == X.shape
     assert np.allclose(out[0, 2], np.mean([5, 7, 9]))
-

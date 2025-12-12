@@ -26,7 +26,6 @@ except ImportError:  # pragma: no cover
     pairwise_gameshowell = None
 
 
-
 @dataclass
 class TestResult:
     """Container for hypothesis test outputs."""
@@ -324,18 +323,12 @@ def run_mannwhitney_u(
             try:
                 g1, g2 = data, group_col
             except Exception as exc:  # pragma: no cover
-                raise ValueError(
-                    "Provide two samples (g1, g2) or "
-                    "a DataFrame with group/value columns."
-                ) from exc
+                raise ValueError("Provide two samples (g1, g2) or " "a DataFrame with group/value columns.") from exc
         else:
             try:
                 g1, g2 = data
             except Exception as exc:  # pragma: no cover
-                raise ValueError(
-                    "Provide two samples (g1, g2) or "
-                    "a DataFrame with group/value columns."
-                ) from exc
+                raise ValueError("Provide two samples (g1, g2) or " "a DataFrame with group/value columns.") from exc
 
     stat, p = stats.mannwhitneyu(g1, g2, alternative=alternative)
     summary = pd.DataFrame(

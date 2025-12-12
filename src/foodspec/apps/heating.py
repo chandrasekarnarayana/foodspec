@@ -103,9 +103,7 @@ def run_heating_degradation_analysis(
     extractor = PeakFeatureExtractor(expected_peaks=[1655.0, 1742.0], tolerance=8.0)
     extractor.fit(X_proc, wavenumbers=wn_proc)
     peak_feats = extractor.transform(X_proc, wavenumbers=wn_proc)
-    peak_df = pd.DataFrame(
-        peak_feats, columns=extractor.get_feature_names_out(), index=spectra.metadata.index
-    )
+    peak_df = pd.DataFrame(peak_feats, columns=extractor.get_feature_names_out(), index=spectra.metadata.index)
     ratios = RatioFeatureGenerator({"ratio_1655_1742": ("peak_1655.0_height", "peak_1742.0_height")})
     ratio_df = ratios.transform(peak_df)
 

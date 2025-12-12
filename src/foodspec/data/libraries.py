@@ -52,9 +52,7 @@ def load_library(path: PathLike) -> FoodSpectrumSet:
         modality = h5.attrs["modality"]
     # Explicit orient and dtype backend avoid pandas warnings on literal JSON (pandas 2.2+).
     metadata = pd.read_json(io.StringIO(metadata_json), orient="table")
-    return FoodSpectrumSet(
-        x=x, wavenumbers=wavenumbers, metadata=metadata, modality=modality
-    )
+    return FoodSpectrumSet(x=x, wavenumbers=wavenumbers, metadata=metadata, modality=modality)
 
 
 def search_library_fingerprint(
@@ -64,9 +62,7 @@ def search_library_fingerprint(
 ) -> pd.DataFrame:
     """Compute similarity scores between query spectra and a library."""
 
-    if library.wavenumbers.shape != query.wavenumbers.shape or not np.allclose(
-        library.wavenumbers, query.wavenumbers
-    ):
+    if library.wavenumbers.shape != query.wavenumbers.shape or not np.allclose(library.wavenumbers, query.wavenumbers):
         raise ValueError("Library and query must share identical wavenumber axes.")
 
     if metric == "cosine":

@@ -11,7 +11,7 @@ Goals:
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
@@ -26,9 +26,10 @@ try:
 except Exception:  # pragma: no cover - optional dependency
     h5py = None
 
-from foodspec.rq import PeakDefinition
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.decomposition import NMF
+
+from foodspec.rq import PeakDefinition
 
 
 # -------------------- Baselines --------------------
@@ -121,6 +122,7 @@ class PreprocessingConfig:
     """
     Declarative preprocessing configuration.
     """
+
     baseline_method: str = "als"  # als | rubberband | polynomial | none
     baseline_enabled: bool = True
     baseline_lambda: float = 1e5
@@ -259,7 +261,6 @@ class SpectralDataset:
         if h5py is None:
             raise ImportError("h5py not installed.")
         with h5py.File(path, "r") as f:
-            schema_version = f.attrs.get("foodspec_hdf5_schema_version", "0")
             if "spectra" in f and "wn_axis" in f["spectra"]:
                 wn = f["spectra"]["wn_axis"][:]
                 spectra = f["spectra"]["intensities"][:]
@@ -283,7 +284,10 @@ class SpectralDataset:
         return SpectralDataset(wn, spectra, metadata, instrument_meta, logs, history)
 
 
-def harmonize_datasets(datasets: List[SpectralDataset], target_wavenumbers: Optional[np.ndarray] = None) -> List[SpectralDataset]:
+def harmonize_datasets(
+    datasets: List[SpectralDataset],
+    target_wavenumbers: Optional[np.ndarray] = None,
+) -> List[SpectralDataset]:
     """
     Simple harmonization: interpolate all spectra to a common wavenumber grid.
     If target_wavenumbers is None, use the median grid of the inputs.
@@ -310,12 +314,18 @@ class HyperspectralDataset(SpectralDataset):
     Hyperspectral cube: shape (y, x, wn). Stored as spectra flattened to (n_pixels, wn)
     with spatial shape tracked separately.
     """
+
     shape_xy: Tuple[int, int] = field(default_factory=lambda: (0, 0))
     label_map: Optional[np.ndarray] = None  # segmentation labels
     roi_masks: Optional[Dict[str, np.ndarray]] = None
 
     @staticmethod
-    def from_cube(cube: np.ndarray, wavenumbers: np.ndarray, metadata: pd.DataFrame, instrument_meta: Dict[str, Any] = None) -> "HyperspectralDataset":
+    def from_cube(
+        cube: np.ndarray,
+        wavenumbers: np.ndarray,
+        metadata: pd.DataFrame,
+        instrument_meta: Dict[str, Any] = None,
+    ) -> "HyperspectralDataset":
         y, x, wn_len = cube.shape
         spectra = cube.reshape((-1, wn_len))
         return HyperspectralDataset(

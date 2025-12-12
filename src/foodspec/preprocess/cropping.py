@@ -24,9 +24,7 @@ class RangeCropper(BaseEstimator):
     def fit(self, X: np.ndarray, y=None, wavenumbers: np.ndarray | None = None):
         return self
 
-    def transform(
-        self, X: np.ndarray, wavenumbers: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def transform(self, X: np.ndarray, wavenumbers: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         X = np.asarray(X, dtype=float)
         wavenumbers = np.asarray(wavenumbers, dtype=float)
         if X.ndim != 2:

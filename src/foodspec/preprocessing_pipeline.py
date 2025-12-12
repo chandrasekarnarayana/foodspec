@@ -7,8 +7,7 @@ and extracts peak intensities for downstream RatioQualityEngine.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List
 
 import numpy as np
 import pandas as pd
@@ -17,8 +16,6 @@ from scipy.signal import savgol_filter
 from scipy.sparse.linalg import spsolve
 
 from foodspec.rq import PeakDefinition
-
-
 from foodspec.spectral_dataset import PreprocessingConfig  # reuse same config
 
 
@@ -77,9 +74,7 @@ def extract_peaks_from_spectra(
         if peak.wavenumber is None:
             continue
         center = float(peak.wavenumber)
-        low, high = (
-            peak.window if peak.window else (center - 10.0, center + 10.0)
-        )
+        low, high = peak.window if peak.window else (center - 10.0, center + 10.0)
         mask = (wn >= low) & (wn <= high)
         if not mask.any():
             out[peak.name] = np.nan

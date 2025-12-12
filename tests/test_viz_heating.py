@@ -16,4 +16,3 @@ def test_plot_ratio_vs_time():
     ax = plot_ratio_vs_time(time, ratio, model=model)
     assert hasattr(ax, "plot")
     plt.close(ax.figure)
-

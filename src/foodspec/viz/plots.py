@@ -351,6 +351,8 @@ def plot_bland_altman(
     ax.set_title(title or "Bland–Altman plot")
     ax.legend()
     return ax
+
+
 __all__ = [
     "plot_spectra_overlay",
     "plot_mean_with_ci",

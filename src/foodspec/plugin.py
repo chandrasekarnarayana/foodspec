@@ -10,6 +10,7 @@ Discovery via entry points: `foodspec.plugins`.
 Each entry point should expose a `get_plugins()` function returning a dict with keys:
   {"protocols": [...], "vendor_loaders": {...}, "harmonization": {...}}
 """
+
 from __future__ import annotations
 
 import importlib

@@ -6,11 +6,12 @@ Takes a run folder (protocol bundle) and produces:
 - Figure panel PDF assembling key plots
 - Supplemental summary CSV (stub)
 """
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -35,8 +36,17 @@ def generate_methods_text(run_dir: Path) -> str:
     lines.append("")
     lines.append("## Preprocessing")
     if preprocessing:
-        lines.append(f"- Baseline: {preprocessing.get('baseline_method','als')}, lambda={preprocessing.get('baseline_lambda','')}, p={preprocessing.get('baseline_p','')}")
-        lines.append(f"- Smoothing: window={preprocessing.get('smooth_window','')}, poly={preprocessing.get('smooth_polyorder','')}")
+        lines.append(
+            "- Baseline: "
+            f"{preprocessing.get('baseline_method','als')}, "
+            f"lambda={preprocessing.get('baseline_lambda','')}, "
+            f"p={preprocessing.get('baseline_p','')}"
+        )
+        lines.append(
+            "- Smoothing: "
+            f"window={preprocessing.get('smooth_window','')}, "
+            f"poly={preprocessing.get('smooth_polyorder','')}"
+        )
         lines.append(f"- Normalization: {preprocessing.get('normalization','reference')}")
     else:
         lines.append("- See run report for preprocessing details.")
@@ -72,7 +82,13 @@ def _select_figures(fig_paths: List[Path], limit: Optional[int] = None, profile:
     return selected
 
 
-def build_figure_panel(run_dir: Path, out_pdf: Path, fig_limit: Optional[int] = None, include_all: bool = False, profile: str = "standard"):
+def build_figure_panel(
+    run_dir: Path,
+    out_pdf: Path,
+    fig_limit: Optional[int] = None,
+    include_all: bool = False,
+    profile: str = "standard",
+):
     run_dir = Path(run_dir)
     figs_dir = run_dir / "figures"
     images = list(figs_dir.glob("*.png"))
@@ -92,13 +108,19 @@ def build_figure_panel(run_dir: Path, out_pdf: Path, fig_limit: Optional[int] = 
             ax.axis("off")
             ax.set_title(img_path.name)
         # hide unused
-        for ax in axes[len(chosen):]:
+        for ax in axes[len(chosen) :]:
             ax.axis("off")
         pdf.savefig(fig, bbox_inches="tight")
         plt.close(fig)
 
 
-def save_markdown_bundle(run_dir: Path, out_dir: Path, fig_limit: Optional[int] = None, include_all: bool = False, profile: str = "standard"):
+def save_markdown_bundle(
+    run_dir: Path,
+    out_dir: Path,
+    fig_limit: Optional[int] = None,
+    include_all: bool = False,
+    profile: str = "standard",
+):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     methods_text = generate_methods_text(run_dir)

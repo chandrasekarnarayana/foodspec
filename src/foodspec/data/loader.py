@@ -49,4 +49,3 @@ def load_example_oils(seed: Optional[int] = 0) -> FoodSpectrumSet:
         }
     )
     return FoodSpectrumSet(x=X, wavenumbers=wavenumbers, metadata=metadata, modality="raman")
-

@@ -1,4 +1,3 @@
-import json
 import subprocess
 import sys
 from pathlib import Path
@@ -12,9 +11,7 @@ from foodspec.rq import PeakDefinition, RatioDefinition
 
 def test_cli_predict(tmp_path: Path):
     # Train and save a tiny model
-    df = pd.DataFrame(
-        {"oil_type": ["A", "B"], "I_1000": [1.0, 2.0], "I_1100": [1.0, 2.0]}
-    )
+    df = pd.DataFrame({"oil_type": ["A", "B"], "I_1000": [1.0, 2.0], "I_1100": [1.0, 2.0]})
     peaks = [
         PeakDefinition(name="I_1000", column="I_1000", wavenumber=1000),
         PeakDefinition(name="I_1100", column="I_1100", wavenumber=1100),

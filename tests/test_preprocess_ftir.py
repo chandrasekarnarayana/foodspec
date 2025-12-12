@@ -30,4 +30,3 @@ def test_simple_atr_outputs_finite():
     X_corr = atr.transform(X)
     assert X_corr.shape == X.shape
     assert np.isfinite(X_corr).all()
-

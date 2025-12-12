@@ -2,11 +2,12 @@
 Feature & model registry for provenance and audit trails.
 Stores entries in a JSON index (could be swapped for SQLite later).
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, asdict, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -105,9 +106,7 @@ class FeatureModelRegistry:
 
     def query_by_protocol(self, name: str, version: Optional[str] = None) -> List[RegistryEntry]:
         return [
-            e
-            for e in self.entries
-            if e.protocol_name == name and (version is None or e.protocol_version == version)
+            e for e in self.entries if e.protocol_name == name and (version is None or e.protocol_version == version)
         ]
 
     def list_models(self) -> List[str]:

@@ -18,4 +18,3 @@ def test_cosmic_ray_remover_despikes():
     assert np.isfinite(X_clean).all()
     for idx in spike_indices:
         assert X_clean[0, idx] < spikes[idx] / 2.0
-

@@ -1,11 +1,10 @@
-import numpy as np
 import pandas as pd
 
 from foodspec.rq import (
     PeakDefinition,
     RatioDefinition,
-    RQConfig,
     RatioQualityEngine,
+    RQConfig,
 )
 
 

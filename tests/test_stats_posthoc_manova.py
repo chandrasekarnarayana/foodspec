@@ -35,4 +35,3 @@ def test_run_manova_detects_group_difference():
 
     res = run_manova(data, groups)
     assert res.pvalue < 0.05
-

@@ -3,7 +3,7 @@ import pytest
 
 def test_gui_smoke_protocol_cockpit():
     try:
-        import PyQt5  # type: ignore
+        pass  # type: ignore
     except Exception:
         pytest.skip("PyQt5 not installed")
     try:

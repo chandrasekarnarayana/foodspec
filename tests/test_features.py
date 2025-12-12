@@ -73,4 +73,3 @@ def test_compute_ratios_and_similarity():
     assert corr.shape == (2, 2)
     assert np.isclose(cos[0, 0], 1.0)
     assert corr[0, 0] > 0.9
-

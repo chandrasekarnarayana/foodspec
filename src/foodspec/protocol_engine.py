@@ -10,6 +10,7 @@ reports, metadata, logs).
 from __future__ import annotations
 
 import json
+import random
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -17,31 +18,27 @@ from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-import random
 
 try:
     import yaml  # type: ignore
 except Exception:
     yaml = None
 
+from sklearn.ensemble import RandomForestClassifier
+
 from foodspec.output_bundle import (
     append_log,
     create_run_folder,
     save_figures,
+    save_index,
     save_metadata,
     save_report_html,
     save_report_text,
     save_tables,
-    save_index,
 )
-from foodspec.preprocessing_pipeline import PreprocessingConfig, run_full_preprocessing, detect_input_mode
-from foodspec.rq import (
-    PeakDefinition,
-    RatioDefinition,
-    RQConfig,
-    RatioQualityEngine,
-)
-from foodspec.spectral_dataset import SpectralDataset, HyperspectralDataset
+from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
+from foodspec.rq import PeakDefinition, RatioDefinition, RatioQualityEngine, RQConfig
+from foodspec.spectral_dataset import HyperspectralDataset, SpectralDataset
 
 
 @dataclass
@@ -186,6 +183,7 @@ class RQAnalysisStep(Step):
         validation_metrics = None
         try:
             from foodspec.validation import nested_cv
+
             df = ctx["data"]
             feature_cols = [p.column for p in peaks] + [r.name for r in ratios]
             feature_cols = [c for c in feature_cols if c in df.columns]
@@ -251,7 +249,13 @@ class OutputStep(Step):
         save_figures(run_dir, ctx.get("figures", {}))
         ctx["metadata"]["logs"] = ctx["logs"]
         save_metadata(run_dir, ctx["metadata"])
-        save_index(run_dir, ctx["metadata"], ctx.get("tables", {}), ctx.get("figures", {}), ctx.get("validation", {}).get("warnings", []))
+        save_index(
+            run_dir,
+            ctx["metadata"],
+            ctx.get("tables", {}),
+            ctx.get("figures", {}),
+            ctx.get("validation", {}).get("warnings", []),
+        )
         # Persist HSI artifacts when available
         hsi_labels = ctx.get("hsi_labels")
         if hsi_labels is not None:
@@ -272,8 +276,9 @@ class HarmonizeStep(Step):
         self.cfg = cfg
 
     def run(self, ctx: Dict[str, Any]):
-        from foodspec.spectral_io import align_wavenumbers
         from foodspec.harmonization import harmonize_datasets_advanced, plot_harmonization_diagnostics
+        from foodspec.spectral_io import align_wavenumbers
+
         datasets = ctx.get("datasets")
         if datasets is None or len(datasets) == 0:
             ctx["logs"].append("[harmonize] No datasets provided; skipping.")
@@ -286,12 +291,17 @@ class HarmonizeStep(Step):
             # save simple mean overlay plot into figures dict
             fig = plot_harmonization_diagnostics(aligned)
             ctx["figures"]["harmonization/mean_overlay"] = fig
-            ctx["logs"].append(f"[harmonize] Advanced harmonization across {len(datasets)} datasets; residual_std_mean={diag.get('residual_std_mean'):.4g}")
+            ctx["logs"].append(
+                "[harmonize] Advanced harmonization across "
+                f"{len(datasets)} datasets; residual_std_mean={diag.get('residual_std_mean'):.4g}"
+            )
         else:
             aligned = align_wavenumbers(datasets, target_grid=target_grid)
             ctx["logs"].append("[harmonize] Completed wavenumber alignment.")
         ctx["datasets"] = aligned
-        ctx["data"] = aligned[0].metadata.join(pd.DataFrame(aligned[0].spectra, columns=[f"{wn:.4f}" for wn in aligned[0].wavenumbers]))
+        ctx["data"] = aligned[0].metadata.join(
+            pd.DataFrame(aligned[0].spectra, columns=[f"{wn:.4f}" for wn in aligned[0].wavenumbers])
+        )
         # record per-instrument info
         instruments = []
         for ds in aligned:
@@ -314,7 +324,7 @@ class HSISegmentStep(Step):
         n_clusters = self.cfg.get("n_clusters", 3)
         labels = hsi.segment(method=method, n_clusters=n_clusters)
         ctx["hsi_labels"] = labels
-        ctx["figures"][f"hsi/label_map"] = labels
+        ctx["figures"]["hsi/label_map"] = labels
         counts = pd.Series(labels.ravel()).value_counts().reset_index()
         counts.columns = ["label", "pixels"]
         ctx["tables"]["hsi_label_counts"] = counts
@@ -404,6 +414,7 @@ class QCStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         from foodspec.validation import validate_dataset
+
         df = ctx.get("data")
         required = self.cfg.get("required_columns", [])
         class_col = self.cfg.get("class_col")
@@ -411,6 +422,7 @@ class QCStep(Step):
         ctx["logs"].append(f"[qc_checks] warnings={diag['warnings']}")
         if diag["errors"]:
             raise ValueError(f"QC failed: {diag['errors']}")
+
 
 STEP_REGISTRY = {
     PreprocessStep.name: PreprocessStep,
@@ -458,6 +470,7 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
         # Best effort version check
         try:
             from foodspec import __version__ as fs_version
+
             if fs_version < cfg.min_foodspec_version:
                 warnings.append(f"Protocol expects FoodSpec >= {cfg.min_foodspec_version}, running {fs_version}.")
         except Exception:
@@ -470,7 +483,9 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
     if cfg.expected_columns:
         for _, col in cfg.expected_columns.items():
             if col and col not in df.columns:
-                errors.append(f"Required column '{col}' not found. Map columns correctly or adjust protocol expected_columns.")
+                errors.append(
+                    f"Required column '{col}' not found. Map columns correctly or adjust protocol expected_columns."
+                )
     if cfg.required_metadata:
         for m in cfg.required_metadata:
             if m not in df.columns:
@@ -483,7 +498,9 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
     if oil_col and oil_col in df.columns:
         min_count = df[oil_col].value_counts(dropna=True).min()
         if pd.notna(min_count) and min_count < 2:
-            errors.append(f"Very small class count detected (min {min_count}); collect more samples or adjust protocol.")
+            errors.append(
+                f"Very small class count detected (min {min_count}); collect more samples or adjust protocol."
+            )
         elif pd.notna(min_count) and min_count < 3:
             warnings.append(f"Small class count (min {min_count}); CV folds will be reduced automatically.")
     # constant columns
@@ -494,7 +511,10 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
     num_features = df.select_dtypes(include=["number"]).shape[1]
     num_samples = len(df)
     if num_samples and num_features > 10 * num_samples:
-        warnings.append(f"High feature-to-sample ratio ({num_features} features vs {num_samples} samples); consider feature capping or simpler normalization.")
+        warnings.append(
+            f"High feature-to-sample ratio ({num_features} features vs {num_samples} samples); "
+            "consider feature capping or simpler normalization."
+        )
     return {"errors": errors, "warnings": warnings}
 
 
@@ -532,9 +552,7 @@ class ProtocolRunner:
                 return
             if isinstance(raw_input, SpectralDataset):
                 datasets.append(raw_input)
-                df_spectra = pd.DataFrame(
-                    raw_input.spectra, columns=[f"{wn:.4f}" for wn in raw_input.wavenumbers]
-                )
+                df_spectra = pd.DataFrame(raw_input.spectra, columns=[f"{wn:.4f}" for wn in raw_input.wavenumbers])
                 tables.append(pd.concat([raw_input.metadata.reset_index(drop=True), df_spectra], axis=1))
                 return
             if isinstance(raw_input, (str, Path)):
@@ -597,12 +615,14 @@ class ProtocolRunner:
         except Exception:
             pass
         # Light guardrails
-        if isinstance(df, pd.DataFrame):
-            if df.shape[0] * df.shape[1] > 2_000_000:
-                ctx["logs"].append(f"[warn] Large dataset ({df.shape}); consider sub-sampling or dry-run first.")
-            if df.shape[1] > 10 * max(1, df.shape[0]):
+        guard_df = primary_df if isinstance(primary_df, pd.DataFrame) else None
+        guard_hsi = hsi_list[0] if hsi_list else None
+        if guard_df is not None:
+            if guard_df.shape[0] * guard_df.shape[1] > 2_000_000:
+                ctx["logs"].append(f"[warn] Large dataset ({guard_df.shape}); consider sub-sampling or dry-run first.")
+            if guard_df.shape[1] > 10 * max(1, guard_df.shape[0]):
                 ctx["logs"].append("[warn] High feature-to-sample ratio; RQ may auto-cap or warn.")
-        if hsi_obj is not None and hsi_obj.spectra.size > 5_000_000:
+        if guard_hsi is not None and guard_hsi.spectra.size > 5_000_000:
             ctx["logs"].append("[warn] Large HSI cube; segmentation may be slow.")
         for step_cfg in self.config.steps:
             if self._cancel:

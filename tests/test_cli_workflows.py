@@ -218,9 +218,7 @@ def test_cli_reproduce_methodsx(tmp_path: Path, monkeypatch):
     mix_meta = pd.DataFrame({"mixture_fraction_evoo": [0.2, 0.4, 0.6, 0.8, 1.0, 0.5]})
     mix_ds = FoodSpectrumSet(x=X_mix, wavenumbers=wn, metadata=mix_meta, modality="raman")
 
-    monkeypatch.setattr(
-        "foodspec.apps.methodsx_reproduction.load_public_mendeley_oils", lambda: oil_ds
-    )
+    monkeypatch.setattr("foodspec.apps.methodsx_reproduction.load_public_mendeley_oils", lambda: oil_ds)
     monkeypatch.setattr(
         "foodspec.apps.methodsx_reproduction.load_public_evoo_sunflower_raman",
         lambda: mix_ds,

@@ -57,13 +57,10 @@ def test_cross_validation_wrapper_and_metrics():
 
 
 def test_regression_metrics_and_pls():
-    X, y = make_regression(
-        n_samples=80, n_features=8, n_informative=5, noise=0.1, random_state=0
-    )
+    X, y = make_regression(n_samples=80, n_features=8, n_informative=5, noise=0.1, random_state=0)
     pipeline = make_pls_regression(n_components=4)
     pipeline.fit(X, y)
     preds = pipeline.predict(X)
     metrics_series = compute_regression_metrics(y, preds)
     assert metrics_series["rmse"] < 1.0
     assert metrics_series["r2"] > 0.9
-

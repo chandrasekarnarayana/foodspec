@@ -20,9 +20,7 @@ def _synthetic_mixture() -> FoodSpectrumSet:
     wn = np.linspace(1000, 1010, 10)
     X = np.random.default_rng(1).normal(size=(5, wn.size))
     fractions = [0.0, 0.25, 0.5, 0.75, 1.0]
-    meta = pd.DataFrame(
-        {"sample_id": [f"m{i}" for i in range(5)], "mixture_fraction_evoo": fractions}
-    )
+    meta = pd.DataFrame({"sample_id": [f"m{i}" for i in range(5)], "mixture_fraction_evoo": fractions})
     return FoodSpectrumSet(x=X, wavenumbers=wn, metadata=meta, modality="raman")
 
 

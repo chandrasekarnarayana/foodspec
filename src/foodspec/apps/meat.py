@@ -49,4 +49,3 @@ def run_meat_authentication_workflow(
         confusion_matrix=result.confusion_matrix,
         class_labels=result.class_labels,
     )
-

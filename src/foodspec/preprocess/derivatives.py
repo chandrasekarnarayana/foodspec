@@ -47,4 +47,3 @@ class DerivativeTransformer(BaseEstimator, TransformerMixin):
             deriv=self.order,
             axis=1,
         )
-

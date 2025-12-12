@@ -2,6 +2,7 @@
 Environment check utility for FoodSpec.
 Reports presence of key dependencies and optional extras (GUI/Web).
 """
+
 from __future__ import annotations
 
 import importlib

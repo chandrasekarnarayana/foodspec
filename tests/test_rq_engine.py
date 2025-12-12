@@ -4,8 +4,8 @@ import pandas as pd
 from foodspec.rq import (
     PeakDefinition,
     RatioDefinition,
-    RQConfig,
     RatioQualityEngine,
+    RQConfig,
 )
 
 
@@ -46,7 +46,9 @@ def test_stability_cv():
     stability = engine.compute_stability(df)
     cv_1742 = stability[(stability["feature"] == "I_1742") & (stability["level"] == "overall")]["cv_percent"].iloc[0]
     assert cv_1742 == 0.0
-    cv_ratio = stability[(stability["feature"] == "1652/2720") & (stability["level"] == "overall")]["cv_percent"].iloc[0]
+    cv_ratio = stability[(stability["feature"] == "1652/2720") & (stability["level"] == "overall")]["cv_percent"].iloc[
+        0
+    ]
     assert cv_ratio > 0.0
 
 

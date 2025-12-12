@@ -4,6 +4,7 @@ Central logging setup for FoodSpec.
 Provides a single entry point to configure console + file logging with
 timestamps and optional resource snapshots (psutil if available).
 """
+
 from __future__ import annotations
 
 import logging

@@ -61,6 +61,13 @@ from .metrics import (
     compute_regression_metrics,
     compute_roc_curve,
 )
+from .rq import (
+    PeakDefinition,
+    RatioDefinition,
+    RatioQualityEngine,
+    RatioQualityResult,
+    RQConfig,
+)
 from .stats import (
     bootstrap_metric,
     permutation_test_metric,
@@ -76,13 +83,6 @@ from .stats import (
 from .synthetic import (
     generate_synthetic_ftir_spectrum,
     generate_synthetic_raman_spectrum,
-)
-from .rq import (
-    PeakDefinition,
-    RatioDefinition,
-    RQConfig,
-    RatioQualityEngine,
-    RatioQualityResult,
 )
 from .utils.troubleshooting import (
     check_missing_metadata,

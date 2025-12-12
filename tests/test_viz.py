@@ -71,4 +71,3 @@ def test_render_html_report(tmp_path):
     output = render_html_report_oil_auth(result, tmp_path / "report.html")
     assert output.exists()
     assert output.read_text()
-

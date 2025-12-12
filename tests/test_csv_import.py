@@ -63,9 +63,7 @@ def test_missing_wavenumber_column_raises(tmp_path):
 
 
 def test_load_csv_long_missing_intensity(tmp_path):
-    df = pd.DataFrame(
-        {"sample_id": ["a"], "wavenumber": [1000.0], "label": ["x"]}
-    )
+    df = pd.DataFrame({"sample_id": ["a"], "wavenumber": [1000.0], "label": ["x"]})
     csv_path = tmp_path / "bad_long.csv"
     df.to_csv(csv_path, index=False)
     with pytest.raises(ValueError):

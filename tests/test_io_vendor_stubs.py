@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from foodspec.spectral_io import load_opus, load_wire, load_envi, detect_format
+from foodspec.spectral_io import detect_format, load_envi, load_opus, load_wire
 
 
 def test_vendor_stubs_return_dataset(tmp_path: Path):

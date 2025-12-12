@@ -49,4 +49,3 @@ def plot_pca_loadings(loadings: np.ndarray, wavenumbers: np.ndarray, ax=None):
     ax.invert_xaxis()
     ax.legend()
     return ax
-

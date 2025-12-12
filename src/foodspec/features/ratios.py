@@ -11,9 +11,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 __all__ = ["compute_ratios", "RatioFeatureGenerator"]
 
 
-def compute_ratios(
-    df: pd.DataFrame, ratio_def: Dict[str, Tuple[str, str]]
-) -> pd.DataFrame:
+def compute_ratios(df: pd.DataFrame, ratio_def: Dict[str, Tuple[str, str]]) -> pd.DataFrame:
     """Compute ratios of specified columns.
 
     Parameters
@@ -53,4 +51,3 @@ class RatioFeatureGenerator(BaseEstimator, TransformerMixin):
         if not isinstance(X, pd.DataFrame):
             raise ValueError("RatioFeatureGenerator expects a pandas DataFrame.")
         return compute_ratios(X, self.ratio_def)
-

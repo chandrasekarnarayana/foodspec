@@ -34,23 +34,23 @@ Example
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 from scipy import stats
-from statsmodels.stats.multitest import multipletests
+from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score, adjusted_rand_score
-
+from statsmodels.stats.multitest import multipletests
 
 # ---------------------------------------------------------------------------
 # Data definitions
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class PeakDefinition:
@@ -111,6 +111,7 @@ class RatioQualityResult:
 # Utility helpers
 # ---------------------------------------------------------------------------
 
+
 def _cv(series: pd.Series) -> Dict[str, float]:
     vals = series.dropna().astype(float)
     if len(vals) == 0:
@@ -159,9 +160,7 @@ def _rf_accuracy(df: pd.DataFrame, features: List[str], label_col: str, random_s
         shuffle=True,
         random_state=random_state,
     )
-    rf = RandomForestClassifier(
-        n_estimators=300, random_state=random_state, n_jobs=-1
-    )
+    rf = RandomForestClassifier(n_estimators=300, random_state=random_state, n_jobs=-1)
     scores = cross_val_score(rf, Xz, y, cv=cv)
     return float(scores.mean())
 
@@ -179,7 +178,12 @@ class RatioQualityEngine:
     and intensity columns referenced by PeakDefinition/RatioDefinition.
     """
 
-    def __init__(self, peaks: Iterable[PeakDefinition], ratios: Iterable[RatioDefinition], config: Optional[RQConfig] = None):
+    def __init__(
+        self,
+        peaks: Iterable[PeakDefinition],
+        ratios: Iterable[RatioDefinition],
+        config: Optional[RQConfig] = None,
+    ):
         self.peaks = list(peaks)
         self.ratios = list(ratios)
         self.config = config or RQConfig()
@@ -222,11 +226,15 @@ class RatioQualityEngine:
         # Guardrails
         n_samples, n_features = df_ratios.shape
         if self.config.max_features and n_features > self.config.max_features:
-            warnings.append(f"Feature count {n_features} exceeds max_features {self.config.max_features}; results may be slow.")
+            warnings.append(
+                f"Feature count {n_features} exceeds max_features {self.config.max_features}; results may be slow."
+            )
         if n_samples < 2 * self.config.n_splits:
             warnings.append(f"Low sample count ({n_samples}) relative to CV splits ({self.config.n_splits}).")
         if n_features > 5 * max(1, n_samples):
-            warnings.append(f"High feature-to-sample ratio (features {n_features} vs samples {n_samples}); interpret cautiously.")
+            warnings.append(
+                f"High feature-to-sample ratio (features {n_features} vs samples {n_samples}); interpret cautiously."
+            )
         if minimal_panel is not None and "status" in minimal_panel.columns:
             if (minimal_panel["status"] == "not_met").any():
                 warnings.append("Minimal panel target accuracy not met; best available panel reported.")
@@ -447,7 +455,9 @@ class RatioQualityEngine:
                     "p_mean": p_mean,
                     "cohen_d": cohen_d,
                     "delta_cv": oil_cv - chips_cv if np.isfinite(oil_cv) and np.isfinite(chips_cv) else np.nan,
-                    "delta_slope": oil_slope - chips_slope if np.isfinite(oil_slope) and np.isfinite(chips_slope) else np.nan,
+                    "delta_slope": (
+                        oil_slope - chips_slope if np.isfinite(oil_slope) and np.isfinite(chips_slope) else np.nan
+                    ),
                     "oil_spearman_rho": oil_rho,
                     "chips_spearman_rho": chips_rho,
                     "oil_spearman_p": oil_rho_p,
@@ -540,10 +550,7 @@ class RatioQualityEngine:
         tpl.append("Stability (CV %)")
         tpl.append("----------------")
         top_stable = (
-            stability[stability["level"] == "overall"]
-            .sort_values("cv_percent")
-            .head(top_k)
-            [["feature", "cv_percent"]]
+            stability[stability["level"] == "overall"].sort_values("cv_percent").head(top_k)[["feature", "cv_percent"]]
         )
         tpl.append(top_stable.to_string(index=False))
         tpl.append("")
@@ -553,8 +560,10 @@ class RatioQualityEngine:
         if not discrim.empty:
             tpl.append(
                 discrim.sort_values("p_value")
-                .head(top_k)
-                [["feature", "method", "statistic", "p_value"] + (["p_value_adj"] if "p_value_adj" in discrim.columns else [])]
+                .head(top_k)[
+                    ["feature", "method", "statistic", "p_value"]
+                    + (["p_value_adj"] if "p_value_adj" in discrim.columns else [])
+                ]
                 .to_string(index=False)
             )
             if "p_value_adj" in discrim.columns:
@@ -566,9 +575,7 @@ class RatioQualityEngine:
         if feat_importance is not None and not feat_importance.empty:
             tpl.append("Feature importance (classifier-based)")
             tpl.append("------------------------------------")
-            tpl.append(
-                feat_importance.head(top_k)[["feature", "rf_importance", "lr_coef_abs"]].to_string(index=False)
-            )
+            tpl.append(feat_importance.head(top_k)[["feature", "rf_importance", "lr_coef_abs"]].to_string(index=False))
             tpl.append("")
         if norm_comp is not None and not norm_comp.empty:
             tpl.append("Normalization comparison")
@@ -581,8 +588,10 @@ class RatioQualityEngine:
         if not heating.empty:
             tpl.append(
                 heating.sort_values("p_value")
-                .head(top_k)
-                [["feature", "slope", "p_value", "monotonic_trend"] + (["p_value_adj"] if "p_value_adj" in heating.columns else [])]
+                .head(top_k)[
+                    ["feature", "slope", "p_value", "monotonic_trend"]
+                    + (["p_value_adj"] if "p_value_adj" in heating.columns else [])
+                ]
                 .to_string(index=False)
             )
             if "p_value_adj" in heating.columns:
@@ -742,7 +751,11 @@ class RatioQualityEngine:
             rows.append({"norm_method": mode, "rf_cv_accuracy": acc, "n_features": len(feat_cols)})
         return pd.DataFrame(rows)
 
-    def compute_minimal_panel(self, df: pd.DataFrame, feat_importance: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
+    def compute_minimal_panel(
+        self,
+        df: pd.DataFrame,
+        feat_importance: Optional[pd.DataFrame],
+    ) -> Optional[pd.DataFrame]:
         oil_col = self.config.oil_col
         ratio_cols = [c for c in df.columns if c.startswith("I_") or "/" in c or "_norm" in c]
         if oil_col not in df.columns or not ratio_cols:

@@ -51,4 +51,3 @@ def run_pca(X: np.ndarray, n_components: int = 2) -> Tuple[PCA, PCAResult]:
         mean_=pca.mean_,
     )
     return pca, result
-

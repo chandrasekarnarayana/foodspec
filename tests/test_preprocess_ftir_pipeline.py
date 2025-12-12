@@ -15,4 +15,3 @@ def test_ftir_pipeline_with_wavenumber_mixin():
     X_out = pipe.fit_transform(X)
     assert X_out.shape == X.shape
     assert np.isfinite(X_out).all()
-

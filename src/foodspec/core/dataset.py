@@ -96,9 +96,7 @@ class FoodSpectrumSet:
             if np.any(indices_array < 0) or np.any(indices_array >= len(self)):
                 raise ValueError("indices contain out-of-range values.")
             if by is not None:
-                indices_array = np.array(
-                    [idx for idx in indices_array if mask[idx]], dtype=int
-                )
+                indices_array = np.array([idx for idx in indices_array if mask[idx]], dtype=int)
             selected_indices = indices_array
         else:
             selected_indices = np.where(mask)[0]
@@ -133,9 +131,7 @@ class FoodSpectrumSet:
             wavenumbers = self.wavenumbers
             metadata = self.metadata
 
-        return FoodSpectrumSet(
-            x=x, wavenumbers=wavenumbers, metadata=metadata, modality=self.modality
-        )
+        return FoodSpectrumSet(x=x, wavenumbers=wavenumbers, metadata=metadata, modality=self.modality)
 
     def to_wide_dataframe(self) -> pd.DataFrame:
         """Convert the dataset to a wide DataFrame.
@@ -149,9 +145,7 @@ class FoodSpectrumSet:
 
         intensity_columns = [f"int_{float(wn)}" for wn in self.wavenumbers]
         spectra_df = pd.DataFrame(self.x, columns=intensity_columns)
-        return pd.concat(
-            [self.metadata.reset_index(drop=True).copy(), spectra_df], axis=1
-        )
+        return pd.concat([self.metadata.reset_index(drop=True).copy(), spectra_df], axis=1)
 
     def validate(self) -> None:
         """Validate array shapes, metadata length, and modality."""
@@ -170,14 +164,10 @@ class FoodSpectrumSet:
             )
         if len(self.metadata) != n_samples:
             raise ValueError(
-                "metadata length does not match number of rows in x "
-                f"({len(self.metadata)} != {n_samples})."
+                "metadata length does not match number of rows in x " f"({len(self.metadata)} != {n_samples})."
             )
         if self.modality not in {"raman", "ftir", "nir"}:
-            raise ValueError(
-                "modality must be one of {'raman', 'ftir', 'nir'}; "
-                f"got '{self.modality}'."
-            )
+            raise ValueError("modality must be one of {'raman', 'ftir', 'nir'}; " f"got '{self.modality}'.")
 
     def _normalize_index(self, index: IndexType) -> np.ndarray:
         """Normalize indexing input to an array of indices."""

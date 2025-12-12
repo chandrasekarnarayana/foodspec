@@ -49,9 +49,7 @@ def _classification_benchmark(random_state: int = 42) -> Tuple[Dict, pd.DataFram
             ("clf", make_classifier("rf", random_state=random_state)),
         ]
     )
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=random_state, stratify=y
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=random_state, stratify=y)
     pipe.fit(X_train, y_train)
     preds = pipe.predict(X_test)
     acc = accuracy_score(y_test, preds)
@@ -74,9 +72,7 @@ def _mixture_benchmark(random_state: int = 42) -> Dict:
     y = ds.metadata["mixture_fraction_evoo"].to_numpy()
     # Simple PLS regression
     pls = PLSRegression(n_components=5)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=random_state
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=random_state)
     pls.fit(X_train, y_train)
     preds = pls.predict(X_test).ravel()
     r2 = r2_score(y_test, preds)

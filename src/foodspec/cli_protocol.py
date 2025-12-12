@@ -8,7 +8,8 @@ Single file:
     foodspec-run-protocol --input data/oils.csv --protocol EdibleOil_Classification_v1 --output-dir runs
 
 Glob / directory:
-    foodspec-run-protocol --input-dir data/batch --glob \"*.csv\" --protocol EdibleOil_Classification_v1 --output-dir runs
+    foodspec-run-protocol --input-dir data/batch --glob \"*.csv\" --protocol \
+EdibleOil_Classification_v1 --output-dir runs
 
 Overrides:
     foodspec-run-protocol --input data/oils.csv --protocol EdibleOil_Classification_v1 --output-dir runs \\
@@ -18,16 +19,16 @@ from __future__ import annotations
 
 import argparse
 import glob
-import sys
 import json
+import sys
 from pathlib import Path
 from typing import List
 
 import pandas as pd
 
-from foodspec.protocol_engine import ProtocolRunner, load_protocol, validate_protocol
-from foodspec.spectral_dataset import SpectralDataset, HyperspectralDataset
 from foodspec.logging_utils import setup_logging
+from foodspec.protocol_engine import ProtocolRunner, load_protocol, validate_protocol
+from foodspec.spectral_dataset import HyperspectralDataset, SpectralDataset
 
 
 def main(argv=None):
@@ -39,20 +40,34 @@ def main(argv=None):
     parser.add_argument("--output-dir", default="protocol_runs", help="Directory for run outputs.")
     parser.add_argument("--seed", type=int, help="Random seed override.")
     parser.add_argument("--cv-folds", type=int, help="Override CV folds for RQ models.")
-    parser.add_argument("--normalization-mode", help="Override normalization mode for preprocess/RQ (e.g., reference, vector).")
+    parser.add_argument(
+        "--normalization-mode",
+        help="Override normalization mode for preprocess/RQ (e.g., reference, vector).",
+    )
     parser.add_argument("--baseline-method", help="Override baseline method (als, rubberband, polynomial, none).")
     parser.add_argument("--verbose", action="store_true", help="Verbose logging.")
     parser.add_argument("--quiet", action="store_true", help="Quiet mode (only errors).")
     parser.add_argument("--no-figures", action="store_true", help="(Reserved) Skip saving figures.")
-    parser.add_argument("--validation-strategy", choices=["standard", "batch_aware", "group_stratified"], default=None, help="Validation approach.")
+    parser.add_argument(
+        "--validation-strategy",
+        choices=["standard", "batch_aware", "group_stratified"],
+        default=None,
+        help="Validation approach.",
+    )
     parser.add_argument("--auto", action="store_true", help="Run publish after protocol completes.")
-    parser.add_argument("--report-level", choices=["summary", "standard", "full"], default="standard", help="Figure/text richness for auto publish.")
+    parser.add_argument(
+        "--report-level",
+        choices=["summary", "standard", "full"],
+        default="standard",
+        help="Figure/text richness for auto publish.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Validate and estimate only; do not execute.")
     parser.add_argument("--check-env", action="store_true", help="Print environment/dep status and exit.")
     args = parser.parse_args(argv)
 
     if args.check_env:
         from foodspec.check_env import check_env
+
         print(check_env())
         return 0
     logger = setup_logging()
@@ -144,7 +159,8 @@ def main(argv=None):
             if "n_splits" in str(exc):
                 for step in cfg.steps:
                     if step.get("type") == "rq_analysis":
-                        step.setdefault("params", {})["n_splits"] = max(2, min(3, len(getattr(df_or_obj, 'index', [])) or 2))
+                        est_rows = len(getattr(df_or_obj, "index", [])) or 2
+                        step.setdefault("params", {})["n_splits"] = max(2, min(3, est_rows))
                 try:
                     result = runner.run([df_or_obj])
                 except Exception as exc2:
@@ -191,7 +207,6 @@ def main(argv=None):
         if not args.quiet:
             logger.info("[DONE] %s -> %s", path, run_dir)
     return exit_code
-
 
 
 if __name__ == "__main__":

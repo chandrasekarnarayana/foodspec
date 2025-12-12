@@ -20,7 +20,12 @@ def main(argv=None):
     parser.add_argument("--out", required=True, help="Output directory for bundle.")
     parser.add_argument("--fig-limit", type=int, default=None, help="Limit number of figures in panel.")
     parser.add_argument("--include-all-figures", action="store_true", help="Include all figures (ignore limit).")
-    parser.add_argument("--profile", choices=["quicklook", "qa", "standard", "publication"], default="standard", help="Figure selection profile.")
+    parser.add_argument(
+        "--profile",
+        choices=["quicklook", "qa", "standard", "publication"],
+        default="standard",
+        help="Figure selection profile.",
+    )
     args = parser.parse_args(argv)
 
     save_markdown_bundle(

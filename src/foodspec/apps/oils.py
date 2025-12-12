@@ -49,9 +49,7 @@ class _RangeCropperTransformer(RangeCropper, TransformerMixin):
     def __init__(self, wavenumbers: np.ndarray, min_wn: float, max_wn: float):
         self.wavenumbers_full = np.asarray(wavenumbers, dtype=float)
         super().__init__(min_wn=min_wn, max_wn=max_wn)
-        mask = (self.wavenumbers_full >= self.min_wn) & (
-            self.wavenumbers_full <= self.max_wn
-        )
+        mask = (self.wavenumbers_full >= self.min_wn) & (self.wavenumbers_full <= self.max_wn)
         if not np.any(mask):
             raise ValueError("Cropping mask is empty.")
         self.mask_ = mask
@@ -74,9 +72,7 @@ class _PeakFeatureTransformer(BaseEstimator, TransformerMixin):
         self.wavenumbers = np.asarray(wavenumbers, dtype=float)
         self.expected_peaks = expected_peaks
         self.tolerance = tolerance
-        self.extractor = PeakFeatureExtractor(
-            expected_peaks=self.expected_peaks, tolerance=self.tolerance
-        )
+        self.extractor = PeakFeatureExtractor(expected_peaks=self.expected_peaks, tolerance=self.tolerance)
         self.feature_names_: List[str] = []
 
     def fit(self, X, y=None):
@@ -259,9 +255,7 @@ def run_oil_authentication_workflow(
     clf_est = pipeline.named_steps["clf"]
     feature_names = pipeline.named_steps["features"].named_steps["to_array"].columns_
     if hasattr(clf_est, "feature_importances_"):
-        feature_importances = pd.Series(
-            clf_est.feature_importances_, index=feature_names, name="importance"
-        )
+        feature_importances = pd.Series(clf_est.feature_importances_, index=feature_names, name="importance")
 
     return OilAuthResult(
         pipeline=pipeline,

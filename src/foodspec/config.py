@@ -21,9 +21,7 @@ def load_config(path: PathLike) -> Dict[str, Any]:
         try:
             import yaml  # type: ignore
         except ImportError as exc:  # pragma: no cover - optional dep
-            raise ImportError(
-                "PyYAML is required to load YAML configs. Install with `pip install pyyaml`."
-            ) from exc
+            raise ImportError("PyYAML is required to load YAML configs. Install with `pip install pyyaml`.") from exc
         with path.open("r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
     elif path.suffix.lower() == ".json":

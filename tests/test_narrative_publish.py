@@ -11,6 +11,7 @@ def test_publish_bundle(tmp_path: Path):
     (run_dir / "report.txt").write_text("RQ report here")
     # fake figure
     import matplotlib.pyplot as plt
+
     plt.figure()
     plt.plot([0, 1], [0, 1])
     plt.savefig(figs / "fig.png")

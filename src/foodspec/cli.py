@@ -75,9 +75,7 @@ def _to_serializable(obj: Any) -> Any:
     if isinstance(obj, (pd.Series,)):
         return {k: _to_serializable(v) for k, v in obj.to_dict().items()}
     if isinstance(obj, (pd.DataFrame,)):
-        return [
-            {k: _to_serializable(v) for k, v in row.items()} for row in obj.to_dict(orient="records")
-        ]
+        return [{k: _to_serializable(v) for k, v in row.items()} for row in obj.to_dict(orient="records")]
     if isinstance(obj, dict):
         return {k: _to_serializable(v) for k, v in obj.items()}
     return obj
@@ -165,9 +163,7 @@ def _write_heating_report(result, output_dir: Path, time_column: str) -> Path:
     # Plot first ratio vs time
     if not result.key_ratios.empty:
         ratio_col = (
-            "ratio_1655_1742"
-            if "ratio_1655_1742" in result.key_ratios.columns
-            else result.key_ratios.columns[0]
+            "ratio_1655_1742" if "ratio_1655_1742" in result.key_ratios.columns else result.key_ratios.columns[0]
         )
         fig, ax = plt.subplots()
         plot_ratio_vs_time(
@@ -574,17 +570,13 @@ def about() -> None:
     typer.echo(f"Python version: {sys.version.split()[0]}")
     typer.echo(f"Optional extras detected: {', '.join(extras) if extras else 'none'}")
     typer.echo("Documentation: https://github.com/your-org/foodspec#documentation")
-    typer.echo(
-        "Description: foodspec is a headless, research-grade toolkit for Raman/FTIR in food science."
-    )
+    typer.echo("Description: foodspec is a headless, research-grade toolkit for Raman/FTIR in food science.")
 
 
 @app.command("csv-to-library")
 def csv_to_library(
     csv_path: str = typer.Argument(..., help="Input CSV file with spectra."),
-    output_hdf5: str = typer.Argument(
-        ..., help="Output HDF5 library path (will be created or overwritten)."
-    ),
+    output_hdf5: str = typer.Argument(..., help="Output HDF5 library path (will be created or overwritten)."),
     format: str = typer.Option(
         "wide",
         "--format",

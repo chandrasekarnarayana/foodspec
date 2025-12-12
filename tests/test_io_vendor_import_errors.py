@@ -1,4 +1,3 @@
-
 import pytest
 
 from foodspec.io import vendor_formats

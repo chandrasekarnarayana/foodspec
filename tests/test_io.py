@@ -56,9 +56,7 @@ def test_load_folder_and_export(tmp_path: Path):
         modality = f.attrs["modality"]
     # Use StringIO to avoid pandas warning on literal JSON (pandas 2.2+).
     meta_back = pd.read_json(io.StringIO(meta_json), orient="table")
-    ds_back = FoodSpectrumSet(
-        x=x_back, wavenumbers=w_back, metadata=meta_back, modality=modality
-    )
+    ds_back = FoodSpectrumSet(x=x_back, wavenumbers=w_back, metadata=meta_back, modality=modality)
     assert ds_back.x.shape == ds.x.shape
     assert ds_back.metadata.equals(ds.metadata)
 

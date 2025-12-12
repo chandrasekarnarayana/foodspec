@@ -24,4 +24,3 @@ def test_qc_oneclass_svm_labels_inliers_outliers():
     labels = result.labels_pred.to_numpy()
     assert (labels[: len(inliers)] == "authentic").sum() >= len(inliers) - 2
     assert (labels[len(inliers) :] == "suspect").sum() >= len(outliers) - 1
-

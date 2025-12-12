@@ -30,9 +30,7 @@ def test_cli_protocol_runs(tmp_path: Path):
                             "oil_col": "oil_type",
                             "matrix_col": "matrix",
                             "heating_col": "heating_stage",
-                            "ratios": [
-                                {"name": "1742/2720", "numerator": "I_1742", "denominator": "I_2720"}
-                            ],
+                            "ratios": [{"name": "1742/2720", "numerator": "I_1742", "denominator": "I_2720"}],
                         },
                     },
                     {"type": "output", "params": {"output_dir": str(tmp_path / "runs")}},
@@ -40,6 +38,16 @@ def test_cli_protocol_runs(tmp_path: Path):
             }
         )
     )
-    cmd = [sys.executable, "-m", "foodspec.cli_protocol", "--input", str(csv), "--protocol", str(proto), "--output-dir", str(tmp_path / "runs")]
+    cmd = [
+        sys.executable,
+        "-m",
+        "foodspec.cli_protocol",
+        "--input",
+        str(csv),
+        "--protocol",
+        str(proto),
+        "--output-dir",
+        str(tmp_path / "runs"),
+    ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
