@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 # Single source of truth for the package version.
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from .core.dataset import FoodSpectrumSet
 from .core.hyperspectral import HyperSpectralCube

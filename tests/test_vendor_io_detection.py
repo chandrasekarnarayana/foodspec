@@ -1,7 +1,8 @@
-import pytest
 from pathlib import Path
 
-from foodspec.spectral_io import detect_format, load_opus, load_wire, load_envi
+import pytest
+
+from foodspec.spectral_io import detect_format, load_envi, load_opus
 
 
 def test_detect_format_vendor_mocks():

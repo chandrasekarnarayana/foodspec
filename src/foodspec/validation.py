@@ -53,11 +53,17 @@ def nested_cv(
     """
     results = []
     if groups is None:
-        outer = StratifiedKFold(n_splits=min(outer_splits, len(np.unique(y))), shuffle=True, random_state=0)
-        inner_factory = lambda: StratifiedKFold(n_splits=min(inner_splits, len(np.unique(y))), shuffle=True, random_state=0)
+        outer = StratifiedKFold(
+            n_splits=min(outer_splits, len(np.unique(y))),
+            shuffle=True,
+            random_state=0,
+        )
     else:
-        outer = StratifiedGroupKFold(n_splits=min(outer_splits, len(np.unique(groups))), shuffle=True, random_state=0)
-        inner_factory = lambda: StratifiedGroupKFold(n_splits=min(inner_splits, len(np.unique(groups))), shuffle=True, random_state=0)
+        outer = StratifiedGroupKFold(
+            n_splits=min(outer_splits, len(np.unique(groups))),
+            shuffle=True,
+            random_state=0,
+        )
 
     for train_idx, test_idx in outer.split(X, y, groups if groups is not None else None):
         X_train, X_test = X[train_idx], X[test_idx]
