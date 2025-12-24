@@ -26,6 +26,7 @@ def compute_band_features(
         raise ValueError("wavenumbers must be 1D and match number of columns in X.")
 
     metrics = list(metrics)
+    single_integral = (len(metrics) == 1 and metrics[0] == "integral")
     data = {}
     for label, min_wn, max_wn in bands:
         if min_wn >= max_wn:
@@ -33,12 +34,14 @@ def compute_band_features(
         mask = (wavenumbers >= min_wn) & (wavenumbers <= max_wn)
         if not np.any(mask):
             for m in metrics:
-                data[f"{label}_{m}"] = np.full(X.shape[0], np.nan)
+                col_name = label if (m == "integral" and single_integral) else f"{label}_{m}"
+                data[col_name] = np.full(X.shape[0], np.nan)
             continue
         sub_x = X[:, mask]
         sub_w = wavenumbers[mask]
         if "integral" in metrics:
-            data[f"{label}_integral"] = np.trapezoid(sub_x, x=sub_w, axis=1)
+            col_name = label if single_integral else f"{label}_integral"
+            data[col_name] = np.trapezoid(sub_x, x=sub_w, axis=1)
         if "mean" in metrics:
             data[f"{label}_mean"] = np.mean(sub_x, axis=1)
         if "max" in metrics:

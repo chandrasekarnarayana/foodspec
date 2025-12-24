@@ -29,6 +29,24 @@ from foodspec.stats.hypothesis_tests import (
 from foodspec.stats.hypothesis_tests import run_shapiro, benjamini_hochberg
 from foodspec.stats.robustness import bootstrap_metric, permutation_test_metric
 from foodspec.stats.reporting import stats_report_for_feature, stats_report_for_features_table
+from foodspec.stats.distances import (
+     euclidean_distance,
+     cosine_distance,
+     pearson_distance,
+     sid_distance,
+     sam_angle,
+     compute_distances,
+)
+from foodspec.stats.time_metrics import (
+    linear_slope,
+    quadratic_acceleration,
+    rolling_slope,
+)
+from foodspec.stats.fusion_metrics import (
+    modality_agreement_kappa,
+    modality_consistency_rate,
+    cross_modality_correlation,
+)
 
 __all__ = [
     "run_ttest",
@@ -53,4 +71,19 @@ __all__ = [
     "benjamini_hochberg",
     "stats_report_for_feature",
     "stats_report_for_features_table",
+     # distances
+     "euclidean_distance",
+     "cosine_distance",
+     "pearson_distance",
+     "sid_distance",
+     "sam_angle",
+     "compute_distances",
+     # time metrics
+     "linear_slope",
+     "quadratic_acceleration",
+     "rolling_slope",
+     # fusion metrics
+     "modality_agreement_kappa",
+     "modality_consistency_rate",
+     "cross_modality_correlation",
 ]

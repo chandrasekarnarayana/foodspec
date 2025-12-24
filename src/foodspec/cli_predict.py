@@ -14,6 +14,7 @@ from pathlib import Path
 import pandas as pd
 
 from foodspec.model_lifecycle import FrozenModel
+from foodspec.qc import evaluate_prediction_qc
 
 
 def main(argv=None):
@@ -43,9 +44,39 @@ def main(argv=None):
         return 1
 
     model = FrozenModel.load(Path(args.model))
+    def _apply_qc(preds_df: pd.DataFrame) -> pd.DataFrame:
+        """Attach QC flags and notes if probabilities are available."""
+
+        if not hasattr(model.model, "classes_"):
+            return preds_df
+        classes = list(model.model.classes_)
+        proba_cols = [f"proba_{cls}" for cls in classes]
+        if not set(proba_cols).issubset(preds_df.columns):
+            return preds_df
+
+        qc_results = []
+        for _, row in preds_df.iterrows():
+            probs = row[proba_cols].to_numpy(dtype=float)
+            qc = evaluate_prediction_qc(probs)
+            qc_results.append(qc)
+
+        preds_df = preds_df.copy()
+        preds_df["qc_do_not_trust"] = [r.do_not_trust for r in qc_results]
+        preds_df["qc_notes"] = ["; ".join(r.reasons or r.warnings) for r in qc_results]
+
+        flagged = preds_df["qc_do_not_trust"].sum()
+        if flagged:
+            print(
+                f"⚠️  Prediction guard: {flagged} rows flagged as 'do not trust'. "
+                "See qc_notes column for details.",
+                file=sys.stderr,
+            )
+        return preds_df
+
     if len(inputs) == 1:
         df = pd.read_csv(inputs[0])
         preds = model.predict(df)
+        preds = _apply_qc(preds)
         out_path = args.output or "predictions.csv"
         preds.to_csv(out_path, index=False)
         print(f"Predictions saved to {out_path}")
@@ -55,6 +86,7 @@ def main(argv=None):
         for inp in inputs:
             df = pd.read_csv(inp)
             preds = model.predict(df)
+            preds = _apply_qc(preds)
             out_path = out_dir / f"{inp.stem}_preds.csv"
             preds.to_csv(out_path, index=False)
             print(f"[{inp.name}] -> {out_path}")

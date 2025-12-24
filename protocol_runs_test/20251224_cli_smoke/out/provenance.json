@@ -1,0 +1,46 @@
+{
+  "workflow_name": "foodspec",
+  "run_id": "foodspec_20251224T183",
+  "config": {
+    "kind": "spectral_data",
+    "modality": "raman",
+    "source": "FoodSpectrumSet"
+  },
+  "config_hash": "7266e31f",
+  "dataset_hash": "4b6f0ddb",
+  "environment": {
+    "python_version": "3.12.9",
+    "platform": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+    "hostname": "unknown",
+    "foodspec_version": "0.2.1",
+    "numpy_version": "2.2.4",
+    "pandas_version": "2.3.3",
+    "sklearn_version": "1.7.2",
+    "scipy_version": "1.15.2",
+    "statsmodels_version": "0.14.6"
+  },
+  "step_records": [
+    {
+      "name": "library_similarity",
+      "hash": "9c716f9c",
+      "timestamp": "2025-12-24T18:34:56.485462+00:00",
+      "error": null,
+      "metadata": {
+        "metric": "cosine",
+        "top_k": 3
+      }
+    }
+  ],
+  "random_seeds": {
+    "python_random_seed": 2147483648,
+    "numpy_seed": 2147483648,
+    "torch_seed": 8632817082411154171
+  },
+  "output_paths": [
+    "/home/cs/FoodSpec/protocol_runs_test/20251224_cli_smoke/out"
+  ],
+  "user": "cs",
+  "notes": null,
+  "timestamp": "2025-12-24T18:34:55.387261+00:00",
+  "combined_hash": "3faece11"
+}

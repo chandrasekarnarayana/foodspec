@@ -1,0 +1,2 @@
+feature,slope,p_value,r_squared,p_spearman,spearman_rho,monotonic_trend,p_value_adj,significant_fdr
+1742/2720,-0.19999999999999996,0.7574643749636671,0.05882352941176468,0.552786404500042,-0.4472135954999579,no clear trend,0.7574643749636671,False

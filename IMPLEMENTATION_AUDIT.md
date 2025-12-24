@@ -2,19 +2,20 @@
 
 **Date:** December 24, 2025  
 **Goal:** Validate codebase alignment with the Implementation Outline  
-**Scope:** Folder structure, entry point UX, triple output (metrics/diagnostics/provenance/artifacts), missing modules
+**Scope:** Folder structure, entry point UX, triple output (metrics/diagnostics/provenance/artifacts), missing modules, code-quality guardrails
 
 ---
 
 ## Executive Summary
 
-The FoodSpec codebase has a **solid foundation** but requires refactoring to fully align with the unified entry point and triple-output contract. Key findings:
+The FoodSpec codebase now ships the unified entry point and artifact bundling, but still needs standardization and code-quality hardening. Key findings:
 
-- ✅ **Core architecture mostly present** (core/, io/, preprocess/, features/, chemometrics/, stats/, viz/)
-- ✅ **Workflows exist** (apps/) with partial metrics/diagnostics output
-- ⚠️ **Entry point fragmented**: `FoodSpectrumSet` is the data container, but no unified `FoodSpec()` class provides chainable UX
-- ⚠️ **Triple output inconsistent**: Some workflows produce metrics/plots, but provenance logging and artifact export are partial
-- ❌ **Missing modules**: `deploy/`, `presets/`, `exp/` not implemented
+- ✅ **Unified entry point delivered**: `FoodSpec` lives in `core/api.py`; CLI `run-exp` executes `exp.yml` end to end
+- ✅ **Artifact path in place**: `artifact.py` supports save/load + `Predictor`; `OutputBundle` captures metrics/diagnostics/provenance
+- ⚠️ **Triple output still uneven**: Workflows emit metrics/plots, but provenance + artifact structure need consistency
+- ⚠️ **Presets/experiments/reporting**: Preset library, experiment diffing, and PDF reporting remain incomplete
+- ⚠️ **Code-quality gaps**: Docstring coverage, PEP8 enforcement, large-file splits, and comment guidelines need CI-backed controls
+
 
 ---
 
@@ -24,7 +25,7 @@ The FoodSpec codebase has a **solid foundation** but requires refactoring to ful
 
 | Module | Expected | Actual | Status | Notes |
 |--------|----------|--------|--------|-------|
-| `core/` | Spectrum, SpectraSet, schema, units | `dataset.py`, `hyperspectral.py` | ✅ Partial | `FoodSpectrumSet` dataclass exists; missing explicit schema/units modules |
+| `core/` | Spectrum, SpectraSet, schema, units | `dataset.py`, `hyperspectral.py`, `api.py` (FoodSpec) | ✅ Partial | Unified entry point shipped; schema/units modules still missing |
 | `io/` | loaders, writers, registry | `loaders.py`, `csv_import.py`, `text_formats.py`, `vendor_formats.py`, `core.py` | ✅ Complete | Good coverage; vendors (SPC, OPUS, JCAMP) supported |
 | `preprocess/` | steps, pipeline, auto-preprocess | `baseline.py`, `cropping.py`, `normalization.py`, `smoothing.py`, `preprocessing_pipeline.py` | ✅ Complete | Pipeline infrastructure exists |
 | `qc/` | QC metrics, drift, outliers | Limited; `apps/qc.py` for training/inference | ⚠️ Partial | QC logic embedded in apps; not a standalone module |
@@ -32,9 +33,9 @@ The FoodSpec codebase has a **solid foundation** but requires refactoring to ful
 | `chemometrics/` | PCA/PLS/PLS-DA/SIMCA/MCR-ALS wrappers | `pca.py`, `mixture.py`, `models.py`, `validation.py` | ✅ Good | Good coverage; some models missing (SIMCA, detailed PLS-DA) |
 | `ml/` | train/eval, suites, calibration, uncertainty | Distributed across `model_lifecycle.py`, `apps/`, chemometrics/ | ⚠️ Fragmented | No dedicated ML module; logic scattered |
 | `stats/` | hypothesis tests, bootstrap, CI | `stats/` folder with hypothesis_tests.py, robustness.py | ✅ Complete | Comprehensive stats module |
-| `exp/` | YAML experiments, run records, diff | `protocol_engine.py`, `config.py` | ⚠️ Partial | Protocol engine exists but not experiment diffing |
+| `exp/` | YAML experiments, run records, diff | Experiment engine + `run-exp` CLI + `artifact.py` | ⚠️ Partial | `exp.yml` execution + artifacts present; diffing/querying missing |
 | `report/` | pdf/html reports | `reporting.py`, `viz/report.py` | ⚠️ Partial | Markdown/JSON reports; PDF missing |
-| `deploy/` | artifact export + predictor | `model_lifecycle.py` (FrozenModel), `model_registry.py` | ⚠️ Partial | No dedicated deploy module; exports scattered |
+| `deploy/` | artifact export + predictor | `artifact.py`, `model_lifecycle.py`, `model_registry.py` | ⚠️ Partial | Artifact bundler + Predictor exist; serving remains | 
 | `cli/` | CLI commands | `cli.py`, `cli_*.py` files | ✅ Complete | Good CLI coverage |
 | `presets/` | YAML presets library | Not implemented | ❌ Missing | Hardcoded presets in code |
 
@@ -69,36 +70,27 @@ The FoodSpec codebase has a **solid foundation** but requires refactoring to ful
 
 ### Current State
 
-**No unified `FoodSpec()` class exists.** Instead, users interact with:
-
-1. **Data loading** (imperative):
-   ```python
-   from foodspec import load_folder, load_csv_spectra
-   fs = load_folder("raw_data/", metadata_csv="meta.csv")
-   ```
-
-2. **Workflows** (separate functions):
-   ```python
-   from foodspec.apps.oils import run_oil_authentication_workflow
-   result = run_oil_authentication_workflow(fs, label_column="oil_type")
-   ```
-
-3. **Model lifecycle** (scattered):
-   ```python
-   from foodspec.model_lifecycle import FrozenModel
-   frozen = FrozenModel(...).predict(X_new)
-   ```
+- `FoodSpec` implemented in `core/api.py` with chainable `qc()`, `preprocess()`, `features()`, `train()`, `export()` flow and `OutputBundle` tracking
+- CLI `run-exp` executes `exp.yml` end to end (qc → preprocess → features → train → artifact export)
+- Artifact bundling (`artifact.py`) + `Predictor` allow deployable `.foodspec` exports
 
 ### Desired State (per outline)
 
 ```python
-fs = FoodSpec(path_or_dataset)  # One entry point
+fs = FoodSpec(path_or_dataset)
 fs.qc()
 fs.preprocess(preset)
 fs.features(preset)
 fs.train(...)
-model.export(...)
+bundle = fs.export(...)
 ```
+
+### Gap Analysis
+
+- ⚠️ **App parity** → Some legacy workflows bypass `FoodSpec`; migrate to the unified entry point
+- ⚠️ **Presets** → No centralized preset library to power `preprocess()` / `features()` defaults
+- ⚠️ **Run records** → Ensure every step logs provenance + seed/versions; add experiment diffing
+- ⚠️ **Quality gates** → Enforce docstrings, PEP8, and file-size limits on `core/api.py` and dependent modules
 
 ### Gap Analysis
 
@@ -192,33 +184,38 @@ Each workflow should produce:
 - `chemometrics/` → Good core; missing advanced methods (SIMCA, detailed PLS-DA)
 - `reporting/` → Markdown/JSON only; no PDF
 - `core/` → Missing schema/units modules
-- `deploy/` → Model export in `model_lifecycle.py`; no dedicated module
+- `deploy/` → Artifact bundler + Predictor exist (`artifact.py`); serving + ONNX export not shipped
+- `exp/` → `run-exp` executes `exp.yml`; diffing/querying not implemented
+- `style/quality` → PEP8/docstring enforcement and file-length guardrails not yet in CI
 
 ### ❌ Missing
 
-- `deploy/` → Dedicated artifact export + serving
 - `presets/` → Centralized YAML preset library
-- `exp/` → Experiment tracking and diffing
-- `ml/` → Unified ML module (training, calibration, uncertainty)
 - `report/pdf` → PDF report generation
 
 ---
 
 ## 5. Implementation Recommendations (Priority Order)
 
-### Phase 1: Unified Entry Point (Highest Priority)
+### Completed: Phase 1 - Unified Entry Point (Delivered)
 
-**Goal:** Implement one entry point class that users learn once.
+- `FoodSpec` implemented (`core/api.py`) and exported
+- CLI `run-exp` uses the unified pipeline and produces artifacts via `OutputBundle` + `artifact.py`
+- Run record + artifact saver/loader in place
+
+### Phase 0: Code Quality & Style Hardening (High Priority)
+
+**Goal:** Enforce readability, PEP8, and documentation standards repo-wide.
 
 **Work:**
-1. Create `src/foodspec/core/api.py` with `FoodSpec` class
-2. Add chainable methods: `qc()`, `preprocess()`, `features()`, `train()`, `export()`
-3. Integrate `OutputBundle` for consistent artifact management
-4. Update `src/foodspec/__init__.py` to export `FoodSpec`
-5. Refactor `cli.py` to use `FoodSpec` internally
+1. Add formatter/linter (e.g., `ruff` + `black`) with CI gating and pre-commit
+2. Require module-level docstrings and function docstrings (inputs/outputs/logic) across `src/` and `tests/`
+3. Add file-length guard (<~600 lines) and refactor oversized modules
+4. Increase meaningful comments on complex blocks; document invariants and assumptions
+5. Add type-check step (pyright/mypy) to improve debuggability and modularity
 
 **Effort:** ~2–3 days  
-**Impact:** User-facing API standardization
+**Impact:** Consistent style, easier reviews, maintainability
 
 ---
 
@@ -392,6 +389,17 @@ artifacts = model.export(path="./results/", format="bundle")
 
 | Phase | Effort | Estimated Duration |
 |-------|--------|-------------------|
+| Phase 1 (Entry Point) | COMPLETE | — |
+| Phase 0 (Code Quality & Style) | High | 2–3 days |
+| Phase 2 (Triple Output) | High | 3–4 days |
+| Phase 3 (Deploy) | High | 2–3 days |
+| Phase 4 (Presets) | Medium | 1–2 days |
+| Phase 5 (Experiments) | Medium | 2–3 days |
+| Phase 6 (PDF Reports) | Low | 2–3 days |
+| **Remaining Total** | - | **10–17 days** |
+
+| Phase | Effort | Estimated Duration |
+|-------|--------|-------------------|
 | Phase 1 (Entry Point) | High | 2–3 days |
 | Phase 2 (Triple Output) | High | 3–4 days |
 | Phase 3 (Deploy) | High | 2–3 days |
@@ -415,8 +423,9 @@ Once complete, users will experience a cleaner, more discoverable API and better
 ---
 
 **Next Steps:**
-1. Approve implementation priorities (recommend starting with Phase 1 + 2)
-2. Create GitHub issues for each phase
-3. Assign developers
-4. Begin Phase 1 implementation
+1. Enforce code-quality guardrails (formatter, linter, docstring policy, file-length check) via CI
+2. Migrate legacy workflows to `FoodSpec` so all apps share the unified entry point
+3. Standardize triple-output contract across workflows and artifact exports
+4. Stand up presets + experiment diffing modules and PDF reporting
+5. Track progress via GitHub issues per phase
 

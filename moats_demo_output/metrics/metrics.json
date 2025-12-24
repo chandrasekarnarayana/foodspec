@@ -1,0 +1,97 @@
+{
+  "matrix_correction_adaptive_baseline": {
+    "baseline_intensity_mean": 1.1108700588096687,
+    "correction_magnitude": 1.1320298848669685
+  },
+  "matrix_correction_robust_scaling": {
+    "matrix_scaling_stats": {
+      "chips": {
+        "median": 0.21720290885151666,
+        "mad": 0.05515077792607328
+      },
+      "pure_oil": {
+        "median": 0.09717158277113899,
+        "mad": 0.034632375257640416
+      }
+    },
+    "matrix_counts": {
+      "chips": 160,
+      "pure_oil": 160
+    }
+  },
+  "matrix_correction_domain_adaptation_pure_oil": {
+    "alignment_shift_magnitude": 3.082104737819415,
+    "explained_variance_source": 0.15052179016104952,
+    "explained_variance_target": 0.15106858416173682,
+    "n_components": 10
+  },
+  "matrix_correction_matrix_effect_magnitude": {
+    "total_correction_magnitude": 1.6459160344586627,
+    "baseline_shift_before": 1.2628714438016646,
+    "baseline_shift_after": 0.00026898408210390966,
+    "per_matrix_correction": {
+      "chips": 2.080235648824555,
+      "pure_oil": 1.0443652762973996
+    }
+  },
+  "heating_trajectory": {
+    "pi": {
+      "r_squared": 0.004086537184062711,
+      "rmse": 892.2151904224612,
+      "params": {
+        "intercept": -36.0194254490052,
+        "slope": 1.0393112911584472
+      },
+      "trend_direction": "increasing"
+    },
+    "tfc": {
+      "r_squared": 0.5254000145117225,
+      "rmse": 0.39532851229286703,
+      "params": {
+        "intercept": 0.6614627570477243,
+        "slope": -0.007563946085649045
+      },
+      "trend_direction": "decreasing"
+    },
+    "oit_proxy": {
+      "r_squared": 0.00011827740799974507,
+      "rmse": 53.09052580985445,
+      "params": {
+        "intercept": -4.226060415388591,
+        "slope": 0.01050032442746316
+      },
+      "trend_direction": "increasing"
+    }
+  },
+  "stage_classification": {
+    "cv_accuracy": 0.553125,
+    "feature_importance": {
+      "pi": 0.23322544583356702,
+      "tfc": 0.5430713626143218,
+      "oit_proxy": 0.22370319155211127
+    },
+    "n_stages": 4,
+    "stage_distribution": {
+      "advanced": 80,
+      "early": 80,
+      "fresh": 40,
+      "spoiled": 120
+    }
+  },
+  "shelf_life": {
+    "shelf_life_estimate": 35.04188375401082,
+    "confidence_interval": [
+      -1659.2550733114263,
+      1729.3388408194478
+    ],
+    "extrapolation_warning": false,
+    "fit_quality": 0.004086537184062711,
+    "model": "linear",
+    "threshold": 0.4
+  },
+  "calibration_transfer_transfer": {
+    "reconstruction_rmse": 0.08795978027169937,
+    "window_size": 11,
+    "n_standards": 20
+  }
+}

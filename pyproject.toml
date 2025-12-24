@@ -65,6 +65,7 @@ foodspec-predict = "foodspec.cli_predict:main"
 foodspec-registry = "foodspec.cli_registry:main"
 foodspec-publish = "foodspec.cli_publish:main"
 foodspec-plugin = "foodspec.cli_plugin:main"
+foodspec-library-search = "foodspec.cli_library_search:main"
 
 [project.urls]
 Homepage = "https://github.com/chandrasekarnarayana/foodspec"

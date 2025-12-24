@@ -42,7 +42,9 @@ class FoodSpectrumSet:
         if self.metadata is None:
             self.metadata = pd.DataFrame(index=np.arange(self.x.shape[0]))
         else:
-            self.metadata = self.metadata.reset_index(drop=True)
+            # Preserve reference semantics for shallow copies by resetting index in place
+            # This avoids creating a new DataFrame that would break aliasing expectations.
+            self.metadata.reset_index(drop=True, inplace=True)
 
         # Auto-detect common label/group columns if not specified
         if self.label_col is None and hasattr(self.metadata, "columns"):

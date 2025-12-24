@@ -56,6 +56,9 @@ from foodspec.viz.classification import plot_confusion_matrix
 from foodspec.viz.heating import plot_ratio_vs_time
 from foodspec.viz.hyperspectral import plot_hyperspectral_intensity_map
 from foodspec.viz.report import render_html_report_oil_auth
+from foodspec.core.time import TimeSpectrumSet
+from foodspec.workflows.aging import compute_degradation_trajectories
+from foodspec.workflows.shelf_life import estimate_remaining_shelf_life
 
 app = typer.Typer(help="foodspec command-line interface")
 logger = get_logger(__name__)
@@ -604,11 +607,138 @@ def hyperspectral_command(
     typer.echo(f"Hyperspectral report: {report_dir}")
 
 
+@app.command("aging")
+def aging_command(
+    input_hdf5: str = typer.Argument(..., help="Input HDF5 library with spectra and metadata."),
+    value_col: str = typer.Option(..., help="Metadata column to model over time (e.g., a ratio/feature)."),
+    method: str = typer.Option("linear", help="Trajectory model: linear or spline."),
+    time_col: Optional[str] = typer.Option(None, help="Time column name in metadata."),
+    entity_col: Optional[str] = typer.Option(None, help="Entity identifier column (e.g., sample_id/batch_id)."),
+    output_dir: str = typer.Option("./out", help="Base output directory."),
+):
+    """Model degradation trajectories and stage classification.
+
+    Computes per-entity trajectories for a numeric value over time, returns slope/acceleration
+    metrics and stage labels (early/mid/late). Writes CSVs and a sample fit figure.
+    """
+
+    ds = load_library(input_hdf5)
+    ts = TimeSpectrumSet(
+        x=ds.x,
+        wavenumbers=ds.wavenumbers,
+        metadata=ds.metadata,
+        modality=ds.modality,
+        time_col=time_col,
+        entity_col=entity_col,
+    )
+    result = compute_degradation_trajectories(ts, value_col=value_col, method=method)  # type: ignore[arg-type]
+    report_dir = _create_report_dir("aging", Path(output_dir))
+    write_metrics_csv(report_dir, "aging_metrics", result.metrics)
+    write_metrics_csv(report_dir, "stages", result.stages)
+    # Plot first entity fit for quick inspection
+    if result.fits:
+        ent = sorted(result.fits.keys())[0]
+        fit = result.fits[ent]
+        fig, ax = plt.subplots()
+        ax.plot(fit.times, fit.values, "o", label=f"{ent} observed")
+        ax.plot(fit.times, fit.fitted, "-", label=f"{fit.method} fit")
+        ax.set_xlabel("Time")
+        ax.set_ylabel(value_col)
+        ax.legend()
+        save_figure(report_dir, f"fit_{ent}", fig)
+        plt.close(fig)
+    write_summary_json(
+        report_dir,
+        {
+            "workflow": "aging",
+            "n_entities": int(result.metrics.shape[0]),
+            "value_col": value_col,
+            "method": method,
+        },
+    )
+    typer.echo(f"Aging report: {report_dir}")
+
+
+@app.command("shelf-life")
+def shelf_life_command(
+    input_hdf5: str = typer.Argument(..., help="Input HDF5 library with spectra and metadata."),
+    value_col: str = typer.Option(..., help="Numeric metric regressed vs time (e.g., degradation index)."),
+    threshold: float = typer.Option(..., help="Decision threshold to estimate remaining time to reach."),
+    time_col: Optional[str] = typer.Option(None, help="Time column name in metadata."),
+    entity_col: Optional[str] = typer.Option(None, help="Entity identifier column (e.g., sample_id/batch_id)."),
+    output_dir: str = typer.Option("./out", help="Base output directory."),
+):
+    """Estimate remaining shelf-life per entity with confidence intervals.
+
+    Fits OLS y~t per entity and solves for t* where y crosses the threshold. Reports t*, CI.
+    """
+
+    ds = load_library(input_hdf5)
+    ts = TimeSpectrumSet(
+        x=ds.x,
+        wavenumbers=ds.wavenumbers,
+        metadata=ds.metadata,
+        modality=ds.modality,
+        time_col=time_col,
+        entity_col=entity_col,
+    )
+    df = estimate_remaining_shelf_life(ts, value_col=value_col, threshold=threshold)
+    report_dir = _create_report_dir("shelf_life", Path(output_dir))
+    write_metrics_csv(report_dir, "shelf_life_estimates", df)
+    # Plot first entity with threshold line
+    first_ent = df["entity"].iloc[0] if not df.empty else None
+    if first_ent is not None:
+        sub = ts.metadata[ts.metadata[ts.entity_col] == first_ent]  # type: ignore[index]
+        t = sub[ts.time_col].to_numpy(dtype=float)  # type: ignore[index]
+        y = sub[value_col].to_numpy(dtype=float)
+        fig, ax = plt.subplots()
+        ax.plot(t, y, "o-", label=f"{first_ent}")
+        ax.axhline(threshold, color="red", linestyle="--", label="threshold")
+        ax.set_xlabel("Time")
+        ax.set_ylabel(value_col)
+        ax.legend()
+        save_figure(report_dir, f"entity_{first_ent}", fig)
+        plt.close(fig)
+    write_summary_json(
+        report_dir,
+        {
+            "workflow": "shelf_life",
+            "n_entities": int(df.shape[0]),
+            "value_col": value_col,
+            "threshold": float(threshold),
+        },
+    )
+    typer.echo(f"Shelf-life report: {report_dir}")
+
+
+@app.command("library-auth")
+def library_auth_command(
+    query_hdf5: str = typer.Argument(..., help="Input HDF5 with query spectra."),
+    library_hdf5: str = typer.Argument(..., help="Reference HDF5 library."),
+    metric: str = typer.Option("cosine", help="Distance metric: euclidean/cosine/pearson/sid/sam."),
+    top_k: int = typer.Option(5, help="Top-k matches per query."),
+    output_dir: str = typer.Option("./out", help="Base output directory."),
+):
+    """Run library-based authentication: similarity search + overlay.
+
+    Produces a similarity table and an overlay plot (first query vs top match)
+    in the output diagnostics folder.
+    """
+    ds_q = load_library(query_hdf5)
+    ds_lib = load_library(library_hdf5)
+    fs = FoodSpec(ds_q)
+    sim = fs.library_similarity(ds_lib, metric=metric, top_k=top_k)
+    out = fs.export(output_dir)
+    typer.echo(f"Similarity table saved under {out}/diagnostics/similarity_table.csv")
+    typer.echo(f"Overlay figure saved under {out}/diagnostics/overlay_query0_top1.png")
+
+
 @app.command("run-exp")
 def run_experiment(
     exp_path: Path = typer.Argument(..., help="Path to exp.yml experiment file."),
     output_dir: Optional[Path] = typer.Option(None, help="Override base output directory."),
     dry_run: bool = typer.Option(False, help="Only validate and summarize the experiment config."),
+    artifact_path: Optional[Path] = typer.Option(None, help="Write a single-file .foodspec deployment artifact."),
 ):
     """Execute an experiment defined in exp.yml (reproducible, single-command pipeline)."""
 
@@ -627,12 +757,26 @@ def run_experiment(
     fs = FoodSpec(cfg.dataset.path, modality=cfg.dataset.modality)
     fs.bundle.run_record = record  # Attach provenance built from exp.yml
 
+    label_column = (cfg.modeling.get("label_column") if cfg.modeling else None) or cfg.dataset.schema.get("label_column", "label")
+
     # QC
     if cfg.qc:
         qc_threshold = cfg.qc.get("threshold")
         if qc_threshold is None:
             qc_threshold = (cfg.qc.get("thresholds") or {}).get("outlier_rate", 0.5)
         fs.qc(method=cfg.qc.get("method", "robust_z"), threshold=qc_threshold)
+
+    # Apply moats (optional, declarative)
+    moats = cfg.moats or {}
+    # 1) Matrix Correction (before preprocessing)
+    mc = moats.get("matrix_correction")
+    if mc:
+        fs.apply_matrix_correction(
+            method=mc.get("method", "adaptive_baseline"),
+            scaling=mc.get("scaling", "median_mad"),
+            domain_adapt=mc.get("domain_adapt", False),
+            matrix_column=mc.get("matrix_column"),
+        )
 
     # Preprocessing
     pre_cfg = cfg.preprocessing or {}
@@ -645,19 +789,94 @@ def run_experiment(
     feat_specs = _build_feature_specs(feat_cfg.get("specs", [])) if feat_preset == "specs" else None
     fs.features(feat_preset, specs=feat_specs)
 
+    # 2) Heating Trajectory analysis (metrics only)
+    ht = moats.get("heating_trajectory")
+    if ht:
+        fs.analyze_heating_trajectory(
+            time_column=ht.get("time_column", "time_hours"),
+            indices=ht.get("indices", ["pi", "tfc", "oit_proxy"]),
+            classify_stages=ht.get("classify_stages", False),
+            stage_column=ht.get("stage_column"),
+            estimate_shelf_life=ht.get("estimate_shelf_life", False),
+            shelf_life_threshold=ht.get("shelf_life_threshold", 2.0),
+            shelf_life_index=ht.get("shelf_life_index", "pi"),
+        )
+
+    # 3) Calibration Transfer (before modeling)
+    ct = moats.get("calibration_transfer")
+    if ct:
+        def _load_matrix(path):
+            p = Path(path)
+            if p.suffix == ".npy":
+                return np.load(p)
+            # assume CSV
+            import pandas as pd
+            return pd.read_csv(p, header=None).to_numpy()
+
+        source_standards = _load_matrix(ct.get("source_standards")) if ct.get("source_standards") else None
+        target_standards = _load_matrix(ct.get("target_standards")) if ct.get("target_standards") else None
+        if source_standards is None or target_standards is None:
+            raise typer.BadParameter("calibration_transfer requires source_standards and target_standards paths")
+        fs.apply_calibration_transfer(
+            source_standards=source_standards,
+            target_standards=target_standards,
+            method=ct.get("method", "ds"),
+            pds_window_size=ct.get("pds_window_size", 11),
+            alpha=ct.get("alpha", 1.0),
+        )
+
     # Modeling
     mod_cfg = cfg.modeling or {}
     suite = mod_cfg.get("suite") or []
     first_model = suite[0] if suite else {}
     algorithm = first_model.get("algorithm", mod_cfg.get("algorithm", "rf"))
-    label_column = mod_cfg.get("label_column") or cfg.dataset.schema.get("label_column", "label")
     cv_folds = first_model.get("cv_folds", mod_cfg.get("cv_folds", 5))
+    if label_column not in fs.data.metadata.columns:
+        raise typer.BadParameter(f"Label column '{label_column}' not found in metadata columns: {list(fs.data.metadata.columns)}")
     params = first_model.get("params", {})
     fs.train(algorithm=algorithm, label_column=label_column, cv_folds=cv_folds, **params)
+
+    # 4) Data Governance (metrics only)
+    dg = moats.get("data_governance")
+    if dg:
+        # Derive label_column if not provided
+        dg_label = dg.get("label_column") or label_column
+        fs.summarize_dataset(label_column=dg_label)
+        fs.check_class_balance(label_column=dg_label)
+        if dg.get("replicate_column"):
+            fs.assess_replicate_consistency(replicate_column=dg.get("replicate_column"))
+        if dg.get("batch_column") or dg.get("replicate_column"):
+            fs.detect_leakage(
+                label_column=dg_label,
+                batch_column=dg.get("batch_column"),
+                replicate_column=dg.get("replicate_column"),
+            )
+        fs.compute_readiness_score(
+            label_column=dg_label,
+            batch_column=dg.get("batch_column"),
+            replicate_column=dg.get("replicate_column"),
+            required_metadata_columns=dg.get("required_metadata_columns"),
+        )
 
     # Export
     base_dir = output_dir or cfg.outputs.get("base_dir") or Path("foodspec_runs") / record.run_id
     out_path = fs.export(base_dir)
+    if artifact_path is None:
+        artifact_path = Path(base_dir) / f"{record.run_id}.foodspec"
+    try:
+        from foodspec.artifact import save_artifact
+
+        target_grid = getattr(fs.data, "wavenumbers", None)
+        save_artifact(
+            fs.bundle,
+            artifact_path,
+            target_grid=target_grid,
+            feature_specs=feat_specs,
+            schema={"label_column": label_column, "modality": cfg.dataset.modality},
+        )
+        typer.echo(f"Artifact saved: {artifact_path}")
+    except Exception as exc:  # pragma: no cover - defensive
+        typer.echo(f"Warning: failed to write artifact: {exc}", err=True)
     typer.echo(f"Experiment complete. Outputs: {out_path}")
 
 

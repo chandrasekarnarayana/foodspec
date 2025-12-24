@@ -19,6 +19,11 @@ Questions this page answers
   foodspec preprocess data/raw_txt libraries/preproc.h5 --metadata-csv data/meta.csv --modality raman --min-wn 600 --max-wn 1800
   ```
 
+## protocol-runner
+- Synopsis: `foodspec-run-protocol --input PATH --protocol PATH|NAME --output-dir DIR [--seed N] [--cv-folds N] [--normalization-mode MODE] [--baseline-method METHOD] [--spike-removal|--no-spike-removal]`
+- Purpose: run a named protocol over CSV/HDF5 inputs and produce a run bundle (tables, figures, report, metadata).
+- Notes: `--spike-removal`/`--no-spike-removal` control cosmic-ray spike correction during preprocessing; see [preprocessing_guide.md](preprocessing_guide.md).
+
 ## csv-to-library
 - Synopsis: `foodspec csv-to-library CSV_PATH OUTPUT_HDF5 [--format wide|long] [--wavenumber-column COL] [--sample-id-column COL] [--intensity-column COL] [--label-column COL] [--modality MOD]`
 - Purpose: convert wide/long CSV to HDF5 library.

@@ -407,6 +407,75 @@ class FoodSpec:
         
         self._steps_applied.append(f"train({algorithm})")
         return self
+
+    def library_similarity(
+        self,
+        library: FoodSpectrumSet,
+        metric: Literal["euclidean", "cosine", "pearson", "sid", "sam"] = "cosine",
+        top_k: int = 5,
+        add_conf: bool = True,
+    ) -> pd.DataFrame:
+        """Run a similarity search against a reference library and record outputs.
+
+        Records a similarity table and an overlay plot (query 0 vs. its top match)
+        into the OutputBundle diagnostics.
+
+        Parameters
+        ----------
+        library : FoodSpectrumSet
+            Reference spectra library.
+        metric : str
+            Distance metric (euclidean, cosine, pearson, sid, sam). Default 'cosine'.
+        top_k : int
+            Number of top matches to report per query. Default 5.
+        add_conf : bool
+            If True, append confidence and decision columns to the similarity table.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Similarity table with distances (and confidence/decision if enabled).
+        """
+        from foodspec.features.library import LibraryIndex, overlay_plot
+        from foodspec.features.confidence import add_confidence
+
+        # Build library index and compute similarity table
+        lib = LibraryIndex.from_dataset(library)
+        query_ids = list(
+            self.data.metadata.get("sample_id", pd.Series(np.arange(len(self.data))).astype(str))
+        )
+        sim_table = lib.search(self.data.x, metric=metric, top_k=top_k, query_ids=query_ids)
+
+        # Confidence and decision mapping
+        if add_conf:
+            sim_table = add_confidence(sim_table, metric=metric)
+
+        # Add diagnostics
+        self.bundle.add_diagnostic("similarity_table", sim_table)
+
+        # Overlay plot for first query vs its top-1 match (if any)
+        try:
+            first_q = 0
+            top_row = sim_table[sim_table["query_index"] == first_q].sort_values("rank").iloc[0]
+            fig, ax = overlay_plot(
+                self.data.x[first_q],
+                lib.X[int(top_row["library_index"])],
+                self.data.wavenumbers,
+            )
+            self.bundle.add_diagnostic("overlay_query0_top1", fig)
+        except Exception:
+            # Non-critical; skip if plotting fails
+            pass
+
+        # Log step
+        self.bundle.run_record.add_step(
+            "library_similarity",
+            hashlib.sha256(json.dumps({"metric": metric, "top_k": top_k}, sort_keys=True).encode()).hexdigest()[:8],
+            metadata={"metric": metric, "top_k": top_k},
+        )
+        self._steps_applied.append(f"library_similarity({metric},k={top_k})")
+
+        return sim_table
     
     def export(
         self,
@@ -470,3 +539,448 @@ class FoodSpec:
             f"FoodSpec(modality={self.data.modality}, n={len(self.data)}, "
             f"steps={len(self._steps_applied)}, output_dir={self.output_dir})"
         )
+    
+    # ──────────────────────────────────────────────────────────────────────────
+    # Moat Methods: Matrix Correction, Heating Trajectory, Calibration Transfer
+    # ──────────────────────────────────────────────────────────────────────────
+    
+    def apply_matrix_correction(
+        self,
+        method: Literal["background_air", "background_dark", "adaptive_baseline", "none"] = "adaptive_baseline",
+        scaling: Literal["median_mad", "huber", "mcd", "none"] = "median_mad",
+        domain_adapt: bool = False,
+        matrix_column: Optional[str] = None,
+        reference_spectra: Optional[np.ndarray] = None,
+    ) -> FoodSpec:
+        """
+        Apply matrix correction to remove matrix effects (e.g., chips vs. pure oil).
+        
+        **Key Assumptions:**
+        - Background reference spectra measured under identical conditions
+        - Matrix types known/inferrable from metadata
+        - Domain adaptation requires ≥2 matrix types with ≥10 samples each
+        - Spectral ranges aligned before correction
+        
+        See foodspec.matrix_correction module docstring for full details.
+        
+        Parameters
+        ----------
+        method : str, default='adaptive_baseline'
+            Background subtraction method.
+        scaling : str, default='median_mad'
+            Robust scaling method per matrix type.
+        domain_adapt : bool, default=False
+            Whether to apply subspace alignment between matrices.
+        matrix_column : str, optional
+            Metadata column with matrix type labels.
+        reference_spectra : np.ndarray, optional
+            Background reference (for background_air/dark methods).
+            
+        Returns
+        -------
+        FoodSpec
+            Self (for chaining).
+        """
+        from foodspec.matrix_correction import apply_matrix_correction as _apply_mc
+        
+        self.data, mc_metrics = _apply_mc(
+            self.data,
+            method=method,
+            scaling=scaling,
+            domain_adapt=domain_adapt,
+            matrix_column=matrix_column,
+            reference_spectra=reference_spectra,
+        )
+        
+        # Record metrics
+        for key, val in mc_metrics.items():
+            self.bundle.add_metrics(f"matrix_correction_{key}", val)
+        
+        self.bundle.run_record.add_step(
+            "matrix_correction",
+            hashlib.sha256(json.dumps(mc_metrics, sort_keys=True).encode()).hexdigest()[:8],
+            metadata={"method": method, "scaling": scaling, "domain_adapt": domain_adapt},
+        )
+        self._steps_applied.append("matrix_correction")
+        
+        return self
+    
+    def analyze_heating_trajectory(
+        self,
+        time_column: str,
+        indices: List[str] = ["pi", "tfc", "oit_proxy"],
+        classify_stages: bool = False,
+        stage_column: Optional[str] = None,
+        estimate_shelf_life: bool = False,
+        shelf_life_threshold: Optional[float] = None,
+        shelf_life_index: str = "pi",
+    ) -> Dict[str, Any]:
+        """
+        Analyze heating/oxidation trajectory from time-series spectra.
+        
+        **Key Assumptions:**
+        - time_column exists and is numeric (hours, days, timestamps)
+        - Repeated measurements over time (longitudinal data)
+        - Degradation is monotonic or follows known patterns
+        - ≥5 time points per sample/group for reliable regression
+        - No major batch effects confounding time trends
+        
+        See foodspec.heating_trajectory module docstring for full details.
+        
+        Parameters
+        ----------
+        time_column : str
+            Metadata column with time values.
+        indices : list of str, default=['pi', 'tfc', 'oit_proxy']
+            Oxidation indices to extract and model.
+        classify_stages : bool, default=False
+            Whether to train degradation stage classifier.
+        stage_column : str, optional
+            Metadata column with stage labels (required if classify_stages=True).
+        estimate_shelf_life : bool, default=False
+            Whether to estimate shelf life.
+        shelf_life_threshold : float, optional
+            Threshold for shelf-life criterion (required if estimate_shelf_life=True).
+        shelf_life_index : str, default='pi'
+            Index to use for shelf-life estimation.
+            
+        Returns
+        -------
+        results : dict
+            - 'indices': extracted indices DataFrame
+            - 'trajectory_models': fit metrics per index
+            - 'stage_classification' (if enabled): classification metrics
+            - 'shelf_life' (if enabled): shelf-life estimation
+        """
+        from foodspec.heating_trajectory import analyze_heating_trajectory as _analyze_ht
+        
+        results = _analyze_ht(
+            self.data,
+            time_column=time_column,
+            indices=indices,
+            classify_stages=classify_stages,
+            stage_column=stage_column,
+            estimate_shelf_life=estimate_shelf_life,
+            shelf_life_threshold=shelf_life_threshold,
+            shelf_life_index=shelf_life_index,
+        )
+
+        # Provide backwards-compatible key expected by tests
+        if "trajectory" not in results:
+            results["trajectory"] = results.get("trajectory_models", {})
+        
+        # Record metrics
+        self.bundle.add_metrics("heating_trajectory", results.get("trajectory_models", {}))
+        if "stage_classification" in results:
+            self.bundle.add_metrics("stage_classification", results["stage_classification"]["metrics"])
+        if "shelf_life" in results:
+            self.bundle.add_metrics("shelf_life", results["shelf_life"])
+        
+        self.bundle.run_record.add_step(
+            "heating_trajectory",
+            hashlib.sha256(json.dumps(results.get("trajectory_models", {}), sort_keys=True).encode()).hexdigest()[:8],
+            metadata={"time_column": time_column, "indices": indices},
+        )
+        self._steps_applied.append("heating_trajectory")
+        
+        return results
+    
+    def apply_calibration_transfer(
+        self,
+        source_standards: np.ndarray,
+        target_standards: np.ndarray,
+        method: Literal["ds", "pds"] = "ds",
+        pds_window_size: int = 11,
+        alpha: float = 1.0,
+    ) -> FoodSpec:
+        """
+        Apply calibration transfer to align target instrument to source.
+        
+        **Key Assumptions:**
+        - Source/target standards are paired (same samples measured on both)
+        - Standards span the calibration range
+        - Spectral alignment already performed
+        - Linear transformation adequate for instrument differences
+        
+        See foodspec.calibration_transfer module docstring for full details.
+        
+        Parameters
+        ----------
+        source_standards : np.ndarray, shape (n_standards, n_wavenumbers)
+            Source (reference) instrument spectra.
+        target_standards : np.ndarray, shape (n_standards, n_wavenumbers)
+            Target (slave) instrument spectra.
+        method : {'ds', 'pds'}, default='ds'
+            Transfer method (Direct Standardization or Piecewise DS).
+        pds_window_size : int, default=11
+            PDS window size (ignored if method='ds').
+        alpha : float, default=1.0
+            Ridge regularization parameter.
+            
+        Returns
+        -------
+        FoodSpec
+            Self (for chaining).
+        """
+        from foodspec.calibration_transfer import calibration_transfer_workflow
+        
+        self.data.x, ct_metrics = calibration_transfer_workflow(
+            source_standards,
+            target_standards,
+            self.data.x,
+            method=method,
+            pds_window_size=pds_window_size,
+            alpha=alpha,
+        )
+        
+        # Record metrics
+        for key, val in ct_metrics.items():
+            self.bundle.add_metrics(f"calibration_transfer_{key}", val)
+        # Generate simple HTML dashboard if metrics include success metrics
+        try:
+            from foodspec.calibration_transfer_dashboard import build_dashboard_html
+            html = build_dashboard_html(ct_metrics)
+            self.bundle.add_diagnostic("calibration_transfer_dashboard", html)
+        except Exception:
+            pass
+        
+        self.bundle.run_record.add_step(
+            "calibration_transfer",
+            hashlib.sha256(json.dumps(ct_metrics, sort_keys=True).encode()).hexdigest()[:8],
+            metadata={"method": method, "pds_window_size": pds_window_size},
+        )
+        self._steps_applied.append("calibration_transfer")
+        
+        return self
+    
+    # -------------------------------------------------------------------------
+    # Data Governance & Dataset Intelligence (Moat 4)
+    # -------------------------------------------------------------------------
+    
+    def summarize_dataset(
+        self,
+        label_column: Optional[str] = None,
+        required_metadata_columns: Optional[list] = None,
+    ) -> Dict[str, Any]:
+        """
+        Generate comprehensive dataset summary for at-a-glance quality assessment.
+        
+        **Returns:**
+        - class_distribution (if label_column provided)
+        - spectral_quality (SNR, range, NaN/inf counts)
+        - metadata_completeness
+        - dataset_info (n_samples, n_wavenumbers, modality)
+        
+        See foodspec.core.summary module docstring for details.
+        
+        Parameters
+        ----------
+        label_column : str, optional
+            Column with class labels.
+        required_metadata_columns : list of str, optional
+            Metadata columns that must be present.
+            
+        Returns
+        -------
+        summary : dict
+            Comprehensive dataset summary.
+        """
+        from foodspec.core.summary import summarize_dataset
+        
+        summary = summarize_dataset(
+            self.data,
+            label_column=label_column,
+            required_metadata_columns=required_metadata_columns,
+        )
+        
+        # Record summary metrics
+        self.bundle.add_metrics("dataset_summary", summary)
+        
+        return summary
+    
+    def check_class_balance(
+        self,
+        label_column: str,
+        severe_threshold: float = 10.0,
+        min_samples_per_class: int = 20,
+    ) -> Dict[str, Any]:
+        """
+        Check class balance and flag severe imbalance.
+        
+        **Returns:**
+        - samples_per_class, imbalance_ratio, severe_imbalance flag
+        - undersized_classes, recommended_action
+        
+        See foodspec.qc.dataset_qc module docstring for details.
+        
+        Parameters
+        ----------
+        label_column : str
+            Column with class labels.
+        severe_threshold : float, default=10.0
+            Imbalance ratio above which to flag as severe.
+        min_samples_per_class : int, default=20
+            Minimum recommended samples per class.
+            
+        Returns
+        -------
+        metrics : dict
+            Class balance diagnostics.
+        """
+        from foodspec.qc.dataset_qc import check_class_balance
+        
+        balance = check_class_balance(
+            self.data.metadata,
+            label_column,
+            severe_threshold=severe_threshold,
+            min_samples_per_class=min_samples_per_class,
+        )
+        
+        self.bundle.add_metrics("class_balance", balance)
+        
+        return balance
+    
+    def assess_replicate_consistency(
+        self,
+        replicate_column: str,
+        technical_cv_threshold: float = 10.0,
+    ) -> Dict[str, Any]:
+        """
+        Compute coefficient of variation (CV) for replicate groups.
+        
+        **Returns:**
+        - cv_per_replicate, median_cv, high_variability_replicates
+        
+        See foodspec.qc.replicates module docstring for details.
+        
+        Parameters
+        ----------
+        replicate_column : str
+            Column defining replicate groups.
+        technical_cv_threshold : float, default=10.0
+            CV (%) above which to flag as high variability.
+            
+        Returns
+        -------
+        metrics : dict
+            Replicate consistency metrics.
+        """
+        from foodspec.qc.replicates import compute_replicate_consistency
+        
+        consistency = compute_replicate_consistency(
+            self.data.x,
+            self.data.metadata,
+            replicate_column,
+            technical_cv_threshold=technical_cv_threshold,
+        )
+        
+        self.bundle.add_metrics("replicate_consistency", consistency)
+        
+        return consistency
+    
+    def detect_leakage(
+        self,
+        label_column: str,
+        batch_column: Optional[str] = None,
+        replicate_column: Optional[str] = None,
+        train_indices: Optional[np.ndarray] = None,
+        test_indices: Optional[np.ndarray] = None,
+    ) -> Dict[str, Any]:
+        """
+        Detect data leakage: batch–label correlation and replicate splits.
+        
+        **Returns:**
+        - batch_label_correlation (Cramér's V)
+        - replicate_leakage (risk/detection)
+        - overall_risk: 'high', 'moderate', 'low'
+        
+        See foodspec.qc.leakage module docstring for details.
+        
+        Parameters
+        ----------
+        label_column : str
+            Column with class labels.
+        batch_column : str, optional
+            Column defining batches.
+        replicate_column : str, optional
+            Column defining replicate groups.
+        train_indices : np.ndarray, optional
+            Row indices for training set.
+        test_indices : np.ndarray, optional
+            Row indices for test set.
+            
+        Returns
+        -------
+        leakage_report : dict
+            Comprehensive leakage diagnostics.
+        """
+        from foodspec.qc.leakage import detect_leakage
+        
+        leakage_report = detect_leakage(
+            self.data,
+            label_column,
+            batch_column=batch_column,
+            replicate_column=replicate_column,
+            train_indices=train_indices,
+            test_indices=test_indices,
+        )
+        
+        self.bundle.add_metrics("leakage_detection", leakage_report)
+        
+        return leakage_report
+    
+    def compute_readiness_score(
+        self,
+        label_column: str,
+        batch_column: Optional[str] = None,
+        replicate_column: Optional[str] = None,
+        required_metadata_columns: Optional[list] = None,
+        weights: Optional[Dict[str, float]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Compute comprehensive dataset readiness score (0-100).
+        
+        **Scoring Dimensions:**
+        - Sample size, class balance, replicate consistency
+        - Metadata completeness, spectral quality, leakage risk
+        
+        **Returns:**
+        - overall_score: 0-100
+        - dimension_scores: individual dimension scores
+        - passed_criteria, failed_criteria
+        - recommendation: text guidance
+        
+        See foodspec.qc.readiness module docstring for details.
+        
+        Parameters
+        ----------
+        label_column : str
+            Column with class labels.
+        batch_column : str, optional
+            Column defining batches.
+        replicate_column : str, optional
+            Column defining replicate groups.
+        required_metadata_columns : list of str, optional
+            Metadata columns that must be complete.
+        weights : dict, optional
+            Custom weights for scoring dimensions.
+            
+        Returns
+        -------
+        score_report : dict
+            Readiness score report.
+        """
+        from foodspec.qc.readiness import compute_readiness_score
+        
+        score_report = compute_readiness_score(
+            self.data,
+            label_column,
+            batch_column=batch_column,
+            replicate_column=replicate_column,
+            required_metadata_columns=required_metadata_columns,
+            weights=weights,
+        )
+        
+        self.bundle.add_metrics("readiness_score", score_report)
+        
+        return score_report

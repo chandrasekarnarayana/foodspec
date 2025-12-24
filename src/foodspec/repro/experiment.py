@@ -54,6 +54,7 @@ class ExperimentConfig:
     reporting: Dict[str, Any] = field(default_factory=dict)
     seeds: Dict[str, Any] = field(default_factory=dict)
     outputs: Dict[str, Any] = field(default_factory=dict)
+    moats: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_yaml(cls, path: Path | str) -> "ExperimentConfig":
@@ -87,6 +88,7 @@ class ExperimentConfig:
             reporting=config.get("reporting", {}),
             seeds=config.get("seeds", {}),
             outputs=config.get("outputs", {}),
+            moats=config.get("moats", {}),
         )
 
     @property
@@ -103,6 +105,7 @@ class ExperimentConfig:
             "reporting": self.reporting,
             "seeds": self.seeds,
             "outputs": self.outputs,
+            "moats": self.moats,
         }
 
     def _step_payloads(self) -> List[tuple[str, Dict[str, Any]]]:
@@ -146,6 +149,7 @@ class ExperimentConfig:
             f"  Modeling suite: {self.modeling.get('suite', [])}",
             f"  Reporting targets: {self.reporting.get('targets', [])}",
             f"  Seeds: {self.seeds if self.seeds else 'none provided'}",
+            f"  Moats: {list(self.moats.keys()) or 'none'}",
         ]
         return "\n".join(lines)
 

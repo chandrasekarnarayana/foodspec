@@ -83,5 +83,82 @@ Run it end-to-end:
 foodspec run-exp exp.yml
 # Dry-run (validate + hashes only)
 foodspec run-exp exp.yml --dry-run
+ # Emit single-file artifact for deployment
+ foodspec run-exp exp.yml --artifact-path runs/oils_exp.foodspec
 ```
 The command builds a RunRecord (config/dataset/step hashes, seeds, environment), executes QC → preprocess → features → train, and exports metrics/diagnostics/artifacts + provenance to `base_dir`.
+
+## Temporal & Shelf-life (CLI)
+
+### Aging (degradation trajectories + stages)
+```bash
+foodspec aging \
+  libraries/time_series_demo.h5 \
+  --value-col degrade_index \
+  --method linear \
+  --time-col time \
+  --entity-col sample_id \
+  --output-dir runs/aging_demo
+```
+Outputs: `aging_metrics.csv`, `stages.csv`, and a sample fit figure under a timestamped folder.
+
+### Shelf-life (remaining time to threshold)
+```bash
+foodspec shelf-life \
+  libraries/time_series_demo.h5 \
+  --value-col degrade_index \
+  --threshold 2.0 \
+  --time-col time \
+  --entity-col sample_id \
+  --output-dir runs/shelf_life_demo
+```
+Outputs: `shelf_life_estimates.csv` with `t_star`, `ci_low`, `ci_high` per entity, plus a quick-look figure.
+
+## Multi-Modal & Cross-Technique Analysis (Python API)
+
+FoodSpec supports **multi-modal spectroscopy** (Raman + FTIR + NIR) for enhanced authentication and cross-validation. While there's no dedicated CLI command yet, the Python API enables powerful multi-modal workflows:
+
+### Quick Example
+
+```python
+from foodspec.core import FoodSpectrumSet, MultiModalDataset
+from foodspec.ml.fusion import late_fusion_concat, decision_fusion_vote
+from foodspec.stats.fusion_metrics import modality_agreement_kappa
+from sklearn.ensemble import RandomForestClassifier
+
+# Load aligned datasets (same samples, different techniques)
+raman = FoodSpectrumSet.from_hdf5("olive_raman.h5")
+ftir = FoodSpectrumSet.from_hdf5("olive_ftir.h5")
+mmd = MultiModalDataset.from_datasets({"raman": raman, "ftir": ftir})
+
+# **Late fusion**: Concatenate features, train joint model
+features = mmd.to_feature_dict()
+result = late_fusion_concat(features)
+X_fused = result.X_fused
+y = raman.sample_table["authentic"]
+
+clf = RandomForestClassifier()
+clf.fit(X_fused, y)
+y_pred = clf.predict(X_fused)
+
+# **Decision fusion**: Train separate models, combine predictions
+predictions = {}
+for mod, ds in mmd.datasets.items():
+    clf = RandomForestClassifier()
+    clf.fit(ds.X, ds.sample_table["authentic"])
+    predictions[mod] = clf.predict(ds.X)
+
+# Majority voting
+vote_result = decision_fusion_vote(predictions, strategy="majority")
+
+# **Agreement metrics**: Check cross-technique consistency
+kappa_df = modality_agreement_kappa(predictions)
+print(kappa_df)  # Cohen's kappa matrix (κ > 0.8 = excellent agreement)
+```
+
+**See full guide**: [Multi-Modal Workflows](multimodal_workflows.md)
+
+**Use cases:**
+- ✅ Olive oil authentication (Raman confirms FTIR)
+- ✅ Novelty detection (modality disagreement flags unknowns)
+- ✅ Robustness validation (cross-lab/cross-technique agreement)

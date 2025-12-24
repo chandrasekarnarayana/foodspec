@@ -91,7 +91,8 @@ class Step:
 def _baseline_als(y: np.ndarray, lam: float = 1e5, p: float = 0.01, niter: int = 10) -> np.ndarray:
     # Simple ALS baseline using finite differences
     L = len(y)
-    D = np.diff(np.eye(L), 2)
+    # Use row-wise differences so that D^T D has shape (L, L)
+    D = np.diff(np.eye(L), 2, axis=0)
     w = np.ones(L)
     for _ in range(niter):
         W = np.diag(w)

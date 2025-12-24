@@ -183,6 +183,10 @@ class OutputBundle:
                         json.dumps(serializable, indent=2),
                         encoding="utf-8"
                     )
+            # Plain strings (write as HTML by default)
+            elif isinstance(value, str):
+                # Save as .html for dashboard-like diagnostics
+                (diag_dir / f"{name}.html").write_text(value, encoding="utf-8")
     
     def _export_artifacts(self, output_dir: Path, formats: List[str]) -> None:
         """Export artifacts to disk."""

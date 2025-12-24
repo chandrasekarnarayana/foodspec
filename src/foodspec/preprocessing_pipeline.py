@@ -16,7 +16,8 @@ from scipy.signal import savgol_filter
 from scipy.sparse.linalg import spsolve
 
 from foodspec.rq import PeakDefinition
-from foodspec.spectral_dataset import PreprocessingConfig  # reuse same config
+from foodspec.spectral_dataset import PreprocessingConfig, baseline_polynomial, baseline_rubberband  # reuse same config
+from foodspec.preprocess.spikes import correct_cosmic_rays
 
 
 def detect_input_mode(df: pd.DataFrame) -> str:
@@ -135,19 +136,41 @@ def run_full_preprocessing(df: pd.DataFrame, config: PreprocessingConfig) -> pd.
         spectra = np.vstack([np.interp(tgt, wn, row) for row in spectra])
         wn = tgt
 
+    # Spike/cosmic ray correction
+    if getattr(config, "spike_removal", False):
+        spectra, spike_report = correct_cosmic_rays(
+            spectra,
+            window=getattr(config, "smoothing_window", 7),
+            zscore_thresh=getattr(config, "spike_zscore_thresh", 8.0),
+        )
+        # Attach per-spectrum spike counts to metadata
+        df = df.copy()
+        df["spikes_removed"] = spike_report.spikes_per_spectrum
+
     # Baseline
     if getattr(config, "baseline_enabled", True):
         baseline_corrected = np.zeros_like(spectra)
+        method = getattr(config, "baseline_method", "als")
         for i, row in enumerate(spectra):
-            baseline_corrected[i, :] = row - baseline_als(row, lam=config.baseline_lambda, p=config.baseline_p)
+            if method == "als":
+                base = baseline_als(row, lam=config.baseline_lambda, p=config.baseline_p)
+            elif method == "rubberband":
+                base = baseline_rubberband(wn, row)
+            elif method == "polynomial":
+                base = baseline_polynomial(wn, row, order=getattr(config, "baseline_order", 3))
+            elif method == "none":
+                base = np.zeros_like(row)
+            else:
+                base = baseline_als(row, lam=config.baseline_lambda, p=config.baseline_p)
+            baseline_corrected[i, :] = row - base
         spectra = baseline_corrected
 
     # Smoothing
-    if getattr(config, "smooth_enabled", True) and config.smooth_window > 2:
+    if getattr(config, "smooth_enabled", True) and getattr(config, "smoothing_window", 7) > 2:
         spectra = savgol_filter(
             spectra,
-            window_length=config.smooth_window,
-            polyorder=config.smooth_polyorder,
+            window_length=getattr(config, "smoothing_window", 7),
+            polyorder=getattr(config, "smoothing_polyorder", 3),
             axis=1,
             mode="interp",
         )
@@ -156,7 +179,11 @@ def run_full_preprocessing(df: pd.DataFrame, config: PreprocessingConfig) -> pd.
     spectra = _normalize_spectra(spectra, config.normalization, wn, config.reference_wavenumber)
 
     proc_df = pd.DataFrame(spectra, columns=wavenumber_cols, index=df.index)
-    proc_df = pd.concat([df[meta_cols].reset_index(drop=True), proc_df.reset_index(drop=True)], axis=1)
+    # Include spikes_removed column in metadata if present
+    meta_plus = df[meta_cols].copy()
+    if "spikes_removed" in df.columns:
+        meta_plus["spikes_removed"] = df["spikes_removed"].values
+    proc_df = pd.concat([meta_plus.reset_index(drop=True), proc_df.reset_index(drop=True)], axis=1)
 
     if peak_defs:
         proc_df = extract_peaks_from_spectra(proc_df, peak_defs, wavenumber_cols)

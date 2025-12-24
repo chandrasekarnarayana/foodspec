@@ -11,7 +11,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from foodspec.plugin import PluginManager, install_plugin
+from foodspec.plugin import install_plugin
+from foodspec.plugins import load_plugins
 
 
 def main(argv=None):
@@ -23,8 +24,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if args.cmd == "list":
-        pm = PluginManager()
-        pm.discover()
+        pm = load_plugins()
         print("Protocols:")
         for p in pm.protocols:
             print(f"- {p.name} ({p.module})")
@@ -34,11 +34,18 @@ def main(argv=None):
         print("Harmonization:")
         for k, v in pm.harmonization.items():
             print(f"- {k} ({v.module})")
+        print("Feature indices:")
+        for k, v in pm.feature_indices.items():
+            print(f"- {k} ({v.module})")
+        print("Workflows:")
+        for k, v in pm.workflows.items():
+            print(f"- {k} ({v.module})")
         return 0
     elif args.cmd == "install":
         ok = install_plugin(args.module)
         if ok:
             print(f"Installed/loaded {args.module}")
+            load_plugins(force=True)
             return 0
         print(f"Failed to install {args.module}", file=sys.stderr)
         return 1

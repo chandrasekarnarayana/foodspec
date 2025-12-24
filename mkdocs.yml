@@ -73,6 +73,9 @@ nav:
       - Harmonization theory: 07-theory-and-background/harmonization_theory.md
   - Glossary: glossary.md
   - Changelog: changelog.md
+  - Moats:
+      - Overview: moats_overview.md
+      - Data Governance: data_governance.md
 
 markdown_extensions:
   - admonition

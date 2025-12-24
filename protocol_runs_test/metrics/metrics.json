@@ -1,0 +1,170 @@
+{
+  "dataset_summary": {
+    "dataset_info": {
+      "n_samples": 200,
+      "n_wavenumbers": 500,
+      "modality": "raman"
+    },
+    "class_distribution": {
+      "samples_per_class": {
+        "authentic": 120,
+        "adulterant_A": 50,
+        "adulterant_B": 30
+      },
+      "total_samples": 200,
+      "n_classes": 3,
+      "min_class_size": 30,
+      "max_class_size": 120,
+      "imbalance_ratio": 3.9999999999998668,
+      "missing_labels": 0
+    },
+    "spectral_quality": {
+      "mean_snr": 25.24508958410382,
+      "spectral_range": [
+        400.0,
+        3000.0
+      ],
+      "n_wavenumbers": 500,
+      "nan_count": 0,
+      "inf_count": 0,
+      "negative_intensity_rate": 0.0,
+      "intensity_range": {
+        "min": 0.3286508494161272,
+        "max": 1.859171695913758,
+        "mean": 1.2600483434070473,
+        "std": 0.32228474260468265
+      }
+    },
+    "metadata_completeness": {
+      "total_columns": 4,
+      "columns_with_missing": [],
+      "missing_rate_per_column": {
+        "oil_type": 0.0,
+        "batch": 0.0,
+        "sample_id": 0.0,
+        "collection_date": 0.0
+      },
+      "required_columns_present": true,
+      "overall_completeness": 1.0
+    }
+  },
+  "class_balance": {
+    "samples_per_class": {
+      "authentic": 120,
+      "adulterant_A": 50,
+      "adulterant_B": 30
+    },
+    "imbalance_ratio": 3.9999999999998668,
+    "severe_imbalance": false,
+    "undersized_classes": [],
+    "majority_class": [
+      "authentic",
+      120
+    ],
+    "minority_class": [
+      "adulterant_B",
+      30
+    ],
+    "recommended_action": "\u2713 Class balance is adequate for standard ML workflows."
+  },
+  "replicate_consistency": {
+    "cv_per_replicate": {
+      "sample_3": 2.6358052301680894,
+      "sample_5": 2.800079415818732,
+      "sample_8": 2.6530043742767826,
+      "sample_15": 2.653690383559377,
+      "sample_17": 2.504497399358426,
+      "sample_19": 2.6245376985578424,
+      "sample_21": 2.749494597621823,
+      "sample_23": 2.6496960598980723,
+      "sample_34": 2.7471190381753003,
+      "sample_47": 2.730239706970218,
+      "sample_49": 2.628979271841641,
+      "sample_52": 2.687560981752383,
+      "sample_59": 2.571843685430522,
+      "sample_68": 2.5509420096328332,
+      "sample_78": 2.338881800456829,
+      "sample_79": 2.4708172343745565,
+      "sample_82": 2.440836502538528,
+      "sample_85": 3.7966330003385056,
+      "sample_87": 3.979580433720209,
+      "sample_88": 4.225654514469832,
+      "sample_96": 3.978864616274049,
+      "sample_97": 3.9690810937770675,
+      "sample_99": 3.4185302084599245,
+      "sample_111": 3.2275140264651934,
+      "sample_121": 3.4347159242116194,
+      "sample_123": 3.3017246048142006,
+      "sample_127": 2.9427560902817533,
+      "sample_131": 2.9169819174255864,
+      "sample_132": 67.74785933024489,
+      "sample_134": 8.189238256065872,
+      "sample_137": 8.682921564204001,
+      "sample_138": 8.363653026029018,
+      "sample_146": 5.761770056573788,
+      "sample_153": 4.302642629705388,
+      "sample_159": 4.45739001501488
+    },
+    "median_cv": 2.9169819174255864,
+    "mean_cv": 5.461015334243079,
+    "max_cv": 67.74785933024489,
+    "high_variability_replicates": [
+      "sample_132"
+    ],
+    "n_replicates": 35
+  },
+  "leakage_detection": {
+    "batch_label_correlation": {
+      "cramers_v": 0.5051127486897247,
+      "chi2_pvalue": 3.590483736927851e-21,
+      "severe": true,
+      "contingency_table": {
+        "adulterant_A": {
+          "batch_1": 10,
+          "batch_2": 30,
+          "batch_3": 10
+        },
+        "adulterant_B": {
+          "batch_1": 0,
+          "batch_2": 10,
+          "batch_3": 20
+        },
+        "authentic": {
+          "batch_1": 90,
+          "batch_2": 20,
+          "batch_3": 10
+        }
+      },
+      "interpretation": "\u26a0\ufe0f Severe batch\u2013label correlation (Cram\u00e9r's V = 0.505). Batches are confounded with classes. Models may learn batch artifacts instead of true biological signals. Consider batch correction or stratified sampling."
+    },
+    "replicate_leakage": {
+      "replicate_groups": 165,
+      "mean_group_size": 1.2121212121212122,
+      "leakage_risk": "high",
+      "recommended_action": "35 replicate groups have multiple samples. Use GroupKFold or GroupShuffleSplit to prevent leakage when splitting."
+    },
+    "overall_risk": "high"
+  },
+  "readiness_score": {
+    "overall_score": 88.0,
+    "dimension_scores": {
+      "sample_size": 100.0,
+      "balance": 100.0,
+      "replicates": 100.0,
+      "metadata": 100.0,
+      "spectral": 100.0,
+      "leakage": 20.0
+    },
+    "passed_criteria": [
+      "sample_size",
+      "balance",
+      "replicates",
+      "metadata",
+      "spectral"
+    ],
+    "failed_criteria": [
+      "leakage"
+    ],
+    "recommendation": "\u2713 Dataset is production-ready for ML deployment. Proceed with model training and validation."
+  }
+}

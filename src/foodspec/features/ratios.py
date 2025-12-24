@@ -1,14 +1,143 @@
-"""Ratio feature utilities."""
+"""Feature: Ratio computation engine (scaffold).
+
+Defines `RatioEngine` to compute feature ratios from peak/intensity columns.
+This is a scaffold with method signatures and docstrings; algorithms and
+robust handling are intentionally left TODO.
+"""
 
 from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+
+try:
+    from foodspec.rq import RatioDefinition
+except Exception:  # pragma: no cover - scaffold fallback
+    @dataclass
+    class RatioDefinition:  # minimal placeholder for type hints
+        name: str
+        numerator: str
+        denominator: str
+
+
+@dataclass
+class RatioEngine:
+    """Compute ratio features from an input DataFrame.
+
+    Parameters
+    ----------
+    ratio_defs : List[RatioDefinition]
+        Definitions of ratios to compute (name, numerator, denominator).
+    safe_division : bool
+        If True, apply safeguards against division by zero (TODO).
+
+    Methods
+    -------
+    fit(df)
+        Placeholder for any learning/calibration on training data.
+    transform(df)
+        Return a copy of df with ratio columns added (currently NaNs placeholder).
+    validate()
+        Check for column presence and definition validity.
+    to_dict()
+        JSON-friendly representation of the configuration.
+    __hash__()
+        Hash of configuration for reproducibility.
+    """
+
+    ratio_defs: List[RatioDefinition] = field(default_factory=list)
+    safe_division: bool = True
+    name: str = "ratio_engine"
+
+    def fit(self, df: pd.DataFrame) -> "RatioEngine":
+        """Placeholder fit step.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Training data with required numerator/denominator columns.
+
+        Returns
+        -------
+        RatioEngine
+            Self, for chaining.
+
+        Notes
+        -----
+        This scaffold does not learn parameters. Future work could calibrate
+        scaling or apply stabilization strategies.
+        """
+        # TODO: Implement optional calibration logic
+        return self
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Compute ratio features (placeholder).
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Input data containing numerator/denominator columns.
+
+        Returns
+        -------
+        pd.DataFrame
+            Copy of df with new ratio columns (NaN placeholders).
+
+        Notes
+        -----
+        Actual ratio computation is deferred. Column existence is checked in
+        `validate()`; this method currently adds NaN columns as placeholders.
+        """
+        out = df.copy()
+        for r in self.ratio_defs:
+            # TODO: Replace placeholder with actual ratio computation and safeguards
+            out[r.name] = pd.NA
+        return out
+
+    def validate(self) -> Dict[str, Any]:
+        """Validate ratio definitions against DataFrame columns.
+
+        Returns
+        -------
+        Dict[str, Any]
+            Validation report with 'ok' and 'issues'.
+        """
+        issues: List[str] = []
+        for r in self.ratio_defs:
+            if not r.name:
+                issues.append("ratio name missing")
+            if not r.numerator or not r.denominator:
+                issues.append(f"ratio '{r.name}' missing numerator/denominator")
+            if r.numerator == r.denominator:
+                issues.append(f"ratio '{r.name}' has identical numerator/denominator")
+        return {"ok": len(issues) == 0, "issues": issues}
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert engine configuration to dict."""
+        return {
+            "name": self.name,
+            "safe_division": self.safe_division,
+            "ratio_defs": [
+                {"name": r.name, "numerator": r.numerator, "denominator": r.denominator} for r in self.ratio_defs
+            ],
+        }
+
+    def __hash__(self) -> int:
+        """Stable hash based on ratio definitions and flags."""
+        key = (self.name, self.safe_division, tuple((r.name, r.numerator, r.denominator) for r in self.ratio_defs))
+        return hash(key)
+
+
+__all__ = ["RatioEngine", "RatioDefinition", "compute_ratios", "RatioFeatureGenerator"]
+"""Ratio feature utilities."""
 
 from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-
-__all__ = ["compute_ratios", "RatioFeatureGenerator"]
 
 
 def compute_ratios(df: pd.DataFrame, ratio_def: Dict[str, Tuple[str, str]]) -> pd.DataFrame:

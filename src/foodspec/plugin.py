@@ -5,10 +5,12 @@ Plugins can register:
 - protocol templates
 - vendor loaders
 - harmonization strategies
+- feature indices
+- workflows
 
 Discovery via entry points: `foodspec.plugins`.
 Each entry point should expose a `get_plugins()` function returning a dict with keys:
-  {"protocols": [...], "vendor_loaders": {...}, "harmonization": {...}}
+    {"protocols": [...], "vendor_loaders": {...}, "harmonization": {...}, "feature_indices": {...}, "workflows": {...}}
 """
 
 from __future__ import annotations
@@ -30,8 +32,10 @@ class PluginManager:
     protocols: List[PluginEntry] = field(default_factory=list)
     vendor_loaders: Dict[str, PluginEntry] = field(default_factory=dict)
     harmonization: Dict[str, PluginEntry] = field(default_factory=dict)
+    feature_indices: Dict[str, PluginEntry] = field(default_factory=dict)
+    workflows: Dict[str, PluginEntry] = field(default_factory=dict)
 
-    def discover(self):
+    def discover(self) -> "PluginManager":
         try:
             from importlib.metadata import entry_points  # Py>=3.10
         except ImportError:
@@ -51,6 +55,11 @@ class PluginManager:
                 self.vendor_loaders[k] = PluginEntry(name=k, module=ep.module, obj=v)
             for k, v in payload.get("harmonization", {}).items():
                 self.harmonization[k] = PluginEntry(name=k, module=ep.module, obj=v)
+            for k, v in payload.get("feature_indices", {}).items():
+                self.feature_indices[k] = PluginEntry(name=k, module=ep.module, obj=v)
+            for k, v in payload.get("workflows", {}).items():
+                self.workflows[k] = PluginEntry(name=k, module=ep.module, obj=v)
+        return self
 
 
 def install_plugin(module_path: str):

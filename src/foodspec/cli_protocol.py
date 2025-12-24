@@ -45,6 +45,21 @@ def main(argv=None):
         help="Override normalization mode for preprocess/RQ (e.g., reference, vector).",
     )
     parser.add_argument("--baseline-method", help="Override baseline method (als, rubberband, polynomial, none).")
+    # Spike removal toggle (cosmic-ray correction in preprocessing)
+    spike_group = parser.add_mutually_exclusive_group()
+    spike_group.add_argument(
+        "--spike-removal",
+        dest="spike_removal",
+        action="store_true",
+        help="Enable cosmic-ray spike removal in preprocessing.",
+    )
+    spike_group.add_argument(
+        "--no-spike-removal",
+        dest="spike_removal",
+        action="store_false",
+        help="Disable cosmic-ray spike removal in preprocessing.",
+    )
+    parser.set_defaults(spike_removal=None)
     parser.add_argument("--verbose", action="store_true", help="Verbose logging.")
     parser.add_argument("--quiet", action="store_true", help="Quiet mode (only errors).")
     parser.add_argument("--no-figures", action="store_true", help="(Reserved) Skip saving figures.")
@@ -101,6 +116,8 @@ def main(argv=None):
                 step.setdefault("params", {})["normalization"] = args.normalization_mode
             if args.baseline_method:
                 step.setdefault("params", {})["baseline_method"] = args.baseline_method
+            if args.spike_removal is not None:
+                step.setdefault("params", {})["spike_removal"] = args.spike_removal
         if step.get("type") == "rq_analysis":
             if args.cv_folds:
                 step.setdefault("params", {})["n_splits"] = args.cv_folds

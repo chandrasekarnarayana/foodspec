@@ -102,3 +102,60 @@ steps:
 - **Plugins:** can register protocols via entry points; see [registry_and_plugins.md](registry_and_plugins.md) and [writing_plugins.md](../06-developer-guide/writing_plugins.md).
 
 For more on validation and harmonization options, see [validation_strategies.md](../05-advanced-topics/validation_strategies.md) and [hsi_and_harmonization.md](../05-advanced-topics/hsi_and_harmonization.md).
+
+---
+
+## Declarative Moats in exp.yml
+
+Beyond protocol steps, you can declaratively enable FoodSpec moats in your `exp.yml` using the optional `moats:` section. The CLI `run-exp` command will apply these in a sensible order.
+
+Example:
+
+```yaml
+dataset:
+  path: data/target_production.csv
+  modality: raman
+  schema:
+    label_column: oil_type
+
+preprocessing:
+  preset: auto
+
+features:
+  preset: standard
+
+modeling:
+  suite:
+    - algorithm: rf
+      cv_folds: 5
+
+moats:
+  matrix_correction:
+    method: adaptive_baseline
+    scaling: median_mad
+    domain_adapt: true
+    matrix_column: matrix_type
+  heating_trajectory:
+    time_column: time_hours
+    indices: [pi, tfc, oit_proxy]
+    classify_stages: false
+    estimate_shelf_life: false
+  calibration_transfer:
+    method: pds
+    pds_window_size: 11
+    alpha: 1.0
+    source_standards: data/source_std.npy
+    target_standards: data/target_std.npy
+  data_governance:
+    batch_column: batch
+    replicate_column: sample_id
+    required_metadata_columns: [oil_type, batch, sample_id]
+
+outputs:
+  base_dir: ./results
+```
+
+Notes:
+- `matrix_correction` applies before preprocessing; `calibration_transfer` applies before modeling.
+- `heating_trajectory` and `data_governance` record metrics in the `OutputBundle`.
+- Standards can be `.npy` (NumPy) or CSV (numeric-only) files.

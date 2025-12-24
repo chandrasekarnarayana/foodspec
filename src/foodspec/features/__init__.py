@@ -6,6 +6,8 @@ from foodspec.features.fingerprint import (
 from foodspec.features.peak_stats import compute_peak_stats, compute_ratio_table
 from foodspec.features.peaks import PeakFeatureExtractor, detect_peaks
 from foodspec.features.ratios import RatioFeatureGenerator, compute_ratios
+from foodspec.features.library import LibraryIndex, similarity_search
+from foodspec.features.confidence import add_confidence, decision_from_confidence
 from foodspec.features.specs import FeatureEngine, FeatureSpec
 from foodspec.features.metrics import (
     feature_cv,
@@ -31,6 +33,11 @@ __all__ = [
     "correlation_similarity_matrix",
     "compute_peak_stats",
     "compute_ratio_table",
+    # library search & confidence
+    "LibraryIndex",
+    "similarity_search",
+    "add_confidence",
+    "decision_from_confidence",
     "FeatureSpec",
     "FeatureEngine",
     "feature_cv",

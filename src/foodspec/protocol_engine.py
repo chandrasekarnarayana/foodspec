@@ -126,14 +126,17 @@ class PreprocessStep(Step):
             for p in peaks_cfg
         ]
         pp_cfg = PreprocessingConfig(
+            baseline_method=self.cfg.get("baseline_method", "als"),
             baseline_lambda=self.cfg.get("baseline_lambda", 1e5),
             baseline_p=self.cfg.get("baseline_p", 0.01),
             baseline_enabled=self.cfg.get("baseline_enabled", True),
             smooth_enabled=self.cfg.get("smooth_enabled", True),
-            smooth_window=self.cfg.get("smooth_window", 7),
-            smooth_polyorder=self.cfg.get("smooth_polyorder", 3),
+            smoothing_window=self.cfg.get("smoothing_window", self.cfg.get("smooth_window", 7)),
+            smoothing_polyorder=self.cfg.get("smoothing_polyorder", self.cfg.get("smooth_polyorder", 3)),
             normalization=self.cfg.get("normalization", "reference"),
             reference_wavenumber=self.cfg.get("reference_wavenumber", 2720.0),
+            spike_removal=self.cfg.get("spike_removal", True),
+            spike_zscore_thresh=self.cfg.get("spike_zscore_thresh", 8.0),
             peak_definitions=peak_defs,
         )
         ctx["logs"].append(f"[preprocess] mode={detect_input_mode(df)}, cfg={pp_cfg}")

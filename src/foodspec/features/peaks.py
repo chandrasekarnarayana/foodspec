@@ -66,7 +66,7 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
         self,
         expected_peaks: Sequence[float],
         tolerance: float = 5.0,
-        features: Sequence[str] = ("height", "area", "width", "centroid", "symmetry"),
+        features: Sequence[str] = ("height", "area"),
     ):
         self.expected_peaks = list(expected_peaks)
         self.tolerance = tolerance

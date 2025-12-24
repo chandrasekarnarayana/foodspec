@@ -52,6 +52,7 @@ class DummyFoodSpec:
         self.modality = modality
         self.bundle = SimpleNamespace(run_record=None)
         self.called = []
+        self.data = SimpleNamespace(metadata=SimpleNamespace(columns=["label"]))
         DummyFoodSpec.instances.append(self)
 
     def qc(self, method="robust_z", threshold=None, **kwargs):

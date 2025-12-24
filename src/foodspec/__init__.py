@@ -49,6 +49,29 @@ __all__ = [
     "ExperimentConfig",
     "ExperimentEngine",
     "diff_runs",
+    "save_artifact",
+    "load_artifact",
+    "Predictor",
+    # Moat modules: matrix correction, heating trajectory, calibration transfer, data governance
+    "apply_matrix_correction",
+    "analyze_heating_trajectory",
+    "calibration_transfer_workflow",
+    "direct_standardization",
+    "piecewise_direct_standardization",
+    # Data governance and dataset intelligence
+    "summarize_dataset",
+    "check_class_balance",
+    "diagnose_imbalance",
+    "compute_replicate_consistency",
+    "assess_variability_sources",
+    "detect_batch_label_correlation",
+    "detect_replicate_leakage",
+    "detect_leakage",
+    "compute_readiness_score",
+    # Plugin infrastructure
+    "PluginManager",
+    "install_plugin",
+    "load_plugins",
 ]
 
 # Single source of truth for the package version.
@@ -84,6 +107,7 @@ from .rq import (
     RQConfig,
 )
 from .repro import DatasetSpec, ExperimentConfig, ExperimentEngine, diff_runs
+from .artifact import load_artifact, save_artifact, Predictor
 from .stats import (
     bootstrap_metric,
     permutation_test_metric,
@@ -106,3 +130,19 @@ from .utils.troubleshooting import (
     estimate_snr,
     summarize_class_balance,
 )
+from .matrix_correction import apply_matrix_correction
+from .heating_trajectory import analyze_heating_trajectory
+from .calibration_transfer import (
+    calibration_transfer_workflow,
+    direct_standardization,
+    piecewise_direct_standardization,
+)
+
+# Data governance and dataset intelligence
+from .core.summary import summarize_dataset
+from .qc.dataset_qc import check_class_balance, diagnose_imbalance
+from .qc.replicates import compute_replicate_consistency, assess_variability_sources
+from .qc.leakage import detect_batch_label_correlation, detect_replicate_leakage, detect_leakage
+from .qc.readiness import compute_readiness_score
+from .plugin import PluginManager, install_plugin
+from .plugins import load_plugins

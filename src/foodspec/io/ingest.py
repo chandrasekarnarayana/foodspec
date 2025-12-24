@@ -26,6 +26,8 @@ from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.io.core import detect_format, read_spectra
 from foodspec.io.text_formats import read_jcamp
 from foodspec.io.vendor_formats import read_opus, read_spc
+from foodspec.plugins import ensure_plugins_loaded
+from foodspec.plugins.loaders import vendor_loader_registry
 
 try:  # Optional dependency
     import h5py
@@ -201,8 +203,37 @@ def load_folder_pattern(path: str | Path, pattern: str = "*.txt", modality: str 
     return IngestResult(dataset=dataset, metrics=metrics, diagnostics={"pattern": pattern})
 
 
+def _coerce_ingest_result(result: object, fmt: str, modality: str) -> IngestResult:
+    if isinstance(result, IngestResult):
+        return result
+    if isinstance(result, FoodSpectrumSet):
+        dataset = result
+    elif hasattr(result, "wavenumbers") and hasattr(result, "spectra"):
+        metadata = getattr(result, "metadata", pd.DataFrame())
+        dataset = FoodSpectrumSet(
+            x=np.asarray(getattr(result, "spectra")),
+            wavenumbers=np.asarray(getattr(result, "wavenumbers")),
+            metadata=metadata,
+            modality=getattr(result, "modality", modality),
+        )
+    else:
+        raise TypeError(f"Vendor loader for format '{fmt}' must return IngestResult or spectrum-like object")
+
+    metrics = _finalize_metrics({"total_files": 1, "parsed_files": 1, "flagged_files": 0, "resampled_spectra": 0}, dataset)
+    return IngestResult(dataset=dataset, metrics=metrics, diagnostics={"format": fmt})
+
+
 def load_vendor(path: str | Path, format: Optional[str] = None, **kwargs) -> IngestResult:
-    fmt = format or detect_format(path)
+    fmt = (format or detect_format(path) or "unknown").lower()
+    ensure_plugins_loaded()
+    plugin_loader = vendor_loader_registry.get(fmt)
+    if plugin_loader is None and fmt == "unknown":
+        suffix = Path(path).suffix.lstrip(".").lower()
+        plugin_loader = vendor_loader_registry.get(suffix) if suffix else None
+    if plugin_loader is not None:
+        plugin_result = plugin_loader(path, **kwargs)
+        return _coerce_ingest_result(plugin_result, fmt, kwargs.get("modality", "raman"))
+
     if fmt == "jcamp":
         ds = read_jcamp(path, **kwargs)
     elif fmt == "spc":

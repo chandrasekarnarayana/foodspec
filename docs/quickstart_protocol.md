@@ -15,5 +15,5 @@ Outputs: `runs/<protocol>_<input>/` containing `report.txt`, figures, tables, me
 
 ## Notes
 - Protocols are YAML/JSON in `examples/protocols/`.
-- Common overrides: `--seed`, `--cv-folds`, `--normalization-mode`, `--baseline-method`.
+- Common overrides: `--seed`, `--cv-folds`, `--normalization-mode`, `--baseline-method`, `--spike-removal`/`--no-spike-removal`.
 - HDF5 stores instrument metadata, preprocessing history, provenance.
