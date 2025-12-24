@@ -55,6 +55,6 @@ print(res.summary)
 - Provide configs and metadata for reproducibility (see [Reproducibility checklist](reproducibility_checklist.md)).
 
 ## Further reading
-- [MethodsX protocol](methodsx_protocol.md)
+
 - [Oil authentication workflow](../workflows/oil_authentication.md)
 - [Model evaluation](../ml/model_evaluation_and_validation.md)

@@ -26,10 +26,10 @@ foodspec-plugin list
 foodspec-plugin install my-plugin   # if distributed
 foodspec-plugin remove my-plugin
 ```
-After installation, plugin protocols/loaders appear in CLI/GUI selectors.
+After installation, plugin protocols/loaders appear in CLI listings and can be referenced by name.
 
 ## How plugin protocols show up
-- In the GUI protocol selector and the `foodspec-run-protocol` CLI, discovered plugin protocols are listed by name. Provide descriptive names/versions in your plugin metadata.
+- In the `foodspec-run-protocol` CLI, discovered plugin protocols are listed by name. Provide descriptive names/versions in your plugin metadata.
 
 ## Writing your own plugin
 - See Developer Guide → `06-developer-guide/writing_plugins.md` and the example packages under `examples/plugins/`.
@@ -43,6 +43,6 @@ After installation, plugin protocols/loaders appear in CLI/GUI selectors.
    pip install -e examples/plugins/plugin_example_protocol
    foodspec-plugin list
    ```  
-   The plugin protocol should appear in GUI/CLI selectors; run it like any other protocol.
+   The plugin protocol should appear in CLI listings; run it like any other protocol.
 
 Cross-links: [cookbook_registry_reporting.md](../03-cookbook/cookbook_registry_reporting.md), [writing_plugins.md](../06-developer-guide/writing_plugins.md).

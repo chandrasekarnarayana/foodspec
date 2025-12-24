@@ -68,9 +68,6 @@ Questions this page answers
 - Synopsis: `foodspec protocol-benchmarks --output-dir DIR`
 - Purpose: run reference benchmarks on public datasets; emits metrics/report.
 
-## reproduce-methodsx
-- Synopsis: `foodspec reproduce-methodsx --output-dir DIR`
-- Purpose: run MethodsX reproduction (classification + mixture + PCA) and save artifacts.
 
 ## model-info
 - Synopsis: `foodspec model-info MODEL_BASEPATH`

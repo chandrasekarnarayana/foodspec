@@ -14,17 +14,7 @@
 ## Why it matters (theory)
 Authenticating oils protects against adulteration and ensures quality. Discriminative ratios (e.g., carbonyl/unsaturation bands) separate oil types. Validation (batch-aware CV) checks generalization; see [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md) and [chemometrics_and_ml_basics.md](../07-theory-and-background/chemometrics_and_ml_basics.md).
 
-## GUI workflow
-1) Launch cockpit/wizard: `foodspec-gui`.
-2) Load `examples/data/oils.csv` in **Data & Mapping**; confirm oil_type/replicate mapping.
-3) Select protocol: **“Edible oil discrimination (basic)”**.
-4) Validate: click **Validate**; fix blocking errors if shown.
-5) Run: click **Run**; progress appears in status/log.
-6) Inspect tabs:  
-   - **Discriminative**: confusion matrix, balanced accuracy, top ratios, minimal marker panel.  
-   - **Stability**: CV/MAD for key ratios.  
-   - **Overview**: QC/validation warnings.  
-   - Run history provides links to the run folder.
+<!-- GUI workflow removed; use CLI workflow below -->
 
 ## CLI workflow
 ```bash
@@ -50,6 +40,5 @@ Check `figures/` for confusion matrix and discriminative barplots; `tables/` for
 - **Stability (CV/MAD):** lower CV/MAD indicates more reproducible markers.
 
 ## Cross-links
-- Getting started (GUI): [first-steps_gui.md](../01-getting-started/first-steps_gui.md)  
 - Cookbook recipes: [cookbook_rq_questions.md](../03-cookbook/cookbook_rq_questions.md)  
 - Theory: [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md)

@@ -66,7 +66,7 @@ foodspec mixture --config examples/configs/mixture_quickstart.yml --output-dir r
 ```
 Outputs: coefficients CSV, residuals, optional reconstruction plots.
 
-## 5. Interpretation (MethodsX tone)
+## 5. Interpretation
 - Compare predicted vs true fractions (if known); report RMSE/MAE and R².
 - Inspect residuals; large or structured residuals may indicate missing components or misalignment.
 - Main figure: predicted vs true scatter; Supplement: residual plots, spectra overlays.

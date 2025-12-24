@@ -5,7 +5,7 @@
 - **RQ Engine**: `rq.py` (stability, discrimination, trends, oil-vs-chips divergence, minimal panel, clustering, report generator).
 - **Protocol Engine**: `protocol_engine.py` with step registry (preprocess, harmonize, hsi_segment, hsi_roi_to_1d, rq_analysis, qc_checks, output) executing YAML/JSON protocols and bundling outputs via `output_bundle.py`.
 - **CLI**: `foodspec-run-protocol`, `foodspec-predict`, `foodspec-registry`, `foodspec-publish`, `foodspec-plugin`.
-- **GUI**: PyQt cockpit (`scripts/foodspec_protocol_cockpit.py`) and wizard; wraps protocol runner.
+ 
 - **Docs/Examples**: `examples/protocols/` for domain presets; `examples/plugins/` for community extensions.
 
 ## Registry and Provenance

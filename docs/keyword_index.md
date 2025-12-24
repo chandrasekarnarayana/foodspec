@@ -47,12 +47,12 @@ Questions this page answers
 - **Cross-validation (CV)** — k-fold, stratified CV for models. See: `metrics/metrics_and_evaluation.md`, `api/chemometrics.md#foodspec.chemometrics.validation`.
 
 ## Workflows
-- **Oil authentication** — classify oils/adulteration. See: `workflows/oil_authentication.md`, `protocols/methodsx_protocol.md`, `api/workflows.md#foodspec.apps.oils`.
+- **Oil authentication** — classify oils/adulteration. See: `workflows/oil_authentication.md`, `api/workflows.md#foodspec.apps.oils`.
 - **Heating degradation** — ratios vs time/temperature. See: `workflows/heating_quality_monitoring.md`, `api/workflows.md#foodspec.apps.heating`.
-- **Mixture analysis (NNLS/MCR-ALS)** — estimate fractions. See: `workflows/mixture_analysis.md`, `api/chemometrics.md#foodspec.chemometrics.mixture` and `api/workflows.md#foodspec.apps.methodsx_reproduction`.
+- **Mixture analysis (NNLS/MCR-ALS)** — estimate fractions. See: `workflows/mixture_analysis.md`, `api/chemometrics.md#foodspec.chemometrics.mixture`.
 - **QC / Novelty detection** — one-class scoring. See: `qc_tutorial.md`, `api/workflows.md#foodspec.apps.qc`.
 - **Hyperspectral analysis** — ratio/cluster maps. See: `hyperspectral_tutorial.md`, `api/datasets.md#foodspec.core.hyperspectral.HyperSpectralCube`.
-- **Protocol benchmarks / MethodsX reproduction** — standardized evaluation. See: `protocol_benchmarks.md`, `protocols/methodsx_protocol.md`, `api/workflows.md#foodspec.apps.protocol_validation`, `api/workflows.md#foodspec.apps.methodsx_reproduction`.
+- **Protocol benchmarks** — standardized evaluation. See: `protocol_benchmarks.md`, `api/workflows.md#foodspec.apps.protocol_validation`.
 - **Domain templates (meat/microbial)** — adapt oil workflow to other domains. See: `domains_overview.md`, `meat_tutorial.md`, `microbial_tutorial.md`, `api/workflows.md#foodspec.apps.meat`, `api/workflows.md#foodspec.apps.microbial`.
 
 ## CLI commands
@@ -60,11 +60,11 @@ Questions this page answers
 - **csv-to-library / preprocess** — build libraries, preprocess raw data. See: `cli.md`.
 - **oil-auth / heating / qc / domains** — workflow commands. See: `cli.md`.
 - **mixture / hyperspectral** — mixture and hyperspectral utilities. See: `cli.md`.
-- **protocol-benchmarks / reproduce-methodsx** — protocol runs. See: `cli.md`.
+- **protocol-benchmarks** — protocol runs. See: `cli.md`.
 - **model-info** — inspect saved model metadata. See: `cli.md`.
 
 See also
 - [Metrics & evaluation](metrics/metrics_and_evaluation.md)
 - [workflows/oil_authentication.md](workflows/oil_authentication.md)
-- [MethodsX protocol](protocols/methodsx_protocol.md)
+
 - [API index](api/index.md)

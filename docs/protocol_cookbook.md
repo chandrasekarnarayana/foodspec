@@ -30,8 +30,8 @@
 - `examples/notebooks/02_oil_vs_chips_matrix_effects.ipynb`: oil vs chips divergence demo.
 - `examples/notebooks/03_hsi_surface_mapping.ipynb`: HSI segmentation → ROI → RQ.
 
-### Example SOP – Oil Authentication (FoodSpec)
-- Protocol: `examples/protocols/EdibleOil_Classification_v1.yml` (preset “Typical edible oil discrimination” in the wizard/cockpit).
-- Replicates: aim for ≥3 spectra per oil type (per batch) for defensible statistics; more for publication-grade studies.
-- Run via wizard/cockpit with defaults (5-fold CV, reference normalization).
+- ### Example SOP – Oil Authentication (FoodSpec)
+- Protocol: `examples/protocols/EdibleOil_Classification_v1.yml`.
+- Replicates: aim for ≥3 spectra per oil type (per batch) for defensible statistics; more for large studies.
+- Run via CLI with defaults (5-fold CV, reference normalization).
 - Include in reports: stability table/plot, discriminative ratios (top ANOVA/importance), minimal panel summary, validation metrics block, and figure panel from `foodspec-publish`.

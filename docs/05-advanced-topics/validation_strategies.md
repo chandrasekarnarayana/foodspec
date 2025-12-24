@@ -5,7 +5,7 @@ FoodSpec includes batch/group-aware and nested cross-validation to improve robus
 ## Batch/group-aware CV
 - Keeps all samples from a batch/instrument together in either train or test to avoid leakage.
 - Stratifies by class when possible to maintain balance.
-- Configured via protocols (`validation_strategy: batch_aware`) or CLI/GUI selectors.
+- Configured via protocols (`validation_strategy: batch_aware`) or CLI flags.
 
 ## Nested CV
 - Outer CV reports performance; inner CV performs feature selection/hyperparameter tuning.
@@ -19,6 +19,6 @@ FoodSpec includes batch/group-aware and nested cross-validation to improve robus
 
 ## Where to configure
 - `validation.py` provides `batch_aware_cv`, `nested_cv`, and split helpers.
-- Protocols can specify `validation_strategy`; CLI flags may override; GUI provides a dropdown.
+- Protocols can specify `validation_strategy`; CLI flags may override.
 
 See `03-cookbook/cookbook_validation.md` for quick recipes and `07-theory-and-background/chemometrics_and_ml_basics.md` for background.

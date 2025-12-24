@@ -37,7 +37,7 @@
 ::: foodspec.apps.meat
 ::: foodspec.apps.microbial
 ::: foodspec.apps.protocol_validation
-::: foodspec.apps.methodsx_reproduction
+
 ::: foodspec.cli
 
 ### Navigation tips

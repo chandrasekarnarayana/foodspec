@@ -151,12 +151,17 @@ def _rf_accuracy(df: pd.DataFrame, features: List[str], label_col: str, random_s
     mask = ~X.isna().any(axis=1) & ~y.isna()
     X = X.loc[mask]
     y = y.loc[mask]
-    if len(y.unique()) < 2 or X.empty:
+    class_counts = y.value_counts(dropna=True)
+    if len(class_counts) < 2 or X.empty:
+        return np.nan
+    min_class = class_counts.min()
+    if min_class < 2:
         return np.nan
     scaler = StandardScaler()
     Xz = scaler.fit_transform(X)
+    cv_splits = max(2, min(int(min_class), len(y), len(class_counts), n_splits))
     cv = StratifiedKFold(
-        n_splits=min(n_splits, len(y.unique()), len(y)),
+        n_splits=cv_splits,
         shuffle=True,
         random_state=random_state,
     )
@@ -226,13 +231,15 @@ class RatioQualityEngine:
         stability = self.compute_stability(df_ratios)
         discrim, feat_imp = (None, None)
         if cv_allowed:
-            discrim, feat_imp = self.compute_discriminative_power(df_ratios)
+            discrim, feat_imp = self.compute_discriminative_power(df_ratios, cv_allowed=cv_allowed)
         heating = self.compute_heating_trends(df_ratios)
         oil_vs_chips = self.compare_oil_vs_chips(df_ratios)
         norm_comp = self.compare_normalizations(df)
         minimal_panel = self.compute_minimal_panel(df_ratios, feat_imp) if cv_allowed else None
         clustering = self.compute_clustering_metrics(df_ratios) if cv_allowed else None
         # normalize Nones to empty DataFrames for downstream text rendering
+        if not cv_allowed:
+            warnings.append("Cross-validation skipped due to too few samples per class.")
         if discrim is None:
             discrim = pd.DataFrame()
         if feat_imp is None:
@@ -319,7 +326,9 @@ class RatioQualityEngine:
                     rows.append({"feature": feat, "level": "oil", "group": str(oil), **metrics})
         return pd.DataFrame(rows)
 
-    def compute_discriminative_power(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
+    def compute_discriminative_power(
+        self, df: pd.DataFrame, cv_allowed: bool = True
+    ) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
         features = self._feature_columns()
         oil_col = self.config.oil_col
         discrim_rows = []
@@ -354,7 +363,7 @@ class RatioQualityEngine:
                 r["significant_fdr"] = bool(rej)
 
         feat_importance = None
-        if self.config.compute_feature_importance and oil_col in df.columns:
+        if self.config.compute_feature_importance and oil_col in df.columns and cv_allowed:
             feat_importance = self._compute_feature_importance(df, features, oil_col)
 
         discrim_df = pd.DataFrame(discrim_rows)
@@ -416,8 +425,8 @@ class RatioQualityEngine:
             oil_sub = df[df[matrix_col] == "oil"]
             chips_sub = df[df[matrix_col] == "chips"]
 
-            oil_cv = _cv(oil_sub[feat])["cv_percent"]
-            chips_cv = _cv(chips_sub[feat])["cv_percent"]
+            oil_cv = _cv(oil_sub[feat])["cv_percent"] if not oil_sub.empty else np.nan
+            chips_cv = _cv(chips_sub[feat])["cv_percent"] if not chips_sub.empty else np.nan
 
             oil_slope, oil_p = self._trend(oil_sub, heating_col, feat)
             chips_slope, chips_p = self._trend(chips_sub, heating_col, feat)
@@ -474,7 +483,7 @@ class RatioQualityEngine:
                     "chips_slope": chips_slope,
                     "oil_p_value": oil_p,
                     "chips_p_value": chips_p,
-                    "diverges": diverges,
+                    "diverges": bool(diverges),
                     "mean_diff": mean_diff,
                     "p_mean": p_mean,
                     "cohen_d": cohen_d,
@@ -514,6 +523,8 @@ class RatioQualityEngine:
                 tag = "mean shift between matrices"
             tags.append(tag)
         df_out["interpretation"] = tags
+        if not df_out.empty:
+            df_out["diverges"] = pd.Series([bool(x) for x in df_out["diverges"]], dtype=object)
         return df_out
 
     def generate_text_report(
@@ -571,16 +582,20 @@ class RatioQualityEngine:
                 tpl.append(f"- {w}")
         tpl.append("")
 
-        tpl.append("Stability (CV %)")
-        tpl.append("----------------")
+        tpl.append("RQ1 – Oil discrimination & clustering")
+        tpl.append("-------------------------------------")
+        tpl.append("")
+
+        tpl.append("RQ2 – Stability (CV %)")
+        tpl.append("----------------------")
         top_stable = (
             stability[stability["level"] == "overall"].sort_values("cv_percent").head(top_k)[["feature", "cv_percent"]]
         )
         tpl.append(top_stable.to_string(index=False))
         tpl.append("")
 
-        tpl.append("Discriminative power (ANOVA / Kruskal)")
-        tpl.append("--------------------------------------")
+        tpl.append("RQ3 – Discriminative power (ANOVA / Kruskal)")
+        tpl.append("--------------------------------------------")
         if not discrim.empty:
             tpl.append(
                 discrim.sort_values("p_value")
@@ -607,8 +622,8 @@ class RatioQualityEngine:
             tpl.append(norm_comp.to_string(index=False))
             tpl.append("")
 
-        tpl.append("Heating trends")
-        tpl.append("--------------")
+        tpl.append("RQ4 – Heating trends")
+        tpl.append("---------------------")
         if not heating.empty:
             tpl.append(
                 heating.sort_values("p_value")
@@ -686,20 +701,21 @@ class RatioQualityEngine:
         mask = ~X.isna().any(axis=1) & ~y.isna()
         X = X.loc[mask]
         y = y.loc[mask]
-        if X.empty or len(y.unique()) < 2:
+        class_counts = y.value_counts(dropna=True)
+        if X.empty or len(class_counts) < 2 or class_counts.min() < 2:
             return pd.DataFrame(columns=["feature", "rf_importance", "lr_coef_abs", "lr_cv_accuracy", "rf_cv_accuracy"])
 
         scaler = StandardScaler()
         Xz = scaler.fit_transform(X)
 
         cv = StratifiedKFold(
-            n_splits=min(self.config.n_splits, len(y.unique()), len(y)),
+            n_splits=max(2, min(self.config.n_splits, int(class_counts.min()), len(y))),
             shuffle=True,
             random_state=self.config.random_state,
         )
 
         # Logistic regression (multiclass)
-        lr = LogisticRegression(max_iter=2000, multi_class="auto")
+        lr = LogisticRegression(max_iter=2000)
         lr_scores = cross_val_score(lr, Xz, y, cv=cv)
         lr.fit(Xz, y)
         lr_coef = np.abs(lr.coef_).mean(axis=0)
@@ -802,7 +818,6 @@ class RatioQualityEngine:
             max_iter=2000,
             C=1.0,
             random_state=self.config.random_state,
-            multi_class="auto",
         )
         lr.fit(Xz, y)
         coef_mag = np.abs(lr.coef_).mean(axis=0)

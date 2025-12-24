@@ -226,7 +226,7 @@ class SpectralDataset:
             ds_wn = grp_spec.create_dataset("wn_axis", data=self.wavenumbers)
             ds_wn.attrs["units"] = "cm^-1"
             grp_spec.create_dataset("intensities", data=self.spectra)
-            grp_spec.create_dataset("sample_table", data=np.string_(self.metadata.to_json()))
+            grp_spec.create_dataset("sample_table", data=np.bytes_(self.metadata.to_json()))
             grp_inst = f.create_group("instrument")
             for k, v in self.instrument_meta.items():
                 try:
@@ -240,15 +240,15 @@ class SpectralDataset:
             grp_proto.attrs["version"] = self.instrument_meta.get("protocol_version", "")
             grp_proto.attrs["steps_json"] = json.dumps(self.instrument_meta.get("protocol_steps", []))
 
-            # Legacy datasets for backward compatibility
-            f.create_dataset("wavenumbers", data=self.wavenumbers)
-            f.create_dataset("spectra", data=self.spectra)
+            # Legacy datasets for backward compatibility (avoid clashing with /spectra group)
             meta_json = self.metadata.to_json()
-            f.create_dataset("metadata_json", data=np.string_(meta_json))
+            f.create_dataset("wavenumbers_legacy", data=self.wavenumbers)
+            f.create_dataset("spectra_legacy", data=self.spectra)
+            f.create_dataset("metadata_json", data=np.bytes_(meta_json))
             inst_json = json.dumps(self.instrument_meta)
-            f.create_dataset("instrument_meta", data=np.string_(inst_json))
-            f.create_dataset("logs", data=np.string_("\n".join(self.logs)))
-            f.create_dataset("history_json", data=np.string_(json.dumps(self.history)))
+            f.create_dataset("instrument_meta", data=np.bytes_(inst_json))
+            f.create_dataset("logs", data=np.bytes_("\n".join(self.logs)))
+            f.create_dataset("history_json", data=np.bytes_(json.dumps(self.history)))
             prov = {
                 "protocol_name": self.instrument_meta.get("protocol_name"),
                 "protocol_version": self.instrument_meta.get("protocol_version"),
@@ -269,8 +269,10 @@ class SpectralDataset:
                 logs = f["logs"][()].decode().splitlines() if "logs" in f else []
                 history = json.loads(f["preprocessing"].attrs.get("history_json", "[]"))
             else:
-                wn = f["wavenumbers"][:]
-                spectra = f["spectra"][:]
+                legacy_wn_key = "wavenumbers" if "wavenumbers" in f else "wavenumbers_legacy"
+                legacy_spec_key = "spectra" if "spectra" in f else "spectra_legacy"
+                wn = f[legacy_wn_key][:]
+                spectra = f[legacy_spec_key][:]
                 metadata = pd.read_json(f["metadata_json"][()].decode())
                 instrument_meta = json.loads(f["instrument_meta"][()].decode())
                 logs = f["logs"][()].decode().splitlines()
@@ -377,7 +379,7 @@ class HyperspectralDataset(SpectralDataset):
             ds_wn.attrs["units"] = "cm^-1"
             grp_spec.create_dataset("cube", data=cube)
             grp_spec.create_dataset("shape_xy", data=np.array(self.shape_xy))
-            grp_spec.create_dataset("sample_table", data=np.string_(self.metadata.to_json()))
+            grp_spec.create_dataset("sample_table", data=np.bytes_(self.metadata.to_json()))
             grp_inst = f.create_group("instrument")
             for k, v in self.instrument_meta.items():
                 try:
@@ -407,11 +409,11 @@ class HyperspectralDataset(SpectralDataset):
             f.create_dataset("cube", data=cube)
             f.create_dataset("shape_xy", data=np.array(self.shape_xy))
             meta_json = self.metadata.to_json()
-            f.create_dataset("metadata_json", data=np.string_(meta_json))
+            f.create_dataset("metadata_json", data=np.bytes_(meta_json))
             inst_json = json.dumps(self.instrument_meta)
-            f.create_dataset("instrument_meta", data=np.string_(inst_json))
-            f.create_dataset("logs", data=np.string_("\n".join(self.logs)))
-            f.create_dataset("history_json", data=np.string_(json.dumps(self.history)))
+            f.create_dataset("instrument_meta", data=np.bytes_(inst_json))
+            f.create_dataset("logs", data=np.bytes_("\n".join(self.logs)))
+            f.create_dataset("history_json", data=np.bytes_(json.dumps(self.history)))
 
     @staticmethod
     def from_hdf5(path: Union[str, Path]) -> "HyperspectralDataset":

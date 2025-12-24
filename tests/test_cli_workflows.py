@@ -206,37 +206,3 @@ def test_cli_hyperspectral(tmp_path: Path):
     _assert_report_created(out_dir)
 
 
-def test_cli_reproduce_methodsx(tmp_path: Path, monkeypatch):
-    # Patch public loaders to avoid external data dependencies.
-    wn = np.linspace(1600, 1610, 15)
-    rng = np.random.default_rng(0)
-    X_oil = rng.normal(0, 0.1, size=(8, wn.size))
-    oil_meta = pd.DataFrame({"oil_type": ["A", "A", "A", "B", "B", "B", "C", "C"]})
-    oil_ds = FoodSpectrumSet(x=X_oil, wavenumbers=wn, metadata=oil_meta, modality="raman")
-
-    X_mix = rng.normal(0, 0.1, size=(6, wn.size))
-    mix_meta = pd.DataFrame({"mixture_fraction_evoo": [0.2, 0.4, 0.6, 0.8, 1.0, 0.5]})
-    mix_ds = FoodSpectrumSet(x=X_mix, wavenumbers=wn, metadata=mix_meta, modality="raman")
-
-    monkeypatch.setattr("foodspec.apps.methodsx_reproduction.load_public_mendeley_oils", lambda: oil_ds)
-    monkeypatch.setattr(
-        "foodspec.apps.methodsx_reproduction.load_public_evoo_sunflower_raman",
-        lambda: mix_ds,
-    )
-
-    result = runner.invoke(
-        app,
-        [
-            "reproduce-methodsx",
-            "--output-dir",
-            str(tmp_path),
-            "--random-state",
-            "0",
-        ],
-    )
-    assert result.exit_code == 0, result.output
-    run_dirs = [p for p in tmp_path.iterdir() if p.is_dir()]
-    assert run_dirs, "No run directory created"
-    run_dir = run_dirs[0]
-    assert (run_dir / "metrics.json").exists()
-    assert (run_dir / "report.md").exists()

@@ -6,7 +6,7 @@
 > — Sri Sathya Sai Baba, *Effect of Food on the Mind*, Summer Showers 1993 – Indian Culture and Spirituality (29 May 1993)
 
 ## What is FoodSpec?
-FoodSpec is a protocol-driven toolkit for Raman/FTIR and hyperspectral imaging in food science. It focuses on edible oils and fried matrices (e.g., chips), covering oil discrimination, thermal stability, and oil–chips matrix effects. The engine bundles preprocessing, harmonization, Ratio-Quality (RQ) analysis, protocol execution, reporting, and prediction into reproducible pipelines usable via GUI, CLI, or web API.
+FoodSpec is a protocol-driven toolkit for Raman/FTIR and hyperspectral imaging in food science. It focuses on edible oils and fried matrices (e.g., chips), covering oil discrimination, thermal stability, and oil–chips matrix effects. The engine bundles preprocessing, harmonization, Ratio-Quality (RQ) analysis, protocol execution, reporting, and prediction into reproducible pipelines usable via the CLI.
 
 ## Who is this for?
 - Food scientists, QA/QC analysts, and lab technicians running spectral workflows.
@@ -17,8 +17,8 @@ FoodSpec is a protocol-driven toolkit for Raman/FTIR and hyperspectral imaging i
 - **Getting started (101)** – install and first runs: `01-getting-started/`
 - **Tutorials (201)** – guided examples: `02-tutorials/`
 - **Cookbook (201/301)** – task recipes (RQ questions, preprocessing, validation): `03-cookbook/`
-- **User guide (401)** – protocols, GUI, CLI, data formats, registry/plugins: `04-user-guide/`
-- **Advanced topics (501)** – architecture, harmonization, validation strategies, model lifecycle, web services: `05-advanced-topics/`
+- **User guide (401)** – protocols, CLI, data formats, registry/plugins: `04-user-guide/`
+- **Advanced topics (501)** – architecture, harmonization, validation strategies, model lifecycle: `05-advanced-topics/`
 - **Developer guide (601)** – contributing, testing/CI, extending steps, writing plugins: `06-developer-guide/`
 - **Theory & background (701)** – spectroscopy/chemometrics foundations and RQ rationale: `07-theory-and-background/`
 - **Glossary**: `glossary.md`
@@ -26,7 +26,6 @@ FoodSpec is a protocol-driven toolkit for Raman/FTIR and hyperspectral imaging i
 
 ## Start here
 - Install: [installation.md](01-getting-started/installation.md)
-- First steps (GUI): [first-steps_gui.md](01-getting-started/first-steps_gui.md)
 - First steps (CLI): [first-steps_cli.md](01-getting-started/first-steps_cli.md)
 - First guided example: [oil_discrimination_basic.md](02-tutorials/oil_discrimination_basic.md)
 

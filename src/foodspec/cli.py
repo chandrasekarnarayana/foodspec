@@ -22,7 +22,6 @@ from foodspec import __version__
 from foodspec.apps.dairy import run_dairy_authentication_workflow
 from foodspec.apps.heating import run_heating_degradation_analysis
 from foodspec.apps.meat import run_meat_authentication_workflow
-from foodspec.apps.methodsx_reproduction import run_methodsx_reproduction
 from foodspec.apps.microbial import run_microbial_detection_workflow
 from foodspec.apps.oils import run_oil_authentication_workflow
 from foodspec.apps.protocol_validation import run_protocol_benchmarks
@@ -681,21 +680,6 @@ def protocol_benchmarks(
     typer.echo(json.dumps(summary, indent=2))
 
 
-@app.command("reproduce-methodsx")
-def reproduce_methodsx(
-    output_dir: str = typer.Option("./methodsx_runs", help="Directory to write MethodsX reproduction artifacts."),
-    random_state: int = typer.Option(42, help="Random seed."),
-):
-    """Run MethodsX protocol reproduction analyses and write artifacts."""
-
-    run_meta = log_run_metadata(logger, {"command": "reproduce-methodsx"})
-    summary = run_methodsx_reproduction(output_dir=output_dir, random_state=random_state)
-    # Save run metadata
-    run_dir = Path(summary.get("run_dir", output_dir))
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run_metadata.json").write_text(json.dumps(run_meta, indent=2), encoding="utf-8")
-    typer.echo("MethodsX reproduction summary:")
-    typer.echo(json.dumps(summary, indent=2))
 
 
 def main():

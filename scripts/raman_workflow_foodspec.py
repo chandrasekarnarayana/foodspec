@@ -33,7 +33,7 @@ This script:
    - Global ANOVA, slopes, stability ranking, figures, interpretation tables
    - Saves into Supplementary_Chips_HeatingStage_Results/ and Supplementary_Oil_HeatingStage_Results/
 
-5. Publication-ready RQ summaries (RQ1–RQ14):
+5. RQ summaries (RQ1–RQ14):
    - Supervised discrimination (RandomForest, Logistic Regression)
    - Feature importance + minimal marker panel
    - Unsupervised clustering (KMeans) & chemometric map (PCA + MDS)
@@ -44,60 +44,43 @@ This script:
    - Normalization robustness (reference-peak vs vector normalization)
 
    -> Saves textual answers to:
-      - Publication_Summaries/RQ_detailed_answers.txt
-      - Publication_Summaries/RQ_brief_summary.txt
+      - Summaries/RQ_detailed_answers.txt
+      - Summaries/RQ_brief_summary.txt
 """
 
 # ============================================================
-# 0. Imports + dependency check
+# 0. Imports
 # ============================================================
-import importlib
-import subprocess
-import sys
-import os
 import json
-import warnings
+import os
 import time
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
-
-warnings.filterwarnings("ignore")
-
-required = ["numpy", "pandas", "matplotlib", "scipy", "sklearn", "statsmodels", "tqdm", "seaborn"]
-
-for pkg in required:
-    try:
-        importlib.import_module(pkg)
-        print(f"{pkg}  installed")
-    except ImportError:
-        print(f"{pkg} ❌ missing, installing...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from tqdm import tqdm
-
 from scipy import stats
 from scipy.sparse import diags
-import scipy.sparse as sparse
-from scipy.sparse.linalg import spsolve
 from scipy.stats import linregress
-
+import scipy.sparse as sparse
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score, adjusted_rand_score
-from sklearn.preprocessing import StandardScaler, normalize
-from sklearn.model_selection import StratifiedKFold, KFold, cross_val_score
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
-from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
-
+from sklearn.metrics import silhouette_score, adjusted_rand_score
+from sklearn.model_selection import StratifiedKFold, KFold, cross_val_score
+from sklearn.preprocessing import StandardScaler, normalize
 from statsmodels.multivariate.manova import MANOVA
-from statsmodels.stats.multitest import multipletests
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from statsmodels.stats.multitest import multipletests
+from tqdm import tqdm
+
+warnings.filterwarnings("ignore")
 
 
 # ============================================================
@@ -115,7 +98,7 @@ SUPP_OIL_HEAT_DIR = r"C:\Users\sairam\Downloads\Supplementary_Oil_HeatingStage_R
 OIL_PEAK_CV_CSV = os.path.join(SUPP_OIL_STATS_DIR, "Oil Ratio peak_CV values.csv")
 OIL_RATIO_NORM_CV_CSV = os.path.join(SUPP_OIL_STATS_DIR, "Oil Ratio peak_Normalized_CV values.csv")
 
-PUBLICATION_SUMMARY_DIR = Path("Publication_Summaries")
+PUBLICATION_SUMMARY_DIR = Path("Summaries")
 ACTIVE_CONFIG = None
 
 
@@ -176,7 +159,7 @@ def configure_paths(cfg: Config):
     OIL_PEAK_CV_CSV = os.path.join(SUPP_OIL_STATS_DIR, "Oil Ratio peak_CV values.csv")
     OIL_RATIO_NORM_CV_CSV = os.path.join(SUPP_OIL_STATS_DIR, "Oil Ratio peak_Normalized_CV values.csv")
 
-    PUBLICATION_SUMMARY_DIR = base_dir / "Publication_Summaries"
+    PUBLICATION_SUMMARY_DIR = base_dir / "Summaries"
 
     ensure_dir(Path(SUPP_OIL_STATS_DIR))
     ensure_dir(Path(SUPP_CHIPS_HEAT_DIR))
@@ -1569,7 +1552,7 @@ to oil discrimination. These same features form the core of the minimal marker p
     def summarize_heating_global(df_glob, matrix_label):
         if df_glob is None:
             return f"No heating-stage ANOVA table available for {matrix_label}."
-        sig = df_glob[df_glob["significant_by_ANOVA"] == True]
+        sig = df_glob[df_glob["significant_by_ANOVA"]]
         if sig.empty:
             return f"No ratio showed significant dependence on heating stage (ANOVA p<0.05) in {matrix_label}."
         lines_local = [f"In {matrix_label}, the following ratios changed significantly with heating (ANOVA p<0.05):"]

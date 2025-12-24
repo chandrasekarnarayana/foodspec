@@ -13,15 +13,7 @@
 ## Why it matters (theory)
 Heating alters oxidation/unsaturation signatures. Trend analysis (linear slopes, Spearman ρ) shows whether ratios increase/decrease with heating. See [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md).
 
-## GUI workflow
-1) Launch `foodspec-gui`.  
-2) Load `oils.csv` (or chips) and map `heating_stage` in **Data & Mapping**.  
-3) Select protocol: **“Thermal stability tracking”**.  
-4) Validate, then Run (batch-aware CV applies if batches exist).  
-5) Inspect tabs:  
-   - **Heating Trends**: slopes, Spearman ρ, FDR-corrected p-values, monotonicity flags; stability ranking (abs(slope)).  
-   - **Stability/Discriminative**: optional context.  
-   - Run history → run folder link.
+<!-- GUI workflow removed; use CLI workflow below -->
 
 ## CLI workflow
 ```bash
@@ -44,6 +36,5 @@ Open `figures/trend_*` for ratio vs heating stage; `tables/heating_trend_summary
 - Choose markers with consistent trend direction across replicates/batches for QA.
 
 ## Cross-links
-- Getting started: [first-steps_gui.md](../01-getting-started/first-steps_gui.md)  
 - Cookbook: [cookbook_rq_questions.md](../03-cookbook/cookbook_rq_questions.md)  
 - Theory: [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md)

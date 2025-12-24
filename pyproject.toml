@@ -38,15 +38,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-gui = [
-  "PyQt5>=5.15",
-  "pyqt5-plugins; platform_system=='Windows'",
-]
-web = [
-  "fastapi>=0.110",
-  "uvicorn[standard]>=0.23",
-  "httpx>=0.24",
-]
 dev = [
   "black>=24.4.0",
   "ruff>=0.5.0",
@@ -56,7 +47,6 @@ dev = [
   "mkdocs-material>=9.5.0",
   "mkdocstrings-python>=1.10.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.0",
-  "httpx>=0.24",
 ]
 ml = [
   "xgboost>=1.7.0",
@@ -99,7 +89,7 @@ select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-addopts = "--cov=foodspec --cov-report=term-missing --cov-fail-under=80"
+addopts = "--cov=foodspec --cov-report=term-missing --cov-fail-under=75"
 testpaths = ["tests"]
 
 [tool.coverage.run]

@@ -58,10 +58,13 @@ def load_opus(path: Union[str, Path]) -> SpectralDataset:
     Future: replace with real OPUS parser.
     """
     try:
-        return load_foodspec_csv(path)
+        ds = load_foodspec_csv(path)
+        if ds.spectra.shape[1] == 0:
+            raise ValueError("No numeric wavenumber columns found.")
+        return ds
     except Exception as exc:
         raise ValueError(
-            "This file looks like OPUS but could not be parsed. Ensure you export as ASCII/CSV. " f"Details: {exc}"
+            "This file looks like OPUS but parsing failed. Ensure you export as ASCII/CSV. " f"Details: {exc}"
         )
 
 
@@ -70,10 +73,13 @@ def load_wire(path: Union[str, Path]) -> SpectralDataset:
     Stub Renishaw WiRE loader (expects ASCII export).
     """
     try:
-        return load_foodspec_csv(path)
+        ds = load_foodspec_csv(path)
+        if ds.spectra.shape[1] == 0:
+            raise ValueError("No numeric wavenumber columns found.")
+        return ds
     except Exception as exc:
         raise ValueError(
-            "This file looks like a WiRE export but could not be parsed. Try exporting as CSV. " f"Details: {exc}"
+            "This file looks like a WiRE export but parsing failed. Try exporting as CSV. " f"Details: {exc}"
         )
 
 
@@ -82,7 +88,10 @@ def load_envi(path_hdr: Union[str, Path], path_dat: Optional[Union[str, Path]] =
     Stub ENVI loader for spectral tables (not HSI).
     """
     try:
-        return load_foodspec_csv(path_hdr)
+        ds = load_foodspec_csv(path_hdr)
+        if ds.spectra.shape[1] == 0:
+            raise ValueError("No numeric wavenumber columns found.")
+        return ds
     except Exception as exc:
         raise ValueError(f"This file looks like ENVI but parsing failed. Provide ASCII/CSV export. Details: {exc}")
 

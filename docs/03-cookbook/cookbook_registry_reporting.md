@@ -5,7 +5,7 @@
 - Include stability/discrimination/trend plots and validation metrics in reports.
 # Cookbook – Registry & reporting
 
-Recipes for querying runs/models and generating publication-ready outputs.
+Recipes for querying runs/models and generating report-ready outputs.
 
 ## Query the registry for a model/protocol
 - **CLI:**  
@@ -35,4 +35,4 @@ Recipes for querying runs/models and generating publication-ready outputs.
   entry = reg.query_models(model_path="path/to/frozen_model.pkl")
   print(entry.provenance)
   ```
-- **Why:** Ensures reproducibility and auditability for QA or publications; check preprocessing, features, validation strategy, metrics.
+- **Why:** Ensures reproducibility and auditability for QA or reports; check preprocessing, features, validation strategy, metrics.

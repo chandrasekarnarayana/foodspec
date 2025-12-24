@@ -56,6 +56,6 @@ Use this checklist to ensure FoodSpec analyses are transparent and repeatable. I
 - Prefer configs/YAML to capture parameters; avoid manual re-entry.
 
 ## Further reading
-- [MethodsX protocol](methodsx_protocol.md)
+
 - [Benchmarking framework](benchmarking_framework.md)
 - [Reporting guidelines](../reporting_guidelines.md)

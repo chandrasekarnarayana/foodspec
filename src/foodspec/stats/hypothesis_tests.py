@@ -149,7 +149,12 @@ def run_manova(data: pd.DataFrame, groups: Iterable) -> TestResult:
     """
 
     if MANOVA is None:
-        raise ImportError("statsmodels is required for MANOVA.")
+        try:
+            from statsmodels.multivariate.manova import MANOVA as _MANOVA  # type: ignore
+
+            globals()["MANOVA"] = _MANOVA
+        except Exception as exc:
+            raise ImportError("statsmodels is required for MANOVA.") from exc
     df = data.copy()
     df["_group"] = np.asarray(groups)
     # statsmodels MANOVA uses endog/exog, use from_formula convenience

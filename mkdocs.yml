@@ -33,7 +33,6 @@ nav:
   - Home: index.md
   - Start Here (101):
       - Installation: 01-getting-started/installation.md
-      - First steps (GUI): 01-getting-started/first-steps_gui.md
       - First steps (CLI): 01-getting-started/first-steps_cli.md
       - FAQ (basic): 01-getting-started/faq_basic.md
   - Tutorials (201/301):
@@ -51,7 +50,6 @@ nav:
       - Troubleshooting: 03-cookbook/cookbook_troubleshooting.md
   - User Guide (401):
       - Protocols & YAML: 04-user-guide/protocols_and_yaml.md
-      - GUI cockpit & wizard: 04-user-guide/gui_cockpit_guide.md
       - CLI guide: 04-user-guide/cli_guide.md
       - Data formats & HDF5: 04-user-guide/data_formats_and_hdf5.md
       - Registry & plugins: 04-user-guide/registry_and_plugins.md
@@ -63,7 +61,6 @@ nav:
       - HSI & harmonization: 05-advanced-topics/hsi_and_harmonization.md
       - Validation strategies: 05-advanced-topics/validation_strategies.md
       - Model lifecycle & prediction: 05-advanced-topics/model_lifecycle_and_prediction.md
-      - Web API & services: 05-advanced-topics/web_api_and_services.md
   - Developer Guide (601):
       - Contributing: 06-developer-guide/contributing.md
       - Testing & CI: 06-developer-guide/testing_and_ci.md

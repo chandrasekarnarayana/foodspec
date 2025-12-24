@@ -14,15 +14,7 @@
 ## Why it matters (theory)
 Matrix components (starch/protein) can alter mean ratios, CV, and heating trends. Identifying matrix-robust vs matrix-sensitive markers is critical for QA. See [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md).
 
-## GUI workflow
-1) Launch `foodspec-gui` (cockpit or wizard).  
-2) Load both files in **Data & Mapping** (project/multi-input view); map matrix labels (oil/chips).  
-3) Select protocol: **“Oil vs chips matrix comparison”**.  
-4) Validate, then Run. Harmonization aligns inputs if configured.  
-5) Inspect tabs:  
-   - **Oil vs Chips**: divergence tables (mean/CV/trend differences, p-values/effect sizes, interpretation tags).  
-   - **Discriminative/Stability/Trends**: additional context if relevant.  
-   - Run history → link to run folder.
+<!-- GUI workflow removed; use CLI workflow below -->
 
 ## CLI workflow
 ```bash
@@ -46,6 +38,5 @@ Open `figures/` for divergence plots and trend charts; `tables/` for oil_vs_chip
 - Prefer matrix-robust markers for cross-matrix QA; avoid markers that flip behavior between oil and chips.
 
 ## Cross-links
-- Getting started: [first-steps_gui.md](../01-getting-started/first-steps_gui.md)  
 - Cookbook: [cookbook_rq_questions.md](../03-cookbook/cookbook_rq_questions.md) and [cookbook_preprocessing.md](../03-cookbook/cookbook_preprocessing.md)  
 - Theory: [rq_engine_theory.md](../07-theory-and-background/rq_engine_theory.md)

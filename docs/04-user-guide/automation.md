@@ -2,15 +2,7 @@
 
 FoodSpec supports highly automated “one-click” analysis in two paths:
 
-## Group A: GUI Auto-Analysis (one-click)
-- **Why:** Fastest path for non-developers; visual validation and progress.
-- **How:**
-  1. Launch `foodspec-gui` (wizard or cockpit).
-  2. Load data (CSV/HDF5); confirm column mapping.
-  3. Select a protocol preset (oil discrimination, thermal stability, oil vs chips, HSI).
-  4. Click **Validate**, then **Run**. All steps (preprocess → harmonize → QC → RQ → bundle) execute automatically.
-  5. When finished, the GUI shows the run folder link with report/figures/tables/models.
-- **Where to review:** Overview, Stability, Discriminative, Trends, Oil vs Chips, HSI tabs; Report & Export for text/HTML.
+<!-- GUI path removed -->
 
 ## Group B: CLI Auto-Analysis + Publish
 - **Why:** Scriptable, reproducible runs for batch use.
@@ -32,9 +24,9 @@ FoodSpec supports highly automated “one-click” analysis in two paths:
 - **Dry-run:** use `--dry-run` to validate/estimate without executing (helpful before large HSI/multi-input runs).
 
 ## Tips for best automation
-- Always run validation (GUI button or CLI validation block); fix blocking errors before proceeding.
+- Always run validation via the protocol’s validation block; fix blocking errors before proceeding.
 - Let protocols choose validation strategy by default; they auto-reduce CV folds when classes are tiny.
 - Use HDF5 for multi-instrument/HSI to retain harmonization metadata.
-- For repeated runs, keep a run history (GUI) or organize CLI outputs under a project folder.
+- For repeated runs, organize CLI outputs under a project folder.
 
-Cross-links: [gui_cockpit_guide.md](gui_cockpit_guide.md), [cli_guide.md](cli_guide.md), [cookbook_rq_questions.md](../03-cookbook/cookbook_rq_questions.md), [validation_strategies.md](../05-advanced-topics/validation_strategies.md).
+Cross-links: [cli_guide.md](cli_guide.md), [cookbook_rq_questions.md](../03-cookbook/cookbook_rq_questions.md), [validation_strategies.md](../05-advanced-topics/validation_strategies.md).

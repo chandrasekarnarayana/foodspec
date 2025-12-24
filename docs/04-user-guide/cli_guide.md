@@ -1,6 +1,6 @@
 # User Guide – CLI reference
 
-Why it matters: CLIs let you automate and reproduce analyses identically to the GUI, with clear outputs and provenance.
+Why it matters: CLIs let you automate and reproduce analyses consistently, with clear outputs and provenance.
 
 ## foodspec-run-protocol
 Purpose: run a protocol end-to-end (preprocess → harmonize → QC → RQ → output bundle).

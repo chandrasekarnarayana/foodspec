@@ -9,7 +9,6 @@ Common failure modes and how to fix them (if you see X, do Y).
 
 ## Protocol validation failed – missing column X
 - **Looks like:** Validation block/error dialog naming a missing column.  
-- **GUI:** Map the correct column in **Data & Mapping**, re-validate.  
 - **CLI:** Add/rename the column in CSV or pick a matching protocol; re-run and check the validation block.
 
 ## Nested CV too slow

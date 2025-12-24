@@ -17,11 +17,10 @@ foodspec-predict --model path/to/model_prefix --input new_data.csv --output pred
 More CLIs: see docs/cli_help.md.
 # First steps (CLI)
 
-Run your first protocol end-to-end from the command line. This mirrors what the GUI does but is scriptable.
+Run your first protocol end-to-end from the command line.
 
 ## Why use CLI?
-- Reproducible, automatable runs.
-- Matches GUI outputs (run folder with figures/tables/report/metadata).
+- Reproducible, automatable runs with clear bundle outputs.
 
 ## Complete example (oil discrimination)
 ```bash
@@ -60,18 +59,15 @@ foodspec-predict \
 ```
 This applies the same preprocessing/feature definitions used in training.
 
-## Relating CLI to GUI
-- The same protocol YAML drives both; GUI is a front end for these steps.
-- Outputs are identical in structure; the GUI shows them inside tabs, while CLI writes to disk.
+ 
 
 ## Environment check
 If dependencies seem missing:
 ```bash
 foodspec-run-protocol --check-env
 ```
-to verify GUI/web availability, Python version, and core deps.
+to verify Python version and core deps.
 
 ## Troubleshooting
 - **Missing columns / protocol mismatch**: ensure required columns match `expected_columns` in the protocol (use the example CSV unchanged to test).
-- **GUI/web warnings**: ignore if you only need CLI; install extras (`foodspec[gui]`, `foodspec[web]`) if needed.
 - **Validation errors**: the CLI prints a “Validation” block; fix blocking errors, re-run. Warnings are captured in `metadata.json` and `run.log`.

@@ -8,7 +8,6 @@ from foodspec.apps.heating import (
     run_heating_degradation_analysis,
     run_heating_quality_workflow,
 )
-from foodspec.apps.methodsx_reproduction import run_methodsx_reproduction
 from foodspec.apps.oils import (
     run_oil_authentication_quickstart,
     run_oil_authentication_workflow,
@@ -125,27 +124,6 @@ def test_protocol_benchmarks_missing(monkeypatch, tmp_path):
     assert "classification_error" in summary
     assert "mixture_error" in summary
 
-
-def test_methodsx_reproduction_smoke(monkeypatch, tmp_path):
-    labels = ["olive", "olive", "sunflower", "sunflower"]
-
-    def fake_oils():
-        local_labels = ["olive"] * 3 + ["sunflower"] * 3 + ["canola"] * 3
-        fs = _make_dataset(9, 20, local_labels)
-        fs.metadata["oil_type"] = local_labels
-        return fs
-
-    def fake_mix():
-        fs = _make_dataset(5, 12, labels[:5] if len(labels) >= 5 else labels + ["olive"])
-        fs.metadata["mixture_fraction_evoo"] = np.linspace(0, 1, len(fs))
-        return fs
-
-    monkeypatch.setattr("foodspec.apps.methodsx_reproduction.load_public_mendeley_oils", fake_oils)
-    monkeypatch.setattr("foodspec.apps.methodsx_reproduction.load_public_evoo_sunflower_raman", fake_mix)
-    metrics = run_methodsx_reproduction(output_dir=tmp_path)
-    run_dir = Path(metrics["run_dir"])
-    assert (run_dir / "metrics.json").exists()
-    assert (run_dir / "report.md").exists()
 
 
 def test_mixture_workflow_nnls_smoke():

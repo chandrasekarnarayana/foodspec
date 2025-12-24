@@ -24,7 +24,6 @@ Headless, research-grade Python toolkit for Raman/FTIR (and NIR) spectroscopy in
 - Documentation serves both as teaching material and protocol-grade guidance.
 
 ## Automated analysis
-- **GUI one-click:** load data, pick a protocol, validate, and run—all steps execute end-to-end with visual tabs and run history. See [automation guide](docs/04-user-guide/automation.md).
 - **CLI + publish:** run a protocol via `foodspec-run-protocol`, then generate narrative/figures with `foodspec-publish` for a fully automated bundle.
 
 ## Key capabilities
@@ -34,15 +33,11 @@ Headless, research-grade Python toolkit for Raman/FTIR (and NIR) spectroscopy in
 - **Statistics & metrics:** Parametric/nonparametric tests (ANOVA/MANOVA, Tukey, Games–Howell, Mann–Whitney, Kruskal), robustness (bootstrap/permutation), classification/regression metrics, embedding metrics (silhouette, between/within), calibration CIs, Bland–Altman.
 - **ML/Chemometrics:** Logistic/SVM (linear/RBF), RF, Gradient Boosting, optional XGBoost/LightGBM, kNN; PLS regression/PLS-DA; optional DL (Conv1D/MLP) with clear cautions; mixture models (NNLS, MCR-ALS).
 - **Workflows:** Oil authentication, heating/degradation, mixtures, batch QC/novelty, hyperspectral mapping, calibration/regression—each with plots + metrics + qualitative/quantitative interpretation.
-- **Reproducibility & reporting:** CLI/ configs, run metadata, metrics/plots/report.md, model registry, reproducibility checklist, MethodsX-style protocol, troubleshooting/FAQ.
+- **Reproducibility & reporting:** CLI/ configs, run metadata, metrics/plots/report.md, model registry, reproducibility checklist, reporting guidelines, troubleshooting/FAQ.
 
 ## Installation
 ```bash
 pip install foodspec
-# GUI extras
-pip install 'foodspec[gui]'
-# Web API extras
-pip install 'foodspec[web]'
 # Optional extras
 pip install 'foodspec[ml]'      # xgboost/lightgbm
 pip install 'foodspec[deep]'    # Conv1D/MLP deep models
@@ -78,16 +73,8 @@ foodspec-run-protocol \
   --output-dir runs
 ```
 
-GUI cockpit (PyQt):
-```bash
-python scripts/foodspec_protocol_cockpit.py
-```
-Select a protocol, pick a CSV/HDF5, validate, then run. Outputs are saved to a timestamped run folder with report, tables, figures, metadata, and logs.
-
-## Prediction service (REST/SPA scaffold)
-- Backend: `webapp/backend/main.py` (FastAPI) exposes `/models`, `/predict`, `/diagnostics`, `/upload`.
+## Prediction service
 - CLI: `foodspec-predict` for batch/offline scoring of frozen models.
-- Frontend scaffold in `webapp/frontend/` (React/Vue-ready) for drag/drop upload and model selection.
 
 ## Registry & Plugins
 - Runs/models can be logged to a registry (`FeatureModelRegistry`). CLI: `foodspec-registry` to list/query.
@@ -106,7 +93,7 @@ mkdocs build      # docs/link check
 ```
 
 ## Citation
-If you use FoodSpec, please cite the software (see `CITATION.cff`) and the forthcoming MethodsX protocol (placeholder until DOI is available).
+If you use FoodSpec, please cite the software (see `CITATION.cff`).
 
 ## Contributing
 Follow the standards in `docs/dev/developer_notes.md`: clear docstrings with examples, tests for new features, and reproducible workflows. Open an issue/PR with a concise description, and ensure lint/tests/docs pass.  

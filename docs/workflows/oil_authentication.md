@@ -3,7 +3,7 @@
 > If you are new to designing spectral workflows, see [Designing & reporting workflows](workflow_design_and_reporting.md).
 > For model choices and evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
 
-Oil authentication addresses “What oil is this?” and “Is it adulterated?” using Raman/FTIR spectra. This workflow provides a complete, reproducible recipe from raw spectra to publication-ready metrics and plots.
+Oil authentication addresses “What oil is this?” and “Is it adulterated?” using Raman/FTIR spectra. This workflow provides a complete, reproducible recipe from raw spectra to report-ready metrics and plots.
 
 Relevant visual aids: spectrum overlays, PCA scores/loadings, confusion matrix, boxplots/violin plots of key ratios. See [Plots guidance](workflow_design_and_reporting.md#plots-visualizations) for expectations. The tutorial content is merged here; see also the legacy tutorial file for reference.
 
@@ -94,7 +94,7 @@ foodspec oil-auth --config examples/configs/oil_auth_quickstart.yml --output-dir
 ```
 Outputs: `metrics.json`, `confusion_matrix.png`, `report.md` in a timestamped folder.
 
-## 5. Interpretation (MethodsX tone)
+## 5. Interpretation
 - Report overall accuracy and macro F1; include confusion matrix with class labels.
 - Mention preprocessing steps (baseline, smoothing, normalization, crop) and feature choices (peak/ratio definitions).
 - Highlight chemically meaningful loadings/feature importances (e.g., unsaturation bands).

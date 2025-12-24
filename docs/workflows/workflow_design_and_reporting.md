@@ -61,7 +61,7 @@ See also:
 - Preprocessing: [Baseline](../preprocessing/baseline_correction.md), [Normalization](../preprocessing/normalization_smoothing.md), [Feature extraction](../preprocessing/feature_extraction.md)
 - ML: [Classification & regression](../ml/classification_regression.md), [Mixture models](../ml/mixture_models.md)
 - Stats: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [ANOVA/MANOVA](../stats/anova_and_manova.md)
-- Protocols: [MethodsX protocol](../protocols/methodsx_protocol.md), [Reproducibility checklist](../protocols/reproducibility_checklist.md)
+- Protocols: [Reproducibility checklist](../protocols/reproducibility_checklist.md)
 - API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../api/workflows.md)
 
 ## Instrument specs, calibration, limitations → data

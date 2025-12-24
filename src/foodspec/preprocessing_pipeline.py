@@ -23,7 +23,7 @@ def detect_input_mode(df: pd.DataFrame) -> str:
     """
     Heuristic detection of raw spectra vs peak table.
     - If any column starts with 'I_' => peak_table
-    - Else if many numeric wavenumber-like columns (>=20) => raw_spectra
+    - Else if numeric wavenumber-like columns (>=3) => raw_spectra
     - Fallback: peak_table
     """
     if any(col.startswith("I_") for col in df.columns):
@@ -37,7 +37,7 @@ def detect_input_mode(df: pd.DataFrame) -> str:
         except Exception:
             continue
 
-    if len(numeric_cols) >= 20:
+    if len(numeric_cols) >= 3:
         return "raw_spectra"
     return "peak_table"
 

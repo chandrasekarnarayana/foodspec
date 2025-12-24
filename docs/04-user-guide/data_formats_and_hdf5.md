@@ -2,7 +2,7 @@
 
 This page explains supported input formats, the HDF5 layout, and vendor IO expectations.
 
-**Why it matters:** Choosing the right format affects reproducibility (FAIR metadata), harmonization, and ease of loading in GUI/CLI.
+**Why it matters:** Choosing the right format affects reproducibility (FAIR metadata), harmonization, and ease of loading via CLI.
 
 ## CSV vs HDF5
 - **CSV**: Wide-format with wavenumber columns and metadata columns (oil_type, matrix, heating_stage, replicate, batch, etc.). Easiest to start with.
@@ -17,8 +17,7 @@ This page explains supported input formats, the HDF5 layout, and vendor IO expec
 - `/protocol/`: protocol name/version, step definitions, validation strategy
 - Attributes: `foodspec_hdf5_schema_version` for compatibility
 
-GUI notes:
-- The **Data & Mapping** panel reads CSV/HDF5; CSV requires numeric wavenumber columns, HDF5 auto-loads axes/sample table.
+Notes:
 - HDF5 retains preprocessing/protocol history, visible in metadata.
 
 ## Vendor IO
@@ -33,7 +32,7 @@ GUI notes:
 
 ## Mini-workflow
 1) Export data as CSV (wide) or HDF5 using FoodSpec save functions.  
-2) Load in GUI (Data & Mapping) or CLI (`--input my.h5`).  
+2) Load via CLI (`--input my.h5`).  
 3) Run a protocol; verify `metadata.json` reflects format, preprocessing, harmonization.
 
 See also: [cookbook_preprocessing.md](../03-cookbook/cookbook_preprocessing.md) and [registry_and_plugins.md](registry_and_plugins.md) for vendor plugins.

@@ -6,7 +6,7 @@
 - Lint: `ruff check`
 
 ## Adding features
-- Keep core logic in `src/foodspec`; GUI in `scripts/`/`modeling_gui/` should remain thin wrappers.
+- Keep core logic in `src/foodspec`. User interfaces are CLI-only.
 - Add tests for new functionality (unit + small integration).
 - Update docs when adding protocols, steps, or config fields.
 

@@ -16,6 +16,5 @@ CLI entry point (`foodspec.cli`) exposes workflows; application modules orchestr
 ::: foodspec.apps.meat
 ::: foodspec.apps.microbial
 ::: foodspec.apps.protocol_validation
-::: foodspec.apps.methodsx_reproduction
 > **Status:** Archived  
 > This page has been superseded by the unified API reference. See [API index](../api/index.md) for current application and CLI APIs.

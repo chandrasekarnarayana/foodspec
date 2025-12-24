@@ -8,7 +8,7 @@ FoodSpec supports training, freezing, and reusing models with embedded preproces
 
 ## Export and reuse
 - During protocol runs, models can be frozen and saved under `models/` in the bundle. `metadata.json` and `index.json` record the model path and features used; the registry can log provenance.
-- `foodspec-predict` (CLI) and GUI “Apply existing model” load a `FrozenModel` and apply the same preprocessing/feature extraction to new data.
+- Use `foodspec-predict` (CLI) to load a `FrozenModel` and apply the same preprocessing/feature extraction to new data.
 
 ## Use cases
 - Routine QA: reuse a validated model on new batches/instruments with harmonization applied.
@@ -17,4 +17,4 @@ FoodSpec supports training, freezing, and reusing models with embedded preproces
 ## Validation interplay
 - Validation strategy (batch-aware/nested) during training influences reported metrics stored with the model. These metrics are surfaced in reports and registry entries.
 
-For practical usage, see the CLI guide and GUI cockpit; for theory, see `07-theory-and-background/chemometrics_and_ml_basics.md`.
+For practical usage, see the CLI guide; for theory, see `07-theory-and-background/chemometrics_and_ml_basics.md`.

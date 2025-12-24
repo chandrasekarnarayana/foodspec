@@ -1,6 +1,6 @@
 # Advanced: Deep learning (optional)
 
-Deep learning is **not required** to use foodspec or to reproduce the MethodsX
+Deep learning is **not required** to use foodspec
 protocol. However, an experimental 1D CNN classifier is provided for users who
 want to explore deep models on spectral data.
 

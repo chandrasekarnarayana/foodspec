@@ -1,6 +1,6 @@
 # Design: Statistics & Data Analysis Layer for FoodSpec
 
-This document outlines the planned architecture, APIs, and documentation for a comprehensive statistics and data-analysis layer in FoodSpec. It is written to guide future implementation and to align with the book-style documentation and MethodsX-ready workflows.
+This document outlines the planned architecture, APIs, and documentation for a comprehensive statistics and data-analysis layer in FoodSpec. It is written to guide future implementation and to align with the book-style documentation.
 
 ## 1. Goals
 - Provide statistically sound, chemometrics-aligned tools for common food spectroscopy tasks.
@@ -82,7 +82,7 @@ This document outlines the planned architecture, APIs, and documentation for a c
 ## 9. Integration points
 - Functions should accept `FoodSpectrumSet` and group columns; use metadata to subset/group.
 - Return structures compatible with reporting (e.g., to JSON) and plotting (pandas-friendly).
-- Link to protocol/benchmarking: enable logging of test parameters and results for MethodsX-style reports.
+- Link to protocol/benchmarking: enable logging of test parameters and results for standardized reports.
 
 ## 10. Next steps (future implementation)
 - Implement t-tests/ANOVA/MANOVA wrappers using SciPy/statsmodels; add effect size calculators.

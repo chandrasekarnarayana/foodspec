@@ -131,7 +131,7 @@ flowchart LR
   D -->|Nonparametric| F
 ```
 
-## Reporting (MethodsX tone)
+## Reporting
 - State test type (ANOVA/MANOVA), factors, assumptions, effect sizes.
 - Provide p-values and post-hoc results; include means/SD per group.
 - Visuals: boxplots/mean plots with CIs; Tukey pairwise table/plot.

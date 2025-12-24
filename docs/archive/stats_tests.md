@@ -168,7 +168,7 @@ Interpretation: slope sign/magnitude shows trend; p tests if slope differs from 
 See also
 - [metrics_interpretation.md](metrics_interpretation.md)
 - [Oil authentication tutorial](../workflows/oil_authentication.md)
-- [MethodsX protocol](../protocols/methodsx_protocol.md)
+
 - [API index](../api/index.md)
 # Statistical tests (legacy)
 

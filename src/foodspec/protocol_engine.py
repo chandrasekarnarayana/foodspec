@@ -490,6 +490,15 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
                 errors.append(
                     f"Required column '{col}' not found. Map columns correctly or adjust protocol expected_columns."
                 )
+    if cfg.min_foodspec_version:
+        try:
+            from foodspec import __version__ as fs_version
+
+            warnings.append(
+                f"Protocol declares min foodspec {cfg.min_foodspec_version}; running on {fs_version}. Ensure compatibility."
+            )
+        except Exception:
+            warnings.append("Could not determine FoodSpec version for protocol compatibility check.")
     if cfg.required_metadata:
         for m in cfg.required_metadata:
             if m not in df.columns:
@@ -502,7 +511,7 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
     if oil_col and oil_col in df.columns:
         min_count = df[oil_col].value_counts(dropna=True).min()
         if pd.notna(min_count) and min_count < 2:
-            errors.append(
+            warnings.append(
                 f"Very small class count detected (min {min_count}); collect more samples or adjust protocol."
             )
         elif pd.notna(min_count) and min_count < 3:
@@ -641,7 +650,7 @@ class ProtocolRunner:
                     min_count = primary_df[oil_col].value_counts(dropna=True).min()
                     default_splits = step_params.get("n_splits", 5)
                     if pd.notna(min_count) and min_count < default_splits:
-                        new_splits = max(2, int(min_count))
+                        new_splits = max(2, int(min_count)) if min_count >= 1 else 2
                         step_params["n_splits"] = new_splits
                         ctx["logs"].append(f"[auto] Reduced CV folds to {new_splits} due to small class counts.")
                         ctx["metadata"].setdefault("auto_adjustments", {})["cv_folds"] = new_splits

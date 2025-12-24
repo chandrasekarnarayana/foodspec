@@ -15,7 +15,6 @@ Quick, practical recipes for reliable validation.
   ```bash
   foodspec-run-protocol --input my.csv --protocol examples/protocols/oil_basic.yaml --validation-strategy batch_aware
   ```
-- **GUI:** Choose “batch-aware” in the validation strategy selector before running.  
 - **Python:**  
   ```python
   from foodspec import validation
@@ -30,7 +29,6 @@ Quick, practical recipes for reliable validation.
   ```bash
   foodspec-run-protocol --input my.csv --protocol examples/protocols/oil_basic.yaml --validation-strategy nested
   ```
-- **GUI:** Select “nested CV” if available in the validation dropdown.  
 - **Python:**  
   ```python
   from foodspec import validation
@@ -42,7 +40,6 @@ Quick, practical recipes for reliable validation.
 **Problem:** Few samples per class make standard k-fold unstable.
 
 - **CLI:** FoodSpec auto-reduces folds when classes are tiny; you can also set `--cv-folds 3`.  
-- **GUI:** Choose fewer folds in validation settings if exposed.  
 - **Python:** pass a smaller `cv_folds` to validation functions.
 - **Tip:** Watch QC warnings in the report if class counts are low; interpret metrics cautiously.
 

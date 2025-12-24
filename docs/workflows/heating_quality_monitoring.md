@@ -73,7 +73,7 @@ foodspec heating --config examples/configs/heating_quality_quickstart.yml
 ```
 Outputs: ratio CSV, optional ANOVA CSV, ratio_vs_time.png, report.md.
 
-## 5. Interpretation (MethodsX tone)
+## 5. Interpretation
 - Report slope and confidence (p-value or R²) for key ratios; note direction (e.g., decreasing unsaturation ratio indicates oxidation).
 - If groups (oil types) exist, compare trends or ANOVA at endpoints.
 - Main figure: ratio vs time with fitted line. Supplement: ANOVA table, spectra snapshots.
@@ -86,7 +86,7 @@ Outputs: ratio CSV, optional ANOVA CSV, ratio_vs_time.png, report.md.
 ## Summary
 - Track unsaturation/oxidation markers via ratios over time/temperature.
 - Use simple linear models; verify significance and direction of trends.
-- Provide plots and statistics to support quality decisions or publication.
+- Provide plots and statistics to support quality decisions or reporting.
 
 ## Statistical analysis
 - **Why:** Test whether degradation markers change with heating; quantify slope significance.

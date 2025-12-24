@@ -70,7 +70,7 @@ class TrainablePipeline:
             params = self.model_params or {"n_estimators": 300, "random_state": 0}
             model = RandomForestClassifier(**params)
         else:
-            params = self.model_params or {"max_iter": 2000, "penalty": "l2", "multi_class": "auto"}
+            params = self.model_params or {"max_iter": 2000, "penalty": "l2"}
             model = LogisticRegression(**params)
         model.fit(Xz, y)
         return FrozenModel(

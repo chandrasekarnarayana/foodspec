@@ -20,7 +20,7 @@ This page summarizes the statistical tools available in FoodSpec and where to us
 - Theory chapters: see the stats section in the nav (hypothesis testing, ANOVA/MANOVA, correlations, design).
 - API reference: [Statistics](../api/stats.md).
 - Workflows: each workflow page includes a “Statistical analysis” section with code snippets and interpretation.
-- Protocols: MethodsX mapping, reproducibility checklist, and benchmarking framework explain how to report and compare results.
+- Protocols: reproducibility checklist and benchmarking framework explain how to report and compare results.
 
 ## Notes
 - Ensure preprocessing and wavenumber alignment are consistent before running tests.

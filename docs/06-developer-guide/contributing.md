@@ -17,7 +17,6 @@ pip install -e ".[dev]"
 2) Run lint/format (if configured) and tests:
 ```bash
 pytest                  # full suite
-pytest -m "not gui"     # skip GUI smoke tests if Qt missing
 ```
 3) Build docs (optional but recommended for doc changes):
 ```bash
@@ -32,7 +31,7 @@ mkdocs build
 - Validation: `tests/test_validation_strategies.py`
 - CLIs: `tests/test_cli_*.py`
 - Registry/plugins/bundle: `tests/test_registry.py`, `tests/test_output_bundle.py`, `tests/test_cli_plugin.py`
-- GUI smoke: `tests/test_gui_wizard_smoke.py` (mark/skip if Qt unavailable)
+ 
 
 Run specific files with `pytest tests/test_validation_strategies.py -k batch`.
 

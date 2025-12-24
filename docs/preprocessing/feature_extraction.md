@@ -118,7 +118,7 @@ ratio_df = compute_ratios(fs.metadata, ratio_def)
 ratio_df["oil_type"] = fs.metadata["oil_type"].values
 sns.boxplot(data=ratio_df, x="oil_type", y="unsat_ratio")
 ```
-*How to read:* Higher unsat_ratio suggests more unsaturation; between-group differences can be tested with ANOVA/Kruskal and effect sizes (Cohen’s d). Pair the plot with p-values/effect sizes for publication.
+*How to read:* Higher unsat_ratio suggests more unsaturation; between-group differences can be tested with ANOVA/Kruskal and effect sizes (Cohen’s d). Pair the plot with p-values/effect sizes for reporting.
 
 ## Summarizing Peaks and Ratios Across Groups
 - **Peak stats:** mean ± std of peak position and intensity indicate alignment/stability (position) and consistency/variation (intensity). Shifts may reflect chemistry (e.g., oxidation) or preprocessing/instrument drift.

@@ -1,8 +1,8 @@
 # User Guide – Protocols & YAML
 
-Protocols are the heart of FoodSpec: YAML/JSON recipes that make analyses reproducible and auditable. This page defines the schema, shows examples, and explains how protocols are discovered by the CLI and GUI.
+Protocols are the heart of FoodSpec: YAML/JSON recipes that make analyses reproducible and auditable. This page defines the schema, shows examples, and explains how protocols are discovered by the CLI.
 
-**Why it matters:** A clear protocol removes guesswork, enforces validation, and makes runs repeatable across GUI/CLI/web. Versioning (`version`, `min_foodspec_version`) prevents incompatibilities.
+**Why it matters:** A clear protocol removes guesswork, enforces validation, and makes runs repeatable via the CLI. Versioning (`version`, `min_foodspec_version`) prevents incompatibilities.
 
 ## Protocol structure
 Top-level keys:
@@ -95,11 +95,10 @@ steps:
 3. Choose **step order** (often preprocess → harmonize → qc_checks → analysis → output).
 4. Set **validation strategy** (batch-aware, nested) and minimal panel/clustering options as needed.
 5. Save as YAML/JSON; include `min_foodspec_version` to prevent incompatibilities.
-6. Test via CLI/GUI; check validation and outputs.
+6. Test via CLI; check validation and outputs.
 
 ## How protocols are discovered
 - **CLI:** pass `--protocol path/to/protocol.yaml` or a known name if installed via plugin.  
-- **GUI:** protocol selector lists built-in and plugin protocols; names/versions appear in the dropdown.  
 - **Plugins:** can register protocols via entry points; see [registry_and_plugins.md](registry_and_plugins.md) and [writing_plugins.md](../06-developer-guide/writing_plugins.md).
 
 For more on validation and harmonization options, see [validation_strategies.md](../05-advanced-topics/validation_strategies.md) and [hsi_and_harmonization.md](../05-advanced-topics/hsi_and_harmonization.md).

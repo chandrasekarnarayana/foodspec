@@ -1,4 +1,4 @@
-# Reporting guidelines (MethodsX-style)
+# Reporting guidelines
 
 ## What to present as core results
 - **Main figures**: confusion matrix (classification), PCA scores, key ratio/time trends, predicted vs true plots (mixture/regression).  

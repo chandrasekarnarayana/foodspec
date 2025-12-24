@@ -13,9 +13,8 @@ FoodSpec protocols are YAML/JSON recipes interpreted by the `ProtocolRunner`. Yo
 3. Add schema/validation entries so YAML protocols can declare it (type name + expected params).
 4. Update docs and tests with a minimal protocol exercising the new step.
 
-## Making it visible in CLI/GUI
-- Protocols that include your step will work automatically in CLI.
-- In GUI, ensure the protocol is discoverable (built-in or via plugin). If your step needs UI controls, add them to the cockpit/wizard panels; otherwise, defaults from the protocol are used.
+## Making it visible in CLI
+- Protocols that include your step will work automatically in the CLI.
 
 ## Extending protocols
 - Protocol YAMLs live under `examples/protocols/`.
