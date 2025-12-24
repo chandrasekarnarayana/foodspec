@@ -5,8 +5,9 @@ Provides Pearson/Spearman correlations and simple cross-correlation for
 time-based sequences. Accepts arrays/DataFrames or FoodSpectrumSet-derived
 features.
 """
-
 from __future__ import annotations
+
+__all__ = ["compute_correlations", "compute_correlation_matrix", "compute_cross_correlation"]
 
 import numpy as np
 import pandas as pd

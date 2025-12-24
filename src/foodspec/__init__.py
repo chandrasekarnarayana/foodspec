@@ -2,6 +2,12 @@
 
 __all__ = [
     "__version__",
+    # Phase 1: Core unified entry point
+    "FoodSpec",
+    "Spectrum",
+    "RunRecord",
+    "OutputBundle",
+    # Phase 0: Original exports
     "FoodSpectrumSet",
     "HyperSpectralCube",
     "load_folder",
@@ -39,11 +45,20 @@ __all__ = [
     "RQConfig",
     "RatioQualityEngine",
     "RatioQualityResult",
+    "DatasetSpec",
+    "ExperimentConfig",
+    "ExperimentEngine",
+    "diff_runs",
 ]
 
 # Single source of truth for the package version.
 __version__ = "0.2.1"
 
+# Phase 1: Core unified entry point and provenance
+from .core.api import FoodSpec
+from .core.spectrum import Spectrum
+from .core.run_record import RunRecord
+from .core.output_bundle import OutputBundle
 from .core.dataset import FoodSpectrumSet
 from .core.hyperspectral import HyperSpectralCube
 from .io import (
@@ -68,6 +83,7 @@ from .rq import (
     RatioQualityResult,
     RQConfig,
 )
+from .repro import DatasetSpec, ExperimentConfig, ExperimentEngine, diff_runs
 from .stats import (
     bootstrap_metric,
     permutation_test_metric,

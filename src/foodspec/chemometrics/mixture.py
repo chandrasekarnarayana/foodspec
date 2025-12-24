@@ -86,8 +86,8 @@ def mcr_als(
 
     prev_err = np.inf
     for _ in range(max_iter):
-        # Update C
-        S_pinv = np.linalg.pinv(S)
+        # Update C (solve X ≈ C S^T)
+        S_pinv = np.linalg.pinv(S.T)
         C = np.maximum(0, X @ S_pinv)
         # Update S
         C_pinv = np.linalg.pinv(C)

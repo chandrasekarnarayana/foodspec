@@ -30,6 +30,7 @@ from foodspec.chemometrics.mixture import nnls_mixture
 from foodspec.config import load_config, merge_cli_overrides
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.core.hyperspectral import HyperSpectralCube
+from foodspec.core.api import FoodSpec
 from foodspec.data.libraries import load_library
 from foodspec.io import create_library, load_csv_spectra
 from foodspec.io.exporters import to_hdf5
@@ -49,6 +50,8 @@ from foodspec.reporting import (
     write_metrics_csv,
     write_summary_json,
 )
+from foodspec.features.specs import FeatureSpec
+from foodspec.repro.experiment import ExperimentEngine, ExperimentConfig
 from foodspec.viz.classification import plot_confusion_matrix
 from foodspec.viz.heating import plot_ratio_vs_time
 from foodspec.viz.hyperspectral import plot_hyperspectral_intensity_map
@@ -89,6 +92,47 @@ def _detect_optional_extras() -> list[str]:
         if importlib.util.find_spec(pkg) is not None:
             installed.append(pkg)
     return installed
+
+
+def _apply_seeds(seeds: dict[str, Any]) -> None:
+    """Set random seeds across common libraries if provided."""
+
+    if not seeds:
+        return
+    if "python_random_seed" in seeds:
+        import random as _random
+
+        _random.seed(seeds["python_random_seed"])
+    if "numpy_seed" in seeds:
+        np.random.seed(int(seeds["numpy_seed"]))
+    try:
+        import torch  # type: ignore
+
+        if "torch_seed" in seeds:
+            torch.manual_seed(int(seeds["torch_seed"]))
+    except Exception:
+        pass
+
+
+def _build_feature_specs(raw_specs: list[dict[str, Any]]) -> list[FeatureSpec]:
+    """Construct FeatureSpec objects from YAML dictionaries."""
+
+    specs: list[FeatureSpec] = []
+    for spec in raw_specs:
+        specs.append(
+            FeatureSpec(
+                name=spec.get("name", "feature"),
+                ftype=spec.get("ftype", "band"),
+                regions=spec.get("regions"),
+                formula=spec.get("formula"),
+                label=spec.get("label"),
+                description=spec.get("description"),
+                citation=spec.get("citation"),
+                constraints=spec.get("constraints", {}),
+                params=spec.get("params", {}),
+            )
+        )
+    return specs
 
 
 def _write_oil_report(
@@ -558,6 +602,63 @@ def hyperspectral_command(
         cube=cube, target_wavenumber=target_wavenumber, window=window, output_dir=Path(output_dir)
     )
     typer.echo(f"Hyperspectral report: {report_dir}")
+
+
+@app.command("run-exp")
+def run_experiment(
+    exp_path: Path = typer.Argument(..., help="Path to exp.yml experiment file."),
+    output_dir: Optional[Path] = typer.Option(None, help="Override base output directory."),
+    dry_run: bool = typer.Option(False, help="Only validate and summarize the experiment config."),
+):
+    """Execute an experiment defined in exp.yml (reproducible, single-command pipeline)."""
+
+    engine = ExperimentEngine.from_yaml(exp_path)
+    cfg: ExperimentConfig = engine.config
+    record = cfg.build_run_record()
+
+    typer.echo(cfg.summary())
+    typer.echo(f"config_hash={cfg.config_hash} dataset_hash={record.dataset_hash}")
+    if dry_run:
+        return
+
+    _apply_seeds(cfg.seeds)
+
+    # Load data and initialize workflow
+    fs = FoodSpec(cfg.dataset.path, modality=cfg.dataset.modality)
+    fs.bundle.run_record = record  # Attach provenance built from exp.yml
+
+    # QC
+    if cfg.qc:
+        qc_threshold = cfg.qc.get("threshold")
+        if qc_threshold is None:
+            qc_threshold = (cfg.qc.get("thresholds") or {}).get("outlier_rate", 0.5)
+        fs.qc(method=cfg.qc.get("method", "robust_z"), threshold=qc_threshold)
+
+    # Preprocessing
+    pre_cfg = cfg.preprocessing or {}
+    pre_args = {k: v for k, v in pre_cfg.items() if k != "preset"}
+    fs.preprocess(pre_cfg.get("preset", "auto"), **pre_args)
+
+    # Features
+    feat_cfg = cfg.features or {}
+    feat_preset = feat_cfg.get("preset", "standard")
+    feat_specs = _build_feature_specs(feat_cfg.get("specs", [])) if feat_preset == "specs" else None
+    fs.features(feat_preset, specs=feat_specs)
+
+    # Modeling
+    mod_cfg = cfg.modeling or {}
+    suite = mod_cfg.get("suite") or []
+    first_model = suite[0] if suite else {}
+    algorithm = first_model.get("algorithm", mod_cfg.get("algorithm", "rf"))
+    label_column = mod_cfg.get("label_column") or cfg.dataset.schema.get("label_column", "label")
+    cv_folds = first_model.get("cv_folds", mod_cfg.get("cv_folds", 5))
+    params = first_model.get("params", {})
+    fs.train(algorithm=algorithm, label_column=label_column, cv_folds=cv_folds, **params)
+
+    # Export
+    base_dir = output_dir or cfg.outputs.get("base_dir") or Path("foodspec_runs") / record.run_id
+    out_path = fs.export(base_dir)
+    typer.echo(f"Experiment complete. Outputs: {out_path}")
 
 
 @app.command("about")

@@ -26,7 +26,9 @@ from foodspec.stats.hypothesis_tests import (
     run_tukey_hsd,
     run_wilcoxon_signed_rank,
 )
+from foodspec.stats.hypothesis_tests import run_shapiro, benjamini_hochberg
 from foodspec.stats.robustness import bootstrap_metric, permutation_test_metric
+from foodspec.stats.reporting import stats_report_for_feature, stats_report_for_features_table
 
 __all__ = [
     "run_ttest",
@@ -47,4 +49,8 @@ __all__ = [
     "run_friedman_test",
     "bootstrap_metric",
     "permutation_test_metric",
+    "run_shapiro",
+    "benjamini_hochberg",
+    "stats_report_for_feature",
+    "stats_report_for_features_table",
 ]

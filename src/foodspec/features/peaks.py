@@ -66,7 +66,7 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
         self,
         expected_peaks: Sequence[float],
         tolerance: float = 5.0,
-        features: Sequence[str] = ("height", "area"),
+        features: Sequence[str] = ("height", "area", "width", "centroid", "symmetry"),
     ):
         self.expected_peaks = list(expected_peaks)
         self.tolerance = tolerance
@@ -97,21 +97,39 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
             col = 0
             for peak_center in self.expected_peaks:
                 mask = (wavenumbers >= peak_center - self.tolerance) & (wavenumbers <= peak_center + self.tolerance)
-                if not np.any(mask):
-                    area = np.nan
-                    height = np.nan
-                else:
+                height = area = width = centroid = symmetry = np.nan
+                if np.any(mask):
                     local_w = wavenumbers[mask]
                     local_y = spectrum[mask]
                     local_max_idx = np.argmax(local_y)
                     height = local_y[local_max_idx]
                     area = np.trapezoid(local_y, x=local_w)
 
+                    half = height / 2.0
+                    above = local_y >= half
+                    if np.any(above):
+                        idx = np.where(above)[0]
+                        width = local_w[idx[-1]] - local_w[idx[0]]
+                    centroid = float(np.sum(local_w * local_y) / (np.sum(local_y) + 1e-12))
+                    left_area = np.trapezoid(local_y[local_w <= centroid], x=local_w[local_w <= centroid]) if np.any(local_w <= centroid) else 0.0
+                    right_area = np.trapezoid(local_y[local_w >= centroid], x=local_w[local_w >= centroid]) if np.any(local_w >= centroid) else 0.0
+                    denom = left_area + right_area + 1e-12
+                    symmetry = 1.0 - abs(left_area - right_area) / denom
+
                 if "height" in self.features:
                     feats[i, col] = height
                     col += 1
                 if "area" in self.features:
                     feats[i, col] = area
+                    col += 1
+                if "width" in self.features:
+                    feats[i, col] = width
+                    col += 1
+                if "centroid" in self.features:
+                    feats[i, col] = centroid
+                    col += 1
+                if "symmetry" in self.features:
+                    feats[i, col] = symmetry
                     col += 1
 
         return feats
@@ -127,4 +145,10 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
                 names.append(f"peak_{peak}_height")
             if "area" in self.features:
                 names.append(f"peak_{peak}_area")
+            if "width" in self.features:
+                names.append(f"peak_{peak}_width")
+            if "centroid" in self.features:
+                names.append(f"peak_{peak}_centroid")
+            if "symmetry" in self.features:
+                names.append(f"peak_{peak}_symmetry")
         self.feature_names_ = names

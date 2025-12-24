@@ -14,6 +14,7 @@ from typing import Iterable, Optional, Tuple
 import numpy as np
 import pandas as pd
 from scipy import stats
+from statsmodels.stats.multitest import multipletests
 
 try:
     import statsmodels.api as sm
@@ -125,6 +126,23 @@ def run_anova(data, groups) -> TestResult:
     stat, p = stats.f_oneway(*grouped)
     summary = pd.DataFrame([{"test": "anova_one_way", "statistic": stat, "pvalue": p, "df": None}])
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
+
+
+def run_shapiro(values) -> TestResult:
+    """Shapiro-Wilk normality test."""
+
+    vals = np.asarray(values)
+    stat, p = stats.shapiro(vals)
+    summary = pd.DataFrame([{"test": "shapiro", "statistic": stat, "pvalue": p, "df": None}])
+    return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
+
+
+def benjamini_hochberg(pvalues: Iterable[float], alpha: float = 0.05) -> pd.DataFrame:
+    """Apply Benjamini–Hochberg FDR correction."""
+
+    pvals = np.asarray(list(pvalues), dtype=float)
+    reject, p_adj, _, _ = multipletests(pvals, alpha=alpha, method="fdr_bh")
+    return pd.DataFrame({"pvalue": pvals, "p_adj": p_adj, "reject": reject})
 
 
 def run_manova(data: pd.DataFrame, groups: Iterable) -> TestResult:

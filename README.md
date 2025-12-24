@@ -63,6 +63,8 @@ foodspec oil-auth preprocessed.h5 --label-column oil_type --output-report report
 ```
 See `docs/cli.md` and workflow pages for full CLI configs and outputs (metrics.json, plots, report.md).
 
+Single-command reproducibility: place dataset, QC, preprocessing, features, modeling, and outputs in `exp.yml`, then run `foodspec run-exp exp.yml` (or `--dry-run` to validate and view hashes). See `docs/quickstart_cli.md` for the schema and example.
+
 ## Protocol engine quickstart
 
 Run a YAML protocol end-to-end (bundled report, tables, figures):

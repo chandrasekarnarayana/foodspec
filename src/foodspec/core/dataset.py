@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Literal, Optional, Sequence, Union
+from pathlib import Path
+from typing import Any, Callable, Dict, Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -31,10 +32,35 @@ class FoodSpectrumSet:
 
     x: np.ndarray
     wavenumbers: np.ndarray
-    metadata: pd.DataFrame
-    modality: Modality
+    metadata: Optional[pd.DataFrame] = None
+    modality: Modality = "raman"
+    label_col: Optional[str] = None
+    group_col: Optional[str] = None
+    batch_col: Optional[str] = None
 
     def __post_init__(self) -> None:
+        if self.metadata is None:
+            self.metadata = pd.DataFrame(index=np.arange(self.x.shape[0]))
+        else:
+            self.metadata = self.metadata.reset_index(drop=True)
+
+        # Auto-detect common label/group columns if not specified
+        if self.label_col is None and hasattr(self.metadata, "columns"):
+            for candidate in ["label", "class", "target"]:
+                if candidate in self.metadata.columns:
+                    self.label_col = candidate
+                    break
+        if self.group_col is None and hasattr(self.metadata, "columns"):
+            for candidate in ["group", "split", "fold"]:
+                if candidate in self.metadata.columns:
+                    self.group_col = candidate
+                    break
+        if self.batch_col is None and hasattr(self.metadata, "columns"):
+            for candidate in ["batch_id", "batch", "run_id"]:
+                if candidate in self.metadata.columns:
+                    self.batch_col = candidate
+                    break
+
         self.validate()
 
     def __len__(self) -> int:
@@ -42,15 +68,55 @@ class FoodSpectrumSet:
 
         return self.x.shape[0]
 
+    @property
+    def labels(self) -> Optional[pd.Series]:
+        """Return label column if configured."""
+
+        if self.label_col and self.label_col in self.metadata.columns:
+            return self.metadata[self.label_col]
+        return None
+
+    @property
+    def groups(self) -> Optional[pd.Series]:
+        """Return grouping column if configured."""
+
+        if self.group_col and self.group_col in self.metadata.columns:
+            return self.metadata[self.group_col]
+        return None
+
+    @property
+    def batch_ids(self) -> Optional[pd.Series]:
+        """Return batch identifier column if configured."""
+
+        if self.batch_col and self.batch_col in self.metadata.columns:
+            return self.metadata[self.batch_col]
+        return None
+
+    def _copy_with(
+        self,
+        *,
+        x: Optional[np.ndarray] = None,
+        wavenumbers: Optional[np.ndarray] = None,
+        metadata: Optional[pd.DataFrame] = None,
+    ) -> "FoodSpectrumSet":
+        return FoodSpectrumSet(
+            x=x if x is not None else self.x,
+            wavenumbers=wavenumbers if wavenumbers is not None else self.wavenumbers,
+            metadata=metadata if metadata is not None else self.metadata.copy(deep=True),
+            modality=self.modality,
+            label_col=self.label_col,
+            group_col=self.group_col,
+            batch_col=self.batch_col,
+        )
+
     def __getitem__(self, index: IndexType) -> "FoodSpectrumSet":
         """Return a subset by position index or slice."""
 
         indices = self._normalize_index(index)
-        return FoodSpectrumSet(
+        return self._copy_with(
             x=self.x[indices],
             wavenumbers=self.wavenumbers.copy(),
             metadata=self.metadata.iloc[indices].reset_index(drop=True),
-            modality=self.modality,
         )
 
     def subset(
@@ -101,11 +167,10 @@ class FoodSpectrumSet:
         else:
             selected_indices = np.where(mask)[0]
 
-        return FoodSpectrumSet(
+        return self._copy_with(
             x=self.x[selected_indices],
             wavenumbers=self.wavenumbers.copy(),
             metadata=self.metadata.iloc[selected_indices].reset_index(drop=True),
-            modality=self.modality,
         )
 
     def copy(self, deep: bool = True) -> "FoodSpectrumSet":
@@ -131,7 +196,15 @@ class FoodSpectrumSet:
             wavenumbers = self.wavenumbers
             metadata = self.metadata
 
-        return FoodSpectrumSet(x=x, wavenumbers=wavenumbers, metadata=metadata, modality=self.modality)
+        return FoodSpectrumSet(
+            x=x,
+            wavenumbers=wavenumbers,
+            metadata=metadata,
+            modality=self.modality,
+            label_col=self.label_col,
+            group_col=self.group_col,
+            batch_col=self.batch_col,
+        )
 
     def to_wide_dataframe(self) -> pd.DataFrame:
         """Convert the dataset to a wide DataFrame.
@@ -162,12 +235,17 @@ class FoodSpectrumSet:
                 "wavenumbers length does not match number of columns in x "
                 f"({self.wavenumbers.shape[0]} != {n_wavenumbers})."
             )
+        if np.any(np.diff(self.wavenumbers) <= 0):
+            raise ValueError("wavenumbers must be strictly increasing (monotonic).")
         if len(self.metadata) != n_samples:
             raise ValueError(
                 "metadata length does not match number of rows in x " f"({len(self.metadata)} != {n_samples})."
             )
         if self.modality not in {"raman", "ftir", "nir"}:
             raise ValueError("modality must be one of {'raman', 'ftir', 'nir'}; " f"got '{self.modality}'.")
+        for col_name in [self.label_col, self.group_col, self.batch_col]:
+            if col_name is not None and col_name not in self.metadata.columns:
+                raise ValueError(f"metadata column '{col_name}' not found for configured annotations.")
 
     def _normalize_index(self, index: IndexType) -> np.ndarray:
         """Normalize indexing input to an array of indices."""
@@ -186,6 +264,89 @@ class FoodSpectrumSet:
         if target_col not in self.metadata.columns:
             raise ValueError(f"Target column '{target_col}' not found in metadata.")
         return self.x, self.metadata[target_col].to_numpy()
+
+    def apply(self, func: Callable[[np.ndarray], np.ndarray], *, inplace: bool = False) -> "FoodSpectrumSet":
+        """Apply a vectorized operation to all spectra."""
+
+        result = np.asarray(func(self.x))
+        if result.shape != self.x.shape:
+            raise ValueError("apply must return an array with the same shape as x.")
+        if inplace:
+            self.x = result
+            return self
+        return self._copy_with(x=result)
+
+    def scale(self, factor: float, *, inplace: bool = False) -> "FoodSpectrumSet":
+        """Scale spectral intensities by a factor."""
+
+        return self.apply(lambda arr: arr * factor, inplace=inplace)
+
+    def offset(self, value: float, *, inplace: bool = False) -> "FoodSpectrumSet":
+        """Add a constant offset to spectral intensities."""
+
+        return self.apply(lambda arr: arr + value, inplace=inplace)
+
+    def add_metadata_column(self, name: str, values: Sequence[Any], *, overwrite: bool = False) -> "FoodSpectrumSet":
+        """Attach a metadata column aligned with spectra."""
+
+        if name in self.metadata.columns and not overwrite:
+            raise ValueError(f"metadata column '{name}' already exists; set overwrite=True to replace.")
+        if len(values) != len(self):
+            raise ValueError("metadata column length must match number of samples.")
+        meta = self.metadata.copy(deep=True)
+        meta[name] = list(values)
+        return self._copy_with(metadata=meta)
+
+    def select_wavenumber_range(self, min_wn: float, max_wn: float) -> "FoodSpectrumSet":
+        """Return spectra restricted to a wavenumber window."""
+
+        if min_wn > max_wn:
+            raise ValueError("min_wn must be <= max_wn.")
+        mask = (self.wavenumbers >= min_wn) & (self.wavenumbers <= max_wn)
+        if not np.any(mask):
+            raise ValueError("No wavenumbers fall within the requested range.")
+        return self._copy_with(x=self.x[:, mask], wavenumbers=self.wavenumbers[mask])
+
+    def with_annotations(
+        self,
+        *,
+        label_col: Optional[str] = None,
+        group_col: Optional[str] = None,
+        batch_col: Optional[str] = None,
+    ) -> "FoodSpectrumSet":
+        """Return a copy with updated label/group/batch annotations."""
+
+        return FoodSpectrumSet(
+            x=self.x,
+            wavenumbers=self.wavenumbers,
+            metadata=self.metadata.copy(deep=True),
+            modality=self.modality,
+            label_col=label_col or self.label_col,
+            group_col=group_col or self.group_col,
+            batch_col=batch_col or self.batch_col,
+        )
+
+    @classmethod
+    def concat(cls, datasets: Sequence["FoodSpectrumSet"]) -> "FoodSpectrumSet":
+        """Concatenate multiple datasets with shared wavenumber grids."""
+
+        if not datasets:
+            raise ValueError("datasets must be non-empty.")
+        ref = datasets[0]
+        for ds in datasets[1:]:
+            if ds.wavenumbers.shape != ref.wavenumbers.shape or not np.allclose(ds.wavenumbers, ref.wavenumbers):
+                raise ValueError("All datasets must share identical wavenumber grids to concatenate.")
+        x = np.vstack([ds.x for ds in datasets])
+        metadata = pd.concat([ds.metadata for ds in datasets], ignore_index=True)
+        return cls(
+            x=x,
+            wavenumbers=ref.wavenumbers.copy(),
+            metadata=metadata.reset_index(drop=True),
+            modality=ref.modality,
+            label_col=ref.label_col,
+            group_col=ref.group_col,
+            batch_col=ref.batch_col,
+        )
 
     def train_test_split(
         self,
@@ -217,8 +378,95 @@ class FoodSpectrumSet:
             wavenumbers=self.wavenumbers.copy(),
             metadata=meta_test.reset_index(drop=True),
             modality=self.modality,
+            label_col=self.label_col,
+            group_col=self.group_col,
+            batch_col=self.batch_col,
         )
         return train_ds, test_ds
+
+    def to_hdf5(self, path: Union[str, Path], key: str = "foodspec", mode: str = "w", complevel: int = 4) -> Path:
+        """Persist dataset to HDF5 (lazy-friendly storage)."""
+
+        path = Path(path)
+        df_x = pd.DataFrame(self.x)
+        df_wn = pd.DataFrame({"wavenumber": self.wavenumbers})
+        df_meta = self.metadata.reset_index(drop=True).copy()
+        df_info = pd.DataFrame(
+            [
+                {
+                    "modality": self.modality,
+                    "label_col": self.label_col or "",
+                    "group_col": self.group_col or "",
+                    "batch_col": self.batch_col or "",
+                }
+            ]
+        )
+        with pd.HDFStore(path, mode=mode, complevel=complevel, complib="zlib") as store:
+            store.put(f"{key}_x", df_x, format="table")
+            store.put(f"{key}_wn", df_wn, format="table")
+            store.put(f"{key}_meta", df_meta, format="table")
+            store.put(f"{key}_info", df_info, format="table")
+        return path
+
+    @classmethod
+    def from_hdf5(cls, path: Union[str, Path], key: str = "foodspec") -> "FoodSpectrumSet":
+        """Load dataset from HDF5 created by ``to_hdf5``."""
+
+        path = Path(path)
+        with pd.HDFStore(path, mode="r") as store:
+            df_x = store.get(f"{key}_x")
+            df_wn = store.get(f"{key}_wn")
+            df_meta = store.get(f"{key}_meta")
+            df_info = store.get(f"{key}_info") if f"{key}_info" in store else pd.DataFrame()
+        info = df_info.iloc[0].to_dict() if not df_info.empty else {}
+        modality = info.get("modality", "raman")
+        label_col = info.get("label_col") or None
+        group_col = info.get("group_col") or None
+        batch_col = info.get("batch_col") or None
+        return cls(
+            x=df_x.to_numpy(),
+            wavenumbers=df_wn["wavenumber"].to_numpy(),
+            metadata=df_meta.reset_index(drop=True),
+            modality=modality,
+            label_col=label_col,
+            group_col=group_col,
+            batch_col=batch_col,
+        )
+
+    def to_parquet(self, path: Union[str, Path]) -> Path:
+        """Persist dataset to Parquet using wide layout."""
+
+        path = Path(path)
+        wide = self.to_wide_dataframe().copy()
+        wide["__fs_modality"] = self.modality
+        wide["__fs_label_col"] = self.label_col or ""
+        wide["__fs_group_col"] = self.group_col or ""
+        wide["__fs_batch_col"] = self.batch_col or ""
+        wide.to_parquet(path)
+        return path
+
+    @classmethod
+    def from_parquet(cls, path: Union[str, Path]) -> "FoodSpectrumSet":
+        """Load dataset from Parquet created by ``to_parquet``."""
+
+        path = Path(path)
+        df = pd.read_parquet(path)
+        info_cols = [c for c in df.columns if c.startswith("__fs_")]
+        info = {col: df[col].iloc[0] for col in info_cols}
+        df = df.drop(columns=info_cols)
+        intensity_cols = [c for c in df.columns if str(c).startswith("int_")]
+        wavenumbers = np.array([float(str(c).split("int_")[1]) for c in intensity_cols])
+        spectra = df[intensity_cols].to_numpy()
+        metadata = df.drop(columns=intensity_cols).reset_index(drop=True)
+        return cls(
+            x=spectra,
+            wavenumbers=wavenumbers,
+            metadata=metadata,
+            modality=info.get("__fs_modality", "raman"),
+            label_col=info.get("__fs_label_col") or None,
+            group_col=info.get("__fs_group_col") or None,
+            batch_col=info.get("__fs_batch_col") or None,
+        )
 
 
 __all__ = ["FoodSpectrumSet"]
