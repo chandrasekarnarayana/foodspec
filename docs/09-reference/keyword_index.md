@@ -64,7 +64,7 @@ Questions this page answers
 - **model-info** — inspect saved model metadata. See: `cli.md`.
 
 See also
-- [Metrics & evaluation](../metrics/metrics_and_evaluation/)
+- [Metrics & evaluation](../../metrics/metrics_and_evaluation/)
 - [workflows/oil_authentication.md](../workflows/oil_authentication.md)
 
 - [API index](../api/index.md)

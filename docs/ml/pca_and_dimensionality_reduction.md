@@ -123,5 +123,5 @@ print(sil, bw, stats["f_stat"], stats["p_perm"])
 
 ## Further reading
 - [Classification & regression](classification_regression.md)
-- [Baseline correction](../preprocessing/baseline_correction.md)
-- [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
+- [Baseline correction](../../preprocessing/baseline_correction/)
+- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)

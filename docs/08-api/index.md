@@ -46,18 +46,18 @@ The FoodSpec API is organized by module, mirroring the codebase structure. Each 
 - `ALSBaseline`: Asymmetric Least Squares (Eilers 2005)
 - `RubberbandBaseline`: Convex hull method
 - `PolynomialBaseline`: Polynomial fitting
-- Theory: [Baseline Correction](../preprocessing/baseline_correction.md)
+- Theory: [Baseline Correction](../../preprocessing/baseline_correction/)
 
 **Normalization & Scaling**
 - `SNVNormalization`: Standard Normal Variate
 - `MSCCorrection`: Multiplicative Scatter Correction
 - `VectorNormalization`: L1/L2 normalization
-- Theory: [Normalization & Smoothing](../preprocessing/normalization_smoothing.md)
+- Theory: [Normalization & Smoothing](../../preprocessing/normalization_smoothing/)
 
 **Derivatives & Smoothing**
 - `SavitzkyGolay`: Savitzky-Golay smoothing/derivatives
 - Derivative order selection guide
-- Theory: [Derivatives & Feature Enhancement](../preprocessing/derivatives_and_feature_enhancement.md)
+- Theory: [Derivatives & Feature Enhancement](../../preprocessing/derivatives_and_feature_enhancement/)
 
 ---
 

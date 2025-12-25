@@ -2,7 +2,7 @@
 
 This page summarizes common plot types in FoodSpec and the helper functions to generate them. All helpers return Matplotlib Axes and use simple defaults suitable for scientific reporting.
 
-> For notation see the [Glossary](../09-reference/glossary.md). Pair every plot with the quantitative metric it supports (see [Metrics & Evaluation](../metrics/metrics_and_evaluation/)).
+> For notation see the [Glossary](../09-reference/glossary.md). Pair every plot with the quantitative metric it supports (see [Metrics & Evaluation](../../metrics/metrics_and_evaluation/)).
 
 ## What?
 Catalog of visualization helpers for spectra, embeddings, classification/regression diagnostics, ratios, and hyperspectral maps.
@@ -97,4 +97,4 @@ Good fit hugs the 1:1 line; CI bands convey uncertainty; Bland–Altman bias nea
 - [Workflow design](../workflows/workflow_design_and_reporting.md#plots-visualizations)  
 - [Calibration/regression workflow](../workflows/calibration_regression_example.md)  
 - [Stats: correlation & mapping](../stats/correlation_and_mapping.md)  
-- [Metrics & evaluation](../metrics/metrics_and_evaluation/)
+- [Metrics & evaluation](../../metrics/metrics_and_evaluation/)

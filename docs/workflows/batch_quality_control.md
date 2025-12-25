@@ -1,7 +1,7 @@
 # Workflow: Batch Quality Control / Novelty Detection
 
 > New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).  
-> For model/evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
+> For model/evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
 
 QC/novelty detection answers “Does this batch look like my reference library?” It is useful for screening incoming materials, production lots, or detecting drift.
 
@@ -149,7 +149,7 @@ print(res.summary)
    - **Fix:** Build in time for replication (≥3 repeats); require agreement before batch acceptance
 
 ## Further reading
-- [Normalization & smoothing](../preprocessing/normalization_smoothing.md)  
+- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)  
 - [Classification & regression](../ml/classification_regression.md)  
 - [Model evaluation](../ml/model_evaluation_and_validation.md)  
 - [Hyperspectral mapping](hyperspectral_mapping.md)

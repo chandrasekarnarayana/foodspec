@@ -14,8 +14,8 @@ Questions this page answers:
 > Working with CV, p-values, or effect sizes to compare models? See Stats: [Overview](../stats/overview.md), [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [Nonparametric methods](../stats/nonparametric_methods_and_robustness.md), [Effect sizes/power](../stats/t_tests_effect_sizes_and_power.md), and [Study design](../stats/study_design_and_data_requirements.md).
 
 See also:
-- Preprocessing & chemometrics: [baseline, normalization, PCA](../preprocessing/feature_extraction.md)
-- Metrics & evaluation: [metrics/metrics_and_evaluation/](../metrics/metrics_and_evaluation/)
+- Preprocessing & chemometrics: [baseline, normalization, PCA](../../preprocessing/feature_extraction/)
+- Metrics & evaluation: [metrics/metrics_and_evaluation/](../../metrics/metrics_and_evaluation/)
 - Visualization: [plotting_with_foodspec.md](../visualization/plotting_with_foodspec.md)
 
 ## 2. Model families and when to use them
@@ -190,7 +190,7 @@ Use DL regression only when you have ample data and non-linear relationships; al
 - **Regression:** RMSE, MAE, R², MAPE; calibration and residual plots.
 - **Workflows:** oil authentication → SVM/RF + confusion matrix; heating degradation → regression/PLS + trends; QC/novelty → one-class models + score distributions.
 
-For detailed definitions and examples of each metric, see [Metrics & Evaluation](../metrics/metrics_and_evaluation/). Plotting utilities are in [Visualization & Diagnostic Plots](../visualization/plotting_with_foodspec.md).
+For detailed definitions and examples of each metric, see [Metrics & Evaluation](../../metrics/metrics_and_evaluation/). Plotting utilities are in [Visualization & Diagnostic Plots](../visualization/plotting_with_foodspec.md).
 For common pitfalls and fixes (imbalance, overfitting, data leakage), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
 
 ## 6. Example end-to-end workflows
@@ -247,7 +247,7 @@ For broader workflow context, see [oil authentication](../workflows/oil_authenti
 
 ## 7. Summary and pointers
 - Choose the simplest model that answers the question; benchmark against baselines.
-- Use the right metrics for the task and class balance; see [Metrics & Evaluation](../metrics/metrics_and_evaluation/).
-- Keep preprocessing in pipelines to avoid leakage; see [Preprocessing & chemometrics](../preprocessing/feature_extraction.md).
+- Use the right metrics for the task and class balance; see [Metrics & Evaluation](../../metrics/metrics_and_evaluation/).
+- Keep preprocessing in pipelines to avoid leakage; see [Preprocessing & chemometrics](../../preprocessing/feature_extraction/).
 - Record configs and export run metadata for reproducibility; see [Reporting guidelines](../troubleshooting/reporting_guidelines.md).
 - For model theory and tuning, continue to [Model evaluation & validation](model_evaluation_and_validation.md).

@@ -1,7 +1,7 @@
 # Workflow: Heating & Quality Monitoring
 
 > New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).
-> For model and evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
+> For model and evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
 
 Heating/frying alters oil composition (oxidation, polymerization, loss of unsaturation). This workflow quantifies spectral markers over time/temperature to monitor quality and degradation.
 
@@ -155,7 +155,7 @@ print(corr)
    - **Fix:** Include error bars (± SD) or confidence bands; report n per timepoint; fit trend with CI
 
 ## Further reading
-- [Baseline correction](../preprocessing/baseline_correction.md)
-- [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
-- [Derivatives & feature enhancement](../preprocessing/derivatives_and_feature_enhancement.md)
+- [Baseline correction](../../preprocessing/baseline_correction/)
+- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)
+- [Derivatives & feature enhancement](../../preprocessing/derivatives_and_feature_enhancement/)
 - [Model evaluation](../ml/model_evaluation_and_validation.md)

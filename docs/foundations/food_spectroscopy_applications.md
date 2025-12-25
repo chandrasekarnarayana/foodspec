@@ -44,7 +44,7 @@ This chapter surveys common applications of Raman, FTIR, and NIR spectroscopy ac
 
 ## Further reading
 - [Spectroscopy basics](spectroscopy_basics.md)
-- [Feature extraction](../preprocessing/feature_extraction.md)
+- [Feature extraction](../../preprocessing/feature_extraction/)
 - [Classification & regression](../ml/classification_regression.md)
 - [Mixture models](../ml/mixture_models.md)
 

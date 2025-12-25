@@ -1,7 +1,7 @@
 # Workflow: Oil Authentication
 
 > If you are new to designing spectral workflows, see [Designing & reporting workflows](workflow_design_and_reporting.md).
-> For model choices and evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
+> For model choices and evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
 
 Oil authentication addresses “What oil is this?” and “Is it adulterated?” using Raman/FTIR spectra. This workflow provides a complete, reproducible recipe from raw spectra to report-ready metrics and plots.
 
@@ -201,7 +201,7 @@ See theory: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscop
    - **Fix:** Test on samples from different harvest years; monitor model performance over time; retrain periodically
 
 ## Further reading
-- [Baseline correction](../preprocessing/baseline_correction.md)
-- [Feature extraction](../preprocessing/feature_extraction.md)
+- [Baseline correction](../../preprocessing/baseline_correction/)
+- [Feature extraction](../../preprocessing/feature_extraction/)
 - [Classification & regression](../ml/classification_regression.md)
 - [Model evaluation](../ml/model_evaluation_and_validation.md)

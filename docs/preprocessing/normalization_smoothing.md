@@ -87,7 +87,7 @@ X_norm = snv.transform(X_smooth)
    - **Fix:** Check raw spectra before normalization; ensure no zero values; use robust normalizations (MSC with outlier handling)
 
 ## Further reading / see also
-- [Baseline correction](baseline_correction.md)
-- [Scatter & cosmic-ray handling](scatter_correction_cosmic_ray_removal.md)
-- [Feature extraction](feature_extraction.md)
+- [Baseline correction](baseline_correction/)
+- [Scatter & cosmic-ray handling](scatter_correction_cosmic_ray_removal/)
+- [Feature extraction](feature_extraction/)
 - [Classification & regression](../ml/classification_regression.md)

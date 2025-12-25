@@ -16,7 +16,7 @@ FoodSpec is a headless, research-grade toolkit for Raman, FTIR, and NIR spectros
 
 See also:
 - PCA/PLS math sketch in [PCA & dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)
-- Baseline/normalization math boxes in [Preprocessing](../preprocessing/baseline_correction.md) and [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
+- Baseline/normalization math boxes in [Preprocessing](../../preprocessing/baseline_correction/) and [Normalization & smoothing](../../preprocessing/normalization_smoothing/)
 - Stats assumptions and tests in [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md) and [Nonparametric methods](../stats/nonparametric_methods_and_robustness.md)
 
 ## How to use this book
@@ -42,7 +42,7 @@ See also:
 ## Further reading
 - [Spectroscopy basics](spectroscopy_basics.md)
 - [Libraries & public datasets](../04-user-guide/libraries.md)
-- [Baseline correction](../preprocessing/baseline_correction.md)
+- [Baseline correction](../../preprocessing/baseline_correction/)
 - [PCA and dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)
 
 ---

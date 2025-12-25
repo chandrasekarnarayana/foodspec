@@ -7,7 +7,7 @@
     
     **Prerequisites:** Basic statistics knowledge (means, standard deviations, p-values)
     
-    **Related:** [Metrics & Evaluation](../metrics/metrics_and_evaluation/) | [Statistical Power](../protocols/statistical_power_and_limits.md) | [Hypothesis Testing](../stats/hypothesis_testing_in_food_spectroscopy.md)
+    **Related:** [Metrics & Evaluation](../../metrics/metrics_and_evaluation/) | [Statistical Power](../protocols/statistical_power_and_limits.md) | [Hypothesis Testing](../stats/hypothesis_testing_in_food_spectroscopy.md)
 
 ---
 
@@ -322,7 +322,7 @@ When reporting metrics, **ALWAYS** include:
 
 ## See Also
 
-- **[Metrics & Evaluation](../metrics/metrics_and_evaluation/)** — Overview of all metrics
+- **[Metrics & Evaluation](../../metrics/metrics_and_evaluation/)** — Overview of all metrics
 - **[Model Evaluation](../ml/model_evaluation_and_validation.md)** — Cross-validation strategies
 - **[Hypothesis Testing](../stats/hypothesis_testing_in_food_spectroscopy.md)** — Statistical tests and p-values
 - **[Statistical Power](../protocols/statistical_power_and_limits.md)** — Sample size planning

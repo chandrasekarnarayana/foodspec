@@ -114,7 +114,7 @@ X_corr = als.transform(X_raw)
    - **Fix:** Understand physical baseline sources; preserve physically meaningful curvature; inspect corrected spectra
 
 ## Further reading
-- [Normalization & smoothing](normalization_smoothing.md)
-- [Feature extraction](feature_extraction.md)
+- [Normalization & smoothing](normalization_smoothing/)
+- [Feature extraction](feature_extraction/)
 - [Raman/FTIR practical guide](../03-cookbook/ftir_raman_preprocessing.md)
 - [PCA](../ml/pca_and_dimensionality_reduction.md)

@@ -19,7 +19,7 @@ Scatter and spike artifacts can mask true chemical signals. This chapter explain
 - **Pitfalls:** Approximate; not a replacement for rigorous optical modeling.
 
 ### Scatter-aware normalization (SNV/MSC)
-- See [Normalization & smoothing](normalization_smoothing.md); SNV/MSC mitigate path-length/contact effects via linear rescaling to a reference.
+- See [Normalization & smoothing](normalization_smoothing/); SNV/MSC mitigate path-length/contact effects via linear rescaling to a reference.
 
 ### Cosmic ray removal (Raman)
 - **Concept:** Detect spikes far above local median/derivative thresholds; replace by local interpolation.
@@ -107,6 +107,6 @@ X_ra = cr.transform(X_ra)
    - **Fix:** Test scatter correction on reference materials; compare corrected/uncorrected downstream metrics
 
 ## Further reading
-- [Baseline correction](baseline_correction.md)
-- [Normalization & smoothing](normalization_smoothing.md)
+- [Baseline correction](baseline_correction/)
+- [Normalization & smoothing](normalization_smoothing/)
 - [PCA and dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)

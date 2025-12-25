@@ -202,8 +202,8 @@ print(ratio_summary.head())
    - **Fix:** Validate features across multiple batches/instruments; check feature stability over time
 
 ## Further reading
-- [Baseline correction](baseline_correction.md)
-- [Normalization & smoothing](normalization_smoothing.md)
+- [Baseline correction](baseline_correction/)
+- [Normalization & smoothing](normalization_smoothing/)
 - [Vibrational modes and spectral signatures](../foundations/spectroscopy_basics.md)
 - [Classification & regression](../ml/classification_regression.md)
 - [Mixture analysis workflow](../workflows/mixture_analysis.md)

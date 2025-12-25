@@ -2,7 +2,7 @@
 
 This guide ties together the main chemometric models used in FoodSpec and how they connect to preprocessing, metrics, and statistics.
 
-> For notation see the [Glossary](../09-reference/glossary.md). For practical bands/ratios, see [Feature extraction](../preprocessing/feature_extraction/#how-to-choose-bands-and-ratios-decision-mini-guide). For metrics, see [Metrics & Evaluation](../metrics/metrics_and_evaluation/).
+> For notation see the [Glossary](../09-reference/glossary.md). For practical bands/ratios, see [Feature extraction](../../preprocessing/feature_extraction/#how-to-choose-bands-and-ratios-decision-mini-guide). For metrics, see [Metrics & Evaluation](../../metrics/metrics_and_evaluation/).
 
 ## What?
 Defines PCA/PLS projections, classifiers, and mixture models, with inputs (preprocessed spectra, labels/targets, or pure spectra) and outputs (scores/loadings, predictions, fractions, metrics).
@@ -60,7 +60,7 @@ Choose by data size/linearity/interpretability; always report per-class metrics 
 - For heteroscedastic groups, use Games–Howell for post-hoc comparisons on ratios/PCs (see [ANOVA & MANOVA](../stats/anova_and_manova.md)).
 
 ## See also
-- [Metrics & Evaluation](../metrics/metrics_and_evaluation/)  
+- [Metrics & Evaluation](../../metrics/metrics_and_evaluation/)  
 - [Model evaluation & validation](../ml/model_evaluation_and_validation.md)  
 - [Mixture models](../ml/mixture_models.md)  
 - [Model interpretability](../ml/model_interpretability.md)  

@@ -24,7 +24,7 @@ flowchart LR
 ```
 - It is a pipeline from question → instrument → data → preprocessing → features → analysis → interpretation → reporting.
 - It aligns scientific goals with acquisition conditions, preprocessing choices, analysis methods, and clear outputs.
-- Model and metric choices are covered in [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
+- Model and metric choices are covered in [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
 - For issues at any stage (baseline, SNR, imbalance, overfitting), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
 
 ## How to design a workflow (step-by-step)
@@ -58,7 +58,7 @@ When assumptions are doubtful or samples are small/skewed, use nonparametric tes
 For instrument/file formats and ingestion routes, see the [Instrument & file formats guide](../user_guide/instrument_file_formats.md).
 
 See also:
-- Preprocessing: [Baseline](../preprocessing/baseline_correction.md), [Normalization](../preprocessing/normalization_smoothing.md), [Feature extraction](../preprocessing/feature_extraction.md)
+- Preprocessing: [Baseline](../../preprocessing/baseline_correction/), [Normalization](../../preprocessing/normalization_smoothing/), [Feature extraction](../../preprocessing/feature_extraction/)
 - ML: [Classification & regression](../ml/classification_regression.md), [Mixture models](../ml/mixture_models.md)
 - Stats: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [ANOVA/MANOVA](../stats/anova_and_manova.md)
 - Protocols: [Reproducibility checklist](../protocols/reproducibility_checklist.md)
@@ -173,5 +173,5 @@ Expected details: axes labels (units), legends, group labels, sample sizes, conf
 ## See also
 - [Workflows](./oil_authentication.md)
 - [Statistics overview](../stats/overview.md)
-- [Preprocessing guides](../preprocessing/baseline_correction.md)
+- [Preprocessing guides](../../preprocessing/baseline_correction/)
 - [Protocols & reproducibility](../protocols/reproducibility_checklist.md)

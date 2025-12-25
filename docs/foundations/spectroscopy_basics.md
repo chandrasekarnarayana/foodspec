@@ -29,7 +29,7 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
   - **FTIR synthetic example (generated via `generate_synthetic_ftir_spectrum`):** O–H stretch (~3300), C–H stretches (2800–3000), ester C=O (~1740), CH₂ bend (~1450), C–O stretch (~1050), fingerprint 800–1500. Plot wavenumber vs absorbance and label each band with the mode and a food interpretation (e.g., ester C=O in lipids).
   - **Raman synthetic example (generated via `generate_synthetic_raman_spectrum`):** discrete peaks at ~717 (C–C stretch), 1265 (cis =C–H bend), 1440 (CH₂ bend), 1655 (C=C stretch). Annotate peaks and note how intensity shifts relate to unsaturation/saturation.
 - **Interpretation:** shifts or intensity changes in these bands map to composition (unsaturation, ester content, moisture). Synthetic plots (see plotting helpers) mirror real bands observed in oils/fats.
-- For notation/abbreviations, see the [Glossary](../09-reference/glossary.md). For a practical bands/ratios guide, see [Feature extraction](../preprocessing/feature_extraction/#how-to-choose-bands-and-ratios-decision-mini-guide).
+- For notation/abbreviations, see the [Glossary](../09-reference/glossary.md). For a practical bands/ratios guide, see [Feature extraction](../../preprocessing/feature_extraction/#how-to-choose-bands-and-ratios-decision-mini-guide).
 
 ## 4. Sampling and instrument notes
 - Laser wavelength (Raman) affects fluorescence and penetration; ATR crystal choice (FTIR) affects depth of penetration.
@@ -43,8 +43,8 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
 - **Water-dominated matrices:** Raman often preferred to avoid strong water absorption in FTIR.
 
 ## 6. Links to computation
-- Baseline drift and fluorescence → [Baseline correction](../preprocessing/baseline_correction.md).
-- Scatter/contact effects → [Normalization & smoothing](../preprocessing/normalization_smoothing.md) and [Scatter & cosmic-ray handling](../preprocessing/scatter_correction_cosmic_ray_removal.md).
+- Baseline drift and fluorescence → [Baseline correction](../../preprocessing/baseline_correction/).
+- Scatter/contact effects → [Normalization & smoothing](../../preprocessing/normalization_smoothing/) and [Scatter & cosmic-ray handling](../../preprocessing/scatter_correction_cosmic_ray_removal/).
 - High dimensionality → [PCA](../ml/pca_and_dimensionality_reduction.md).
 
 ## Summary
@@ -53,8 +53,8 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
 - Baselines, fluorescence, atmospheric lines, and scatter are common artifacts to mitigate in preprocessing.
 
 ## Further reading
-- [Baseline correction](../preprocessing/baseline_correction.md)
-- [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
+- [Baseline correction](../../preprocessing/baseline_correction/)
+- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)
 - [PCA and dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)
 - [CSV → HDF5 pipeline](../04-user-guide/csv_to_library.md)
 

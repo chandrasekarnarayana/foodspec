@@ -91,6 +91,6 @@ Preview derivatives alongside raw spectra with `foodspec.viz.plot_spectra` or a 
    - **Fix:** Validate derivative-based features against independent measurements; use statistical tests; report uncertainty
 
 ## Further reading
-- [Normalization & smoothing](normalization_smoothing.md)
-- [Feature extraction](feature_extraction.md)
+- [Normalization & smoothing](normalization_smoothing/)
+- [Feature extraction](feature_extraction/)
 - [PCA and dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)

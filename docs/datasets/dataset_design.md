@@ -54,5 +54,5 @@ Describe the ingestion pipeline so readers know how files become libraries and w
 ## See also
 - Instrument formats & loading: [instrument_file_formats](../user_guide/instrument_file_formats.md)
 - Workflow design: [workflow_design_and_reporting](../workflows/workflow_design_and_reporting.md)
-- Metrics & evaluation: [metrics_and_evaluation](../metrics/metrics_and_evaluation/)
+- Metrics & evaluation: [metrics_and_evaluation](../../metrics/metrics_and_evaluation/)
 - Troubleshooting dataset issues: [common_problems_and_solutions](../troubleshooting/common_problems_and_solutions.md)

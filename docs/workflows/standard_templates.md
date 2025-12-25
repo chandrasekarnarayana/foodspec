@@ -28,7 +28,7 @@ This page lists concise templates you can adapt for common tasks. Each template 
   4. Metrics: RMSE, MAE, R², MAPE; plots: calibration + residuals.
   5. Robustness: bootstrap/permutation; check bias across range.
   6. Reports: predicted vs true, residual plots, parameter settings.
-- **See:** [Calibration example](calibration_regression_example.md), [Metrics](../metrics/metrics_and_evaluation/).
+- **See:** [Calibration example](calibration_regression_example.md), [Metrics](../../metrics/metrics_and_evaluation/).
 
 ## Time/temperature trends (heating degradation)
 - **Goal:** Track degradation markers vs time/temperature.

@@ -67,7 +67,7 @@ Questions this page answers
 - Mention preprocessing and features (baseline/smoothing/normalization, peaks/ratios).
 
 See also
-- [Metrics & evaluation](../metrics/metrics_and_evaluation/)
+- [Metrics & evaluation](../../metrics/metrics_and_evaluation/)
 - [Oil authentication tutorial](../workflows/oil_authentication.md)
 
 - [API index](../api/index.md)

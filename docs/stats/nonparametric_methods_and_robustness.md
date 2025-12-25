@@ -133,5 +133,5 @@ Use cases:
 ## See also
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [Study design](study_design_and_data_requirements.md)
-- [Metrics & evaluation](../metrics/metrics_and_evaluation/)
+- [Metrics & evaluation](../../metrics/metrics_and_evaluation/)
 - [Stats API](../08-api/stats.md)
