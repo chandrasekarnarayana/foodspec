@@ -1,3 +1,11 @@
+---
+**🗄️ ARCHIVED DOCUMENT**
+
+This document is archived for historical reference and is no longer actively maintained. 
+For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_STRUCTURE.md).
+
+---
+
 # PHASE 0 — DISCOVERY REPORT
 **Date:** December 25, 2025  
 **Engineer:** Lead Maintainer & Release Engineer

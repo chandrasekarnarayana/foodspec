@@ -1,3 +1,11 @@
+---
+**🗄️ ARCHIVED DOCUMENT**
+
+This document is archived for historical reference and is no longer actively maintained. 
+For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_STRUCTURE.md).
+
+---
+
 # Statistical tests for food spectroscopy
 
 You are here: Methods & theory → Statistical tests for food spectroscopy

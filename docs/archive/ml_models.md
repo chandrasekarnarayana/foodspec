@@ -1,3 +1,11 @@
+---
+**🗄️ ARCHIVED DOCUMENT**
+
+This document is archived for historical reference and is no longer actively maintained. 
+For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_STRUCTURE.md).
+
+---
+
 # Machine learning models in foodspec
 
 > **Status:** Legacy/archived. This page is superseded by `../ml/models_and_best_practices.md` and the mkdocstrings API pages. Retained here for historical reference.

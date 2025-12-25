@@ -1,3 +1,11 @@
+---
+**🗄️ ARCHIVED DOCUMENT**
+
+This document is archived for historical reference and is no longer actively maintained. 
+For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_STRUCTURE.md).
+
+---
+
 # API reference hub (legacy)
 
 > **Status: Legacy / Archived**  

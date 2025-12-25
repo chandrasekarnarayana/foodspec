@@ -61,11 +61,14 @@ nav:
       - HSI & harmonization: 05-advanced-topics/hsi_and_harmonization.md
       - Validation strategies: 05-advanced-topics/validation_strategies.md
       - Model lifecycle & prediction: 05-advanced-topics/model_lifecycle_and_prediction.md
+      - MOATS implementation: 05-advanced-topics/MOATS_IMPLEMENTATION.md
   - Developer Guide (601):
       - Contributing: 06-developer-guide/contributing.md
       - Testing & CI: 06-developer-guide/testing_and_ci.md
       - Extending protocols & steps: 06-developer-guide/extending_protocols_and_steps.md
       - Writing plugins: 06-developer-guide/writing_plugins.md
+      - Releasing: 06-developer-guide/RELEASING.md
+      - Release checklist: 06-developer-guide/RELEASE_CHECKLIST.md
   - Theory & Background (701):
       - Spectroscopy basics: 07-theory-and-background/spectroscopy_basics.md
       - Chemometrics & ML basics: 07-theory-and-background/chemometrics_and_ml_basics.md

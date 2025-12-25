@@ -47,7 +47,17 @@ protocol_runs_test/
 foodspec_runs/
 moats_demo_output/
 *_demo_output/
+examples/sample_runs/*.h5
+examples/sample_runs/*.json
+*.foodspec
+
+# Temporary and backup files
+*.bak
+*.tmp
+*.old
+*_old.py
 
 # OS generated
 .DS_Store
 Thumbs.db
+*.db
