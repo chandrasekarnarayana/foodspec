@@ -41,7 +41,6 @@ classifiers = [
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Chemistry",
   "Topic :: Scientific/Engineering :: Information Analysis",
-  "Topic :: Scientific/Engineering :: Medical/Dental Instruments and Supplies",
 ]
 dependencies = [
   "numpy>=1.24",
