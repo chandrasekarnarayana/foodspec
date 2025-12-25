@@ -11,8 +11,9 @@ This module assembles CLI commands organized into logical groups:
 
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 from typing import Optional
-from importlib.metadata import PackageNotFoundError, version as pkg_version
 
 import matplotlib
 import typer
