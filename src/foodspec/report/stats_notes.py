@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Dict, Optional
 
-
 TEST_RATIONALES: Dict[str, str] = {
     "t-test": "Independent samples t-test was selected for approximately normal, equal-variance groups.",
     "paired_t-test": "Paired t-test was used to account for within-sample pairing across conditions.",

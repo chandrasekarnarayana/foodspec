@@ -4,9 +4,8 @@ This does not require proprietary data. It mimics two spectra that could have be
 loaded via vendor loaders (SPC/OPUS) after normalization to wavenumber/intensity
 arrays. The figure is saved to docs/assets/vendor_overlay.png.
 """
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 rng = np.random.default_rng(0)
 wavenumbers = np.linspace(600, 1800, 400)

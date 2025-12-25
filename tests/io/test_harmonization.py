@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from foodspec.core.spectral_dataset import SpectralDataset
 from foodspec.harmonization import (
     CalibrationCurve,
     apply_calibration,
@@ -9,7 +10,6 @@ from foodspec.harmonization import (
     harmonize_datasets_advanced,
     intensity_normalize_by_power,
 )
-from foodspec.core.spectral_dataset import SpectralDataset
 
 
 def test_calibration_and_power_norm():

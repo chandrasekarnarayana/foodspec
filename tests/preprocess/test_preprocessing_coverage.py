@@ -7,14 +7,17 @@ cropping, and FTIR/Raman specific preprocessing.
 import numpy as np
 import pytest
 
-from foodspec.preprocess.baseline import ALSBaseline, RubberbandBaseline, PolynomialBaseline
-from foodspec.preprocess.normalization import (
-    VectorNormalizer, AreaNormalizer, InternalPeakNormalizer,
-    SNVNormalizer, MSCNormalizer
-)
-from foodspec.preprocess.smoothing import SavitzkyGolaySmoother, MovingAverageSmoother
-from foodspec.preprocess.spikes import correct_cosmic_rays
+from foodspec.preprocess.baseline import ALSBaseline, PolynomialBaseline, RubberbandBaseline
 from foodspec.preprocess.cropping import RangeCropper
+from foodspec.preprocess.normalization import (
+    AreaNormalizer,
+    InternalPeakNormalizer,
+    MSCNormalizer,
+    SNVNormalizer,
+    VectorNormalizer,
+)
+from foodspec.preprocess.smoothing import MovingAverageSmoother, SavitzkyGolaySmoother
+from foodspec.preprocess.spikes import correct_cosmic_rays
 
 
 class TestALSBaseline:
@@ -56,10 +59,10 @@ class TestALSBaseline:
         baseline = 5.0 + 2.0 * x / 10
         signal = 1.0 * np.sin(x)
         X = (baseline + signal).reshape(1, -1)
-        
+
         als = ALSBaseline(lambda_=1e4, p=0.01, max_iter=5)
         Y = als.transform(X)
-        
+
         # Corrected signal should have lower mean than original
         assert Y.mean() < X.mean()
 
@@ -148,7 +151,7 @@ class TestVectorNormalizer:
         X = np.array([[3.0, 4.0], [1.0, 1.0]])
         vn = VectorNormalizer(norm='l2')
         Y = vn.transform(X)
-        
+
         # Check L2 norm of each row
         norms = np.linalg.norm(Y, axis=1)
         np.testing.assert_array_almost_equal(norms, [1.0, 1.0])
@@ -158,7 +161,7 @@ class TestVectorNormalizer:
         X = np.array([[2.0, 3.0], [1.0, 1.0]])
         vn = VectorNormalizer(norm='l1')
         Y = vn.transform(X)
-        
+
         # Check L1 norm of each row
         norms = np.sum(np.abs(Y), axis=1)
         np.testing.assert_array_almost_equal(norms, [1.0, 1.0])
@@ -168,7 +171,7 @@ class TestVectorNormalizer:
         X = np.array([[2.0, 4.0], [1.0, 3.0]])
         vn = VectorNormalizer(norm='max')
         Y = vn.transform(X)
-        
+
         # Check max abs of each row
         max_vals = np.max(np.abs(Y), axis=1)
         np.testing.assert_array_almost_equal(max_vals, [1.0, 1.0])
@@ -219,7 +222,7 @@ class TestInternalPeakNormalizer:
         """Test InternalPeakNormalizer."""
         X = np.random.randn(5, 100)
         wavenumbers = np.linspace(400, 4000, 100)
-        
+
         # Requires target_wavenumber parameter
         ipn = InternalPeakNormalizer(target_wavenumber=2000.0)
         Y = ipn.fit(X, wavenumbers=wavenumbers).transform(X, wavenumbers)
@@ -235,7 +238,7 @@ class TestSNVNormalizer:
         snv = SNVNormalizer()
         Y = snv.transform(X)
         assert Y.shape == X.shape
-        
+
         # Check that variance of each row is ~1
         variances = np.var(Y, axis=1)
         np.testing.assert_array_almost_equal(variances, np.ones(5), decimal=0)
@@ -255,7 +258,7 @@ class TestMSCNormalizer:
         """Test MSC fit and transform."""
         X_train = np.random.randn(5, 100)
         X_test = np.random.randn(3, 100)
-        
+
         msc = MSCNormalizer()
         msc.fit(X_train)
         Y = msc.transform(X_test)
@@ -292,10 +295,10 @@ class TestSavitzkyGolaySmoother:
         signal = np.sin(x)
         noise = np.random.randn(100) * 0.1
         X = (signal + noise).reshape(1, -1)
-        
+
         sg = SavitzkyGolaySmoother(window_length=7, polyorder=2)
         Y = sg.transform(X)
-        
+
         # Smoothed should be closer to original signal
         mse_original = np.mean((X.ravel() - signal) ** 2)
         mse_smoothed = np.mean((Y.ravel() - signal) ** 2)
@@ -338,10 +341,10 @@ class TestMovingAverageSmoother:
         signal = np.sin(x)
         noise = np.random.randn(100) * 0.1
         X = (signal + noise).reshape(1, -1)
-        
+
         ma = MovingAverageSmoother(window_size=5)
         Y = ma.transform(X)
-        
+
         # Should reduce variance
         assert np.var(Y) < np.var(X)
 
@@ -356,7 +359,7 @@ class TestSpikeCorrectionModule:
         # Add spikes
         X[0, 50] = 100.0
         X[2, 75] = -100.0
-        
+
         X_corr, report = correct_cosmic_rays(X, window=5)
         assert X_corr.shape == X.shape
         assert report.total_spikes >= 0
@@ -366,7 +369,7 @@ class TestSpikeCorrectionModule:
         """Test spike detection works."""
         X = np.ones((1, 100))
         X[0, 50] = 100.0  # Clear spike
-        
+
         X_corr, report = correct_cosmic_rays(X, window=5)
         # Should detect at least one spike
         assert report.spikes_per_spectrum[0] > 0
@@ -395,11 +398,11 @@ class TestRangeCropper:
         """Test wavenumber cropping."""
         wn = np.linspace(400, 4000, 100)
         X = np.random.randn(5, 100)
-        
+
         cropper = RangeCropper(min_wn=800, max_wn=3000)
         cropper.fit(X, wavenumbers=wn)
         X_crop, wn_crop = cropper.transform(X, wn)
-        
+
         assert X_crop.shape[1] < X.shape[1]
         assert np.all(wn_crop >= 800)
         assert np.all(wn_crop <= 3000)
@@ -408,10 +411,10 @@ class TestRangeCropper:
         """Test cropping with full range."""
         wn = np.linspace(400, 4000, 100)
         X = np.random.randn(5, 100)
-        
+
         cropper = RangeCropper(min_wn=400, max_wn=4000)
         X_crop, wn_crop = cropper.transform(X, wn)
-        
+
         assert X_crop.shape == X.shape
         assert len(wn_crop) == len(wn)
 
@@ -422,13 +425,13 @@ class TestPreprocessingPipeline:
     def test_baseline_normalization_pipeline(self):
         """Test baseline correction followed by normalization."""
         X = np.random.randn(5, 100) + 5.0
-        
+
         als = ALSBaseline(lambda_=1e4, p=0.01, max_iter=3)
         X_baseline = als.transform(X)
-        
+
         vn = VectorNormalizer(norm='l2')
         X_final = vn.transform(X_baseline)
-        
+
         assert X_final.shape == X.shape
         norms = np.linalg.norm(X_final, axis=1)
         np.testing.assert_array_almost_equal(norms, [1.0]*5)
@@ -436,44 +439,44 @@ class TestPreprocessingPipeline:
     def test_smoothing_normalization_pipeline(self):
         """Test smoothing followed by normalization."""
         X = np.random.randn(5, 100)
-        
+
         sg = SavitzkyGolaySmoother(window_length=7, polyorder=2)
         X_smooth = sg.transform(X)
-        
+
         snv = SNVNormalizer()
         X_final = snv.transform(X_smooth)
-        
+
         assert X_final.shape == X.shape
 
     def test_spike_removal_baseline_pipeline(self):
         """Test spike removal followed by baseline correction."""
         X = np.random.randn(5, 100)
         X[:, 50] += 100  # Add spikes
-        
+
         X_despike, _ = correct_cosmic_rays(X, window=5)
-        
+
         als = ALSBaseline(lambda_=1e4, p=0.01, max_iter=3)
         X_final = als.transform(X_despike)
-        
+
         assert X_final.shape == X.shape
 
     def test_full_preprocessing_pipeline(self):
         """Test full preprocessing pipeline."""
         X = np.random.randn(5, 100) + 2.0
         X[:, 50] += 50  # Add spike
-        
+
         # Pipeline: despike -> baseline -> smooth -> normalize
         X, _ = correct_cosmic_rays(X, window=5)
-        
+
         als = ALSBaseline(lambda_=1e4, p=0.01, max_iter=3)
         X = als.transform(X)
-        
+
         sg = SavitzkyGolaySmoother(window_length=7, polyorder=2)
         X = sg.transform(X)
-        
+
         vn = VectorNormalizer(norm='l2')
         X = vn.transform(X)
-        
+
         assert X.shape == (5, 100)
         norms = np.linalg.norm(X, axis=1)
         np.testing.assert_array_almost_equal(norms, [1.0]*5)

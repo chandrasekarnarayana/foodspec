@@ -7,7 +7,7 @@ human-readable sections for CLI and protocol outputs.
 
 from __future__ import annotations
 
-from typing import Any, List, Optional, Sequence, Mapping
+from typing import Any, List, Mapping, Optional, Sequence
 
 import pandas as pd
 

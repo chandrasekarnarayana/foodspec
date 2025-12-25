@@ -6,7 +6,7 @@ Generates a standalone HTML report summarizing pre/post metrics and improvement 
 
 from __future__ import annotations
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 HTML_TEMPLATE = """
 <!doctype html>

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -217,7 +217,7 @@ def detect_drift(
     if time_col and time_col in meta:
         order = np.argsort(meta[time_col].to_numpy())
         X = X[order]
-    ref = reference if reference is not None else np.mean(X, axis=0)
+    reference if reference is not None else np.mean(X, axis=0)
 
     if method == "pca_cusum":
         pca = PCA(n_components=min(3, X.shape[0], X.shape[1]))

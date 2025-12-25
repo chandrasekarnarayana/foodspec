@@ -4,8 +4,8 @@ This file ensures pytest can discover and run tests in the reorganized
 test directory structure which mirrors the source code structure.
 """
 
-import sys
 import os
+import sys
 
 # Add the src directory to path so imports work correctly
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))

@@ -1,7 +1,7 @@
 """Tests for publication assistance helpers."""
 
-from foodspec.report.checklist import ChecklistItem, checklist_score, default_checklist, render_checklist
 from foodspec.report.captions import generate_caption, panel_labels
+from foodspec.report.checklist import checklist_score, default_checklist, render_checklist
 from foodspec.report.journals import get_journal_preset, list_journal_presets
 from foodspec.report.methods import MethodsConfig, generate_methods_text, methods_sections
 from foodspec.report.stats_notes import statistical_justification

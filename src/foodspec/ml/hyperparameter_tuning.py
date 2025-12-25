@@ -7,7 +7,7 @@ for spectroscopy models.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
@@ -146,7 +146,7 @@ def grid_search_classifier(
         - 'cv_results': full GridSearchCV results
     """
     param_grid = get_search_space_classifier(model_name)
-    
+
     # Prepend step name to param keys
     param_grid = {f"model__{k}": v for k, v in param_grid.items()}
 

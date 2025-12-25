@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Optional
 
-
 SUGGESTIONS = {
     "file_not_found": "Check the path, ensure the file exists, or rerun with an absolute path.",
     "permission_denied": "Verify filesystem permissions or run with appropriate privileges.",

@@ -14,12 +14,13 @@ if your bundle structure differs.
 from __future__ import annotations
 
 from pathlib import Path
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 try:
-    from foodspec.protocol import ProtocolRunner, ProtocolConfig
+    from foodspec.protocol import ProtocolConfig, ProtocolRunner
 except Exception as exc:  # pragma: no cover
     raise SystemExit(f"Cannot import FoodSpec protocol engine: {exc}")
 

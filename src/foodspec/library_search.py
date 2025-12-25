@@ -8,14 +8,13 @@ optional overlay plot.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from scipy.spatial.distance import cosine as dist_cosine
 from scipy.spatial.distance import euclidean as dist_euclidean
 from scipy.stats import pearsonr
-import matplotlib.pyplot as plt
 
 
 @dataclass

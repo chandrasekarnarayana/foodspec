@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from foodspec.protocol import ProtocolConfig, ProtocolRunner
 from foodspec.core.spectral_dataset import HyperspectralDataset
+from foodspec.protocol import ProtocolConfig, ProtocolRunner
 
 
 def test_protocol_hsi_segment_and_roi_to_1d():

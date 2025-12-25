@@ -3,8 +3,8 @@ import pandas as pd
 
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.preprocess.engine import (
-    AutoPreprocess,
     AlignmentStep,
+    AutoPreprocess,
     BaselineStep,
     DerivativeStep,
     NormalizationStep,

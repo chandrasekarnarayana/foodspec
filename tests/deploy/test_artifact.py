@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 
-from foodspec.artifact import save_artifact, load_artifact
+from foodspec.artifact import load_artifact, save_artifact
 from foodspec.core.output_bundle import OutputBundle
 from foodspec.core.run_record import RunRecord
 

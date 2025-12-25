@@ -1,4 +1,5 @@
 import numpy as np
+
 from foodspec.stats.method_comparison import bland_altman, bland_altman_plot
 
 

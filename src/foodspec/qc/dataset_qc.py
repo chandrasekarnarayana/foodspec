@@ -22,8 +22,8 @@ leads to high-accuracy classifiers that always predict the majority class.
 
 from __future__ import annotations
 
-from typing import Dict, Optional, Any
 import warnings
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -39,12 +39,12 @@ def check_class_balance(
 ) -> Dict[str, Any]:
     """
     Check class balance and flag severe imbalance.
-    
+
     **Assumptions:**
     - label_column is categorical
     - severe_threshold is ratio (max_class / min_class)
     - min_samples_per_class is minimum viable for ML training
-    
+
     Parameters
     ----------
     metadata : pd.DataFrame
@@ -55,7 +55,7 @@ def check_class_balance(
         Imbalance ratio above which to flag as severe.
     min_samples_per_class : int, default=20
         Minimum recommended samples per class.
-        
+
     Returns
     -------
     metrics : dict
@@ -69,30 +69,30 @@ def check_class_balance(
     """
     if label_column not in metadata.columns:
         raise ValueError(f"label_column '{label_column}' not found in metadata.")
-    
+
     labels = metadata[label_column]
     class_counts = labels.value_counts(dropna=True).to_dict()
-    
+
     if len(class_counts) == 0:
         raise ValueError(f"No valid labels found in '{label_column}'.")
-    
+
     counts_array = np.array(list(class_counts.values()))
     min_count = int(counts_array.min())
     max_count = int(counts_array.max())
     imbalance_ratio = max_count / (min_count + 1e-12)
-    
+
     # Identify majority and minority
     majority_class = max(class_counts, key=class_counts.get)
     minority_class = min(class_counts, key=class_counts.get)
-    
+
     # Undersized classes
     undersized = [
         cls for cls, count in class_counts.items() if count < min_samples_per_class
     ]
-    
+
     # Severe imbalance flag
     severe = imbalance_ratio > severe_threshold
-    
+
     # Recommendation
     if severe and undersized:
         recommendation = (
@@ -112,10 +112,10 @@ def check_class_balance(
         )
     else:
         recommendation = "✓ Class balance is adequate for standard ML workflows."
-    
+
     if severe or undersized:
         warnings.warn(recommendation)
-    
+
     metrics = {
         "samples_per_class": {str(k): int(v) for k, v in class_counts.items()},
         "imbalance_ratio": float(imbalance_ratio),
@@ -125,7 +125,7 @@ def check_class_balance(
         "minority_class": (str(minority_class), int(class_counts[minority_class])),
         "recommended_action": recommendation,
     }
-    
+
     return metrics
 
 
@@ -136,16 +136,16 @@ def diagnose_imbalance(
 ) -> Dict[str, Any]:
     """
     Detailed class imbalance diagnostics with optional stratification analysis.
-    
+
     **Workflow:**
     1. Overall class balance check
     2. If stratification_column provided: check balance within each stratum (e.g., batch)
     3. Flag problematic batches with severe within-batch imbalance
-    
+
     **Assumptions:**
     - stratification_column (if provided) defines independent sampling units (batches)
     - Within-batch imbalance suggests systematic collection bias
-    
+
     Parameters
     ----------
     dataset : FoodSpectrumSet
@@ -154,7 +154,7 @@ def diagnose_imbalance(
         Column with class labels.
     stratification_column : str, optional
         Column defining strata (e.g., 'batch_id', 'collection_date').
-        
+
     Returns
     -------
     diagnostics : dict
@@ -163,47 +163,47 @@ def diagnose_imbalance(
         - 'problematic_strata': list of strata with severe imbalance
     """
     metadata = dataset.metadata
-    
+
     # Overall balance
     overall_balance = check_class_balance(metadata, label_column)
-    
+
     diagnostics = {
         "overall_balance": overall_balance,
     }
-    
+
     # Stratified analysis
     if stratification_column is not None:
         if stratification_column not in metadata.columns:
             raise ValueError(f"stratification_column '{stratification_column}' not found.")
-        
+
         strata_values = metadata[stratification_column].unique()
         stratified_balance = {}
         problematic_strata = []
-        
+
         for stratum in strata_values:
             stratum_mask = metadata[stratification_column] == stratum
             stratum_meta = metadata[stratum_mask]
-            
+
             if len(stratum_meta) < 2:
                 continue  # Skip tiny strata
-            
+
             try:
                 stratum_balance = check_class_balance(stratum_meta, label_column)
                 stratified_balance[str(stratum)] = stratum_balance
-                
+
                 if stratum_balance["severe_imbalance"]:
                     problematic_strata.append(str(stratum))
             except ValueError:
                 # Stratum may have only one class
                 continue
-        
+
         diagnostics["stratified_balance"] = stratified_balance
         diagnostics["problematic_strata"] = problematic_strata
-        
+
         if problematic_strata:
             warnings.warn(
                 f"Severe imbalance detected in {len(problematic_strata)} strata: {problematic_strata}. "
                 "This suggests systematic collection bias."
             )
-    
+
     return diagnostics

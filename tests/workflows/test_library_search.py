@@ -1,5 +1,6 @@
 import numpy as np
-from foodspec.library_search import search_library, overlay_plot
+
+from foodspec.library_search import overlay_plot, search_library
 
 
 def test_search_library_topk_confidence():

@@ -1,4 +1,5 @@
 import numpy as np
+
 from foodspec.stats.time_metrics import linear_slope, quadratic_acceleration, rolling_slope
 
 

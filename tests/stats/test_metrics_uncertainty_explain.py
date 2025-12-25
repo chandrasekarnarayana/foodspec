@@ -5,15 +5,15 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
 
 from foodspec.chemometrics.validation import (
-    classification_report_full,
-    regression_report_full,
-    confusion_matrix_table,
-    calibration_summary,
-    bootstrap_prediction_intervals,
-    split_conformal_regression,
-    reliability_diagram,
-    permutation_importance_wrapper,
     band_highlight_table,
+    bootstrap_prediction_intervals,
+    calibration_summary,
+    classification_report_full,
+    confusion_matrix_table,
+    permutation_importance_wrapper,
+    regression_report_full,
+    reliability_diagram,
+    split_conformal_regression,
 )
 
 

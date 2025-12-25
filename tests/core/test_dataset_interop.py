@@ -1,7 +1,6 @@
 import numpy as np
-import pytest
 
-from foodspec.core.dataset import from_sklearn, to_sklearn, FoodSpectrumSet
+from foodspec.core.dataset import FoodSpectrumSet, from_sklearn, to_sklearn
 
 
 def test_from_sklearn_creates_dataset_with_labels_and_wavenumbers():

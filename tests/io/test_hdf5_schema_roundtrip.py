@@ -2,10 +2,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 import pytest
 
-from foodspec.core.spectral_dataset import SpectralDataset, HDF5_SCHEMA_VERSION
+from foodspec.core.spectral_dataset import HDF5_SCHEMA_VERSION, SpectralDataset
 
 
 def test_hdf5_schema_roundtrip(tmp_path: Path):

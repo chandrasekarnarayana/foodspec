@@ -1,16 +1,15 @@
 """Comprehensive tests for preprocessing_pipeline to increase coverage."""
 import numpy as np
 import pandas as pd
-import pytest
 
+from foodspec.features.features.rq import PeakDefinition
 from foodspec.preprocessing_pipeline import (
-    detect_input_mode,
+    PreprocessingConfig,
     baseline_als,
+    detect_input_mode,
     extract_peaks_from_spectra,
     run_full_preprocessing,
-    PreprocessingConfig,
 )
-from foodspec.features.features.rq import PeakDefinition
 
 
 def test_detect_input_mode_peak_table():
@@ -20,7 +19,7 @@ def test_detect_input_mode_peak_table():
         "I_1000": [10.0, 12.0, 11.0],
         "I_1200": [8.0, 9.0, 8.5],
     })
-    
+
     mode = detect_input_mode(df)
     assert mode == "peak_table"
 
@@ -34,7 +33,7 @@ def test_detect_input_mode_raw_spectra():
         "700.0": [3.0, 3.1, 3.2],
         "800.0": [4.0, 4.1, 4.2],
     })
-    
+
     mode = detect_input_mode(df)
     assert mode == "raw_spectra"
 
@@ -45,7 +44,7 @@ def test_detect_input_mode_fallback():
         "sample_id": [1, 2, 3],
         "value": [10.0, 12.0, 11.0],
     })
-    
+
     mode = detect_input_mode(df)
     assert mode == "peak_table"
 
@@ -54,7 +53,7 @@ def test_baseline_als_correction():
     """Test ALS baseline correction."""
     y = np.linspace(0, 10, 100) + np.random.randn(100) * 0.1
     baseline = baseline_als(y, lam=1e5, p=0.01, niter=10)
-    
+
     assert len(baseline) == len(y)
     # Baseline may have small negative values due to interpolation
     assert baseline.min() > -1.0
@@ -71,15 +70,15 @@ def test_extract_peaks_from_spectra():
         "900.0": [5.0, 5.1, 5.2],
         "1000.0": [6.0, 6.1, 6.2],
     })
-    
+
     peaks = [
         PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750)),
         PeakDefinition(name="peak2", column="I_900", wavenumber=900, window=(850, 950)),
     ]
-    
+
     wavenumber_cols = ["500.0", "600.0", "700.0", "800.0", "900.0", "1000.0"]
     result = extract_peaks_from_spectra(df, peaks, wavenumber_cols)
-    
+
     assert "peak1" in result.columns
     assert "peak2" in result.columns
     assert "sample_id" in result.columns
@@ -94,12 +93,12 @@ def test_extract_peaks_peak_outside_range():
         "600.0": [2.0, 2.1],
         "700.0": [3.0, 3.1],
     })
-    
+
     peaks = [PeakDefinition(name="out_of_range", column="I_2000", wavenumber=2000, window=(1950, 2050))]
     wavenumber_cols = ["500.0", "600.0", "700.0"]
-    
+
     result = extract_peaks_from_spectra(df, peaks, wavenumber_cols)
-    
+
     assert "out_of_range" in result.columns
     assert result["out_of_range"].isna().all()
 
@@ -111,12 +110,12 @@ def test_extract_peaks_no_wavenumber():
         "500.0": [1.0, 1.1],
         "600.0": [2.0, 2.1],
     })
-    
+
     peaks = [PeakDefinition(name="no_wn", column="I_none", wavenumber=None)]
     wavenumber_cols = ["500.0", "600.0"]
-    
+
     result = extract_peaks_from_spectra(df, peaks, wavenumber_cols)
-    
+
     # Peak with no wavenumber should be skipped
     assert "no_wn" not in result.columns
 
@@ -128,10 +127,10 @@ def test_run_full_preprocessing_peak_table():
         "I_1000": [10.0, 12.0, 11.0],
         "I_1200": [8.0, 9.0, 8.5],
     })
-    
+
     config = PreprocessingConfig()
     result = run_full_preprocessing(df, config)
-    
+
     assert "sample_id" in result.columns
     assert "I_1000" in result.columns
     assert len(result) == 3
@@ -153,20 +152,20 @@ def test_run_full_preprocessing_raw_spectra():
         "950.0": [5.5, 5.6, 5.7],
         "1000.0": [6.0, 6.1, 6.2],
     })
-    
+
     peaks = [
         PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750)),
     ]
-    
+
     config = PreprocessingConfig(
         baseline_method="als",
         smoothing_method="savgol",
         normalization="vector",
         peak_definitions=peaks,
     )
-    
+
     result = run_full_preprocessing(df, config)
-    
+
     assert "sample_id" in result.columns
     assert "peak1" in result.columns
     assert len(result) == 3
@@ -188,15 +187,15 @@ def test_run_full_preprocessing_with_spike_removal():
         "950.0": [5.5, 5.6],
         "1000.0": [6.0, 6.1],
     })
-    
+
     peaks = [PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750))]
-    
+
     config = PreprocessingConfig(
         spike_removal=True,
         spike_zscore_thresh=3.0,
         peak_definitions=peaks,
     )
-    
+
     result = run_full_preprocessing(df, config)
     assert len(result) == 2
 
@@ -217,9 +216,9 @@ def test_run_full_preprocessing_different_baseline_methods():
         "950.0": [5.5, 5.6],
         "1000.0": [6.0, 6.1],
     })
-    
+
     peaks = [PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750))]
-    
+
     # Test with rubberband baseline
     config_rb = PreprocessingConfig(
         baseline_method="rubberband",
@@ -227,7 +226,7 @@ def test_run_full_preprocessing_different_baseline_methods():
     )
     result_rb = run_full_preprocessing(df, config_rb)
     assert len(result_rb) == 2
-    
+
     # Test with polynomial baseline
     config_poly = PreprocessingConfig(
         baseline_method="polynomial",
@@ -236,7 +235,7 @@ def test_run_full_preprocessing_different_baseline_methods():
     )
     result_poly = run_full_preprocessing(df, config_poly)
     assert len(result_poly) == 2
-    
+
     # Test with no baseline
     config_none = PreprocessingConfig(
         baseline_method="none",
@@ -262,9 +261,9 @@ def test_run_full_preprocessing_different_normalizations():
         "950.0": [5.5, 5.6],
         "1000.0": [6.0, 6.1],
     })
-    
+
     peaks = [PeakDefinition(name="peak1", column="I_600", wavenumber=600, window=(550, 650))]
-    
+
     for norm_mode in ["vector", "area", "none"]:
         config = PreprocessingConfig(
             normalization=norm_mode,
@@ -287,7 +286,7 @@ def test_preprocessing_config_custom_values():
         normalization="area",
         spike_zscore_thresh=10.0,
     )
-    
+
     assert config.baseline_method == "polynomial"
     assert config.baseline_lambda == 1e6
     assert config.baseline_order == 4

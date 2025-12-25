@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Any, Dict, Literal, Optional
+from typing import Literal, Optional
 
 import numpy as np
 
@@ -14,7 +14,7 @@ from foodspec.qc.engine import generate_qc_report
 
 class FoodSpecPreprocessMixin:
     """Mixin class providing preprocessing capabilities for FoodSpec."""
-    
+
     def qc(
         self,
         method: str = "robust_z",
@@ -22,7 +22,7 @@ class FoodSpecPreprocessMixin:
         **kwargs,
     ):
         """Apply QC (quality control) to detect and flag outliers.
-        
+
         Parameters
         ----------
         method : {'robust_z', 'mahalanobis', 'isolation_forest', 'lof'}, optional
@@ -31,7 +31,7 @@ class FoodSpecPreprocessMixin:
             Not used in current implementation (reserved for future scoring cutoffs).
         **kwargs
             Additional arguments forwarded to QC engine (e.g., reference_grid, batch_col, time_col).
-            
+
         Returns
         -------
         FoodSpec
@@ -63,28 +63,27 @@ class FoodSpecPreprocessMixin:
 
         self._steps_applied.append("qc")
         return self
-    
+
     def preprocess(
         self,
         preset: str = "auto",
         **kwargs,
     ):
         """Apply preprocessing pipeline.
-        
+
         Parameters
         ----------
         preset : str, optional
             Preset name: 'auto', 'quick', 'standard', 'publication'. Default: 'auto'.
         **kwargs
             Override preset parameters (forwarded to AutoPreprocess or manual presets).
-            
+
         Returns
         -------
         FoodSpec
             Self (for chaining).
         """
 
-        config_dict = {"preset": preset, **kwargs}
 
         # Use AutoPreprocess as the default preset (Phase 3).
         if preset == "auto":
@@ -148,7 +147,7 @@ class FoodSpecPreprocessMixin:
 
         self._steps_applied.append(f"preprocess({preset})")
         return self
-    
+
     def apply_matrix_correction(
         self,
         method: Literal["background_air", "background_dark", "adaptive_baseline", "none"] = "adaptive_baseline",
@@ -159,15 +158,15 @@ class FoodSpecPreprocessMixin:
     ):
         """
         Apply matrix correction to remove matrix effects (e.g., chips vs. pure oil).
-        
+
         **Key Assumptions:**
         - Background reference spectra measured under identical conditions
         - Matrix types known/inferrable from metadata
         - Domain adaptation requires ≥2 matrix types with ≥10 samples each
         - Spectral ranges aligned before correction
-        
+
         See foodspec.matrix_correction module docstring for full details.
-        
+
         Parameters
         ----------
         method : str, default='adaptive_baseline'
@@ -180,14 +179,14 @@ class FoodSpecPreprocessMixin:
             Metadata column with matrix type labels.
         reference_spectra : np.ndarray, optional
             Background reference (for background_air/dark methods).
-            
+
         Returns
         -------
         FoodSpec
             Self (for chaining).
         """
         from foodspec.preprocess.matrix_correction import apply_matrix_correction as _apply_mc
-        
+
         self.data, mc_metrics = _apply_mc(
             self.data,
             method=method,
@@ -196,20 +195,20 @@ class FoodSpecPreprocessMixin:
             matrix_column=matrix_column,
             reference_spectra=reference_spectra,
         )
-        
+
         # Record metrics
         for key, val in mc_metrics.items():
             self.bundle.add_metrics(f"matrix_correction_{key}", val)
-        
+
         self.bundle.run_record.add_step(
             "matrix_correction",
             hashlib.sha256(json.dumps(mc_metrics, sort_keys=True).encode()).hexdigest()[:8],
             metadata={"method": method, "scaling": scaling, "domain_adapt": domain_adapt},
         )
         self._steps_applied.append("matrix_correction")
-        
+
         return self
-    
+
     def apply_calibration_transfer(
         self,
         source_standards: np.ndarray,
@@ -220,15 +219,15 @@ class FoodSpecPreprocessMixin:
     ):
         """
         Apply calibration transfer to align target instrument to source.
-        
+
         **Key Assumptions:**
         - Source/target standards are paired (same samples measured on both)
         - Standards span the calibration range
         - Spectral alignment already performed
         - Linear transformation adequate for instrument differences
-        
+
         See foodspec.calibration_transfer module docstring for full details.
-        
+
         Parameters
         ----------
         source_standards : np.ndarray, shape (n_standards, n_wavenumbers)
@@ -241,14 +240,14 @@ class FoodSpecPreprocessMixin:
             PDS window size (ignored if method='ds').
         alpha : float, default=1.0
             Ridge regularization parameter.
-            
+
         Returns
         -------
         FoodSpec
             Self (for chaining).
         """
         from foodspec.preprocess.calibration_transfer import calibration_transfer_workflow
-        
+
         self.data.x, ct_metrics = calibration_transfer_workflow(
             source_standards,
             target_standards,
@@ -257,7 +256,7 @@ class FoodSpecPreprocessMixin:
             pds_window_size=pds_window_size,
             alpha=alpha,
         )
-        
+
         # Record metrics
         for key, val in ct_metrics.items():
             self.bundle.add_metrics(f"calibration_transfer_{key}", val)
@@ -268,12 +267,12 @@ class FoodSpecPreprocessMixin:
             self.bundle.add_diagnostic("calibration_transfer_dashboard", html)
         except Exception:
             pass
-        
+
         self.bundle.run_record.add_step(
             "calibration_transfer",
             hashlib.sha256(json.dumps(ct_metrics, sort_keys=True).encode()).hexdigest()[:8],
             metadata={"method": method, "pds_window_size": pds_window_size},
         )
         self._steps_applied.append("calibration_transfer")
-        
+
         return self

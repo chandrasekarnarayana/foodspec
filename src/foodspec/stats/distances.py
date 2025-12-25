@@ -7,7 +7,7 @@ query-to-library distance matrices.
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 

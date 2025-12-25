@@ -1,17 +1,16 @@
 import numpy as np
-import pandas as pd
-from sklearn.datasets import make_regression, make_classification
 from sklearn.cross_decomposition import PLSRegression
-from foodspec.chemometrics.models import make_pls_da
+from sklearn.datasets import make_classification, make_regression
 from sklearn.decomposition import PCA
 
+from foodspec.chemometrics.models import make_pls_da
 from foodspec.chemometrics.validation import (
     compute_explained_variance,
     compute_q2_rmsec_rmsep,
     compute_vip_scores,
     hotelling_t2_q_residuals,
-    permutation_pls_da,
     make_pca_report,
+    permutation_pls_da,
     vip_table_with_meanings,
 )
 

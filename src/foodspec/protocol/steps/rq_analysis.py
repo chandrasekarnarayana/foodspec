@@ -23,7 +23,7 @@ class RQAnalysisStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize RQ analysis step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -33,7 +33,7 @@ class RQAnalysisStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Execute RQ analysis on data in context.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]

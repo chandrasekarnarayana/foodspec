@@ -19,7 +19,7 @@ class HSISegmentStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize HSI segmentation step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -29,7 +29,7 @@ class HSISegmentStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Execute HSI segmentation.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]

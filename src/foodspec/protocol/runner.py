@@ -16,8 +16,8 @@ from typing import Any, Dict, List, Union
 import numpy as np
 import pandas as pd
 
-from foodspec.output_bundle import save_figures, save_tables
 from foodspec.core.spectral_dataset import HyperspectralDataset, SpectralDataset
+from foodspec.output_bundle import save_figures, save_tables
 
 from .config import ProtocolConfig, ProtocolRunResult
 from .steps import STEP_REGISTRY
@@ -29,7 +29,7 @@ class ProtocolRunner:
 
     def __init__(self, config: ProtocolConfig):
         """Initialize protocol runner.
-        
+
         Parameters
         ----------
         config : ProtocolConfig
@@ -41,12 +41,12 @@ class ProtocolRunner:
     @classmethod
     def from_file(cls, path: Union[str, Path]) -> "ProtocolRunner":
         """Create runner from protocol file.
-        
+
         Parameters
         ----------
         path : Union[str, Path]
             Path to protocol YAML or JSON file.
-            
+
         Returns
         -------
         ProtocolRunner
@@ -210,7 +210,7 @@ class ProtocolRunner:
 
     def save_outputs(self, result: ProtocolRunResult, output_dir: Union[str, Path]):
         """Save protocol execution results to directory.
-        
+
         Parameters
         ----------
         result : ProtocolRunResult

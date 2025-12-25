@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal
 
 import numpy as np
 
@@ -14,12 +14,12 @@ AxisUnit = Literal["cm-1", "nm", "um", "1/cm"]
 
 def _validate_spectrum_schema(metadata: Dict[str, Any]) -> None:
     """Validate spectrum metadata against expected schema.
-    
+
     Parameters
     ----------
     metadata : dict
         Metadata dictionary to validate.
-        
+
     Raises
     ------
     ValueError
@@ -28,7 +28,7 @@ def _validate_spectrum_schema(metadata: Dict[str, Any]) -> None:
     # Allow any metadata; basic checks only
     if not isinstance(metadata, dict):
         raise TypeError("metadata must be a dictionary")
-    
+
     # Optional field checks
     if "sample_id" in metadata and not isinstance(metadata["sample_id"], str):
         raise ValueError("metadata['sample_id'] must be string if present")
@@ -37,9 +37,9 @@ def _validate_spectrum_schema(metadata: Dict[str, Any]) -> None:
 @dataclass
 class Spectrum:
     """Single spectrum with axis, intensity, units, kind, and metadata.
-    
+
     Represents a single spectroscopic measurement with full provenance tracking.
-    
+
     Parameters
     ----------
     x : np.ndarray
@@ -52,7 +52,7 @@ class Spectrum:
         Unit of x-axis. Default: 'cm-1'.
     metadata : dict, optional
         Additional metadata (sample_id, instrument, temperature, etc.).
-    
+
     Attributes
     ----------
     x : np.ndarray
@@ -68,19 +68,19 @@ class Spectrum:
     config_hash : str
         Hash of metadata for reproducibility tracking.
     """
-    
+
     x: np.ndarray
     y: np.ndarray
     kind: SpectrumKind
     x_unit: AxisUnit = "cm-1"
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         """Validate and normalize inputs."""
         # Convert to numpy arrays
         self.x = np.asarray(self.x, dtype=np.float64)
         self.y = np.asarray(self.y, dtype=np.float64)
-        
+
         # Validate shapes
         if self.x.ndim != 1:
             raise ValueError(f"x must be 1D; got shape {self.x.shape}")
@@ -88,20 +88,20 @@ class Spectrum:
             raise ValueError(f"y must be 1D; got shape {self.y.shape}")
         if self.x.shape[0] != self.y.shape[0]:
             raise ValueError(f"x and y must have same length; got {self.x.shape[0]} vs {self.y.shape[0]}")
-        
+
         # Validate kind
         if self.kind not in ("raman", "ftir", "nir"):
             raise ValueError(f"kind must be 'raman', 'ftir', or 'nir'; got {self.kind}")
-        
+
         # Validate and ensure metadata is dict
         if not isinstance(self.metadata, dict):
             self.metadata = {}
         _validate_spectrum_schema(self.metadata)
-    
+
     @property
     def config_hash(self) -> str:
         """Hash of metadata for reproducibility tracking.
-        
+
         Returns
         -------
         str
@@ -110,12 +110,12 @@ class Spectrum:
         import json
         meta_str = json.dumps(self.metadata, sort_keys=True, default=str)
         return hashlib.sha256(meta_str.encode()).hexdigest()[:8]
-    
+
     @property
     def n_points(self) -> int:
         """Number of spectral points."""
         return len(self.x)
-    
+
     def copy(self) -> Spectrum:
         """Return a deep copy of this spectrum."""
         return Spectrum(
@@ -125,17 +125,17 @@ class Spectrum:
             x_unit=self.x_unit,
             metadata={k: (v.copy() if hasattr(v, 'copy') else v) for k, v in self.metadata.items()},
         )
-    
+
     def crop_wavenumber(self, x_min: float, x_max: float) -> Spectrum:
         """Crop spectrum to wavenumber range.
-        
+
         Parameters
         ----------
         x_min : float
             Minimum wavenumber.
         x_max : float
             Maximum wavenumber.
-            
+
         Returns
         -------
         Spectrum
@@ -151,22 +151,22 @@ class Spectrum:
             x_unit=self.x_unit,
             metadata=self.metadata.copy(),
         )
-    
+
     def normalize(self, method: str = "vector") -> Spectrum:
         """Normalize spectrum.
-        
+
         Parameters
         ----------
         method : {'vector', 'max', 'area'}, optional
             Normalization method. Default: 'vector'.
-            
+
         Returns
         -------
         Spectrum
             Normalized spectrum.
         """
         y_norm = self.y.copy()
-        
+
         if method == "vector":
             norm = np.linalg.norm(y_norm)
             if norm > 0:
@@ -181,7 +181,7 @@ class Spectrum:
                 y_norm = y_norm / area
         else:
             raise ValueError(f"Unknown normalization method: {method}")
-        
+
         return Spectrum(
             x=self.x.copy(),
             y=y_norm,
@@ -189,7 +189,7 @@ class Spectrum:
             x_unit=self.x_unit,
             metadata=self.metadata.copy(),
         )
-    
+
     def __repr__(self) -> str:
         """String representation."""
         return (

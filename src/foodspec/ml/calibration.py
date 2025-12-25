@@ -6,13 +6,11 @@ Provides tools for assessing and improving classifier calibration in production.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal, Optional, Tuple
+from typing import Literal, Tuple
 
 import numpy as np
 import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.isotonic import IsotonicRegression
-from sklearn.linear_model import LinearRegression
 
 
 @dataclass

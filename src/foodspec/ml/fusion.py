@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from typing import Dict, List, Literal, Optional, Sequence
 
 import numpy as np
-import pandas as pd
-from sklearn.base import BaseEstimator, ClassifierMixin
 
 
 @dataclass

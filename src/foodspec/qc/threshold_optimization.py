@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict
 
 import numpy as np
-from sklearn.metrics import roc_curve, auc, precision_recall_curve
+from sklearn.metrics import precision_recall_curve, roc_curve
 
 
 def estimate_threshold_quantile(
@@ -55,7 +55,7 @@ def estimate_threshold_elbow(
     try:
         from sklearn.cluster import KMeans
         km = KMeans(n_clusters=n_clusters, random_state=0, n_init=10)
-        labels = km.fit_predict(sorted_scores.reshape(-1, 1))
+        km.fit_predict(sorted_scores.reshape(-1, 1))
         centers = np.sort(km.cluster_centers_.flatten())
         return float(np.mean(centers[:2]))
     except Exception:

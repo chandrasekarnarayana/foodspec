@@ -78,22 +78,39 @@ __all__ = [
 __version__ = "0.2.1"
 
 # Phase 1: Core unified entry point and provenance
+from .artifact import Predictor, load_artifact, save_artifact
+from .calibration_transfer import (
+    calibration_transfer_workflow,
+    direct_standardization,
+    piecewise_direct_standardization,
+)
 from .core.api import FoodSpec
-from .core.spectrum import Spectrum
-from .core.run_record import RunRecord
-from .core.output_bundle import OutputBundle
 from .core.dataset import FoodSpectrumSet
 from .core.hyperspectral import HyperSpectralCube
+from .core.output_bundle import OutputBundle
+from .core.run_record import RunRecord
 from .core.spectral_dataset import (
+    HDF5_SCHEMA_VERSION,
     HyperspectralDataset,
     PreprocessingConfig,
     SpectralDataset,
-    harmonize_datasets,
-    baseline_rubberband,
     baseline_als,
     baseline_polynomial,
-    HDF5_SCHEMA_VERSION,
+    baseline_rubberband,
+    harmonize_datasets,
 )
+from .core.spectrum import Spectrum
+
+# Data governance and dataset intelligence
+from .core.summary import summarize_dataset
+from .features.rq import (
+    PeakDefinition,
+    RatioDefinition,
+    RatioQualityEngine,
+    RatioQualityResult,
+    RQConfig,
+)
+from .heating_trajectory import analyze_heating_trajectory
 from .io import (
     create_library,
     detect_format,
@@ -103,21 +120,20 @@ from .io import (
     read_spectra,
 )
 from .logo import LOGO_BASE64, get_logo_base64, get_logo_bytes, save_logo
+from .matrix_correction import apply_matrix_correction
 from .metrics import (
     compute_classification_metrics,
     compute_pr_curve,
     compute_regression_metrics,
     compute_roc_curve,
 )
-from .features.rq import (
-    PeakDefinition,
-    RatioDefinition,
-    RatioQualityEngine,
-    RatioQualityResult,
-    RQConfig,
-)
+from .plugin import PluginManager, install_plugin
+from .plugins import load_plugins
+from .qc.dataset_qc import check_class_balance, diagnose_imbalance
+from .qc.leakage import detect_batch_label_correlation, detect_leakage, detect_replicate_leakage
+from .qc.readiness import compute_readiness_score
+from .qc.replicates import assess_variability_sources, compute_replicate_consistency
 from .repro import DatasetSpec, ExperimentConfig, ExperimentEngine, diff_runs
-from .artifact import load_artifact, save_artifact, Predictor
 from .stats import (
     bootstrap_metric,
     permutation_test_metric,
@@ -140,19 +156,3 @@ from .utils.troubleshooting import (
     estimate_snr,
     summarize_class_balance,
 )
-from .matrix_correction import apply_matrix_correction
-from .heating_trajectory import analyze_heating_trajectory
-from .calibration_transfer import (
-    calibration_transfer_workflow,
-    direct_standardization,
-    piecewise_direct_standardization,
-)
-
-# Data governance and dataset intelligence
-from .core.summary import summarize_dataset
-from .qc.dataset_qc import check_class_balance, diagnose_imbalance
-from .qc.replicates import compute_replicate_consistency, assess_variability_sources
-from .qc.leakage import detect_batch_label_correlation, detect_replicate_leakage, detect_leakage
-from .qc.readiness import compute_readiness_score
-from .plugin import PluginManager, install_plugin
-from .plugins import load_plugins

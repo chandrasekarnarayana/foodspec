@@ -1,8 +1,8 @@
 """Generate an annotated peak/band spectrum figure.
 Saves docs/assets/peak_band_annotation.png.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 rng = np.random.default_rng(1)
 wavenumbers = np.linspace(600, 1800, 400)

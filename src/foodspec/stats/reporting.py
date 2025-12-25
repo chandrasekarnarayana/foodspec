@@ -2,21 +2,20 @@
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from typing import Iterable
 
 import numpy as np
 import pandas as pd
 
+from foodspec.stats.effects import compute_cohens_d
 from foodspec.stats.hypothesis_tests import (
-    run_ttest,
+    benjamini_hochberg,
     run_anova,
     run_kruskal_wallis,
     run_mannwhitney_u,
-    benjamini_hochberg,
     run_shapiro,
+    run_ttest,
 )
-from foodspec.stats.effects import compute_cohens_d
-from foodspec.stats.correlations import compute_correlations
 
 
 def stats_report_for_feature(

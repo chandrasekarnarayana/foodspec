@@ -1,11 +1,10 @@
 import numpy as np
-import pytest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
-from foodspec.chemometrics.models import make_classifier, make_pls_da, _PLSProjector
+from foodspec.chemometrics.models import _PLSProjector, make_classifier, make_pls_da
 
 
 def test_classifier_factory_core_models():

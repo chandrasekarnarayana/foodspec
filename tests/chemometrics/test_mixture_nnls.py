@@ -1,5 +1,6 @@
 import numpy as np
-from foodspec.chemometrics.mixture_nnls import solve_nnls, bootstrap_nnls
+
+from foodspec.chemometrics.mixture_nnls import bootstrap_nnls, solve_nnls
 
 
 def test_nnls_and_bootstrap_ci():

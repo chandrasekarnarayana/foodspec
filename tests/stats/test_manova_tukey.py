@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import pytest
-from foodspec.stats.hypothesis_tests import run_manova, tukey_hsd, pairwise_tukeyhsd
+
+from foodspec.stats.hypothesis_tests import pairwise_tukeyhsd, run_manova, tukey_hsd
 
 
 def test_run_manova_and_tukey():

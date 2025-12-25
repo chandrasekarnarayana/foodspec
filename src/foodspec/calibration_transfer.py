@@ -12,4 +12,4 @@ warnings.warn(
     stacklevel=2,
 )
 
-from foodspec.preprocess.calibration_transfer import *  # noqa: F401, F403
+from foodspec.preprocess.calibration_transfer import *  # noqa: F401,F403,E402

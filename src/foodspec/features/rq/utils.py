@@ -11,7 +11,6 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler

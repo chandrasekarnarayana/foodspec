@@ -6,6 +6,7 @@ This shim will be removed in a future major release.
 from __future__ import annotations
 
 import sys
+
 from foodspec.cli.registry import main as _main
 
 

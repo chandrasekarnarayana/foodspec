@@ -7,9 +7,7 @@ Manages schema versions, migration strategies, and compatibility checking.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Dict, Optional, Tuple
-
-import numpy as np
+from typing import Dict, Tuple
 
 
 class SchemaVersion(Enum):

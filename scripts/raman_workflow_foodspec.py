@@ -59,21 +59,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import scipy.sparse as sparse
 import seaborn as sns
 from scipy import stats
-from scipy.sparse import diags
 from scipy.stats import linregress
-import scipy.sparse as sparse
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.manifold import MDS
-from sklearn.metrics import silhouette_score, adjusted_rand_score
-from sklearn.model_selection import StratifiedKFold, KFold, cross_val_score
+from sklearn.metrics import adjusted_rand_score, silhouette_score
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler, normalize
 from statsmodels.multivariate.manova import MANOVA
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
@@ -1403,7 +1402,7 @@ def generate_rq_summaries(norm_output_dir: str, cfg: Optional[Config] = None):
 
     norm_out_dir = Path(norm_output_dir)
     ensure_dir(norm_out_dir)
-    mds_df = compute_mds_map(
+    compute_mds_map(
         oil_df.dropna(subset=ratio_cols + ["Oil_Name"]), ratio_cols, label_col="Oil_Name", out_dir=norm_out_dir
     )
 
@@ -1431,7 +1430,7 @@ def generate_rq_summaries(norm_output_dir: str, cfg: Optional[Config] = None):
     anova_feat_path = Path(norm_output_dir) / "anova_norm2720_features.csv"
     gh_path = Path(norm_output_dir) / "games_howell_norm2720.csv"
     feat_anova_df = pd.read_csv(anova_feat_path) if anova_feat_path.exists() else None
-    gh_df = pd.read_csv(gh_path) if gh_path.exists() else None
+    pd.read_csv(gh_path) if gh_path.exists() else None
 
     # 8) Peak CVs (RQ2)
     cv_int_df = pd.read_csv(OIL_RATIO_NORM_CV_CSV) if os.path.exists(OIL_RATIO_NORM_CV_CSV) else None
@@ -1801,7 +1800,7 @@ approximate the cumulative thermal load, although prediction errors on individua
     )
 
     # RQ13 – Global chemometric map
-    rq13_text = f"""
+    rq13_text = """
 A low-dimensional chemometric map was constructed using both PCA (see pca_norm2720_scatter.png) and metric Multi-Dimensional
 Scaling (MDS; mds_2D_oils.png).
 

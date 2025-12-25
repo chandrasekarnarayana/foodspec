@@ -35,7 +35,6 @@ from foodspec.metrics import (
 from foodspec.synthetic import generate_synthetic_raman_spectrum
 from foodspec.synthetic.spectra import PeakSpec
 
-
 ASSETS_DIR = Path(__file__).resolve().parents[2] / "assets"
 
 

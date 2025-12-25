@@ -11,6 +11,7 @@ Demonstrates all five sub-modules:
 
 import numpy as np
 import pandas as pd
+
 from foodspec import FoodSpec
 
 # ----------------------------------------------------------------------------
@@ -268,11 +269,11 @@ output_path = fs.export(path="protocol_runs_test/", formats=["json", "csv"])  # 
 print(f"✓ Results exported to: {output_path}")
 
 print("\nMetrics recorded in OutputBundle:")
-print(f"  - dataset_summary")
-print(f"  - class_balance")
-print(f"  - replicate_consistency")
-print(f"  - leakage_detection")
-print(f"  - readiness_score")
+print("  - dataset_summary")
+print("  - class_balance")
+print("  - replicate_consistency")
+print("  - leakage_detection")
+print("  - readiness_score")
 
 print("\n" + "=" * 80)
 print("Demo Complete!")

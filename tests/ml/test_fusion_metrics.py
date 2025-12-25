@@ -1,22 +1,21 @@
 """Tests for fusion agreement metrics."""
 
 import numpy as np
-import pytest
+
 from foodspec.stats.fusion_metrics import (
+    cross_modality_correlation,
     modality_agreement_kappa,
     modality_consistency_rate,
-    cross_modality_correlation,
 )
 
 
 def test_modality_agreement_kappa():
     """Test Cohen's kappa agreement between modalities."""
-    n = 20
     pred1 = np.array([0] * 10 + [1] * 10)
     pred2 = np.array([0] * 9 + [1] * 11)  # mostly agrees
-    
+
     kappa_df = modality_agreement_kappa({"m1": pred1, "m2": pred2})
-    
+
     assert kappa_df.shape == (2, 2)
     assert kappa_df.loc["m1", "m1"] == 1.0
     assert kappa_df.loc["m2", "m2"] == 1.0
@@ -39,13 +38,12 @@ def test_modality_consistency_rate():
 def test_cross_modality_correlation():
     """Test cross-modality feature correlation."""
     # Create two modalities with simple positive correlation structure
-    n = 50
     # Both modalities measure similar underlying patterns
     X1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]] * 10).astype(float)
     X2 = X1 * 1.2 + 5  # linearly related
-    
+
     corr_df = cross_modality_correlation({"m1": X1, "m2": X2}, method="pearson")
-    
+
     assert corr_df.shape == (2, 2)
     assert corr_df.loc["m1", "m1"] == 1.0
     assert corr_df.loc["m2", "m2"] == 1.0

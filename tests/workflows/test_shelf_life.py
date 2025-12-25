@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+
 from foodspec.core.time import TimeSpectrumSet
 from foodspec.workflows.shelf_life import estimate_remaining_shelf_life
 

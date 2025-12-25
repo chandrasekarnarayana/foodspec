@@ -14,38 +14,39 @@ from foodspec.stats.correlations import (
     compute_cross_correlation,
 )
 from foodspec.stats.design import check_minimum_samples, summarize_group_sizes
+from foodspec.stats.distances import (
+    compute_distances,
+    cosine_distance,
+    euclidean_distance,
+    pearson_distance,
+    sam_angle,
+    sid_distance,
+)
 from foodspec.stats.effects import compute_anova_effect_sizes, compute_cohens_d
+from foodspec.stats.fusion_metrics import (
+    cross_modality_correlation,
+    modality_agreement_kappa,
+    modality_consistency_rate,
+)
 from foodspec.stats.hypothesis_tests import (
+    benjamini_hochberg,
     games_howell,
     run_anova,
     run_friedman_test,
     run_kruskal_wallis,
     run_mannwhitney_u,
     run_manova,
+    run_shapiro,
     run_ttest,
     run_tukey_hsd,
     run_wilcoxon_signed_rank,
 )
-from foodspec.stats.hypothesis_tests import run_shapiro, benjamini_hochberg
-from foodspec.stats.robustness import bootstrap_metric, permutation_test_metric
 from foodspec.stats.reporting import stats_report_for_feature, stats_report_for_features_table
-from foodspec.stats.distances import (
-     euclidean_distance,
-     cosine_distance,
-     pearson_distance,
-     sid_distance,
-     sam_angle,
-     compute_distances,
-)
+from foodspec.stats.robustness import bootstrap_metric, permutation_test_metric
 from foodspec.stats.time_metrics import (
     linear_slope,
     quadratic_acceleration,
     rolling_slope,
-)
-from foodspec.stats.fusion_metrics import (
-    modality_agreement_kappa,
-    modality_consistency_rate,
-    cross_modality_correlation,
 )
 
 __all__ = [

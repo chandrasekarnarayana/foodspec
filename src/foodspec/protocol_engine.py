@@ -12,8 +12,8 @@ import warnings
 from foodspec.protocol import (
     EXAMPLE_PROTOCOL,
     ProtocolConfig,
-    ProtocolRunResult,
     ProtocolRunner,
+    ProtocolRunResult,
     list_available_protocols,
     load_protocol,
     validate_protocol,

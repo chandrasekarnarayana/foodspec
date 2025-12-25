@@ -3,12 +3,13 @@ Quickstart script for oil authentication using foodspec.
 Run with: python examples/oil_authentication_quickstart.py
 """
 
-from foodspec.data.loader import load_example_oils
-from foodspec.apps.oils import run_oil_authentication_quickstart
-from foodspec.viz.classification import plot_confusion_matrix
-from foodspec.chemometrics.pca import run_pca
-from foodspec.viz.pca import plot_pca_scores
 import matplotlib.pyplot as plt
+
+from foodspec.apps.oils import run_oil_authentication_quickstart
+from foodspec.chemometrics.pca import run_pca
+from foodspec.data.loader import load_example_oils
+from foodspec.viz.classification import plot_confusion_matrix
+from foodspec.viz.pca import plot_pca_scores
 
 
 def main():

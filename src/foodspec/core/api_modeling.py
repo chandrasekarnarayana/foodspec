@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional, Union
+from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ from foodspec.features.specs import FeatureEngine, FeatureSpec
 
 class FoodSpecModelingMixin:
     """Mixin class providing modeling capabilities for FoodSpec."""
-    
+
     def features(
         self,
         preset: str = "specs",
@@ -24,7 +24,7 @@ class FoodSpecModelingMixin:
         **kwargs,
     ):
         """Extract features (peaks, ratios, etc.).
-        
+
         Parameters
         ----------
         preset : str, optional
@@ -33,7 +33,7 @@ class FoodSpecModelingMixin:
             Feature specifications to evaluate when preset='specs'.
         **kwargs
             Override preset parameters or provide default specs for other presets.
-            
+
         Returns
         -------
         FoodSpec
@@ -74,7 +74,7 @@ class FoodSpecModelingMixin:
 
         self._steps_applied.append(f"features({preset})")
         return self
-    
+
     def train(
         self,
         algorithm: str = "rf",
@@ -84,7 +84,7 @@ class FoodSpecModelingMixin:
         **kwargs,
     ):
         """Train a model on the data.
-        
+
         Parameters
         ----------
         algorithm : {'rf', 'lr', 'svm', 'pls_da'}, optional
@@ -97,7 +97,7 @@ class FoodSpecModelingMixin:
             Cross-validation folds. Default: 5.
         **kwargs
             Algorithm-specific parameters.
-            
+
         Returns
         -------
         FoodSpec
@@ -105,10 +105,10 @@ class FoodSpecModelingMixin:
         """
         from foodspec.chemometrics.models import make_classifier
         from foodspec.chemometrics.validation import compute_classification_metrics
-        
+
         # Extract features and labels
         X, y = self.data.to_X_y(target_col=label_column)
-        
+
         # Train model
         pipeline = make_classifier(
             X,
@@ -117,21 +117,21 @@ class FoodSpecModelingMixin:
             cv_folds=cv_folds,
             **kwargs,
         )
-        
+
         # Compute metrics
         cv_metrics = compute_classification_metrics(pipeline, X, y, cv=cv_folds)
-        
+
         # Store model and metrics
         self.bundle.add_artifact("model", pipeline)
         self.bundle.add_metrics("cv_metrics", cv_metrics)
-        
+
         # Log step
         self.bundle.run_record.add_step(
             "train",
             hashlib.sha256(json.dumps({"algorithm": algorithm}).encode()).hexdigest()[:8],
             metadata={"algorithm": algorithm, "cv_folds": cv_folds},
         )
-        
+
         self._steps_applied.append(f"train({algorithm})")
         return self
 
@@ -163,8 +163,8 @@ class FoodSpecModelingMixin:
         pandas.DataFrame
             Similarity table with distances (and confidence/decision if enabled).
         """
-        from foodspec.features.library import LibraryIndex, overlay_plot
         from foodspec.features.confidence import add_confidence
+        from foodspec.features.library import LibraryIndex, overlay_plot
 
         # Build library index and compute similarity table
         lib = LibraryIndex.from_dataset(library)
@@ -203,21 +203,21 @@ class FoodSpecModelingMixin:
         self._steps_applied.append(f"library_similarity({metric},k={top_k})")
 
         return sim_table
-    
+
     def export(
         self,
         path: Optional[Union[str, Path]] = None,
         formats: Optional[list] = None,
     ) -> Path:
         """Export all outputs to disk.
-        
+
         Parameters
         ----------
         path : Path or str, optional
             Output directory. If None, uses self.output_dir.
         formats : list, optional
             Export formats. Default: ['json', 'csv', 'png', 'joblib'].
-            
+
         Returns
         -------
         Path

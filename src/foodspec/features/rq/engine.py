@@ -20,11 +20,12 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler
 from statsmodels.stats.multitest import multipletests
 
-# Import from package modules
-from .types import PeakDefinition, RatioDefinition, RQConfig, RatioQualityResult
-from .utils import _cv, _safe_group_vectors, _monotonic_label, _rf_accuracy
-from .report import generate_text_report as _rq_text_report
 from .matrix import compare_oil_vs_chips as _compare_oil_vs_chips
+from .report import generate_text_report as _rq_text_report
+
+# Import from package modules
+from .types import PeakDefinition, RatioDefinition, RatioQualityResult, RQConfig
+from .utils import _cv, _monotonic_label, _rf_accuracy, _safe_group_vectors
 
 
 class RatioQualityEngine:

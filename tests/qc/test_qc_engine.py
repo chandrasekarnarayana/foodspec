@@ -4,8 +4,8 @@ import pandas as pd
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.qc.engine import (
     compute_health_scores,
-    detect_outliers,
     detect_drift,
+    detect_outliers,
     generate_qc_report,
 )
 

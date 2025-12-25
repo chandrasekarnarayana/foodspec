@@ -1,13 +1,10 @@
+import textwrap
 from pathlib import Path
 from types import SimpleNamespace
-import textwrap
 
-import pytest
 from typer.testing import CliRunner
 
-from foodspec import __version__
 from foodspec import cli
-
 
 runner = CliRunner()
 

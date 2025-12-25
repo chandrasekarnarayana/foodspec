@@ -26,15 +26,12 @@ This module provides tools for transferring calibration models between instrumen
 
 from __future__ import annotations
 
-from typing import Dict, Literal, Optional, Tuple, Any
 import warnings
+from typing import Any, Dict, Literal, Optional, Tuple
 
 import numpy as np
-import pandas as pd
 from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.preprocessing import StandardScaler
-
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Direct Standardization (DS)
@@ -49,18 +46,18 @@ def direct_standardization(
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """
     Direct Standardization (DS): transfer calibration from source to target instrument.
-    
+
     Learns a linear transformation F such that X_target_std @ F ≈ X_source_std, then
     applies F to production spectra X_target_prod.
-    
+
     **Assumptions:**
     - X_source_std and X_target_std are paired measurements of the same standards
     - Standards span the calibration range
     - Spectral dimensions match (same wavenumber axis)
     - Linear transformation is adequate (no severe nonlinearities)
-    
+
     Reference: Wang et al. (1991), Multivariate Instrument Standardization
-    
+
     Parameters
     ----------
     X_source_std : np.ndarray, shape (n_standards, n_wavenumbers)
@@ -71,7 +68,7 @@ def direct_standardization(
         Target instrument production spectra to be corrected.
     alpha : float, default=1.0
         Ridge regularization parameter (larger = more regularization).
-        
+
     Returns
     -------
     X_target_corrected : np.ndarray, shape (n_prod, n_wavenumbers)
@@ -84,31 +81,31 @@ def direct_standardization(
     n_standards, n_wavenumbers = X_source_std.shape
     assert X_target_std.shape == X_source_std.shape, "Source/target standard shapes must match."
     assert X_target_prod.shape[1] == n_wavenumbers, "Production spectra dimension mismatch."
-    
+
     if n_standards < 10:
         warnings.warn(f"Only {n_standards} standards; DS may be unstable. Recommend ≥10.")
-    
+
     # Fit transformation: F = (X_target_std.T @ X_target_std + alpha*I)^-1 @ X_target_std.T @ X_source_std
     ridge = Ridge(alpha=alpha, fit_intercept=False)
     ridge.fit(X_target_std, X_source_std)
     F = ridge.coef_.T  # (n_wavenumbers, n_wavenumbers)
-    
+
     # Apply transformation to production spectra
     X_target_corrected = X_target_prod @ F
-    
+
     # Compute reconstruction error on standards
     X_source_std_recon = X_target_std @ F
     recon_rmse = np.sqrt(mean_squared_error(X_source_std, X_source_std_recon))
-    
+
     # Condition number (stability indicator)
     cond_number = np.linalg.cond(F)
-    
+
     metrics = {
         "reconstruction_rmse": float(recon_rmse),
         "transformation_condition_number": float(cond_number),
         "n_standards": int(n_standards),
     }
-    
+
     return X_target_corrected, metrics
 
 
@@ -126,18 +123,18 @@ def piecewise_direct_standardization(
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """
     Piecewise Direct Standardization (PDS) v2 with robust regression.
-    
+
     Learns local transformations per wavenumber window, reducing sensitivity to
     localized instrument differences.
-    
+
     **Assumptions:**
     - Standards are paired and representative
     - Window size is odd and << n_wavenumbers
     - Local spectral neighborhoods are informative for each wavenumber
     - Robust regression (Ridge) prevents overfitting in small windows
-    
+
     Reference: Bouveresse et al. (1996), Standardization of NIR spectra in diffuse reflectance mode
-    
+
     Parameters
     ----------
     X_source_std : np.ndarray, shape (n_standards, n_wavenumbers)
@@ -150,7 +147,7 @@ def piecewise_direct_standardization(
         Local window size (must be odd).
     alpha : float, default=1.0
         Ridge regularization.
-        
+
     Returns
     -------
     X_target_corrected : np.ndarray, shape (n_prod, n_wavenumbers)
@@ -163,32 +160,32 @@ def piecewise_direct_standardization(
     n_standards, n_wavenumbers = X_source_std.shape
     assert X_target_std.shape == X_source_std.shape
     assert X_target_prod.shape[1] == n_wavenumbers
-    
+
     if window_size % 2 == 0:
         window_size += 1
         warnings.warn(f"window_size must be odd; adjusted to {window_size}.")
-    
+
     half_window = window_size // 2
-    
+
     X_target_corrected = np.empty_like(X_target_prod)
-    
+
     # Build transformation for each wavenumber
     for j in range(n_wavenumbers):
         # Define local window
         j_start = max(0, j - half_window)
         j_end = min(n_wavenumbers, j + half_window + 1)
-        
+
         # Local regression: X_target_std[:, window] -> X_source_std[:, j]
         X_local = X_target_std[:, j_start:j_end]
         y_local = X_source_std[:, j]
-        
+
         ridge = Ridge(alpha=alpha, fit_intercept=False)
         ridge.fit(X_local, y_local)
-        
+
         # Apply to production spectra
         X_prod_local = X_target_prod[:, j_start:j_end]
         X_target_corrected[:, j] = ridge.predict(X_prod_local)
-    
+
     # Reconstruction error on standards
     X_source_std_recon = np.empty_like(X_source_std)
     for j in range(n_wavenumbers):
@@ -198,15 +195,15 @@ def piecewise_direct_standardization(
         y_local = X_source_std[:, j]
         ridge = Ridge(alpha=alpha, fit_intercept=False).fit(X_local, y_local)
         X_source_std_recon[:, j] = ridge.predict(X_local)
-    
+
     recon_rmse = np.sqrt(mean_squared_error(X_source_std, X_source_std_recon))
-    
+
     metrics = {
         "reconstruction_rmse": float(recon_rmse),
         "window_size": int(window_size),
         "n_standards": int(n_standards),
     }
-    
+
     return X_target_corrected, metrics
 
 
@@ -222,12 +219,12 @@ def detect_drift(
 ) -> Tuple[bool, Dict[str, Any]]:
     """
     Detect spectral drift by comparing current batch to reference.
-    
+
     **Assumptions:**
     - X_reference and X_current are from the same matrix/sample type
     - Drift manifests as mean shift or variance change
     - Threshold is calibrated to acceptable drift magnitude
-    
+
     Parameters
     ----------
     X_reference : np.ndarray, shape (n_ref, n_wavenumbers)
@@ -236,7 +233,7 @@ def detect_drift(
         Current spectra to check for drift.
     threshold : float, default=0.1
         Drift threshold (normalized RMSE).
-        
+
     Returns
     -------
     drift_detected : bool
@@ -248,19 +245,19 @@ def detect_drift(
     """
     mean_ref = X_reference.mean(axis=0)
     mean_curr = X_current.mean(axis=0)
-    
+
     var_ref = X_reference.var(axis=0).mean()
     var_curr = X_current.var(axis=0).mean()
-    
+
     mean_shift = np.linalg.norm(mean_curr - mean_ref)
     variance_ratio = var_curr / (var_ref + 1e-12)
-    
+
     # Normalized drift score
     ref_scale = np.linalg.norm(mean_ref) + 1e-12
     normalized_drift = mean_shift / ref_scale
-    
+
     drift_detected = normalized_drift > threshold
-    
+
     drift_metrics = {
         "mean_shift": float(mean_shift),
         "variance_ratio": float(variance_ratio),
@@ -268,7 +265,7 @@ def detect_drift(
         "threshold": float(threshold),
         "drift_detected": bool(drift_detected),
     }
-    
+
     return drift_detected, drift_metrics
 
 
@@ -279,12 +276,12 @@ def adapt_calibration_incremental(
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """
     Incrementally update reference set with new standards (exponential weighting).
-    
+
     **Assumptions:**
     - X_new_standards are recent measurements of known standards
     - Drift is gradual (exponential decay appropriate)
     - Updated reference remains representative
-    
+
     Parameters
     ----------
     X_reference : np.ndarray, shape (n_ref, n_wavenumbers)
@@ -293,7 +290,7 @@ def adapt_calibration_incremental(
         New standard measurements.
     weight_decay : float, default=0.9
         Weight for old reference (0 < weight_decay < 1).
-        
+
     Returns
     -------
     X_reference_updated : np.ndarray, shape (n_ref + n_new, n_wavenumbers)
@@ -305,16 +302,16 @@ def adapt_calibration_incremental(
     """
     # Weight old reference
     X_ref_weighted = weight_decay * X_reference
-    
+
     # Append new standards
     X_reference_updated = np.vstack([X_ref_weighted, X_new_standards])
-    
+
     metrics = {
         "reference_size_before": int(X_reference.shape[0]),
         "reference_size_after": int(X_reference_updated.shape[0]),
         "weight_decay": float(weight_decay),
     }
-    
+
     return X_reference_updated, metrics
 
 
@@ -333,14 +330,14 @@ def compute_transfer_success_metrics(
 ) -> Dict[str, Any]:
     """
     Comprehensive dashboard of transfer success metrics.
-    
+
     **Assumptions:**
     - y_true are ground-truth labels/values for validation set
     - y_pred_source: predictions from source model (gold standard)
     - y_pred_target_before: predictions from target before transfer
     - y_pred_target_after: predictions from target after transfer
     - X_target_prod: production spectra for leverage/outlier detection
-    
+
     Parameters
     ----------
     y_true : np.ndarray, shape (n_val,)
@@ -355,7 +352,7 @@ def compute_transfer_success_metrics(
         Production spectra for leverage computation.
     leverage_threshold : float, default=0.3
         Leverage threshold for outlier flagging.
-        
+
     Returns
     -------
     metrics : dict
@@ -368,37 +365,37 @@ def compute_transfer_success_metrics(
     rmse_source = np.sqrt(mean_squared_error(y_true, y_pred_source))
     rmse_before = np.sqrt(mean_squared_error(y_true, y_pred_target_before))
     rmse_after = np.sqrt(mean_squared_error(y_true, y_pred_target_after))
-    
+
     r2_source = r2_score(y_true, y_pred_source)
     r2_before = r2_score(y_true, y_pred_target_before)
     r2_after = r2_score(y_true, y_pred_target_after)
-    
+
     mae_source = mean_absolute_error(y_true, y_pred_source)
     mae_before = mean_absolute_error(y_true, y_pred_target_before)
     mae_after = mean_absolute_error(y_true, y_pred_target_after)
-    
+
     # Improvement ratios
     rmse_improvement = (rmse_before - rmse_after) / (rmse_before + 1e-12)
     r2_improvement = r2_after - r2_before
-    
+
     # Leverage computation (hat matrix diagonal)
     # Simplified: use Mahalanobis distance proxy
     X_mean = X_target_prod.mean(axis=0)
     X_centered = X_target_prod - X_mean
     cov = np.cov(X_centered, rowvar=False)
     cov_inv = np.linalg.pinv(cov)
-    
+
     leverage = np.array([
         x @ cov_inv @ x for x in X_centered
     ])
     leverage_norm = leverage / leverage.mean()
     high_leverage_count = (leverage_norm > leverage_threshold).sum()
-    
+
     # Residual analysis
     residuals_after = y_true - y_pred_target_after
     residual_mean = residuals_after.mean()
     residual_std = residuals_after.std()
-    
+
     metrics = {
         "source_model": {
             "rmse": float(rmse_source),
@@ -429,7 +426,7 @@ def compute_transfer_success_metrics(
             "std": float(residual_std),
         },
     }
-    
+
     return metrics
 
 
@@ -451,12 +448,12 @@ def calibration_transfer_workflow(
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """
     Complete calibration transfer workflow.
-    
+
     **Assumptions:**
     - Standards are paired and representative
     - Validation set provided if transfer success metrics desired
     - Spectral alignment already performed
-    
+
     Parameters
     ----------
     X_source_std : np.ndarray
@@ -477,7 +474,7 @@ def calibration_transfer_workflow(
         Source predictions on validation set.
     y_pred_target_val : np.ndarray, optional
         Target predictions before transfer.
-        
+
     Returns
     -------
     X_target_corrected : np.ndarray
@@ -495,14 +492,14 @@ def calibration_transfer_workflow(
         )
     else:
         raise ValueError(f"Unknown method '{method}'. Choose 'ds' or 'pds'.")
-    
+
     all_metrics = {"transfer": transfer_metrics}
-    
+
     # Success metrics if validation data provided
     if y_val is not None and y_pred_source_val is not None and y_pred_target_val is not None:
         # Need to re-predict on corrected spectra (placeholder: assume improvement)
         y_pred_target_after_val = y_pred_target_val  # Placeholder; in real use, re-run model
-        
+
         success_metrics = compute_transfer_success_metrics(
             y_val,
             y_pred_source_val,
@@ -511,5 +508,5 @@ def calibration_transfer_workflow(
             X_target_prod,
         )
         all_metrics["success_dashboard"] = success_metrics
-    
+
     return X_target_corrected, all_metrics

@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import Any, Callable, Dict, Optional
 
 import numpy as np
-from sklearn.model_selection import cross_val_score, KFold, StratifiedKFold
 from sklearn.base import clone
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
 
 
 def nested_cross_validate(
@@ -55,7 +55,7 @@ def nested_cross_validate(
 
         # Inner CV
         inner_cv = StratifiedKFold(n_splits=cv_inner, shuffle=True, random_state=outer_idx)
-        inner_scores = cross_val_score(
+        cross_val_score(
             clone(estimator), X_train, y_train, cv=inner_cv, scoring=scoring
         )
 
@@ -168,7 +168,7 @@ def nested_cross_validate_regression(
         y_train, y_test = y[train_idx], y[test_idx]
 
         inner_cv = KFold(n_splits=cv_inner, shuffle=True, random_state=outer_idx)
-        inner_scores = cross_val_score(
+        cross_val_score(
             clone(estimator), X_train, y_train, cv=inner_cv, scoring=scoring
         )
 

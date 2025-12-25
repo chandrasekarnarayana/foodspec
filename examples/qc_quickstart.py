@@ -6,8 +6,8 @@ Run with: python examples/qc_quickstart.py
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.apps.qc import run_qc_workflow
+from foodspec.core.dataset import FoodSpectrumSet
 
 
 def _synthetic_qc():

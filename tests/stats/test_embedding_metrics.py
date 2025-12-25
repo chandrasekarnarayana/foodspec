@@ -1,4 +1,5 @@
 import numpy as np
+
 from foodspec.stats.embedding import evaluate_embedding
 
 

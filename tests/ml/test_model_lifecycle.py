@@ -1,8 +1,8 @@
 import pandas as pd
 
+from foodspec.features.rq import PeakDefinition, RatioDefinition
 from foodspec.model_lifecycle import FrozenModel, TrainablePipeline
 from foodspec.preprocessing_pipeline import PreprocessingConfig
-from foodspec.features.rq import PeakDefinition, RatioDefinition
 
 
 def test_train_and_predict_roundtrip(tmp_path):

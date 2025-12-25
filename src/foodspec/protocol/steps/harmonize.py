@@ -19,7 +19,7 @@ class HarmonizeStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize harmonization step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -29,7 +29,7 @@ class HarmonizeStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Execute harmonization on datasets in context.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]

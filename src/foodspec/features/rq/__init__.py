@@ -29,8 +29,8 @@ Example
 >>> print(results.text_report[:120])
 """
 
-from .types import PeakDefinition, RatioDefinition, RQConfig, RatioQualityResult
 from .engine import RatioQualityEngine
+from .types import PeakDefinition, RatioDefinition, RatioQualityResult, RQConfig
 
 __all__ = [
     "PeakDefinition",

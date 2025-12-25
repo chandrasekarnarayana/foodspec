@@ -8,7 +8,7 @@ using the existing visualization utilities.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Dict, List, Literal, Optional
 
 import numpy as np
 import pandas as pd

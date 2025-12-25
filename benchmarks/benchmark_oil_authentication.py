@@ -15,7 +15,6 @@ from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from scipy.signal import savgol_filter
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
@@ -23,10 +22,6 @@ from sklearn.model_selection import StratifiedKFold, cross_val_predict
 
 from foodspec.apps.oils import run_oil_authentication_workflow
 from foodspec.data.loader import load_example_oils
-from foodspec.preprocess.baseline import ALSBaseline
-from foodspec.preprocess.normalization import VectorNormalizer
-from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-
 
 # %% [markdown]
 # ## Helper: manual preprocessing and features (no foodspec abstractions)

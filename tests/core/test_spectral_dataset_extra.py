@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
-import pytest
 
-from foodspec.core.spectral_dataset import SpectralDataset, HyperspectralDataset, PreprocessingConfig, harmonize_datasets
+from foodspec.core.spectral_dataset import (
+    HyperspectralDataset,
+    PreprocessingConfig,
+    SpectralDataset,
+    harmonize_datasets,
+)
 
 
 def test_spectral_dataset_hdf5_roundtrip(tmp_path):

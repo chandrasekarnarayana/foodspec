@@ -12,8 +12,6 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-from foodspec.stats.distances import cosine, sid, sam
-
 
 @dataclass
 class LibrarySearchWorkflow:

@@ -1,8 +1,8 @@
 """Generate a small confusion matrix example figure without extra deps.
 Saves docs/assets/confusion_matrix_example.png.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 cm = np.array([[18, 2, 0], [1, 14, 3], [0, 2, 20]])
 labels = ["Olive", "Sunflower", "Canola"]

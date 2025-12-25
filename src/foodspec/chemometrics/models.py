@@ -5,17 +5,16 @@ from __future__ import annotations
 from typing import Any, Dict
 
 import numpy as np
-
-from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 from sklearn.cross_decomposition import PLSRegression
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, RandomForestRegressor, IsolationForest
-from sklearn.linear_model import LogisticRegression, Ridge, Lasso, ElasticNet
+from sklearn.decomposition import PCA
+from sklearn.ensemble import GradientBoostingClassifier, IsolationForest, RandomForestClassifier, RandomForestRegressor
+from sklearn.linear_model import ElasticNet, Lasso, LogisticRegression, Ridge
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC, OneClassSVM
-from sklearn.decomposition import PCA
 
 from foodspec.chemometrics.validation import compute_vip_scores
 

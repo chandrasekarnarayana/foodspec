@@ -8,7 +8,6 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 from foodspec.apps.oils import run_oil_authentication_workflow
 from foodspec.chemometrics.pca import run_pca

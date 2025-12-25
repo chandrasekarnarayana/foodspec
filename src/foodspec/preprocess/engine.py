@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 from scipy.ndimage import gaussian_filter1d
 from scipy.signal import savgol_filter
+
 from foodspec.core.dataset import FoodSpectrumSet
 
 # ----------------------------- Utilities -----------------------------
@@ -315,9 +316,11 @@ class ResampleStep(Step):
         target = np.asarray(self.grid, dtype=float)
         if self.config.get("method", "linear") == "cubic":
             # Fallback to linear for simplicity if scipy CubicSpline unavailable
-            interp_fn = lambda row: np.interp(target, source_grid, row)
+            def interp_fn(row):
+                return np.interp(target, source_grid, row)
         else:
-            interp_fn = lambda row: np.interp(target, source_grid, row)
+            def interp_fn(row):
+                return np.interp(target, source_grid, row)
         Xr = np.vstack([interp_fn(row) for row in X])
         return _clone_ds(ds, Xr, wavenumbers=target)
 
@@ -395,7 +398,6 @@ class PreprocessPipeline:
     def transform(self, ds: FoodSpectrumSet) -> Tuple[FoodSpectrumSet, Dict[str, Dict[str, float]]]:
         metrics: Dict[str, Dict[str, float]] = {}
         current = ds
-        raw_before = ds.x
         for step in self.steps:
             before = current.x
             current = step.transform(current)

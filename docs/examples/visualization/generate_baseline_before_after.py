@@ -1,8 +1,8 @@
 """Generate a baseline before/after illustration.
 Saves docs/assets/baseline_before_after.png.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 rng = np.random.default_rng(2)
 wavenumbers = np.linspace(600, 1800, 400)

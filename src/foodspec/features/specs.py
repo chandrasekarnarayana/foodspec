@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 import numpy as np
 import pandas as pd
 
-from foodspec.features.bands import compute_band_features, integrate_bands
+from foodspec.features.bands import compute_band_features
 from foodspec.features.interpretation import explain_feature_spec
 from foodspec.features.peaks import PeakFeatureExtractor
 

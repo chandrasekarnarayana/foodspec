@@ -3,13 +3,10 @@
 from datetime import datetime, timedelta
 
 import numpy as np
-import pytest
 
 from foodspec.ml.lifecycle import (
-    ModelAgingScore,
     ModelLifecycleTracker,
     ModelState,
-    PerformanceSnapshot,
     SunsetRule,
 )
 

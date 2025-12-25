@@ -14,12 +14,12 @@ class Step:
 
     def run(self, ctx: Dict[str, Any]):
         """Execute the step with given context.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]
             Execution context containing data, logs, metadata, etc.
-            
+
         Raises
         ------
         NotImplementedError

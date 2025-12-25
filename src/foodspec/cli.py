@@ -12,4 +12,4 @@ warnings.warn(
     stacklevel=2,
 )
 
-from foodspec.cli.main import *  # noqa: F401, F403
+from foodspec.cli.main import *  # noqa: F401,F403,E402

@@ -8,7 +8,7 @@ Dataclass definitions for the Ratio-Quality (RQ) engine.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -56,7 +56,7 @@ class RQConfig:
 @dataclass
 class RatioQualityResult:
     """Result container for RQ analysis."""
-    
+
     ratio_table: pd.DataFrame
     stability_summary: pd.DataFrame
     discriminative_summary: pd.DataFrame

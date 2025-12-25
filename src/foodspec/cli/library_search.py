@@ -17,7 +17,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-from foodspec.library_search import search_library, overlay_plot
+from foodspec.library_search import overlay_plot, search_library
 
 
 def _extract_wavenumber_columns(df: pd.DataFrame) -> List[str]:

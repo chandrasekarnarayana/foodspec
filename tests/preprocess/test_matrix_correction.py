@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+
 from foodspec import FoodSpec
+
 
 def make_synthetic_matrix_dataset(n_per_matrix=10, n_wn=200):
     wn = np.linspace(400, 3000, n_wn)

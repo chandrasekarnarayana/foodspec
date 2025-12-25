@@ -15,12 +15,12 @@ from .steps import STEP_REGISTRY
 
 def list_available_protocols(proto_dir: Union[str, Path] = "examples/protocols") -> List[Path]:
     """List all available protocol files in a directory.
-    
+
     Parameters
     ----------
     proto_dir : Union[str, Path], optional
         Directory to search for protocol files, by default "examples/protocols"
-        
+
     Returns
     -------
     List[Path]
@@ -34,19 +34,19 @@ def list_available_protocols(proto_dir: Union[str, Path] = "examples/protocols")
 
 def load_protocol(name: str, proto_dir: Union[str, Path] = "examples/protocols") -> ProtocolConfig:
     """Load a protocol by name from a directory.
-    
+
     Parameters
     ----------
     name : str
         Protocol filename (with or without extension).
     proto_dir : Union[str, Path], optional
         Directory containing protocol files, by default "examples/protocols"
-        
+
     Returns
     -------
     ProtocolConfig
         Loaded protocol configuration.
-        
+
     Raises
     ------
     FileNotFoundError
@@ -67,14 +67,14 @@ def load_protocol(name: str, proto_dir: Union[str, Path] = "examples/protocols")
 
 def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[str]]:
     """Validate protocol configuration against a dataset.
-    
+
     Parameters
     ----------
     cfg : ProtocolConfig
         Protocol configuration to validate.
     df : pd.DataFrame
         Dataset to validate against.
-        
+
     Returns
     -------
     Dict[str, List[str]]

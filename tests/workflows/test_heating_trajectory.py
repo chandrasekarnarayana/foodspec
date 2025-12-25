@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+
 from foodspec import FoodSpec
+
 
 def make_synthetic_time_series(n_samples=30, n_wn=150):
     wn = np.linspace(400, 3000, n_wn)

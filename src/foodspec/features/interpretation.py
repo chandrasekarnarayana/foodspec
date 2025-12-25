@@ -8,9 +8,7 @@ helpers that generate short textual explanations for FeatureSpec objects
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, Sequence
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from foodspec.features.specs import FeatureSpec

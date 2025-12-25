@@ -29,19 +29,17 @@ This module provides tools for analyzing spectral changes over time:
 
 from __future__ import annotations
 
-from typing import Dict, List, Literal, Optional, Tuple, Any
 import warnings
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
 from scipy.stats import t as t_dist
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score
 
 from foodspec.core.dataset import FoodSpectrumSet
-
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Index Extraction
@@ -55,19 +53,19 @@ def extract_oxidation_indices(
 ) -> pd.DataFrame:
     """
     Extract common oxidation/degradation indices from spectra.
-    
+
     **Assumptions:**
     - Wavenumbers are in cm⁻¹ (Raman shift)
     - Spectra are baseline-corrected and normalized
     - Peak regions are consistent with typical food matrices
-    
+
     **Available Indices:**
     - 'pi': Peroxide Index (band ratio ~840 / ~1080 cm⁻¹)
     - 'tfc': Total Fatty Chain (intensity ~1440 cm⁻¹)
     - 'oit_proxy': Oxidative Induction Time proxy (ratio ~1660 / ~1440 cm⁻¹)
     - 'cc_stretch': C=C stretch intensity (~1660 cm⁻¹)
     - 'ch2_bend': CH₂ bending (~1440 cm⁻¹)
-    
+
     Parameters
     ----------
     spectra : np.ndarray, shape (n_samples, n_wavenumbers)
@@ -76,7 +74,7 @@ def extract_oxidation_indices(
         Wavenumber axis in cm⁻¹.
     indices : list of str, default=['pi', 'tfc', 'oit_proxy']
         Indices to compute.
-        
+
     Returns
     -------
     index_df : pd.DataFrame, shape (n_samples, len(indices))
@@ -84,7 +82,7 @@ def extract_oxidation_indices(
     """
     n_samples = spectra.shape[0]
     index_values = {}
-    
+
     def _intensity_at(wn_target: float, tol: float = 10.0) -> np.ndarray:
         """Extract intensity at target wavenumber ± tolerance."""
         idx = np.where((wavenumbers >= wn_target - tol) & (wavenumbers <= wn_target + tol))[0]
@@ -92,35 +90,35 @@ def extract_oxidation_indices(
             warnings.warn(f"No wavenumbers found near {wn_target} cm⁻¹; returning zeros.")
             return np.zeros(n_samples)
         return spectra[:, idx].mean(axis=1)
-    
+
     for index_name in indices:
         if index_name == "pi":
             # Peroxide Index: ratio of ~840 / ~1080
             i_840 = _intensity_at(840)
             i_1080 = _intensity_at(1080)
             index_values["pi"] = i_840 / (i_1080 + 1e-12)
-        
+
         elif index_name == "tfc":
             # Total Fatty Chain: intensity at ~1440 (CH₂ bending)
             index_values["tfc"] = _intensity_at(1440)
-        
+
         elif index_name == "oit_proxy":
             # OIT proxy: ratio ~1660 / ~1440
             i_1660 = _intensity_at(1660)
             i_1440 = _intensity_at(1440)
             index_values["oit_proxy"] = i_1660 / (i_1440 + 1e-12)
-        
+
         elif index_name == "cc_stretch":
             # C=C stretch at ~1660
             index_values["cc_stretch"] = _intensity_at(1660)
-        
+
         elif index_name == "ch2_bend":
             # CH₂ bending at ~1440
             index_values["ch2_bend"] = _intensity_at(1440)
-        
+
         else:
             warnings.warn(f"Unknown index '{index_name}'; skipping.")
-    
+
     index_df = pd.DataFrame(index_values)
     return index_df
 
@@ -137,12 +135,12 @@ def fit_trajectory_model(
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """
     Fit a parametric model to index trajectory over time.
-    
+
     **Assumptions:**
     - Time is sorted or will be sorted internally
     - No missing values in time or index_values
     - Sufficient data points (≥5) for reliable fitting
-    
+
     Parameters
     ----------
     time : np.ndarray, shape (n_timepoints,)
@@ -153,7 +151,7 @@ def fit_trajectory_model(
         - 'linear': y = a + b*t
         - 'exponential': y = a * exp(b*t)
         - 'sigmoidal': y = L / (1 + exp(-k*(t - t0)))
-        
+
     Returns
     -------
     fitted_values : np.ndarray, shape (n_timepoints,)
@@ -168,14 +166,14 @@ def fit_trajectory_model(
     sort_idx = np.argsort(time)
     time_sorted = time[sort_idx]
     index_sorted = index_values[sort_idx]
-    
+
     if model == "linear":
         # Linear fit: y = a + b*t
         params = np.polyfit(time_sorted, index_sorted, deg=1)
         fitted = np.polyval(params, time_sorted)
         fit_params = {"intercept": float(params[1]), "slope": float(params[0])}
         trend = "increasing" if params[0] > 0 else "decreasing"
-    
+
     elif model == "exponential":
         # Exponential fit: y = a * exp(b*t)
         # Use log-linear regression for stability
@@ -186,17 +184,17 @@ def fit_trajectory_model(
         fitted = a * np.exp(b * time_sorted)
         fit_params = {"a": float(a), "b": float(b)}
         trend = "increasing" if b > 0 else "decreasing"
-    
+
     elif model == "sigmoidal":
         # Sigmoidal fit: y = L / (1 + exp(-k*(t - t0)))
         def sigmoid(t, L, k, t0):
             return L / (1 + np.exp(-k * (t - t0)))
-        
+
         # Initial guess
         L_init = index_sorted.max()
         t0_init = time_sorted.mean()
         k_init = 0.1
-        
+
         try:
             popt, _ = curve_fit(
                 sigmoid,
@@ -214,24 +212,24 @@ def fit_trajectory_model(
             fitted = np.polyval(params, time_sorted)
             fit_params = {"intercept": float(params[1]), "slope": float(params[0])}
             trend = "increasing" if params[0] > 0 else "decreasing"
-    
+
     # Compute fit metrics
     ss_res = ((index_sorted - fitted) ** 2).sum()
     ss_tot = ((index_sorted - index_sorted.mean()) ** 2).sum()
     r_squared = 1 - ss_res / (ss_tot + 1e-12)
     rmse = np.sqrt(ss_res / len(index_sorted))
-    
+
     # Restore original order
     fitted_full = np.empty_like(index_values)
     fitted_full[sort_idx] = fitted
-    
+
     fit_metrics = {
         "r_squared": float(r_squared),
         "rmse": float(rmse),
         "params": fit_params,
         "trend_direction": trend,
     }
-    
+
     return fitted_full, fit_metrics
 
 
@@ -247,12 +245,12 @@ def classify_degradation_stage(
 ) -> Tuple[np.ndarray, np.ndarray, Dict[str, Any]]:
     """
     Train a degradation stage classifier from index features.
-    
+
     **Assumptions:**
     - stage_labels are discrete categories (e.g., "fresh", "early", "advanced", "spoiled")
     - Sufficient samples per stage (≥10 recommended)
     - Indices are informative of degradation state
-    
+
     Parameters
     ----------
     index_df : pd.DataFrame, shape (n_samples, n_indices)
@@ -261,7 +259,7 @@ def classify_degradation_stage(
         Ground-truth degradation stage labels.
     n_estimators : int, default=100
         Number of trees in RandomForest.
-        
+
     Returns
     -------
     predictions : np.ndarray, shape (n_samples,)
@@ -275,17 +273,17 @@ def classify_degradation_stage(
     """
     X = index_df.values
     y = stage_labels
-    
+
     # Check class balance
     unique_stages, counts = np.unique(y, return_counts=True)
     n_stages = len(unique_stages)
-    
+
     if n_stages < 2:
         raise ValueError("At least 2 degradation stages required for classification.")
-    
+
     if counts.min() < 5:
-        warnings.warn(f"Some stages have <5 samples; classification may be unreliable.")
-    
+        warnings.warn("Some stages have <5 samples; classification may be unreliable.")
+
     # Train classifier
     clf = RandomForestClassifier(
         n_estimators=n_estimators,
@@ -294,24 +292,24 @@ def classify_degradation_stage(
         random_state=42,
     )
     clf.fit(X, y)
-    
+
     predictions = clf.predict(X)
     probabilities = clf.predict_proba(X)
-    
+
     # Cross-validation accuracy
     cv_scores = cross_val_score(clf, X, y, cv=min(5, counts.min()), scoring="accuracy")
     cv_accuracy = cv_scores.mean()
-    
+
     # Feature importance
     feature_importance = dict(zip(index_df.columns, clf.feature_importances_))
-    
+
     metrics = {
         "cv_accuracy": float(cv_accuracy),
         "feature_importance": {k: float(v) for k, v in feature_importance.items()},
         "n_stages": int(n_stages),
         "stage_distribution": {str(stage): int(count) for stage, count in zip(unique_stages, counts)},
     }
-    
+
     return predictions, probabilities, metrics
 
 
@@ -329,13 +327,13 @@ def _estimate_shelf_life(
 ) -> Dict[str, Any]:
     """
     Estimate shelf life: time when index crosses threshold.
-    
+
     **Assumptions:**
     - Index changes monotonically with time
     - Threshold represents spoilage/failure criterion
     - Extrapolation is valid within reasonable time range (warn if far)
     - Linear or exponential model captures trend adequately
-    
+
     Parameters
     ----------
     time : np.ndarray, shape (n_timepoints,)
@@ -348,7 +346,7 @@ def _estimate_shelf_life(
         Trajectory model.
     confidence_level : float, default=0.95
         Confidence level for interval estimation.
-        
+
     Returns
     -------
     shelf_life_metrics : dict
@@ -361,7 +359,7 @@ def _estimate_shelf_life(
     fitted, fit_metrics = fit_trajectory_model(time, index_values, model=model)
     r_squared = fit_metrics["r_squared"]
     params = fit_metrics["params"]
-    
+
     # Solve for time when index = threshold
     if model == "linear":
         # y = a + b*t → t = (threshold - a) / b
@@ -372,7 +370,7 @@ def _estimate_shelf_life(
             t_shelf = np.inf
         else:
             t_shelf = (threshold - a) / b
-    
+
     elif model == "exponential":
         # y = a * exp(b*t) → t = ln(threshold / a) / b
         a = params["a"]
@@ -382,18 +380,18 @@ def _estimate_shelf_life(
             t_shelf = np.inf
         else:
             t_shelf = np.log(threshold / a) / b
-    
+
     # Check extrapolation
     t_min, t_max = time.min(), time.max()
     extrapolation_warning = not (t_min <= t_shelf <= t_max)
-    
+
     # Confidence interval (bootstrap or parametric approximation)
     # Simplified: use residual standard error and t-distribution
     residuals = index_values - fitted
     residual_se = np.sqrt((residuals ** 2).sum() / (len(residuals) - 2))
     n = len(time)
     t_crit = t_dist.ppf((1 + confidence_level) / 2, df=n - 2)
-    
+
     # Approximate CI for shelf life (assumes linear model)
     if model == "linear":
         # SE of predicted t: se_t ≈ residual_se / |b|
@@ -405,7 +403,7 @@ def _estimate_shelf_life(
         se_t = residual_se / (abs(params["b"]) + 1e-12)
         ci_lower = t_shelf - t_crit * se_t
         ci_upper = t_shelf + t_crit * se_t
-    
+
     shelf_life_metrics = {
         "shelf_life_estimate": float(t_shelf) if not np.isinf(t_shelf) else None,
         "confidence_interval": (float(ci_lower), float(ci_upper)),
@@ -414,7 +412,7 @@ def _estimate_shelf_life(
         "model": model,
         "threshold": float(threshold),
     }
-    
+
     return shelf_life_metrics
 
 
@@ -435,19 +433,19 @@ def analyze_heating_trajectory(
 ) -> Dict[str, Any]:
     """
     Analyze heating/oxidation trajectory from time-series spectra.
-    
+
     **Workflow:**
     1. Extract oxidation indices
     2. Fit trajectory models per index
     3. (Optional) Classify degradation stages
     4. (Optional) Estimate shelf life
-    
+
     **Assumptions:**
     - time_column exists in metadata and is numeric
     - For stage classification: stage_column must be provided
     - For shelf-life estimation: shelf_life_threshold must be provided
     - Sufficient time points (≥5) for trajectory fitting
-    
+
     Parameters
     ----------
     dataset : FoodSpectrumSet
@@ -466,7 +464,7 @@ def analyze_heating_trajectory(
         Threshold for shelf-life criterion (required if estimate_shelf_life=True).
     shelf_life_index : str, default='pi'
         Index to use for shelf-life estimation.
-        
+
     Returns
     -------
     results : dict
@@ -478,32 +476,32 @@ def analyze_heating_trajectory(
     # Validate inputs
     if time_column not in dataset.metadata.columns:
         raise ValueError(f"time_column '{time_column}' not found in metadata.")
-    
+
     time = dataset.metadata[time_column].values
     if not np.issubdtype(time.dtype, np.number):
         raise ValueError(f"time_column '{time_column}' must be numeric.")
-    
+
     if classify_stages and stage_column is None:
         raise ValueError("classify_stages=True requires stage_column to be specified.")
-    
+
     if estimate_shelf_life and shelf_life_threshold is None:
         raise ValueError("estimate_shelf_life=True requires shelf_life_threshold to be specified.")
-    
+
     results = {}
-    
+
     # Step 1: Extract indices
     index_df = extract_oxidation_indices(dataset.x, dataset.wavenumbers, indices=indices)
     results["indices"] = index_df
-    
+
     # Step 2: Fit trajectory models
     trajectory_models = {}
     for index_name in index_df.columns:
         index_vals = index_df[index_name].values
         fitted, fit_metrics = fit_trajectory_model(time, index_vals, model="linear")
         trajectory_models[index_name] = fit_metrics
-    
+
     results["trajectory_models"] = trajectory_models
-    
+
     # Step 3: Degradation stage classification
     if classify_stages:
         stage_labels = dataset.metadata[stage_column].values
@@ -513,12 +511,12 @@ def analyze_heating_trajectory(
             "probabilities": probabilities.tolist(),
             "metrics": class_metrics,
         }
-    
+
     # Step 4: Shelf-life estimation
     if estimate_shelf_life:
         if shelf_life_index not in index_df.columns:
             raise ValueError(f"shelf_life_index '{shelf_life_index}' not found in extracted indices.")
-        
+
         index_vals = index_df[shelf_life_index].values
         shelf_life_metrics = _estimate_shelf_life(
             time,
@@ -527,5 +525,5 @@ def analyze_heating_trajectory(
             model="linear",
         )
         results["shelf_life"] = shelf_life_metrics
-    
+
     return results

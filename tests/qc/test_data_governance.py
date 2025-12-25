@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+
 from foodspec import FoodSpec
+
 
 def make_governance_dataset(n=60, n_wn=100):
     wn = np.linspace(400, 3000, n_wn)

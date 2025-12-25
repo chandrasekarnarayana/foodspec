@@ -1,12 +1,11 @@
 import numpy as np
-from numpy.testing import assert_allclose
 
 from foodspec.preprocess.calibration_transfer import (
-    direct_standardization,
-    piecewise_direct_standardization,
-    detect_drift,
     adapt_calibration_incremental,
     calibration_transfer_workflow,
+    detect_drift,
+    direct_standardization,
+    piecewise_direct_standardization,
 )
 
 
@@ -86,9 +85,7 @@ def test_calibration_transfer_workflow_ds_metrics_present():
     assert corrected.shape == X_target_prod.shape
     assert "transfer" in all_metrics
     assert "reconstruction_rmse" in all_metrics["transfer"]
-import numpy as np
-import pandas as pd
-from foodspec import FoodSpec
+
 
 def test_apply_calibration_transfer_basic():
     n_std, n_wn = 20, 120

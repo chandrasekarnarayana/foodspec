@@ -17,7 +17,7 @@ class QCStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize QC step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -27,12 +27,12 @@ class QCStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Execute QC validation checks.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]
             Execution context with 'data' DataFrame.
-            
+
         Raises
         ------
         ValueError

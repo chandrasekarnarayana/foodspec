@@ -19,14 +19,14 @@ import pandas as pd
 @dataclass
 class RunRecord:
     """Immutable record of a workflow execution with full provenance.
-    
+
     Tracks:
     - Configuration parameters and their hash
     - Input dataset hash
     - Step-wise transformations (hash each step)
     - Environment (Python, package versions)
     - Timing and user info
-    
+
     Parameters
     ----------
     workflow_name : str
@@ -43,7 +43,7 @@ class RunRecord:
         User who ran the workflow.
     notes : str, optional
         Freeform notes.
-    
+
     Attributes
     ----------
     workflow_name : str
@@ -60,7 +60,7 @@ class RunRecord:
     run_id : str
         Unique run identifier (8-char hash).
     """
-    
+
     workflow_name: str
     config: Dict[str, Any]
     dataset_hash: str
@@ -71,7 +71,7 @@ class RunRecord:
     user: Optional[str] = None
     notes: Optional[str] = None
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    
+
     def __post_init__(self):
         """Finalize and validate run record."""
         if not self.environment:
@@ -80,25 +80,25 @@ class RunRecord:
             self.random_seeds = _capture_seeds()
         if not self.user:
             self.user = os.getenv("USER", "unknown")
-    
+
     @property
     def config_hash(self) -> str:
         """Hash of configuration."""
         config_str = json.dumps(self.config, sort_keys=True, default=str)
         return hashlib.sha256(config_str.encode()).hexdigest()[:8]
-    
+
     @property
     def run_id(self) -> str:
         """Unique run identifier combining workflow name and timestamp."""
         ts = self.timestamp.replace(":", "").replace("-", "").replace(".", "")[:12]
         return f"{self.workflow_name}_{ts}"
-    
+
     @property
     def combined_hash(self) -> str:
         """Combined hash of config + dataset + all steps."""
         combined_str = f"{self.config_hash}_{self.dataset_hash}_{'_'.join(s['hash'] for s in self.step_records)}"
         return hashlib.sha256(combined_str.encode()).hexdigest()[:8]
-    
+
     def add_step(
         self,
         name: str,
@@ -107,7 +107,7 @@ class RunRecord:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Record a workflow step.
-        
+
         Parameters
         ----------
         name : str
@@ -127,7 +127,7 @@ class RunRecord:
             "metadata": metadata or {},
         }
         self.step_records.append(record)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Serialize to dictionary."""
         return {
@@ -145,15 +145,15 @@ class RunRecord:
             "timestamp": self.timestamp,
             "combined_hash": self.combined_hash,
         }
-    
+
     def to_json(self, path: Path | str) -> Path:
         """Write to JSON file.
-        
+
         Parameters
         ----------
         path : Path or str
             Output file path.
-            
+
         Returns
         -------
         Path
@@ -163,16 +163,16 @@ class RunRecord:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2), encoding="utf-8")
         return path
-    
+
     @classmethod
     def from_json(cls, path: Path | str) -> RunRecord:
         """Load from JSON file.
-        
+
         Parameters
         ----------
         path : Path or str
             Input file path.
-            
+
         Returns
         -------
         RunRecord
@@ -196,7 +196,7 @@ class RunRecord:
         """Record an output path for the run (e.g., exported bundle location)."""
 
         self.output_paths.append(str(Path(path)))
-    
+
     def __repr__(self) -> str:
         """String representation."""
         return (
@@ -207,34 +207,34 @@ class RunRecord:
 
 def _capture_environment() -> Dict[str, Any]:
     """Capture environment info: Python version, installed packages, etc.
-    
+
     Returns
     -------
     dict
         Environment information.
     """
     import sys
-    
+
     env = {
         "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
         "platform": platform.platform(),
         "hostname": os.getenv("HOSTNAME", "unknown"),
     }
-    
+
     # Capture key package versions
     try:
         import foodspec
         env["foodspec_version"] = getattr(foodspec, "__version__", "unknown")
     except ImportError:
         pass
-    
+
     for pkg in ["numpy", "pandas", "sklearn", "scipy", "statsmodels"]:
         try:
             mod = __import__(pkg)
             env[f"{pkg}_version"] = getattr(mod, "__version__", "unknown")
         except ImportError:
             pass
-    
+
     return env
 
 
@@ -300,12 +300,12 @@ def _hash_file(path: Path | str) -> str:
 
 def _hash_data(data: np.ndarray | pd.DataFrame) -> str:
     """Compute hash of data array or DataFrame.
-    
+
     Parameters
     ----------
     data : np.ndarray or pd.DataFrame
         Input data to hash.
-        
+
     Returns
     -------
     str
@@ -316,5 +316,5 @@ def _hash_data(data: np.ndarray | pd.DataFrame) -> str:
     else:
         data = np.asarray(data)
         data_bytes = data.tobytes()
-    
+
     return hashlib.sha256(data_bytes).hexdigest()[:8]

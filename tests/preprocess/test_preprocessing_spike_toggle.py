@@ -1,7 +1,7 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from foodspec.preprocessing_pipeline import run_full_preprocessing, PreprocessingConfig
+from foodspec.preprocessing_pipeline import PreprocessingConfig, run_full_preprocessing
 
 
 def test_spike_removal_toggle_affects_output_and_counts():

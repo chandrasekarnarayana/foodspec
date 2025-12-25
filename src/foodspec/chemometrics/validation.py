@@ -7,18 +7,18 @@ from typing import Any, Optional, Tuple
 import numpy as np
 import pandas as pd
 from sklearn import metrics
-from sklearn.model_selection import cross_validate, permutation_test_score
+from sklearn.base import clone
+from sklearn.calibration import calibration_curve
 from sklearn.decomposition import PCA
+from sklearn.inspection import permutation_importance
 from sklearn.metrics import (
     balanced_accuracy_score,
+    brier_score_loss,
     confusion_matrix,
     precision_recall_fscore_support,
-    brier_score_loss,
     roc_auc_score,
 )
-from sklearn.calibration import calibration_curve
-from sklearn.inspection import permutation_importance
-from sklearn.base import clone
+from sklearn.model_selection import cross_validate, permutation_test_score
 
 from foodspec.features.interpretation import find_chemical_meanings
 
@@ -83,7 +83,7 @@ def classification_report_full(
 
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
-    labels = np.unique(np.concatenate([y_true, y_pred]))
+    np.unique(np.concatenate([y_true, y_pred]))
     avg = average
     prec, rec, f1, _ = precision_recall_fscore_support(y_true, y_pred, average=avg, zero_division=0)
     bal_acc = balanced_accuracy_score(y_true, y_pred)

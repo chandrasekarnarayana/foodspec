@@ -2,8 +2,8 @@ import pytest
 
 from foodspec.chemometrics.models import (
     make_classifier,
-    make_regressor,
     make_one_class_scanner,
+    make_regressor,
 )
 
 

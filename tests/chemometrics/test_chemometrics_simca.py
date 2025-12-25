@@ -1,7 +1,7 @@
 import numpy as np
 
-from foodspec.chemometrics.models import make_simca
 from foodspec.chemometrics.mixture import mcr_als
+from foodspec.chemometrics.models import make_simca
 
 
 def test_simca_separates_simple_clusters():

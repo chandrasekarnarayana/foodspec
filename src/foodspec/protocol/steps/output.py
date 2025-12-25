@@ -31,7 +31,7 @@ class OutputStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize output step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -41,7 +41,7 @@ class OutputStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Save all outputs to run folder.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, Optional
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -58,7 +58,7 @@ def modality_consistency_rate(
     if len(predictions) < 2:
         raise ValueError("Need at least two modalities for consistency.")
     pred_arrays = list(predictions.values())
-    n_samples = pred_arrays[0].shape[0]
+    pred_arrays[0].shape[0]
     stacked = np.vstack(pred_arrays).T  # (n_samples, n_modalities)
     unanimous = np.all(stacked == stacked[:, [0]], axis=1)
     return float(unanimous.mean())

@@ -7,7 +7,7 @@ to handle large cubes without loading entirely into memory.
 
 from __future__ import annotations
 
-from typing import Iterator, Optional, Tuple
+from typing import Iterator, Tuple
 
 import numpy as np
 

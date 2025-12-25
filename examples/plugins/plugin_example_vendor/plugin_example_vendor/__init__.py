@@ -2,8 +2,8 @@
 Example vendor loader plugin.
 Adds a dummy loader for *.toy files (CSV with columns: meta, int1, int2, ...).
 """
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from foodspec.core.spectral_dataset import SpectralDataset
 

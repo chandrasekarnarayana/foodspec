@@ -4,10 +4,9 @@ Embedding metrics and representation evaluation.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict
 
 import numpy as np
-from sklearn.metrics import silhouette_score, davies_bouldin_score
+from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 
 @dataclass

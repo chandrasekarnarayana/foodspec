@@ -22,7 +22,7 @@ class HSIRoiStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize HSI ROI extraction step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -32,7 +32,7 @@ class HSIRoiStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Execute ROI extraction and optional RQ analysis.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]

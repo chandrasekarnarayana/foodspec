@@ -3,12 +3,12 @@ Quickstart script for heating/quality monitoring using foodspec.
 Run with: python examples/heating_quality_quickstart.py
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
-from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.apps.heating import run_heating_quality_workflow
+from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.viz.heating import plot_ratio_vs_time
 
 

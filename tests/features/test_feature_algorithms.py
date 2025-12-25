@@ -3,8 +3,8 @@ import pandas as pd
 
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.features.bands import compute_band_features
+from foodspec.features.metrics import discriminative_power, feature_cv, robustness_vs_variations
 from foodspec.features.peaks import PeakFeatureExtractor
-from foodspec.features.metrics import feature_cv, discriminative_power, robustness_vs_variations
 
 
 def _ds():

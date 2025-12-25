@@ -10,13 +10,13 @@ import warnings
 
 from foodspec.core.spectral_dataset import *  # noqa: F401,F403
 
-warnings.warn(
+warnings.warn(  # noqa: E402
     "foodspec.spectral_dataset is deprecated; use foodspec.core.spectral_dataset instead.",
     DeprecationWarning,
     stacklevel=2,
 )
 
-__all__ = [
+__all__ = [  # noqa: F405,F401
     "PreprocessingConfig",
     "PreprocessOptions",
     "SpectralDataset",

@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from foodspec.stats.hypothesis_tests import run_shapiro, benjamini_hochberg
 from foodspec.stats.effects import compute_cohens_d
+from foodspec.stats.hypothesis_tests import benjamini_hochberg, run_shapiro
 from foodspec.stats.reporting import stats_report_for_feature, stats_report_for_features_table
 
 

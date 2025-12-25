@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from foodspec.harmonization import CalibrationCurve, harmonize_datasets_advanced
 from foodspec.core.spectral_dataset import SpectralDataset
+from foodspec.harmonization import CalibrationCurve, harmonize_datasets_advanced
 
 
 def test_cross_instrument_harmonization_reduces_rmse(tmp_path):

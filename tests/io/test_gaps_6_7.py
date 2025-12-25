@@ -2,35 +2,34 @@
 Tests for gap 6 (OPUS/SPC vendor format support) and gap 7 (HDF5 schema versioning).
 """
 
-import pytest
-import numpy as np
 import tempfile
-import h5py
 
+import h5py
+import numpy as np
+import pytest
+
+from foodspec.io.hdf5_schema_versioning import (
+    CURRENT_SCHEMA_VERSION,
+    CompatibilityLevel,
+    SchemaVersion,
+    check_schema_compatibility,
+    get_compatibility_level,
+    migrate_schema,
+    migrate_schema_v1_0_to_v1_1,
+    migrate_schema_v1_1_to_v1_2,
+    migrate_schema_v1_2_to_v2_0,
+)
 from foodspec.io.vendor_format_support import (
     OPUS_BLOCK_TYPES_SUPPORTED,
     SPC_BLOCK_TYPES_SUPPORTED,
     BlockTypeSupportEntry,
     get_opus_support_summary,
     get_spc_support_summary,
-    validate_opus_blocks,
-    validate_spc_blocks,
     get_untested_blocks_opus,
     get_untested_blocks_spc,
+    validate_opus_blocks,
+    validate_spc_blocks,
 )
-
-from foodspec.io.hdf5_schema_versioning import (
-    SchemaVersion,
-    CompatibilityLevel,
-    CURRENT_SCHEMA_VERSION,
-    get_compatibility_level,
-    check_schema_compatibility,
-    migrate_schema,
-    migrate_schema_v1_0_to_v1_1,
-    migrate_schema_v1_1_to_v1_2,
-    migrate_schema_v1_2_to_v2_0,
-)
-
 
 # ============================================================================
 # GAP 6: OPUS/SPC Vendor Format Support Tests

@@ -27,8 +27,8 @@ overly optimistic performance estimates. Common sources:
 
 from __future__ import annotations
 
-from typing import Dict, Optional, Any
 import warnings
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -45,12 +45,12 @@ def detect_batch_label_correlation(
 ) -> Dict[str, Any]:
     """
     Detect correlation between batch and class labels (confounding).
-    
+
     **Assumptions:**
     - batch_column and label_column are categorical
     - Chi-squared test assumptions apply (expected counts ≥5)
     - Cramér's V ∈ [0, 1]: 0=no association, 1=perfect association
-    
+
     Parameters
     ----------
     metadata : pd.DataFrame
@@ -61,7 +61,7 @@ def detect_batch_label_correlation(
         Column defining batches.
     severe_threshold : float, default=0.5
         Cramér's V above which to flag as severe confounding.
-        
+
     Returns
     -------
     metrics : dict
@@ -75,20 +75,20 @@ def detect_batch_label_correlation(
         raise ValueError(f"label_column '{label_column}' not found.")
     if batch_column not in metadata.columns:
         raise ValueError(f"batch_column '{batch_column}' not found.")
-    
+
     # Contingency table
     contingency = pd.crosstab(metadata[batch_column], metadata[label_column])
-    
+
     # Chi-squared test
     chi2, pvalue, dof, expected = chi2_contingency(contingency)
-    
+
     # Cramér's V: sqrt(chi2 / (n * min(r-1, c-1)))
     n = contingency.sum().sum()
     r, c = contingency.shape
     cramers_v = np.sqrt(chi2 / (n * min(r - 1, c - 1)))
-    
+
     severe = cramers_v > severe_threshold
-    
+
     # Interpretation
     if severe:
         interpretation = (
@@ -108,7 +108,7 @@ def detect_batch_label_correlation(
             f"Minimal batch–label correlation (Cramér's V = {cramers_v:.3f}). "
             "Batches are approximately balanced across classes."
         )
-    
+
     metrics = {
         "cramers_v": float(cramers_v),
         "chi2_pvalue": float(pvalue),
@@ -116,7 +116,7 @@ def detect_batch_label_correlation(
         "contingency_table": contingency.to_dict(),
         "interpretation": interpretation,
     }
-    
+
     return metrics
 
 
@@ -128,12 +128,12 @@ def detect_replicate_leakage(
 ) -> Dict[str, Any]:
     """
     Detect replicate leakage in train/test splits.
-    
+
     **Assumptions:**
     - replicate_column defines groups that should NOT be split
     - train_indices and test_indices (if provided) are row indices into metadata
     - If indices not provided: check potential for leakage (replicate group sizes)
-    
+
     Parameters
     ----------
     metadata : pd.DataFrame
@@ -144,7 +144,7 @@ def detect_replicate_leakage(
         Row indices for training set.
     test_indices : np.ndarray, optional
         Row indices for test set.
-        
+
     Returns
     -------
     metrics : dict
@@ -157,34 +157,34 @@ def detect_replicate_leakage(
     """
     if replicate_column not in metadata.columns:
         raise ValueError(f"replicate_column '{replicate_column}' not found.")
-    
+
     replicate_ids = metadata[replicate_column]
     unique_replicates = replicate_ids.unique()
     replicate_sizes = replicate_ids.value_counts().to_dict()
-    
+
     mean_group_size = np.mean(list(replicate_sizes.values()))
-    
+
     # High risk: any replicate group > 1 (potential for splitting)
     multi_sample_groups = [rep for rep, size in replicate_sizes.items() if size > 1]
     leakage_risk = "high" if multi_sample_groups else "low"
-    
+
     metrics = {
         "replicate_groups": len(unique_replicates),
         "mean_group_size": float(mean_group_size),
         "leakage_risk": leakage_risk,
     }
-    
+
     # If train/test indices provided: check actual leakage
     if train_indices is not None and test_indices is not None:
         train_reps = set(replicate_ids.iloc[train_indices])
         test_reps = set(replicate_ids.iloc[test_indices])
-        
+
         leaked_groups = train_reps.intersection(test_reps)
         n_leaked = len(leaked_groups)
-        
+
         metrics["leaked_groups"] = list(leaked_groups)
         metrics["n_leaked_groups"] = n_leaked
-        
+
         if n_leaked > 0:
             recommendation = (
                 f"⚠️ {n_leaked} replicate groups split across train/test sets. "
@@ -193,7 +193,7 @@ def detect_replicate_leakage(
             warnings.warn(recommendation)
         else:
             recommendation = "✓ No replicate leakage detected in train/test split."
-        
+
         metrics["recommended_action"] = recommendation
     else:
         # No split provided: warn about potential
@@ -204,9 +204,9 @@ def detect_replicate_leakage(
             )
         else:
             recommendation = "✓ Low leakage risk (all replicates are singleton groups)."
-        
+
         metrics["recommended_action"] = recommendation
-    
+
     return metrics
 
 
@@ -220,12 +220,12 @@ def detect_leakage(
 ) -> Dict[str, Any]:
     """
     Comprehensive leakage detection for dataset governance.
-    
+
     **Workflow:**
     1. Batch–label correlation (if batch_column provided)
     2. Replicate leakage risk (if replicate_column provided)
     3. Actual leakage check (if train/test indices provided)
-    
+
     Parameters
     ----------
     dataset : FoodSpectrumSet
@@ -240,7 +240,7 @@ def detect_leakage(
         Row indices for training set.
     test_indices : np.ndarray, optional
         Row indices for test set.
-        
+
     Returns
     -------
     leakage_report : dict
@@ -250,30 +250,30 @@ def detect_leakage(
     """
     metadata = dataset.metadata
     leakage_report = {}
-    
+
     risk_flags = []
-    
+
     # Batch–label correlation
     if batch_column is not None:
         batch_corr = detect_batch_label_correlation(metadata, label_column, batch_column)
         leakage_report["batch_label_correlation"] = batch_corr
-        
+
         if batch_corr["severe"]:
             risk_flags.append("severe_batch_confounding")
-    
+
     # Replicate leakage
     if replicate_column is not None:
         rep_leak = detect_replicate_leakage(
             metadata, replicate_column, train_indices, test_indices
         )
         leakage_report["replicate_leakage"] = rep_leak
-        
+
         if rep_leak["leakage_risk"] == "high":
             risk_flags.append("replicate_leakage_risk")
-        
+
         if "n_leaked_groups" in rep_leak and rep_leak["n_leaked_groups"] > 0:
             risk_flags.append("actual_replicate_leakage")
-    
+
     # Overall risk
     if "actual_replicate_leakage" in risk_flags or "severe_batch_confounding" in risk_flags:
         overall_risk = "high"
@@ -281,7 +281,7 @@ def detect_leakage(
         overall_risk = "moderate"
     else:
         overall_risk = "low"
-    
+
     leakage_report["overall_risk"] = overall_risk
-    
+
     return leakage_report

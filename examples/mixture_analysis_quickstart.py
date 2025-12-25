@@ -6,8 +6,8 @@ Run with: python examples/mixture_analysis_quickstart.py
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.chemometrics.mixture import run_mixture_analysis_workflow
+from foodspec.core.dataset import FoodSpectrumSet
 
 
 def _synthetic_mixtures():

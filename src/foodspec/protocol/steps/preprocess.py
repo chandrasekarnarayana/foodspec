@@ -9,8 +9,8 @@ from typing import Any, Dict
 
 import pandas as pd
 
-from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
 from foodspec.features.rq import PeakDefinition
+from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
 
 from .base import Step
 
@@ -22,7 +22,7 @@ class PreprocessStep(Step):
 
     def __init__(self, cfg: Dict[str, Any]):
         """Initialize preprocessing step.
-        
+
         Parameters
         ----------
         cfg : Dict[str, Any]
@@ -32,7 +32,7 @@ class PreprocessStep(Step):
 
     def run(self, ctx: Dict[str, Any]):
         """Execute preprocessing on data in context.
-        
+
         Parameters
         ----------
         ctx : Dict[str, Any]

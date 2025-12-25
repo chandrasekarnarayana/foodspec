@@ -21,9 +21,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
+from foodspec.features.rq import PeakDefinition, RatioDefinition
 from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
 from foodspec.registry import FeatureModelRegistry
-from foodspec.features.rq import PeakDefinition, RatioDefinition
 
 
 def _compute_ratios(df: pd.DataFrame, ratios: List[RatioDefinition]) -> pd.DataFrame:

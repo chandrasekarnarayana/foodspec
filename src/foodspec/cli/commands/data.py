@@ -13,7 +13,7 @@ import typer
 from foodspec.core.api import FoodSpec
 from foodspec.data.libraries import load_library
 from foodspec.io import create_library, load_csv_spectra
-from foodspec.library_search import search_library, overlay_plot
+from foodspec.library_search import overlay_plot, search_library
 from foodspec.logging_utils import get_logger
 from foodspec.model_registry import load_model as registry_load_model
 
@@ -145,7 +145,7 @@ def library_auth_command(
     ds_q = load_library(query_hdf5)
     ds_lib = load_library(library_hdf5)
     fs = FoodSpec(ds_q)
-    sim = fs.library_similarity(ds_lib, metric=metric, top_k=top_k)
+    fs.library_similarity(ds_lib, metric=metric, top_k=top_k)
     out = fs.export(output_dir)
     typer.echo(f"Similarity table saved under {out}/diagnostics/similarity_table.csv")
     typer.echo(f"Overlay figure saved under {out}/diagnostics/overlay_query0_top1.png")

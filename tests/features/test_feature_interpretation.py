@@ -1,11 +1,10 @@
-import pytest
 
-from foodspec.features.specs import FeatureSpec
 from foodspec.features.interpretation import (
-    find_chemical_meanings,
-    explain_feature_spec,
     explain_feature_set,
+    explain_feature_spec,
+    find_chemical_meanings,
 )
+from foodspec.features.specs import FeatureSpec
 
 
 def test_meaning_lookup_matches_library_entry():

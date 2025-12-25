@@ -8,10 +8,10 @@ try:
     from foodspec.features.rq import (
         PeakDefinition,
         RatioDefinition,
-        RQConfig,
         RatioQualityEngine,
         RatioQualityResult,
+        RQConfig,
     )
-except Exception:  # pragma: no cover
+except Exception:  # pragma: no cover,noqa: BLE001
     # Allow import to succeed even if submodule missing in minimal installs
     pass
