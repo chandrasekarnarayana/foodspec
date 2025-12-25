@@ -29,6 +29,7 @@ from foodspec.cli.commands.workflow import workflow_app
 
 app = typer.Typer(help="foodspec command-line interface")
 
+
 # Global options for root command
 @app.callback(invoke_without_command=True)
 def root_callback(
@@ -37,7 +38,7 @@ def root_callback(
         "--version",
         "-V",
         help="Show FoodSpec version and exit",
-    )
+    ),
 ):
     """Root-level options for the foodspec CLI."""
     if version:
@@ -47,6 +48,7 @@ def root_callback(
             v = "unknown"
         typer.echo(v)
         raise typer.Exit()
+
 
 # Register command groups
 # Data commands
