@@ -1,7 +1,7 @@
 # Workflow: Oil Authentication
 
 > If you are new to designing spectral workflows, see [Designing & reporting workflows](workflow_design_and_reporting.md).
-> For model choices and evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+> For model choices and evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
 
 Oil authentication addresses “What oil is this?” and “Is it adulterated?” using Raman/FTIR spectra. This workflow provides a complete, reproducible recipe from raw spectra to report-ready metrics and plots.
 

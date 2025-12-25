@@ -279,7 +279,7 @@ Most examples can run with synthetic data, but for real-world results you'll nee
 
 | Example | Data Type | Size | Source |
 |---------|-----------|------|--------|
-| Oil Authentication | FTIR/Raman spectra | 50-200 samples | [Public datasets](../datasets/) |
+| Oil Authentication | FTIR/Raman spectra | 50-200 samples | [Public datasets](../datasets/dataset_design.md) |
 | Heating Quality | Time-series spectra | 10-50 timepoints | Lab experiments |
 | Mixture Analysis | Pure + mixture spectra | 20-100 samples | Controlled mixtures |
 | Hyperspectral | HSI datacube | 100x100x500 | Imaging system |
@@ -356,7 +356,7 @@ Each example connects to theoretical documentation:
 
 ## See Also
 
-- [Tutorials](../02-tutorials/) — Step-by-step learning paths
-- [User Guide](../04-user-guide/) — Detailed feature documentation  
-- [API Reference](../08-api/) — Function/class documentation
-- [Protocols](../protocols/) — YAML-based analysis protocols
+- [Tutorials](../02-tutorials/oil_discrimination_basic.md) — Step-by-step learning paths
+- [User Guide](../04-user-guide/automation.md) — Detailed feature documentation  
+- [API Reference](../08-api/stats.md) — Function/class documentation
+- [Protocols](../protocols/reference_protocol.md) — YAML-based analysis protocols

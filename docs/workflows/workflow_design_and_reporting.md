@@ -24,7 +24,7 @@ flowchart LR
 ```
 - It is a pipeline from question → instrument → data → preprocessing → features → analysis → interpretation → reporting.
 - It aligns scientific goals with acquisition conditions, preprocessing choices, analysis methods, and clear outputs.
-- Model and metric choices are covered in [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+- Model and metric choices are covered in [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
 - For issues at any stage (baseline, SNR, imbalance, overfitting), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
 
 ## How to design a workflow (step-by-step)
@@ -62,7 +62,7 @@ See also:
 - ML: [Classification & regression](../ml/classification_regression.md), [Mixture models](../ml/mixture_models.md)
 - Stats: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [ANOVA/MANOVA](../stats/anova_and_manova.md)
 - Protocols: [Reproducibility checklist](../protocols/reproducibility_checklist.md)
-- API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../api/workflows.md)
+- API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../08-api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../api/workflows.md)
 
 ## Instrument specs, calibration, limitations → data
 - **Range & resolution:** Determines which bands are captured/resolved. Choose ranges that cover key functional groups.

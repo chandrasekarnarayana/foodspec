@@ -2,7 +2,7 @@
 
 Compositional analysis decomposes mixtures into fractions of known or unknown components, while fingerprinting compares spectra for QC or search. This page follows the WHAT/WHY/WHEN/WHERE template.
 
-> For notation see the [Glossary](../09-reference/glossary.md). For plots and metrics see [Metrics & Evaluation](../metrics/metrics_and_evaluation.md) and [Visualization](../visualization/plotting_with_foodspec.md).
+> For notation see the [Glossary](../09-reference/glossary.md). For plots and metrics see [Metrics & Evaluation](../metrics/metrics_and_evaluation/) and [Visualization](../visualization/plotting_with_foodspec.md).
 
 ## What?
 Defines NNLS (non-negative least squares) for single mixtures with known references, MCR-ALS for unsupervised mixtures, and fingerprint similarity (cosine/correlation). Inputs: preprocessed spectra, reference spectra, or libraries. Outputs: fractions/coefficients, reconstructed spectra, similarity scores, and metrics (RMSE/R²).
@@ -127,7 +127,7 @@ fractions = coeffs / coeffs.sum()
 
 ## See also
 - [Classification & regression](classification_regression.md)  
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)  
+- [Metrics & evaluation](../metrics/metrics_and_evaluation/)  
 - [Feature extraction](../preprocessing/feature_extraction.md)  
 - [Workflow: mixture analysis](../workflows/mixture_analysis.md)  
 - [Workflow: calibration/regression](../workflows/calibration_regression_example.md)

@@ -1,7 +1,7 @@
 # Workflow: Batch Quality Control / Novelty Detection
 
 > New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).  
-> For model/evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+> For model/evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
 
 QC/novelty detection answers “Does this batch look like my reference library?” It is useful for screening incoming materials, production lots, or detecting drift.
 

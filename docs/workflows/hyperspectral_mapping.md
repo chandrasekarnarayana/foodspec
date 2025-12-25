@@ -1,6 +1,6 @@
 # Workflow: Hyperspectral Mapping
 
-> New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md). For model/metric choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md). Troubleshooting (SNR, misalignment): [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
+> New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md). For model/metric choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/). Troubleshooting (SNR, misalignment): [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
 
 Hyperspectral mapping treats each pixel as a spectrum; goals include spatial localization of components, contaminants, or quality gradients.
 
@@ -62,7 +62,7 @@ fig = plot_hyperspectral_intensity_map(cube, target_wavenumber=1655, window=5)
 
 ### Qualitative & quantitative interpretation
 - **Qualitative:** Intensity/ratio maps reveal spatial patterns; cluster maps show segmentation; inspect representative pixel spectra for classes.  
-- **Quantitative:** Report pixel accuracy/IoU (if masks); silhouette/between-within metrics on PCA pixel scores for cluster separability; confusion matrix for pixel labels. Link to [Metrics & evaluation](../metrics/metrics_and_evaluation.md).  
+- **Quantitative:** Report pixel accuracy/IoU (if masks); silhouette/between-within metrics on PCA pixel scores for cluster separability; confusion matrix for pixel labels. Link to [Metrics & evaluation](../metrics/metrics_and_evaluation/).  
 - **Reviewer phrasing:** “Ratio maps highlight localized high-intensity regions; clustering yields k segments with silhouette ≈ …; pixel-level IoU vs reference mask = …; representative spectra confirm chemical plausibility.”
 ---
 

@@ -66,7 +66,7 @@ Successfully fixed broken internal cross-reference links across the FoodSpec doc
 - ✅ `07-theory-and-background/rq_engine_theory.md` → `../07-theory-and-background/rq_engine_theory.md`
 - ✅ `05-advanced-topics/validation_strategies.md` → `../05-advanced-topics/validation_strategies.md`
 - ✅ `03-cookbook/cookbook_preprocessing.md` → `../03-cookbook/cookbook_preprocessing.md`
-- ✅ `metrics/metrics_and_evaluation.md` → `../metrics/metrics_and_evaluation.md`
+- ✅ `metrics/metrics_and_evaluation/` → `../metrics/metrics_and_evaluation/`
 - ✅ `workflows/oil_authentication.md` → `../workflows/oil_authentication.md`
 - ✅ `api/index.md` → `../api/index.md`
 - ✅ `chemometrics_guide.md` → `../03-cookbook/chemometrics_guide.md`

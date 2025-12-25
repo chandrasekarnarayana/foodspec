@@ -42,9 +42,9 @@ Questions this page answers
 - **Mixture models (NNLS, MCR-ALS)** — estimate component fractions. See: `workflows/mixture_analysis.md`, `api/chemometrics.md#foodspec.chemometrics.mixture`.
 
 ## Metrics and validation
-- **Accuracy, Precision, Recall, F1 (macro/micro), ROC-AUC, Confusion matrix** — classification metrics. See: `metrics/metrics_and_evaluation.md`, `api/metrics.md`.
-- **R², RMSE, MAE, Residuals** — regression/mixture metrics. See: `metrics/metrics_and_evaluation.md`, `api/metrics.md`.
-- **Cross-validation (CV)** — k-fold, stratified CV for models. See: `metrics/metrics_and_evaluation.md`, `api/chemometrics.md#foodspec.chemometrics.validation`.
+- **Accuracy, Precision, Recall, F1 (macro/micro), ROC-AUC, Confusion matrix** — classification metrics. See: `metrics/metrics_and_evaluation/`, `api/metrics.md`.
+- **R², RMSE, MAE, Residuals** — regression/mixture metrics. See: `metrics/metrics_and_evaluation/`, `api/metrics.md`.
+- **Cross-validation (CV)** — k-fold, stratified CV for models. See: `metrics/metrics_and_evaluation/`, `api/chemometrics.md#foodspec.chemometrics.validation`.
 
 ## Workflows
 - **Oil authentication** — classify oils/adulteration. See: `workflows/oil_authentication.md`, `api/workflows.md#foodspec.apps.oils`.
@@ -64,7 +64,7 @@ Questions this page answers
 - **model-info** — inspect saved model metadata. See: `cli.md`.
 
 See also
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation/)
 - [workflows/oil_authentication.md](../workflows/oil_authentication.md)
 
 - [API index](../api/index.md)

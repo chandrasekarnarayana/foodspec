@@ -71,4 +71,4 @@ See also
 - [API index](../api/index.md)
 # Metrics interpretation (legacy)
 
-> **Status:** Legacy/archived. Superseded by the maintained page at `../metrics/metrics_and_evaluation.md`. Kept only for historical reference; use the main metrics chapter for current guidance.
+> **Status:** Legacy/archived. Superseded by the maintained page at `../metrics/metrics_and_evaluation/`. Kept only for historical reference; use the main metrics chapter for current guidance.

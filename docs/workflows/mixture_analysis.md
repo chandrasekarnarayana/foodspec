@@ -1,7 +1,7 @@
 # Workflow: Mixture Analysis
 
 > New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).
-> For model/evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+> For model/evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
 
 Mixture analysis estimates component fractions (e.g., EVOO–sunflower blends) from spectra. This workflow uses NNLS when pure references exist and MCR-ALS when they do not.
 
@@ -73,7 +73,7 @@ Outputs: coefficients CSV, residuals, optional reconstruction plots.
 
 ### Qualitative & quantitative interpretation
 - **Qualitative:** Overlay observed mixture vs NNLS reconstruction; residual should look like noise, not structured bands. Predicted vs true fractions plot should follow 1:1 line.
-- **Quantitative:** Report reconstruction RMSE/R²; residual norm from NNLS; optional permutation p_perm on between/within separation if visualizing embeddings of fractions/components. Link to [Metrics](../metrics/metrics_and_evaluation.md) and [Stats](../stats/overview.md) for regression diagnostics.
+- **Quantitative:** Report reconstruction RMSE/R²; residual norm from NNLS; optional permutation p_perm on between/within separation if visualizing embeddings of fractions/components. Link to [Metrics](../metrics/metrics_and_evaluation/) and [Stats](../stats/overview.md) for regression diagnostics.
 - **Reviewer phrasing:** “NNLS reconstruction overlays the observed spectrum with RMSE = …; predicted fractions track true values (R² = …); residuals show no systematic misfit.”
 
 ## Summary

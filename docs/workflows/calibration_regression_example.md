@@ -2,7 +2,7 @@
 
 Predicting a continuous quality index (e.g., mixture fraction or degradation score) from spectral features is a common task. This example shows a simple pipeline using synthetic data to illustrate calibration, metrics, and robustness checks.
 
-> For model and metric choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+> For model and metric choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
 
 ## Scientific question
 - Can spectral ratios or latent variables (PLS components) predict a continuous quality metric?
@@ -71,7 +71,7 @@ ax.figure.savefig("bland_altman.png", dpi=150)
 
 ### Qualitative & quantitative interpretation
 - **Qualitative:** Predicted vs true should cluster around the 1:1 line; residuals should be structureless and homoscedastic.
-- **Quantitative:** Report RMSE/MAE/R² (and adjusted R² if multiple predictors); consider bootstrap CIs and permutation checks for small n. Add CI bands on calibration plots (`plot_calibration_with_ci`) and, when comparing methods, use Bland–Altman to assess agreement (bias, limits). Link to [Metrics & evaluation](../metrics/metrics_and_evaluation.md) and [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md) for supporting stats.
+- **Quantitative:** Report RMSE/MAE/R² (and adjusted R² if multiple predictors); consider bootstrap CIs and permutation checks for small n. Add CI bands on calibration plots (`plot_calibration_with_ci`) and, when comparing methods, use Bland–Altman to assess agreement (bias, limits). Link to [Metrics & evaluation](../metrics/metrics_and_evaluation/) and [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md) for supporting stats.
 - **Reviewer phrasing:** “Calibration achieved R² = … and RMSE = …; residuals show no trend with fitted values, suggesting adequate model form.”
 ---
 
@@ -120,6 +120,6 @@ ax.figure.savefig("bland_altman.png", dpi=150)
    - **Fix:** Include QC standards throughout calibration; check for time-dependent drift; recalibrate periodically
 ## See also
 - [Classification & regression](../ml/classification_regression.md)
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)
+- [Metrics & evaluation](../metrics/metrics_and_evaluation/)
 - [Workflow design](workflow_design_and_reporting.md)
 - [Stats: nonparametric & robustness](../stats/nonparametric_methods_and_robustness.md)

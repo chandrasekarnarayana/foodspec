@@ -187,4 +187,4 @@ flowchart LR
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)
 - [Study design](study_design_and_data_requirements.md)
 - [Nonparametric methods & robustness](nonparametric_methods_and_robustness.md)
-- API: [Statistics](../api/stats.md)
+- API: [Statistics](../08-api/stats.md)

@@ -2,7 +2,7 @@
 
 Robust evaluation is essential for trustworthy food spectroscopy models. This page follows the WHAT/WHY/WHEN/WHERE template and adds concrete guidance for visualizing cross-validation (CV) results.
 
-> For notation see the [Glossary](../09-reference/glossary.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
+> For notation see the [Glossary](../09-reference/glossary.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation/).
 
 ## What?
 Defines validation schemes (train/test, stratified CV, group-aware CV, permutation tests), the metrics to report, and how to visualize per-fold outcomes (confusion matrices, residuals, calibration).

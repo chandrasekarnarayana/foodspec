@@ -117,7 +117,7 @@ foodspec run-exp config.yml --output-dir results/
 ```
 
 ## See Also
-- [PLS Regression & PLS-DA](../03-cookbook/chemometrics_guide.md#pls-and-pls-da)
+- [PLS Regression & PLS-DA](../../03-cookbook/chemometrics_guide/#pls-and-pls-da)
 - [Model Interpretability](../ml/model_interpretability.md)
 - Feature Interpretation (under review)
 - [Spectroscopic Databases](../04-user-guide/vendor_io.md)

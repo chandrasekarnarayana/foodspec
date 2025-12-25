@@ -1,7 +1,7 @@
 # Workflow: Heating & Quality Monitoring
 
 > New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).
-> For model and evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation.md).
+> For model and evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../metrics/metrics_and_evaluation/).
 
 Heating/frying alters oil composition (oxidation, polymerization, loss of unsaturation). This workflow quantifies spectral markers over time/temperature to monitor quality and degradation.
 

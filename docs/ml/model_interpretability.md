@@ -100,7 +100,7 @@ For PLS-DA/PLS regression, examine loading vectors and VIP-like interpretations;
    - **Fix:** Report importance from multiple models/methods; highlight consensus features; note disagreements
 
 ## See also
-- Metrics & evaluation: [metrics_and_evaluation](../metrics/metrics_and_evaluation.md)
+- Metrics & evaluation: [metrics_and_evaluation](../metrics/metrics_and_evaluation/)
 - ML models & best practices: [models_and_best_practices](models_and_best_practices.md)
 - Stats: [ANOVA & MANOVA](../stats/anova_and_manova.md) for group-level effects
 - Troubleshooting: [common_problems_and_solutions](../troubleshooting/common_problems_and_solutions.md)

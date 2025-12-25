@@ -2,7 +2,7 @@
 
 Supervised learning connects spectral features to labels (oil_type, species) or continuous targets (mixture fraction, heating proxies). This page follows the WHAT/WHY/WHEN/WHERE template for clarity.
 
-> For notation see the [Glossary](../09-reference/glossary.md). For bands/ratios, see [Feature extraction](../preprocessing/feature_extraction.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
+> For notation see the [Glossary](../09-reference/glossary.md). For bands/ratios, see [Feature extraction](../preprocessing/feature_extraction.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation/).
 
 ## What?
 Defines model families for classification (LogReg, SVM, RF, kNN, PLS-DA) and regression/calibration (PLS, SVR), with inputs (preprocessed features/ratios/PCs) and outputs (predictions, probabilities/scores, calibration curves, metrics).
@@ -140,6 +140,6 @@ plot_residuals(y_cont, y_pred)
    - Reported average metric masks instability
    - **Fix:** Visualize per-fold metrics; check for outliers; increase sample size; use stratified CV
 - [Model evaluation & validation](model_evaluation_and_validation.md)  
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)  
+- [Metrics & evaluation](../metrics/metrics_and_evaluation/)  
 - [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)  
 - [Workflow design & reporting](../workflows/workflow_design_and_reporting.md)
