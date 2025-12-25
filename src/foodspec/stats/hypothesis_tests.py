@@ -55,6 +55,7 @@ class TestResult:
     See Also:
         - [Metric Significance Tables](../09-reference/metric_significance_tables.md)
     """
+
     statistic: float
     pvalue: float
     df: Optional[float]

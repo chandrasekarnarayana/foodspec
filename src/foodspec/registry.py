@@ -106,6 +106,7 @@ class RegistryEntry:
         - Theory: docs/foundations/data_structures_and_fair_principles.md
         - Protocols: docs/protocols/reference_protocol.md#step-8-document
     """
+
     dataset_hash: str
     protocol_name: str
     protocol_version: str
