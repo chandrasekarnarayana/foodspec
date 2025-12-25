@@ -1,3 +1,6 @@
+!!! warning "Not Canonical — Redirect"
+	This page is not the canonical source. Please use [05-advanced-topics/architecture.md](05-advanced-topics/architecture.md).
+
 ## FoodSpec Architecture
 
 - **IO & Harmonization**: `spectral_io.py`, vendor stubs, CSV/HDF5 loaders; `spectral_dataset.py` for 1D spectra and `HyperspectralDataset` for cubes; simple alignment utilities.

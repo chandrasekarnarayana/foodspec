@@ -11,7 +11,7 @@ from foodspec.features.interpretation import (
 def test_meaning_lookup_matches_library_entry():
     matches = find_chemical_meanings(1745.0, modality="ftir")
     assert matches, "Expected at least one chemical meaning match"
-    assert any("C=O" in m for m in matches)
+    assert any("C=O" in m.meaning for m in matches)
 
 
 def test_explain_feature_spec_for_peak():

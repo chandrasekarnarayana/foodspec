@@ -77,12 +77,20 @@ class DummyFoodSpec:
 
 
 def test_run_exp_executes_pipeline(monkeypatch, tmp_path):
+    # Create a properly formatted dataset CSV with wavenumber column and sample columns
+    # Need at least 11 wavenumber points for default Savitzky-Golay window
+    # CSV format: wavenumber in first column, samples in remaining columns
     dataset_path = tmp_path / "data.csv"
-    dataset_path.write_text("x,y\n1,2\n")
+    csv_content = "wavenumber,sample1,sample2,sample3\n"
+    for wn in range(500, 1100, 50):  # 500, 550, ..., 1050 (12 points)
+        csv_content += f"{wn},{wn/500.0},{wn/500.0 + 0.5},{wn/500.0 + 0.2}\n"
+    dataset_path.write_text(csv_content)
     exp_path = _write_exp(tmp_path, dataset_path)
 
     DummyFoodSpec.instances.clear()
-    monkeypatch.setattr(cli, "FoodSpec", DummyFoodSpec)
+    # Monkeypatch FoodSpec in the workflow module where it's actually imported
+    from foodspec.cli.commands import workflow
+    monkeypatch.setattr(workflow, "FoodSpec", DummyFoodSpec)
 
     result = runner.invoke(cli.app, ["run-exp", str(exp_path), "--output-dir", str(tmp_path / "out")])
 
@@ -97,14 +105,18 @@ def test_run_exp_executes_pipeline(monkeypatch, tmp_path):
 
 def test_run_exp_dry_run(monkeypatch, tmp_path):
     dataset_path = tmp_path / "data.csv"
-    dataset_path.write_text("x,y\n1,2\n")
+    csv_content = "wavenumber,sample1,sample2,sample3\n"
+    for wn in range(500, 1100, 50):  # 500, 550, ..., 1050 (12 points)
+        csv_content += f"{wn},{wn/500.0},{wn/500.0 + 0.5},{wn/500.0 + 0.2}\n"
+    dataset_path.write_text(csv_content)
     exp_path = _write_exp(tmp_path, dataset_path)
 
     # If FoodSpec is called, fail
     def _boom(*_, **__):
         raise AssertionError("FoodSpec should not be instantiated during dry-run")
 
-    monkeypatch.setattr(cli, "FoodSpec", _boom)
+    from foodspec.cli.commands import workflow
+    monkeypatch.setattr(workflow, "FoodSpec", _boom)
 
     result = runner.invoke(cli.app, ["run-exp", str(exp_path), "--dry-run"])
 

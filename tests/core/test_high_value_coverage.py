@@ -34,13 +34,17 @@ def test_foodspec_init_with_numpy():
 
 def test_foodspec_init_with_dataframe():
     """Test FoodSpec initialization with DataFrame."""
+    # DataFrame format: first column is "wavenumber", remaining columns are samples
+    # Each row represents a wavenumber, each column (after first) is a sample
     df = pd.DataFrame({
-        "wavenumber": [500, 600, 700, 800, 900],
-        "sample1": [1.0, 2.0, 3.0, 4.0, 5.0],
-        "sample2": [1.5, 2.5, 3.5, 4.5, 5.5],
+        "wavenumber": [500, 600, 700],
+        "sample1": [1.0, 2.0, 3.0],
+        "sample2": [1.5, 2.5, 3.5],
+        "sample3": [1.2, 2.2, 3.2],
     })
     
     fs = FoodSpec(df, modality="raman")
+    # With 3 wavenumber rows and 3 sample columns, we should get 3 spectra
     assert fs.data.x.shape[0] >= 1  # At least one sample
 
 

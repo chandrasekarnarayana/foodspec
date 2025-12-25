@@ -1,3 +1,6 @@
+!!! warning "Not Canonical — Redirect"
+  This page is not the canonical source. Please use [04-user-guide/cli_guide.md](04-user-guide/cli_guide.md).
+
 # CLI reference
 
 Questions this page answers

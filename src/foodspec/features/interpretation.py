@@ -81,7 +81,7 @@ def find_chemical_meanings(
             distance = abs(wavenumber - entry.center)
             matches.append((distance, entry))
     matches.sort(key=lambda m: m[0])
-    return [m[1].meaning for m in matches[:top_n]]
+    return [m[1] for m in matches[:top_n]]
 
 
 def explain_feature_spec(
@@ -109,8 +109,8 @@ def explain_feature_spec(
             center = (float(lo) + float(hi)) / 2.0
             meanings = find_chemical_meanings(center, modality=modality, tolerance=tolerance, library=library)
             if meanings:
-                first = meanings[0]
-                extras = f"; also consider {', '.join(meanings[1:])}" if len(meanings) > 1 else ""
+                first = meanings[0].meaning
+                extras = f"; also consider {', '.join(m.meaning for m in meanings[1:])}" if len(meanings) > 1 else ""
                 parts.append(f"{direction_word} near {center:.0f} cm^-1 suggests {first}{extras}.")
             else:
                 parts.append(f"{direction_word} near {center:.0f} cm^-1 (no library match).")

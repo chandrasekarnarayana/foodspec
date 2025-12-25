@@ -1,3 +1,6 @@
+!!! warning "Not Canonical — Redirect"
+  This page is not the canonical source. Please use [01-getting-started/installation.md](01-getting-started/installation.md).
+
 # Installation
 
 ## Requirements

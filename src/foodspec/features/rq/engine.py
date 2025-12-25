@@ -23,6 +23,8 @@ from statsmodels.stats.multitest import multipletests
 # Import from package modules
 from .types import PeakDefinition, RatioDefinition, RQConfig, RatioQualityResult
 from .utils import _cv, _safe_group_vectors, _monotonic_label, _rf_accuracy
+from .report import generate_text_report as _rq_text_report
+from .matrix import compare_oil_vs_chips as _compare_oil_vs_chips
 
 
 class RatioQualityEngine:
@@ -261,121 +263,10 @@ class RatioQualityEngine:
     def compare_oil_vs_chips(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Compare stability and heating trends between matrix types (oil vs chips).
-        Flags divergence when slopes differ in significance/sign.
+        Delegates to `features.rq.matrix.compare_oil_vs_chips`.
         """
-        matrix_col = self.config.matrix_col
-        heating_col = self.config.heating_col
         features = self._feature_columns()
-
-        if matrix_col not in df.columns:
-            return pd.DataFrame(columns=["feature", "oil_cv", "chips_cv", "oil_slope", "chips_slope", "diverges"])
-
-        rows = []
-        for feat in features:
-            oil_sub = df[df[matrix_col] == "oil"]
-            chips_sub = df[df[matrix_col] == "chips"]
-
-            oil_cv = _cv(oil_sub[feat])["cv_percent"] if not oil_sub.empty else np.nan
-            chips_cv = _cv(chips_sub[feat])["cv_percent"] if not chips_sub.empty else np.nan
-
-            oil_slope, oil_p = self._trend(oil_sub, heating_col, feat)
-            chips_slope, chips_p = self._trend(chips_sub, heating_col, feat)
-
-            # Mean diff and Cohen's d
-            oil_vals = oil_sub[feat].dropna().astype(float)
-            chips_vals = chips_sub[feat].dropna().astype(float)
-            mean_diff = oil_vals.mean() - chips_vals.mean() if len(oil_vals) and len(chips_vals) else np.nan
-            cohen_d = np.nan
-            if len(oil_vals) > 1 and len(chips_vals) > 1:
-                pooled_std = np.sqrt(((oil_vals.std(ddof=1) ** 2) + (chips_vals.std(ddof=1) ** 2)) / 2)
-                if pooled_std != 0:
-                    cohen_d = mean_diff / pooled_std
-            try:
-                t_stat, p_mean = stats.ttest_ind(oil_vals, chips_vals, equal_var=False, nan_policy="omit")
-            except Exception:
-                p_mean = np.nan
-
-            # Spearman trends
-            def _spearman(sub):
-                if heating_col not in sub.columns:
-                    return (np.nan, np.nan)
-                x = pd.to_numeric(sub[heating_col], errors="coerce")
-                y = sub[feat].astype(float)
-                mask = ~x.isna() & ~y.isna()
-                if mask.sum() < 3:
-                    return (np.nan, np.nan)
-                rho, pval = stats.spearmanr(x[mask], y[mask])
-                return (rho, pval)
-
-            oil_rho, oil_rho_p = _spearman(oil_sub)
-            chips_rho, chips_rho_p = _spearman(chips_sub)
-
-            # Divergence criteria
-            diverges = False
-            # trend divergence: significance mismatch or opposite sign
-            if np.isfinite(oil_p) and np.isfinite(chips_p):
-                sig_oil = oil_p < 0.05
-                sig_chips = chips_p < 0.05
-                if sig_oil != sig_chips:
-                    diverges = True
-                elif sig_oil and sig_chips and np.sign(oil_slope) != np.sign(chips_slope):
-                    diverges = True
-            # mean divergence
-            if np.isfinite(p_mean) and p_mean < 0.05:
-                diverges = True
-
-            rows.append(
-                {
-                    "feature": feat,
-                    "oil_cv": oil_cv,
-                    "chips_cv": chips_cv,
-                    "oil_slope": oil_slope,
-                    "chips_slope": chips_slope,
-                    "oil_p_value": oil_p,
-                    "chips_p_value": chips_p,
-                    "diverges": bool(diverges),
-                    "mean_diff": mean_diff,
-                    "p_mean": p_mean,
-                    "cohen_d": cohen_d,
-                    "delta_cv": oil_cv - chips_cv if np.isfinite(oil_cv) and np.isfinite(chips_cv) else np.nan,
-                    "delta_slope": (
-                        oil_slope - chips_slope if np.isfinite(oil_slope) and np.isfinite(chips_slope) else np.nan
-                    ),
-                    "oil_spearman_rho": oil_rho,
-                    "chips_spearman_rho": chips_rho,
-                    "oil_spearman_p": oil_rho_p,
-                    "chips_spearman_p": chips_rho_p,
-                }
-            )
-        df_out = pd.DataFrame(rows)
-        if self.config.adjust_p_values and not df_out.empty:
-            # Adjust mean p-values
-            if "p_mean" in df_out.columns:
-                reject, p_adj, _, _ = multipletests(df_out["p_mean"].fillna(1.0), method="fdr_bh")
-                df_out["p_mean_adj"] = p_adj
-                df_out["significant_mean_fdr"] = reject
-            # Adjust trend p-values (combine oil/chips p via max conservative)
-            trend_p = np.maximum(df_out["oil_p_value"].fillna(1.0), df_out["chips_p_value"].fillna(1.0))
-            reject, p_adj, _, _ = multipletests(trend_p, method="fdr_bh")
-            df_out["p_trend_adj"] = p_adj
-            df_out["significant_trend_fdr"] = reject
-        # Interpretation tags
-        tags = []
-        for _, r in df_out.iterrows():
-            tag = "matrix-robust marker"
-            if r.get("significant_trend_fdr") and np.sign(r["oil_slope"]) != np.sign(r["chips_slope"]):
-                tag = "opposite trend in oil vs chips"
-            elif r.get("significant_trend_fdr") and r["oil_p_value"] < 0.05 and r["chips_p_value"] >= 0.05:
-                tag = "stable in chips, trending in oil"
-            elif r.get("significant_trend_fdr") and r["chips_p_value"] < 0.05 and r["oil_p_value"] >= 0.05:
-                tag = "stable in oil, trending in chips"
-            elif r.get("significant_mean_fdr"):
-                tag = "mean shift between matrices"
-            tags.append(tag)
-        df_out["interpretation"] = tags
-        if not df_out.empty:
-            df_out["diverges"] = pd.Series([bool(x) for x in df_out["diverges"]], dtype=object)
-        return df_out
+        return _compare_oil_vs_chips(df, self.config, features)
 
     def generate_text_report(
         self,
@@ -392,147 +283,22 @@ class RatioQualityEngine:
         top_k: int = 5,
     ) -> str:
         """
-        Generate a text report with optional protocol/context fields.
-        context keys: protocol_name, intro, preprocessing_notes, normalization_modes.
+        Generate a text report for RQ results.
+        Delegates to `features.rq.report.generate_text_report`.
         """
-        ctx = context or {}
-        tpl = []
-        tpl.append("Ratio-Quality (RQ) Report")
-        tpl.append("=========================")
-        if "protocol_name" in ctx:
-            tpl.append(f"Protocol: {ctx['protocol_name']}")
-        if "protocol_version" in ctx:
-            tpl.append(f"Protocol version: {ctx['protocol_version']}")
-        if "validation_strategy" in ctx:
-            tpl.append(f"Validation strategy: {ctx['validation_strategy']}")
-        if "intro" in ctx:
-            tpl.append(ctx["intro"])
-        if "preprocessing_notes" in ctx:
-            tpl.append(f"Preprocessing: {ctx['preprocessing_notes']}")
-        if "normalization_modes" in ctx:
-            tpl.append(f"Normalization modes: {ctx['normalization_modes']}")
-        tpl.append("")
-
-        # QC block
-        tpl.append("QC / Dataset summary")
-        tpl.append("--------------------")
-        tpl.append(f"Samples: {ctx.get('n_samples', 'na')}, Features: {ctx.get('n_features', 'na')}")
-        for k, v in ctx.items():
-            if k.endswith("_counts") and hasattr(v, "to_string"):
-                tpl.append(f"{k.replace('_counts','')} counts:\n{v.to_string()}")
-        if "const_features" in ctx:
-            tpl.append(f"Constant features: {', '.join(ctx['const_features'][:5])}")
-        if "validation_metrics" in ctx:
-            vm = ctx["validation_metrics"]
-            tpl.append(f"Validation balanced accuracy: {vm.get('balanced_accuracy', 'na')}")
-            tpl.append(f"Per-class recall: {vm.get('per_class_recall', [])}")
-        if warnings:
-            tpl.append("Warnings:")
-            for w in warnings:
-                tpl.append(f"- {w}")
-        tpl.append("")
-
-        tpl.append("RQ1 – Oil discrimination & clustering")
-        tpl.append("-------------------------------------")
-        tpl.append("")
-
-        tpl.append("RQ2 – Stability (CV %)")
-        tpl.append("----------------------")
-        top_stable = (
-            stability[stability["level"] == "overall"].sort_values("cv_percent").head(top_k)[["feature", "cv_percent"]]
+        return _rq_text_report(
+            stability,
+            discrim,
+            heating,
+            oil_vs_chips,
+            feat_importance,
+            norm_comp,
+            minimal_panel,
+            clustering_metrics,
+            warnings,
+            context=context,
+            top_k=top_k,
         )
-        tpl.append(top_stable.to_string(index=False))
-        tpl.append("")
-
-        tpl.append("RQ3 – Discriminative power (ANOVA / Kruskal)")
-        tpl.append("--------------------------------------------")
-        if not discrim.empty:
-            tpl.append(
-                discrim.sort_values("p_value")
-                .head(top_k)[
-                    ["feature", "method", "statistic", "p_value"]
-                    + (["p_value_adj"] if "p_value_adj" in discrim.columns else [])
-                ]
-                .to_string(index=False)
-            )
-            if "p_value_adj" in discrim.columns:
-                tpl.append("P-values adjusted by FDR (Benjamini–Hochberg).")
-        else:
-            tpl.append("No discriminative tests computed.")
-        tpl.append("")
-
-        if feat_importance is not None and not feat_importance.empty:
-            tpl.append("Feature importance (classifier-based)")
-            tpl.append("------------------------------------")
-            tpl.append(feat_importance.head(top_k)[["feature", "rf_importance", "lr_coef_abs"]].to_string(index=False))
-            tpl.append("")
-        if norm_comp is not None and not norm_comp.empty:
-            tpl.append("Normalization comparison")
-            tpl.append("------------------------")
-            tpl.append(norm_comp.to_string(index=False))
-            tpl.append("")
-
-        tpl.append("RQ4 – Heating trends")
-        tpl.append("---------------------")
-        if not heating.empty:
-            tpl.append(
-                heating.sort_values("p_value")
-                .head(top_k)[
-                    ["feature", "slope", "p_value", "monotonic_trend"]
-                    + (["p_value_adj"] if "p_value_adj" in heating.columns else [])
-                ]
-                .to_string(index=False)
-            )
-            if "p_value_adj" in heating.columns:
-                tpl.append("Trend p-values adjusted by FDR.")
-        else:
-            tpl.append("No heating trends computed.")
-        tpl.append("")
-
-        tpl.append("Oil vs chips divergence")
-        tpl.append("-----------------------")
-        if not oil_vs_chips.empty:
-            diverging = oil_vs_chips[oil_vs_chips["diverges"]]
-            if diverging.empty:
-                tpl.append("No strong divergences detected.")
-            else:
-                tpl.append("Top divergent markers (mean/Trend/CV differences):")
-                cols = [
-                    "feature",
-                    "p_mean",
-                    "p_mean_adj" if "p_mean_adj" in oil_vs_chips.columns else None,
-                    "cohen_d",
-                    "delta_cv",
-                    "delta_slope",
-                    "interpretation",
-                ]
-                cols = [c for c in cols if c is not None and c in oil_vs_chips.columns]
-                tpl.append(diverging.head(top_k)[cols].to_string(index=False))
-        else:
-            tpl.append("Matrix column not provided; no comparison run.")
-
-        if minimal_panel is not None and not minimal_panel.empty:
-            tpl.append("")
-            tpl.append("Minimal marker panel")
-            tpl.append("---------------------")
-            tpl.append(minimal_panel.to_string(index=False))
-            if "status" in minimal_panel.columns and (minimal_panel["status"] == "not_met").any():
-                tpl.append("Target accuracy not met; best available panel shown.")
-
-        if clustering_metrics:
-            tpl.append("")
-            tpl.append("Clustering structure")
-            tpl.append("--------------------")
-            for k, v in clustering_metrics.items():
-                tpl.append(f"{k}: {v}")
-
-        if warnings:
-            tpl.append("")
-            tpl.append("Warnings / Guardrails")
-            tpl.append("---------------------")
-            tpl.extend(warnings)
-
-        return "\n".join(tpl) + "\n"
 
     # ----------------------------------------------
     # Internal helpers
