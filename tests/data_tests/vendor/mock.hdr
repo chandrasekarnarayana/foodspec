@@ -1,0 +1,8 @@
+ENVI
+samples = 2
+lines = 1
+bands = 2
+data type = 4
+interleave = bsq
+byte order = 0
+data file = mock.dat
