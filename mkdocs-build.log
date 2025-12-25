@@ -1,0 +1,106 @@
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: /home/cs/FoodSpec/site
+INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
+  - 03-cookbook/cookbook_preprocessing.md
+  - 04-user-guide/cli_guide.md
+  - 04-user-guide/logging.md
+  - 05-advanced-topics/model_lifecycle_and_prediction.md
+  - 06-developer-guide/FEATURE_INVENTORY.md
+  - 06-developer-guide/GAPS_AND_FUTURE_WORK.md
+  - 06-developer-guide/RELEASING.md
+  - 06-developer-guide/ci_troubleshooting.md
+  - 06-developer-guide/design_stats_and_analysis.md
+  - 06-developer-guide/developer_notes.md
+  - 07-theory-and-background/rq_engine_theory.md
+  - 08-api/chemometrics.md
+  - 08-api/datasets.md
+  - 08-api/features.md
+  - 08-api/io.md
+  - 08-api/metrics.md
+  - 08-api/preprocessing.md
+  - 08-api/workflows.md
+  - api/index.md
+  - api/chemometrics.md
+  - api/datasets.md
+  - api/features.md
+  - api/io.md
+  - api/metrics.md
+  - api/ml.md
+  - api/preprocessing.md
+  - api/stats.md
+  - api/workflows.md
+  - archive/AUDIT_DOCUMENTATION_INDEX.md
+  - archive/CLI_REFACTORING_COMPLETE.md
+  - archive/CODEBASE_STATUS_SUMMARY.md
+  - archive/DOCS_AUDIT_REPORT.md
+  - archive/FEATURE_AUDIT.md
+  - archive/IMPLEMENTATION_AUDIT.md
+  - archive/MIGRATION_GUIDE.md
+  - archive/PHASE0_DISCOVERY_REPORT.md
+  - archive/PROJECT_STRUCTURE_AUDIT.md
+  - archive/README_DOCS_STRUCTURE.md
+  - archive/REORGANIZATION_SUMMARY.md
+  - archive/SMOKE_TEST.md
+  - archive/api_cli_apps.md
+  - archive/api_core.md
+  - archive/api_features_chemometrics.md
+  - archive/api_io_data.md
+  - archive/api_preprocess.md
+  - archive/api_reference.md
+  - archive/metrics_interpretation.md
+  - archive/ml_models.md
+  - archive/smoke_test_results_2025-12-25.md
+  - archive/spectral_basics.md
+  - archive/stats_tests.md
+  - archive/project_history/DOCS_COMPLIANCE_UPDATE.md
+  - archive/project_history/DOCS_REORGANIZATION_COMPLETE.md
+  - archive/project_history/IMPORT_AUDIT_SUMMARY.md
+  - archive/project_history/IMPORT_FIXES.md
+  - archive/project_history/LINK_FIXES_COMPLETE.md
+  - archive/project_history/PACKAGE_CLEANUP_COMPLETE.md
+  - archive/project_history/PRODUCTION_READINESS_REPORT.md
+  - datasets/dataset_design.md
+  - design/01_overview.md
+  - dev/design_stats_and_analysis.md
+  - dev/developer_notes.md
+  - dev/smoke_test_results_2025-12-25.md
+  - foundations/data_structures_and_fair_principles.md
+  - foundations/food_spectroscopy_applications.md
+  - foundations/introduction.md
+  - foundations/spectroscopy_basics.md
+  - metrics/metrics_and_evaluation.md
+  - ml/classification_regression.md
+  - ml/mixture_models.md
+  - ml/model_evaluation_and_validation.md
+  - ml/model_interpretability.md
+  - ml/models_and_best_practices.md
+  - ml/pca_and_dimensionality_reduction.md
+  - preprocessing/baseline_correction.md
+  - preprocessing/derivatives_and_feature_enhancement.md
+  - preprocessing/feature_extraction.md
+  - preprocessing/normalization_smoothing.md
+  - preprocessing/scatter_correction_cosmic_ray_removal.md
+  - protocols/benchmarking_framework.md
+  - protocols/decision_trees.md
+  - protocols/reproducibility_checklist.md
+  - stats/anova_and_manova.md
+  - stats/correlation_and_mapping.md
+  - stats/hypothesis_testing_in_food_spectroscopy.md
+  - stats/introduction_to_statistical_analysis.md
+  - stats/nonparametric_methods_and_robustness.md
+  - stats/overview.md
+  - stats/study_design_and_data_requirements.md
+  - stats/t_tests_effect_sizes_and_power.md
+  - troubleshooting/common_problems_and_solutions.md
+  - user_guide/instrument_file_formats.md
+  - visualization/plotting_with_foodspec.md
+  - workflows/calibration_regression_example.md
+  - workflows/domain_templates.md
+  - workflows/standard_templates.md
+INFO    -  Doc file '06-tutorials/example_catalog.md' contains an unrecognized relative link '../datasets/', it was left as is.
+INFO    -  Doc file '06-tutorials/example_catalog.md' contains an unrecognized relative link '../02-tutorials/', it was left as is.
+INFO    -  Doc file '06-tutorials/example_catalog.md' contains an unrecognized relative link '../04-user-guide/', it was left as is.
+INFO    -  Doc file '06-tutorials/example_catalog.md' contains an unrecognized relative link '../08-api/', it was left as is. Did you mean '../08-api/index.md'?
+INFO    -  Doc file '06-tutorials/example_catalog.md' contains an unrecognized relative link '../protocols/', it was left as is.
+
+Aborted!
