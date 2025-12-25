@@ -73,7 +73,51 @@ ax.figure.savefig("bland_altman.png", dpi=150)
 - **Qualitative:** Predicted vs true should cluster around the 1:1 line; residuals should be structureless and homoscedastic.
 - **Quantitative:** Report RMSE/MAE/R² (and adjusted R² if multiple predictors); consider bootstrap CIs and permutation checks for small n. Add CI bands on calibration plots (`plot_calibration_with_ci`) and, when comparing methods, use Bland–Altman to assess agreement (bias, limits). Link to [Metrics & evaluation](../metrics/metrics_and_evaluation.md) and [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md) for supporting stats.
 - **Reviewer phrasing:** “Calibration achieved R² = … and RMSE = …; residuals show no trend with fitted values, suggesting adequate model form.”
+---
 
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for calibration/regression workflow:**
+
+1. **Extremely high R² (0.99+) on small dataset without independent validation**
+   - High R² on training data doesn't guarantee generalization
+   - Overfitting: model learns noise, not true relationship
+   - **Fix:** Use cross-validation or hold-out test set; bootstrap confidence intervals on R²
+
+2. **Calibration range too narrow (model trained on 10–20% property range, deployed on 0–50% range)**
+   - Linear relationships valid only in training range
+   - Extrapolation beyond training range produces unreliable predictions
+   - **Fix:** Ensure calibration samples span full operational range; mark and test extrapolation regions separately
+
+3. **Calibration standards from single source (all "low", "medium", "high" from same batch/supplier)**
+   - Intra-source variability unknown; model may learn supplier-specific patterns
+   - Different sources with same property value may have different spectra
+   - **Fix:** Include multiple sources per property level; validate on independent reference materials
+
+4. **Residuals show systematic trend with fitted values (heteroscedasticity)**
+   - Violates homogeneity assumption; confidence intervals unreliable
+   - May indicate nonlinear relationship or missing variable
+   - **Fix:** Visualize residuals vs fitted; log-transform if variance increases; consider nonlinear model
+
+5. **No replication in calibration (each standard measured once)**
+   - Measurement error unquantified; precision of calibration unknown
+   - Single outlier can disproportionately influence fit
+   - **Fix:** Measure each standard ≥3 times; report residual SD; use robust regression
+
+6. **Calibration model not validated on new samples (RMSE only computed on training data)**
+   - Training metrics optimistic; test set RMSE is ground truth
+   - Real-world performance may be worse
+   - **Fix:** Hold out independent test set; cross-validate; measure RMSE on truly new samples
+
+7. **Reference method uncertainty not considered (assuming reference measurements are error-free)**
+   - Reference method has uncertainty; can't achieve better precision than reference
+   - Model R² inflated if reference error ignored
+   - **Fix:** Quantify reference method error; report measurement uncertainty for calibration samples
+
+8. **Instrumental drift over calibration period not checked (calibration measured over weeks with no QC)**
+   - Drift shifts spectral baselines; affects all samples
+   - Calibration may fit drift, not true property relationship
+   - **Fix:** Include QC standards throughout calibration; check for time-dependent drift; recalibrate periodically
 ## See also
 - [Classification & regression](../ml/classification_regression.md)
 - [Metrics & evaluation](../metrics/metrics_and_evaluation.md)

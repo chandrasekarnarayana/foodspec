@@ -2,7 +2,7 @@
 
 Supervised learning connects spectral features to labels (oil_type, species) or continuous targets (mixture fraction, heating proxies). This page follows the WHAT/WHY/WHEN/WHERE template for clarity.
 
-> For notation see the [Glossary](../glossary.md). For bands/ratios, see [Feature extraction](../preprocessing/feature_extraction.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
+> For notation see the [Glossary](../09-reference/glossary.md). For bands/ratios, see [Feature extraction](../preprocessing/feature_extraction.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
 
 ## What?
 Defines model families for classification (LogReg, SVM, RF, kNN, PLS-DA) and regression/calibration (PLS, SVR), with inputs (preprocessed features/ratios/PCs) and outputs (predictions, probabilities/scores, calibration curves, metrics).
@@ -94,9 +94,51 @@ plot_residuals(y_cont, y_pred)
 - Combine visuals with metrics + uncertainty; avoid leakage; handle imbalance explicitly.  
 - Tie outputs back to chemistry (bands/ratios) and support claims with stats tests on key features.
 
-## Further reading
-- [PCA and dimensionality reduction](pca_and_dimensionality_reduction.md)  
-- [Mixture models & fingerprinting](mixture_models.md)  
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for classification and regression model reliability:**
+
+1. **Perfect or near-perfect accuracy (>98%) without independent test set**
+   - Too-good results suggest overfitting, data leakage, or class separation artifacts
+   - Accuracy on training data inflates; test set is ground truth
+   - **Fix:** Always use held-out test set or cross-validation; validate on truly independent data
+
+2. **Data leakage (using preprocessing statistics from entire dataset, or same sample in train and test)**
+   - Information from test set bleeds into training, producing inflated metrics
+   - Leakage can be subtle (e.g., baseline correction fit on all data, then train/test split)
+   - **Fix:** Include preprocessing inside CV loop; use Pipeline to prevent leakage; manually inspect train/test splits
+
+3. **Severe class imbalance (95% class A, 5% class B) with no special handling**
+   - Imbalanced data can produce misleading accuracy (classifier predicts majority class, achieves 95% accuracy)
+   - F1, precision, recall, or AUC better than accuracy for imbalanced tasks
+   - **Fix:** Stratify CV splits; use weighted loss or resampling; report confusion matrix and per-class metrics
+
+4. **High feature dimensionality, small sample size (1000 bands, 50 samples) without dimensionality reduction**
+   - p >> n (features > samples) causes overfitting and unstable models
+   - Model has enough parameters to memorize training data
+   - **Fix:** Use PCA or feature selection before modeling; keep p < n or use regularization (L1/L2)
+
+5. **Regression with huge residuals in certain regions unaddressed**
+   - Heteroscedasticity (variance increases with predicted value) violates assumptions
+   - May indicate nonlinear relationship or missing important feature
+   - **Fix:** Visualize predicted vs residuals; check for heteroscedasticity; consider log-transform or nonlinear model
+
+6. **Feature importance from same model used for training (overfitted features list)**
+   - Feature importance from overfit model is unreliable; top features may be noise in that model
+   - Importance doesn't generalize to independent data
+   - **Fix:** Use permutation importance on test set; or report with uncertainty (e.g., from cross-validation)
+
+7. **No attention to batch effects (training on one analyzer, deploying on another)**
+   - Analyzer drift, calibration, or instrument variation can dominate learned patterns
+   - Model may not transfer across instruments without retraining
+   - **Fix:** Use batch-aware CV; test on data from different batches/instruments; include batch as a feature
+
+8. **Unstable cross-validation metrics (fold 1 F1 = 0.95, fold 5 F1 = 0.50)**
+   - High fold-to-fold variability suggests model is sensitive to data splits or presence of outliers
+   - Reported average metric masks instability
+   - **Fix:** Visualize per-fold metrics; check for outliers; increase sample size; use stratified CV
 - [Model evaluation & validation](model_evaluation_and_validation.md)  
 - [Metrics & evaluation](../metrics/metrics_and_evaluation.md)  
 - [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)  

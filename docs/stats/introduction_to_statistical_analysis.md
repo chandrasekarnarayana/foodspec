@@ -46,6 +46,52 @@ flowchart LR
   F -->|No| H[Predictive modeling (see ML chapters)]
 ```
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for statistical analysis validity across all methods:**
+
+1. **Assumptions not checked before test selection**
+   - Each test (t-test, ANOVA, correlation) assumes normality, independence, or linearity
+   - Violating assumptions without correcting inflates Type I error
+   - **Fix:** Always check Q-Q plots, Shapiro–Wilk, Levene's test; use robust/nonparametric alternatives
+
+2. **P-value interpreted as truth (p = 0.04 → "result is true with 96% confidence")**
+   - p-value is probability of observing data IF null hypothesis is true; not probability that result is true
+   - Misinterpretation is widespread and leads to overconfidence
+   - **Fix:** Report effect size and confidence intervals; avoid binary "significant/not significant" language
+
+3. **Multiple testing without correction (testing 50 hypotheses at α = 0.05, expecting ≤2.5 false positives by chance)**
+   - Uncorrected p-values are misleading when many tests performed
+   - Problem scales with number of tests
+   - **Fix:** Declare hypotheses a priori; apply Bonferroni, FDR, or permutation-based correction
+
+4. **Sample size chosen arbitrarily ("n = 10 seems reasonable") without power analysis**
+   - Underpowered studies miss real effects and inflate false negatives
+   - No rationale for sample choice reduces credibility
+   - **Fix:** Conduct a priori power analysis based on target effect size and power (0.80)
+
+5. **Preprocessing choices undisclosed (baseline correction, outlier removal, transformation)**
+   - Different preprocessing → different results, even on same raw data
+   - Undisclosed choices enable hidden p-hacking
+   - **Fix:** Freeze preprocessing before analysis; document all choices; report sensitivity to preprocessing
+
+6. **Batch confounding (treatment A = Day 1 analyzer, treatment B = Day 2 analyzer)**
+   - Systematic batch effects mimick biological differences
+   - Impossible to know whether test detects biology or batch artifact
+   - **Fix:** Randomize sample order; include batch in model; use batch-aware CV
+
+7. **Selective reporting of results (reporting 3 significant tests out of 20 performed)**
+   - Bias toward positive results inflates false positive rate
+   - Non-significant results are equally informative
+   - **Fix:** Pre-register analyses; report all tests performed; use exploratory vs confirmatory designations
+
+8. **Independence assumption violated (using technical replicates as if independent biological replicates)**
+   - Repeated measurements of same unit are autocorrelated
+   - Tests assuming independence produce inflated significance
+   - **Fix:** Analyze ≥3 distinct samples; document which measurements are replicates; use mixed-effects models if nested
+
 ## Further reading
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [ANOVA and MANOVA](anova_and_manova.md)

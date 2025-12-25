@@ -42,7 +42,7 @@ Headless, research-grade Python toolkit for Raman/FTIR/NIR spectroscopy in food 
 **Machine Learning**
 - Classification: logistic, SVM, random forest, gradient boosting
 - Regression: linear, partial least squares, random forest
-- Optional: XGBoost, LightGBM, Conv1D, and MLP deep learning
+- XGBoost, LightGBM, Conv1D, and MLP deep learning
 - Model registry and versioning
 
 **Domain Workflows**

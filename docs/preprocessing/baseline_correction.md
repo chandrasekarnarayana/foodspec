@@ -2,7 +2,7 @@
 
 Baselines drift because of fluorescence, scattering, ATR contact, and instrument response. Poor baselines distort peak heights/areas and ratios. This chapter explains when and how to correct baselines in Raman/FTIR/NIR spectra.
 
-> For notation and symbols used below, see the [Glossary](../glossary.md).
+> For notation and symbols used below, see the [Glossary](../09-reference/glossary.md).
 
 ## 1. Why baselines drift
 - **Fluorescence (Raman):** Broad background that can dwarf weak peaks.
@@ -67,8 +67,54 @@ X_corr = als.transform(X_raw)
 - ALS is a flexible default; rubberband is simple; polynomial fits suit mild curvature.
 - Always inspect corrections; avoid removing true broad features.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for baseline correction validity:**
+
+1. **Baseline correction removes true spectral features (ALS with low p removes real broad bands)**
+   - Aggressive baseline subtraction can eliminate informative signal
+   - Ratio calculations biased by removed features
+   - **Fix:** Inspect baseline-corrected spectra visually; check that broad true features (e.g., water, baseline) not removed; use moderate ALS parameters (p = 0.01–0.1)
+
+2. **Baseline corrected spectra negative in valid signal regions (spectra have negative intensities post-ALS)**
+   - Indicates over-correction; true signal removed
+   - Invalid for intensity-based ratios or downstream modeling
+   - **Fix:** Reduce ALS aggressiveness (increase p); use gentler smoothing; validate baseline visually
+
+3. **Different baseline methods applied to different samples (some samples ALS, others polynomial)**
+   - Inconsistent preprocessing produces incomparable spectra
+   - Ratios and models fail across samples
+   - **Fix:** Freeze preprocessing parameters before analysis; apply identical method to all samples
+
+4. **Baseline correction applied to over-smoothed spectra (smoothing removes peaks, then baseline correction applied)**
+   - Preprocessing order matters; over-smoothing hides information that baseline tries to fit
+   - Compounded information loss
+   - **Fix:** Apply baseline correction before smoothing; use gentle smoothing after baseline
+
+5. **ALS parameters (lambda, p) chosen by eye ("looks good") without validation**
+   - Data-dependent parameter choice overfits; new data may need different parameters
+   - Reproducibility and generalization compromised
+   - **Fix:** Pre-specify parameters based on spectral characteristics or previous studies; validate on test samples
+
+6. **Baseline features confused with true sample features (matrix baseline treated as signal)**
+   - Removing baseline removes chemistry-independent variation but not true matrix peaks
+   - Incomplete baseline removal leaves matrix effects
+   - **Fix:** Distinguish baseline (smooth, slow trend) from true peaks (sharp, chemical meaning); validate with reference materials
+
+7. **No baseline correction applied to noisy spectra (baseline noise directly affects ratios)**
+   - Uneven baseline amplifies noise; ratio variability increased
+   - Statistics and reproducibility suffer
+   - **Fix:** Always apply baseline correction; use appropriate method (ALS or rolling ball) for spectral type
+
+8. **Spectral regions with true curvature treated as baseline (curvature from sample composition corrected away)**
+   - Example: long-wavelength drift in FTIR from sample absorption treated as baseline
+   - True information removed
+   - **Fix:** Understand physical baseline sources; preserve physically meaningful curvature; inspect corrected spectra
+
 ## Further reading
 - [Normalization & smoothing](normalization_smoothing.md)
 - [Feature extraction](feature_extraction.md)
-- [Raman/FTIR practical guide](../ftir_raman_preprocessing.md)
+- [Raman/FTIR practical guide](../03-cookbook/ftir_raman_preprocessing.md)
 - [PCA](../ml/pca_and_dimensionality_reduction.md)

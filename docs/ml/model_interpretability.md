@@ -53,6 +53,52 @@ For PLS-DA/PLS regression, examine loading vectors and VIP-like interpretations;
 - Avoid over-interpretation of noisy or collinear features; cross-check with domain knowledge.
 - Pair interpretability with metrics: a model that performs poorly but shows plausible bands still needs improved performance.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for feature importance and model interpretability:**
+
+1. **Feature importance from overfit model (high training accuracy but low test accuracy)**
+   - Importance scores reflect noise fit during overfitting, not true signal
+   - Top features may be coincidental collinearities in training data
+   - **Fix:** Report feature importance from test set or cross-validation; use permutation importance; validate feature relevance independently
+
+2. **Correlations with labels misinterpreted as feature importance**
+   - High correlation doesn't mean feature is used by model or is important for prediction
+   - Spurious correlations (batch confounding, data leakage) can rank high
+   - **Fix:** Use model-specific importance (coefficients, tree splits, SHAP values); don't rely on univariate correlations alone
+
+3. **Loadings/coefficients from collinear features not interpreted cautiously**
+   - High collinearity (VIF > 10) makes coefficients unstable; small data changes flip signs
+   - Ranking features by coefficient magnitude misleads when collinearity present
+   - **Fix:** Check VIF or condition number; use regularization (Ridge/Lasso) to stabilize coefficients; use permutation importance
+
+4. **Confidence intervals not reported for feature importance**
+   - Point estimates of importance vary across CV folds; single-fold importance is unstable
+   - Without CI, importance scores appear more certain than they are
+   - **Fix:** Compute importance across CV folds; report mean ± SD or 95% CI; visualize variability
+
+5. **Statistical significance confused with practical importance (p < 0.05 band ≠ important for prediction)**
+   - ANOVA or t-test on feature values tests association, not model utility
+   - Significant association doesn't guarantee predictive power
+   - **Fix:** Report model-based importance; tie to prediction accuracy; validate with independent data
+
+6. **Interpreting absence of feature as "not important" (feature has importance = 0)**
+   - Feature with zero importance may be redundant with other features, not truly unimportant
+   - Or importance measure is insensitive to that feature's contribution
+   - **Fix:** Use multiple importance measures (permutation, SHAP, coefficients); test feature removal effect on metrics
+
+7. **Chemically implausible features ranked as most important without flagging as suspicious**
+   - Food spectra are noisy; random noise peaks can rank highly if model overfit
+   - Chemical bands should make physical/chemical sense
+   - **Fix:** Cross-check with domain expertise; validate top features in independent data; avoid over-interpreting noisy regions
+
+8. **Feature importance from single model type only (only PLS loadings, no RF permutation importance)**
+   - Different models and importance measures can rank features differently
+   - Robust conclusions require agreement across multiple approaches
+   - **Fix:** Report importance from multiple models/methods; highlight consensus features; note disagreements
+
 ## See also
 - Metrics & evaluation: [metrics_and_evaluation](../metrics/metrics_and_evaluation.md)
 - ML models & best practices: [models_and_best_practices](models_and_best_practices.md)

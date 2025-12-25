@@ -31,54 +31,148 @@ extra_css:
 
 nav:
   - Home: index.md
-  - Start Here (101):
+
+  # Level 1: Quick Start (Entry Point)
+  - Start Here:
+      - 15-Minute Quickstart: 01-getting-started/quickstart_15min.md
       - Installation: 01-getting-started/installation.md
-      - First steps (CLI): 01-getting-started/first-steps_cli.md
-      - FAQ (basic): 01-getting-started/faq_basic.md
-  - Tutorials (201/301):
-      - Oil discrimination (basic): 02-tutorials/oil_discrimination_basic.md
-      - Oil vs chips matrix effects: 02-tutorials/oil_vs_chips_matrix_effects.md
-      - Thermal stability tracking: 02-tutorials/thermal_stability_tracking.md
-      - HSI surface mapping: 02-tutorials/hsi_surface_mapping.md
-      - End-to-end notebooks: 02-tutorials/end_to_end_notebooks.md
-  - Cookbook (201/301):
-      - Cookbook intro: 03-cookbook/cookbook_intro.md
-      - Preprocessing recipes: 03-cookbook/cookbook_preprocessing.md
-      - RQ questions & recipes: 03-cookbook/cookbook_rq_questions.md
-      - Validation recipes: 03-cookbook/cookbook_validation.md
-      - Registry & reporting: 03-cookbook/cookbook_registry_reporting.md
-      - Troubleshooting: 03-cookbook/cookbook_troubleshooting.md
-  - User Guide (401):
+      - Getting Started: 01-getting-started/getting_started.md
+      - Quickstart (CLI): 01-getting-started/quickstart_cli.md
+      - Quickstart (Python): 01-getting-started/quickstart_python.md
+      - Quickstart (Protocol): 01-getting-started/quickstart_protocol.md
+      - First Steps (CLI): 01-getting-started/first-steps_cli.md
+      - FAQ (Basic): 01-getting-started/faq_basic.md
+
+  # Level 2: Foundations (Conceptual Basis)
+  - Foundations:
+      - Introduction: index.md
+      - Spectroscopy Fundamentals: 07-theory-and-background/spectroscopy_basics.md
+      - Food Spectroscopy Applications: 05-advanced-topics/hsi_and_harmonization.md
+      - Scope & Limitations: non_goals_and_limitations.md
+      - Domain Overview: 07-theory-and-background/domains_overview.md
+
+  # Level 3: Theory & Methods (Scientific Underpinnings)
+  - Theory & Background:
+      - Spectroscopy Theory: 07-theory-and-background/spectroscopy_basics.md
+      - Chemometrics & ML Basics: 07-theory-and-background/chemometrics_and_ml_basics.md
+      - RQ Engine Theory: 07-theory-and-background/rq_engine_detailed.md
+      - Harmonization Theory: 07-theory-and-background/harmonization_theory.md
+      - Validation Theory: 05-advanced-topics/validation_strategies.md
+      - Model Lifecycle: 05-advanced-topics/model_lifecycle.md
+      - MOATS Overview: 07-theory-and-background/moats_overview.md
+
+  # Level 4: Methods & Preprocessing (Practical Implementation)
+  - Methods & Preprocessing:
+      - Overview: 03-cookbook/cookbook_intro.md
+      - Preprocessing Recipes: 03-cookbook/preprocessing_guide.md
+      - Chemometrics Guide: 03-cookbook/chemometrics_guide.md
+      - FTIR/Raman Methods: 03-cookbook/ftir_raman_preprocessing.md
+      - RQ Features Guide: 03-cookbook/cookbook_rq_questions.md
+      - Data Formats & HDF5: 04-user-guide/data_formats_and_hdf5.md
+      - Registry & Plugins: 04-user-guide/registry_and_plugins.md
+
+  # Level 5: Modeling & Validation (ML & Statistics)
+  - Modeling & Statistics:
+      - Overview: 05-advanced-topics/architecture.md
+      - Model Architecture: 05-advanced-topics/design_overview.md
+      - Model Lifecycle & Prediction: 05-advanced-topics/model_lifecycle.md
+      - Model Registry: 05-advanced-topics/model_registry.md
+      - Validation Strategies: 05-advanced-topics/validation_strategies.md
+      - MOATS Implementation: 05-advanced-topics/MOATS_IMPLEMENTATION.md
+      - Validation Recipes: 03-cookbook/cookbook_validation.md
+      - Baseline Validation: 03-cookbook/validation_baseline.md
+      - Chemometrics (Oils): 03-cookbook/validation_chemometrics_oils.md
+      - Peak Ratios: 03-cookbook/validation_peak_ratios.md
+
+  # Level 6: Applications & Workflows (Domain Expertise)
+  - Applications:
+      - Oil Authentication: workflows/oil_authentication.md
+      - Heating Quality: workflows/heating_quality_monitoring.md
+      - Mixture Analysis: workflows/mixture_analysis.md
+      - Batch QC: workflows/batch_quality_control.md
+      - Hyperspectral Mapping: workflows/hyperspectral_mapping.md
+      - Custom Workflows: workflows/workflow_design_and_reporting.md
+      - Aging Workflows: workflows/aging_workflows.md
+      - Harmonization & Calibration: workflows/harmonization_automated_calibration.md
+      - Multimodal Workflows: 05-advanced-topics/multimodal_workflows.md
+
+  # Level 7: Tutorials & Learning (Step-by-Step)
+  - Tutorials:
+      - Beginner:
+          - Oil Discrimination (Basic): 02-tutorials/oil_discrimination_basic.md
+          - Reference Analysis: 02-tutorials/reference_analysis_oil_authentication.md
+          - Raman GUI Quickstart: 02-tutorials/raman_gui_quickstart.md
+      - Intermediate:
+          - Matrix Effects: 02-tutorials/oil_vs_chips_matrix_effects.md
+          - Thermal Stability: 02-tutorials/thermal_stability_tracking.md
+          - GUI Workflow: 02-tutorials/modeling_gui_foodspec_workflow.md
+      - Advanced:
+          - HSI Surface Mapping: 02-tutorials/hsi_surface_mapping.md
+          - End-to-End Notebooks: 02-tutorials/end_to_end_notebooks.md
+          - Advanced Deep Learning: 05-advanced-topics/advanced_deep_learning.md
+      - Example Catalog: 06-tutorials/example_catalog.md
+
+  # Level 8: Protocols & Reproducibility (Publication Support)
+  - Protocols:
+      - Protocols Overview: protocols/protocols_overview.md
+      - Reference Protocol: protocols/reference_protocol.md
+      - Methods Text Generator: protocols/methods_text_generator.md
+      - Protocol Cookbook: 03-cookbook/protocol_cookbook.md
+      - Protocol Benchmarks: protocols/protocol_benchmarks.md
+      - Statistical Power & Design: protocols/statistical_power_and_limits.md
+
+  # Level 9: User Guide (Operations & Configuration)
+  - User Guide:
+      - CLI Guide: 04-user-guide/cli.md
+      - CLI Help Reference: 04-user-guide/cli_help.md
       - Protocols & YAML: 04-user-guide/protocols_and_yaml.md
-      - CLI guide: 04-user-guide/cli_guide.md
-      - Data formats & HDF5: 04-user-guide/data_formats_and_hdf5.md
-      - Registry & plugins: 04-user-guide/registry_and_plugins.md
-      - Automated analysis: 04-user-guide/automation.md
-      - Protocol profiles: 04-user-guide/protocol_profiles.md
-      - Logging & diagnostics: 04-user-guide/logging.md
-  - Advanced Topics (501):
-      - Architecture: 05-advanced-topics/architecture.md
-      - HSI & harmonization: 05-advanced-topics/hsi_and_harmonization.md
-      - Validation strategies: 05-advanced-topics/validation_strategies.md
-      - Model lifecycle & prediction: 05-advanced-topics/model_lifecycle_and_prediction.md
-      - MOATS implementation: 05-advanced-topics/MOATS_IMPLEMENTATION.md
-  - Developer Guide (601):
+      - Automated Analysis: 04-user-guide/automation.md
+      - Protocol Profiles: 04-user-guide/protocol_profiles.md
+      - Logging & Configuration: 04-user-guide/config_logging.md
+      - Data Governance: 04-user-guide/data_governance.md
+      - Library Management: 04-user-guide/libraries.md
+      - Library Search: 04-user-guide/library_search.md
+      - CSV to Library: 04-user-guide/csv_to_library.md
+      - Vendor I/O: 04-user-guide/vendor_io.md
+      - Registry & Reporting: 03-cookbook/cookbook_registry_reporting.md
+      - Troubleshooting: 03-cookbook/cookbook_troubleshooting.md
+      - Troubleshooting FAQ: troubleshooting/troubleshooting_faq.md
+      - Reporting Guidelines: troubleshooting/reporting_guidelines.md
+
+  # Level 10: API Reference (Code Documentation)
+  - API Reference:
+      - Overview: 08-api/index.md
+      - Core API: 08-api/core.md
+      - Machine Learning: 08-api/ml.md
+      - Statistics: 08-api/stats.md
+
+  # Level 11: Reference Materials (Supporting Documentation)
+  - Reference:
+      - Metric Significance Tables: 09-reference/metric_significance_tables.md
+      - Glossary: 09-reference/glossary.md
+      - Keyword Index: 09-reference/keyword_index.md
+      - Method Comparison: 09-reference/method_comparison.md
+      - ML Model VIP Scores: 09-reference/ml_model_vip_scores.md
+      - Non-Goals & Limitations: non_goals_and_limitations.md
+      - Changelog: 09-reference/changelog.md
+      - Citing FoodSpec: 09-reference/citing.md
+      - Versioning: 09-reference/versioning.md
+      - Archive (Historical): archive/README.md
+
+  # Level 12: Developer Guide (Extension & Contribution)
+  - Developer Guide:
       - Contributing: 06-developer-guide/contributing.md
       - Testing & CI: 06-developer-guide/testing_and_ci.md
-      - Extending protocols & steps: 06-developer-guide/extending_protocols_and_steps.md
-      - Writing plugins: 06-developer-guide/writing_plugins.md
-      - Releasing: 06-developer-guide/RELEASING.md
-      - Release checklist: 06-developer-guide/RELEASE_CHECKLIST.md
-  - Theory & Background (701):
-      - Spectroscopy basics: 07-theory-and-background/spectroscopy_basics.md
-      - Chemometrics & ML basics: 07-theory-and-background/chemometrics_and_ml_basics.md
-      - RQ engine theory: 07-theory-and-background/rq_engine_theory.md
-      - Harmonization theory: 07-theory-and-background/harmonization_theory.md
-  - Glossary: glossary.md
-  - Changelog: changelog.md
-  - Moats:
-      - Overview: moats_overview.md
-      - Data Governance: data_governance.md
+      - Testing Coverage: 06-developer-guide/testing_coverage.md
+      - Architecture: 05-advanced-topics/architecture.md
+      - Integration Checklist: 06-developer-guide/integration_checklist.md
+      - Documentation Guidelines: 06-developer-guide/documentation_guidelines.md
+      - Extending Protocols: 06-developer-guide/extending_protocols_and_steps.md
+      - Writing Plugins: 06-developer-guide/writing_plugins.md
+      - Deployment Artifacts: 05-advanced-topics/deployment_artifact_versioning.md
+      - HDF5 Schema Versioning: 05-advanced-topics/deployment_hdf5_schema_versioning.md
+      - Releasing: 06-developer-guide/releasing.md
+      - Release Checklist: 06-developer-guide/RELEASE_CHECKLIST.md
 
 markdown_extensions:
   - admonition

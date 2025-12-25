@@ -12,21 +12,19 @@ import pandas as pd
 
 
 def compute_cohens_d(group1, group2, pooled: bool = True) -> float:
-    """
-    Compute Cohen's d for two groups.
-
-    Parameters
-    ----------
-    group1, group2 : array-like
-        Samples for the two groups.
-    pooled : bool, optional
-        If True, use pooled standard deviation; otherwise use unpooled average,
-        by default True.
-
-    Returns
-    -------
-    float
-        Cohen's d effect size.
+    """Compute Cohen's d effect size for comparing two groups.
+    
+    Quantifies the magnitude of difference between two groups independent of
+    sample size. Essential for evaluating whether statistically significant
+    differences are also practically significant.
+    
+    Parameters:
+        group1 (array-like): First group numerical samples for comparison
+        group2 (array-like): Second group numerical samples for comparison
+        pooled (bool): Use pooled std (assume equal variances). If False, average unpooled std.
+    
+    Returns:
+        float: Cohen's d effect size (unbounded; can be negative)
     """
 
     g1 = np.asarray(group1, dtype=float)
@@ -44,23 +42,24 @@ def compute_cohens_d(group1, group2, pooled: bool = True) -> float:
 
 
 def compute_anova_effect_sizes(ss_between: float, ss_total: float, ss_within: float | None = None) -> pd.Series:
-    """
-    Compute eta-squared and partial eta-squared for ANOVA.
+    """Compute eta-squared and partial eta-squared for ANOVA.
 
-    Parameters
-    ----------
-    ss_between : float
-        Sum of squares between groups.
-    ss_total : float
-        Total sum of squares.
-    ss_within : float | None, optional
-        Sum of squares within groups (error term). If provided, partial
-        eta-squared is computed.
+    Quantifies proportion of variance explained by group differences.
+    
+    Interpretation Scale:
+    - eta-squared < 0.01: Negligible effect
+    - 0.01 <= eta-squared < 0.06: Small effect
+    - 0.06 <= eta-squared < 0.14: Medium effect
+    - eta-squared >= 0.14: Large effect
+    
+    Parameters:
+        ss_between: Sum of squares between groups (treatment effect)
+        ss_total: Total sum of squares (all variation in data)
+        ss_within: Sum of squares within groups (error). If provided, partial
+            eta-squared is computed.
 
-    Returns
-    -------
-    pd.Series
-        eta_squared and partial_eta_squared (if ss_within provided).
+    Returns:
+        pd.Series with 'eta_squared' and optionally 'partial_eta_squared'
     """
 
     eta_sq = ss_between / ss_total if ss_total != 0 else np.nan

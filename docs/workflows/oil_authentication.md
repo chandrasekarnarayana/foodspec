@@ -154,6 +154,52 @@ See theory: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscop
 - Ratio–ratio scatter (e.g., 1655/1742 vs 3010/2850) highlights compositional regimes; pair with silhouette/ANOVA on each ratio.
 - Summary tables (peak/ratio mean ± SD by oil_type) can accompany plots in supplementary material.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for oil authentication workflow:**
+
+1. **Model trained and tested on oils from same source/batch (e.g., all "olive" from single producer/harvest)**
+   - Intra-source variability unknown; model may learn producer-specific patterns, not species
+   - Different olive cultivar or origin will fail
+   - **Fix:** Include multiple sources per oil type; validate across different cultivars/origins
+
+2. **No adulterant testing (model validated only on pure oils, not blends or refined oils)**
+   - Pure-oil classification doesn't confirm ability to detect adulteration
+   - Refined oils may cluster closer to pure oils than expected
+   - **Fix:** Include known adulterants (refined oils, blends) in test set; test detection rates at 1%, 5%, 10% adulteration levels
+
+3. **Ratios or features cherry-picked post-hoc to separate oils**
+   - Data-dependent feature selection inflates reproducibility claims
+   - Different dataset may reveal different separating features
+   - **Fix:** Use univariate feature selection a priori; or use model-based importance from cross-validation
+
+4. **Authentication model based on single spectral region (only CH stretches, ignore C=O region)**
+   - Narrow spectral window may miss adulterants affecting other regions
+   - Real adulterants exploit regions unchecked
+   - **Fix:** Use full spectral range; test sensitivity to adulterants in different regions
+
+5. **Cross-contamination during sample preparation (using same pipette for different oils)**
+   - Cross-contamination creates false similarity between oils
+   - Baseline or preprocessing steps may not remove contamination
+   - **Fix:** Use separate equipment per sample; measure blanks between samples; document sample handling
+
+6. **Confusing near-infrared (NIR) with Raman/FTIR without method validation**
+   - Different spectroscopic methods give different spectral signatures
+   - Transferring models between methods requires retraining
+   - **Fix:** Validate method-specific models; don't mix spectra from different instruments/wavelengths without harmonization
+
+7. **Model accuracy high (>95%) but specificity/sensitivity per oil type varies wildly**
+   - Macro-accuracy can mask severe class-specific failures
+   - Confusion matrix and per-class metrics reveal true performance
+   - **Fix:** Report per-class precision/recall; show confusion matrix; investigate misclassified oils
+
+8. **No temporal validation (model trained on 2024 oils, deployed on 2023 samples without revalidation)**
+   - Aging, storage, or oxidation changes oil spectra over time
+   - Model trained on recent oils may fail on archived samples
+   - **Fix:** Test on samples from different harvest years; monitor model performance over time; retrain periodically
+
 ## Further reading
 - [Baseline correction](../preprocessing/baseline_correction.md)
 - [Feature extraction](../preprocessing/feature_extraction.md)

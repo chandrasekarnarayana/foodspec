@@ -1,6 +1,6 @@
 # ML & Chemometrics: PCA and Dimensionality Reduction
 
-> For notation and symbols used below, see the [Glossary](../glossary.md).
+> For notation and symbols used below, see the [Glossary](../09-reference/glossary.md).
 
 ## What?
 PCA projects high-dimensional spectra/features into orthogonal components capturing variance; outputs scores (samples in PC space), loadings (feature contributions), explained variance, and visualizations (scores/loadings, scree, optional t-SNE). Used for exploration, denoising, and as input to downstream ML.
@@ -74,6 +74,52 @@ print(sil, bw, stats["f_stat"], stats["p_perm"])
 - PCA reduces dimensionality and reveals structure; interpret scores/loadings in chemical context.
 - Good preprocessing is essential; variance may otherwise reflect baseline/noise.
 - Use PCA/t-SNE for exploration/QC; pair every plot with quantitative metrics (silhouette, between/within ratio/F-stat, p_perm) for defensible interpretation.
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for PCA and dimensionality reduction:**
+
+1. **PCA applied to unscaled features (large-magnitude bands dominate, small bands hidden)**
+   - Unscaled PCA gives high variance features (e.g., strong C=O band) top components
+   - Small but informative features (e.g., weak overtones) contribute little
+   - **Fix:** Always standardize (unit variance) or normalize before PCA; document scaling choice
+
+2. **Batch effects not removed before PCA (batch drift appears as PC1, obscuring biology)**
+   - Systematic batch variation (instrument age, temperature) can dominate PCA
+   - Biological signal hidden in lower components
+   - **Fix:** Apply batch correction (ComBat, SVA) before PCA, or visualize/color by batch to interpret batch effects
+
+3. **Number of components chosen by eye ("PC1 + PC2 look separated")**
+   - Subjective choice risks overfitting; overstating signal clarity
+   - Objective criteria (cumulative variance, scree plot elbow, cross-validation) more defensible
+   - **Fix:** Use elbow method, silhouette score, or cross-validation to choose n_components
+
+4. **Outliers not investigated (one sample far from others in PC space)**
+   - Outliers can be real (damaged sample, contamination) or artifacts (processing error)
+   - Outliers dominate PC1, compress other samples
+   - **Fix:** Visualize outliers; check for data errors; consider robust PCA or outlier removal
+
+5. **Loadings interpretation without domain knowledge (PC1 loading high at random peaks)**
+   - Loadings can be noisy; high loadings at weak/noisy regions don't indicate importance
+   - True informative bands should align with domain knowledge (expected biochemical changes)
+   - **Fix:** Cross-check loadings with domain expertise; only trust loadings for strong, consistent peaks
+
+6. **t-SNE/UMAP used without understanding non-linearity can create artifacts**
+   - t-SNE/UMAP can exaggerate cluster separation; apparent clusters may dissolve under perturbation
+   - Metrics (silhouette, Davies–Bouldin) more objective than visual inspection
+   - **Fix:** Use t-SNE/UMAP for exploration only; validate clusters with stability analysis and metrics
+
+7. **Inference on low-dimensional PCA projections (e.g., running statistics on PC1 without considering full space)**
+   - Information loss in dimensionality reduction; statistical tests on PCs don't reflect full data
+   - Example: group difference in PC1 doesn't mean groups differ significantly in high-D space
+   - **Fix:** Run inference on original data or account for dimensionality reduction in models
+
+8. **No explanation of variance explained by noise or batch ("PC1 explains 60%, but this is just drift")**
+   - High cumulative variance (>90% in 3 PCs) doesn't guarantee signal quality
+   - Can reflect preprocessing artifacts (e.g., baseline residuals) or batch effects
+   - **Fix:** Visualize by batch/time; apply batch correction; compute signal-to-noise on residuals
 
 ## Further reading
 - [Classification & regression](classification_regression.md)

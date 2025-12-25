@@ -40,6 +40,52 @@ X_norm = snv.transform(X_smooth)
 - Overlays showing effects of vector vs SNV vs MSC on replicates.
 - Cropped vs full-range spectra.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for normalization and smoothing validity:**
+
+1. **Normalization method not matched to data characteristics (vector normalization on spectra with very different magnitudes)**
+   - Vector norm emphasizes high-intensity regions; may not be appropriate for all data
+   - SNV or MSC better if multiplicative effects present
+   - **Fix:** Test multiple normalizations; choose based on data characteristics; validate downstream metrics
+
+2. **Smoothing window too large (7-point Savitzky-Goyal on sharp peaks 5 points wide)**
+   - Large smoothing windows flatten true narrow peaks
+   - Information loss for peak-based features
+   - **Fix:** Ensure smoothing window smaller than narrowest true feature; use conservative window_length
+
+3. **Smoothing and derivatives without examining polynomial order (2nd-order polyorder removes true 2nd-derivative features)**
+   - Polynomial order affects what's preserved; high order fits noise
+   - Derivatives amplify noise; high polynomial order makes worse
+   - **Fix:** Use low polyorder (2–3); visualize smoothed/derivative spectra; validate peaks preserved
+
+4. **Normalization parameters (SNV mean/SD) computed on all data, then applied to test set**
+   - Data leakage: test set statistics influence training
+   - Proper workflow: compute normalization on training data only
+   - **Fix:** Include normalization in preprocessing pipeline; compute statistics only on training data
+
+5. **Different normalization methods applied to spectra from different sources (Device A vector-normalized, Device B SNV)**
+   - Spectra not comparable; downstream models fail
+   - Batch effects introduced by normalization
+   - **Fix:** Apply identical normalization to all data; freeze parameters before analysis
+
+6. **Cropping wavenumber range without justification (removing low-wavenumber noise regions containing informative peaks)**
+   - Important chemical information removed
+   - Chemometric models trained on partial spectra won't generalize
+   - **Fix:** Document crop regions; validate that no informative peaks removed; test models on uncropped data
+
+7. **Over-smoothing (window_length = 201 on 1800-point spectra) makes features disappear**
+   - Excessively smoothed spectra lose all peak structure
+   - Ratios collapse; information completely lost
+   - **Fix:** Use conservative smoothing (window_length ≤10 points); visualize smoothed spectra; verify peaks visible
+
+8. **Normalization makes zero/negative intensities (spectra divided by zero or normalized to zero mean, producing negative values)**
+   - Invalid for log-transforms, ratio calculations
+   - Suggests over-normalization or data issue
+   - **Fix:** Check raw spectra before normalization; ensure no zero values; use robust normalizations (MSC with outlier handling)
+
 ## Further reading / see also
 - [Baseline correction](baseline_correction.md)
 - [Scatter & cosmic-ray handling](scatter_correction_cosmic_ray_removal.md)

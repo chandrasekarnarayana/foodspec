@@ -60,6 +60,52 @@ X_ra = cr.transform(X_ra)
 - Cosmic ray spikes in Raman should be removed to avoid biasing normalization/peaks.
 - Always validate corrections visually.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for scatter correction and cosmic ray removal:**
+
+1. **Cosmic rays not removed from spectra (single-pixel spikes affect normalization and averaging)**
+   - Cosmic ray (high intensity noise) inflates normalization factors
+   - Averaged spectra have artifacts
+   - **Fix:** Detect cosmic rays (statistical outliers per wavelength); interpolate or remove; validate visually
+
+2. **Scatter correction method not validated on reference (using MSC without checking it reduces scatter)**
+   - Some scatter-correction methods ineffective for specific scatter types
+   - Scatter may remain post-correction
+   - **Fix:** Apply reference-free QC (compare spectra before/after); validate on samples with known scatter levels
+
+3. **Atmospheric water/CO₂ lines not masked in FTIR (strong H₂O/CO₂ peaks affect ratios)**
+   - Water/CO₂ lines dominate certain regions; ratios computed in these regions are meaningless
+   - Information loss
+   - **Fix:** Mask atmospheric bands before feature extraction; list masked regions; validate peaks not in masked regions
+
+4. **Multiplicative scatter correction (MSC) applied assuming linear reference-sample relationship (breaks if sample composition fundamentally different)**
+   - MSC assumes sample and reference vary only in scale/offset
+   - Non-linear scatter or complex matrix breaks assumption
+   - **Fix:** Validate MSC on test samples; check residuals post-MSC; consider Extended MSC or nonlinear alternatives
+
+5. **Spikes/cosmic rays interpolated without validation (interpolated values treated as real data)**
+   - Interpolation introduces artificial spectra
+   - May create false peaks or alter ratios
+   - **Fix:** Mark interpolated regions; avoid extracting features from interpolated wavelengths; use robust statistics
+
+6. **Scatter not uniform across samples (one sample highly scattering, another clear, corrected with single MSC)**
+   - Sample-specific scatter variation not captured by single MSC
+   - Residual scatter remains
+   - **Fix:** Apply sample-specific scatter correction; check scatter by visual inspection; group similar scatter types
+
+7. **Removal of high-frequency noise (cosmic rays) also removes true high-frequency information**
+   - Aggressive spike removal flattens sharp true peaks
+   - Information loss for peak-based features
+   - **Fix:** Use conservative spike detection (>5 SD from local mean); visualize removed vs. original; preserve sharp features
+
+8. **No validation of scatter correction on known samples (assuming correction works without testing)**
+   - Different sample types may respond differently to scatter correction
+   - Overcorrection or undercorrection undetected
+   - **Fix:** Test scatter correction on reference materials; compare corrected/uncorrected downstream metrics
+
 ## Further reading
 - [Baseline correction](baseline_correction.md)
 - [Normalization & smoothing](normalization_smoothing.md)

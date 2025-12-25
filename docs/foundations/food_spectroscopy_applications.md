@@ -47,3 +47,39 @@ This chapter surveys common applications of Raman, FTIR, and NIR spectroscopy ac
 - [Feature extraction](../preprocessing/feature_extraction.md)
 - [Classification & regression](../ml/classification_regression.md)
 - [Mixture models](../ml/mixture_models.md)
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for food spectroscopy applications:**
+
+1. **Single-source validation (all "olive oil" from one producer; all "adulterated" from single batch)**
+   - Intra-source variability unknown; model may learn source-specific patterns
+   - Generalization to other sources unverified
+   - **Fix:** Include multiple sources, varieties, origins; validate across independent suppliers
+
+2. **Matrix effects ignored (oil spectra compared to dairy spectra without accounting for matrix differences)**
+   - Different food matrices have different spectral baselines, absorption
+   - Direct comparison invalid
+   - **Fix:** Normalize by matrix; use matrix-matched standards; validate within-matrix first
+
+3. **Aging/storage effects not controlled (samples of different ages compared as if equivalent)**
+   - Oxidation, ripening, degradation change spectra over time
+   - Age confounds with treatment
+   - **Fix:** Control storage time; document sample age; include age as covariate
+
+4. **Adulteration detection without testing at realistic levels (model validated on 50% adulteration, deployed at 1%)**
+   - Detection limit unestablished; method sensitivity unknown
+   - May miss realistic adulteration levels
+   - **Fix:** Test at 0.5%, 1%, 2%, 5%, 10%, 20%; report limit of detection
+
+5. **Spectroscopy method choice not justified (using NIR for C=C bands best detected by Raman)**
+   - Different methods have different sensitivities
+   - Mismatch reduces performance
+   - **Fix:** Match method to analyte; justify choice based on band strengths; benchmark alternatives
+
+6. **Reference method comparisons missing (spectroscopy results not validated by HPLC/GC-MS/wet chemistry)**
+   - Spectroscopy is indirect; orthogonal validation essential
+   - Can't confirm chemical interpretation without reference method
+   - **Fix:** Validate key findings with orthogonal methods; report agreement

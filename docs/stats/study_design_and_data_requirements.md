@@ -41,6 +41,54 @@ flowchart LR
 - Note instrument model/settings and preprocessing applied.
 - Tie design choices to assumptions (normality, homoscedasticity) and power considerations.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags that invalidate study conclusions:**
+
+1. **Insufficient replication (n < 3 per group)**
+   - Single measurements are too noisy for food spectroscopy
+   - Natural sample variability alone can exceed your signal
+   - **Fix:** Increase replicates to ≥3 per group; report confidence intervals, not point estimates
+
+2. **Pseudo-replication (multiple scans of same aliquot)**
+   - Repeated scans of identical sample are NOT independent; they're autocorrelated
+   - Statistical tests assume independence; violating this inflates false positives
+   - **Fix:** Analyze ≥3 distinct aliquots; document which measurements come from same sample
+
+3. **Batch confounding (all treatment A = Day 1, all treatment B = Day 2)**
+   - Systematic drift (laser aging, temperature) mimics biological differences
+   - Impossible to know if group difference is real or instrumental drift
+   - **Fix:** Randomize sample order across batches; use batch-aware CV (GroupKFold); include batch as factor in ANOVA
+
+4. **Gross sample imbalance (n_A = 50, n_B = 3)**
+   - Power is limited by smallest group; ANOVA assumptions (homoscedasticity) violated
+   - May mask true effects or generate spurious significance
+   - **Fix:** Aim for balanced or near-balanced designs; if imbalanced, use Welch's ANOVA or permutation tests
+
+5. **No randomization (samples processed in order: A, A, A, B, B, B)**
+   - Systematic bias from drift, operator fatigue, or instrument warmup accumulates within groups
+   - Differences may be temporal, not biological
+   - **Fix:** Randomize acquisition order; interleave groups across time
+
+6. **Undisclosed preprocessing variations**
+   - If baseline correction λ or smoothing window changes between samples, spectra are not comparable
+   - Different preprocessing → different statistics, even on same raw data
+   - **Fix:** Freeze preprocessing parameters before analysis; document and report all preprocessing details
+
+7. **Ignoring known batch effects (batch effect visible in PCA, not adjusted)**
+   - Multi-day or multi-instrument studies require batch correction (ComBat, SVA) or batch-aware CV
+   - Ignoring batch effects inflates variance and reduces power; may create false significance
+   - **Fix:** Include batch in ANOVA model, or use batch-correction; report residuals after batch adjustment
+
+8. **No control for multiple testing (comparing 100 peaks, reporting p < 0.05 as significant)**
+   - Each test has 5% chance of false positive; 100 tests → ~5 false positives expected by chance
+   - Uncorrected p-values are misleading
+   - **Fix:** Use Bonferroni, Benjamini–Hochberg FDR, or permutation tests; report corrected p-values
+
+---
+
 ## Further reading
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [ANOVA and MANOVA](anova_and_manova.md)

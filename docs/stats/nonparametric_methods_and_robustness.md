@@ -84,6 +84,52 @@ Use cases:
 - Always inspect distributions/boxplots; pair tests with visualizations.
 - Robustness checks should accompany headline metrics in methods/results for transparency.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for nonparametric test and robustness validity:**
+
+1. **Nonparametric test chosen just because parametric test failed (ignoring why assumptions violated)**
+   - Nonparametric tests are valid but less powerful
+   - Choosing nonparametric test post-hoc because p-value was > 0.05 is p-hacking
+   - **Fix:** Declare test choice a priori; if assumptions violated, decide robustness strategy before analysis
+
+2. **Permutation test with n too small (n = 5, only 5! = 120 possible permutations)**
+   - Permutation test p-values are discrete; limited by number of possible permutations
+   - Very small samples produce limited p-values (e.g., only p ∈ {0.017, 0.033, 0.050, ...})
+   - **Fix:** For n < 10, consider exact permutation tests; for n < 20, Monte Carlo permutation; report number of permutations used
+
+3. **Robustness check ignored if it contradicts main result (parametric p < 0.05, but nonparametric p > 0.05; report only parametric)**
+   - Selective reporting of robust/non-robust results is biased
+   - Discrepancies suggest assumption violations; deserve discussion
+   - **Fix:** Report both parametric and nonparametric; discuss disagreements transparently
+
+4. **Confidence intervals from permutation test not reported (only p-value given)**
+   - p-values don't quantify effect size or precision
+   - Permutation CI provides more informative uncertainty
+   - **Fix:** Report permutation CI alongside p-value; interpret magnitude of effect
+
+5. **Nonparametric test with no visualization (reporting Mann–Whitney U statistic without boxplots)**
+   - Nonparametric tests compare distributions (not just medians)
+   - p-value alone obscures what aspect of distribution differs
+   - **Fix:** Pair nonparametric tests with boxplots, density plots, or empirical CDFs
+
+6. **Rank transformation applied before modeling (converting data to ranks, then running regression)**
+   - Rank transformation loses quantitative information
+   - Interpretation becomes ambiguous (ranks are ordinal, not cardinal)
+   - **Fix:** Use nonparametric tests (Mann–Whitney, Spearman) directly on original data; or use robust regression
+
+7. **Batch effects ignored in permutation test (permuting within batch → false positive if batch confounded with groups)**
+   - Standard permutation test assumes exchangeability; batch effects violate this
+   - Can produce spurious significance if batch correlates with treatment
+   - **Fix:** Use restricted permutation (preserve batch structure) or batch-stratified permutation
+
+8. **Bootstrap confidence interval with transformation (reporting CI on log-scale without back-transforming)**
+   - Back-transformation of CI bounds is not identity (confidence intervals don't map linearly through transformations)
+   - Can produce misleading intervals
+   - **Fix:** Use appropriate bootstrap method for transformed data; consider bias-corrected bootstrap
+
 ## See also
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [Study design](study_design_and_data_requirements.md)

@@ -2,7 +2,7 @@
 
 Metrics tell you how well a workflow answers a scientific or QC question. Different food spectroscopy tasks (authentication, adulteration detection, spoilage monitoring, calibration) demand different metrics and plots. This chapter explains what to use, why, and how to interpret results in practice.
 
-> For notation and symbols, see the [Glossary](../glossary.md).
+> For notation and symbols, see the [Glossary](../09-reference/glossary.md).
 
 ## What?
 Defines classification, regression, embedding-structure, and agreement metrics; pairs each with recommended plots. Inputs: true/pred labels or continuous targets (plus scores), embeddings, ratios. Outputs: metric dictionaries, plots (confusion matrix, ROC/PR, calibration, residuals, Bland–Altman), and uncertainty (bootstrapped CI).
@@ -208,6 +208,52 @@ When comparing spectral features (ratios/peaks) across groups, complement metric
 - **MANOVA** to test multivariate group differences across several ratios/PCs.
 - **Games–Howell** post-hoc after ANOVA/Kruskal when variances/group sizes differ; safer for many spectroscopic datasets.
 See [ANOVA & MANOVA](../stats/anova_and_manova.md) for theory and code.
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for metrics and evaluation:**
+
+1. **High accuracy on imbalanced data without checking per-class metrics (90% accuracy from 90% majority-class prediction)**
+   - Accuracy misleading on imbalanced tasks
+   - F1, precision, recall, or balanced accuracy more informative
+   - **Fix:** Report confusion matrix; per-class precision/recall; use weighted/balanced metrics
+
+2. **Metrics reported without uncertainty (F1 = 0.85, no confidence interval or SD)**
+   - Point estimates hide fold-to-fold variability
+   - Can't assess significance of model differences
+   - **Fix:** Report mean ± SD across folds; compute bootstrap CI; visualize per-fold metrics
+
+3. **Single metric used in isolation (only accuracy, ignoring confusion matrix or calibration)**
+   - Each metric highlights different aspects
+   - Single metric can miss important failures
+   - **Fix:** Report multiple metrics (accuracy + F1 + AUC + confusion matrix); discuss trade-offs
+
+4. **Test set metrics inflated by leakage (preprocessing computed on full data before train/test split)**
+   - Data leakage inflates metrics; performance estimates unreliable
+   - Proper workflow: preprocessing inside CV loop
+   - **Fix:** Use Pipeline; compute statistics only on training data; audit for leakage sources
+
+5. **Metrics sensitive to threshold not reported with threshold (AUC without reporting classification threshold)**
+   - Binary classification metrics depend on threshold choice
+   - Default threshold (0.5) may not be optimal
+   - **Fix:** Tune threshold on validation set; report operating point; plot ROC/PR curves
+
+6. **Model comparison without statistical testing (Model A 0.90, Model B 0.91 → "B is better")**
+   - Small metric differences may not be significant
+   - Variability across folds needed to assess significance
+   - **Fix:** Perform paired t-test or Wilcoxon on fold-level metrics; report p-value
+
+7. **Metrics computed on same data used for hyperparameter tuning (test set used for tuning)**
+   - Tuning on test set overfits; metrics inflated
+   - Proper workflow: nested CV or separate tune/test sets
+   - **Fix:** Use nested CV (inner: tune, outer: evaluate); never tune on test set
+
+8. **Regression metrics (R², RMSE) without residual plots (high R² but systematic residual bias)**
+   - R² doesn't detect heteroscedasticity or non-linearity
+   - Residual plots reveal model failures
+   - **Fix:** Always plot residuals vs fitted; check for trends; investigate heteroscedasticity
 
 ## See also
 - [Visualization with FoodSpec](../visualization/plotting_with_foodspec.md)

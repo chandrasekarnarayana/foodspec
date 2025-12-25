@@ -35,7 +35,7 @@ Short, practical “How do I…?” tasks. Each recipe includes a CLI and Python
   cfg = PreprocessingConfig(remove_spikes=True)
   df_clean = run_full_preprocessing(df_raw, cfg)
   ```
-- **More:** [ftir_raman_preprocessing.md](../ftir_raman_preprocessing.md)
+- **More:** [ftir_raman_preprocessing.md](ftir_raman_preprocessing.md)
 
 ## Align spectra from two instruments
 **Problem:** Need a common wavenumber grid across instruments/batches.
@@ -46,7 +46,7 @@ Short, practical “How do I…?” tasks. Each recipe includes a CLI and Python
   ```
 - **Python way:**  
   ```python
-  from foodspec.harmonization import align_wavenumbers
-  aligned = align_wavenumbers([ds1, ds2], target_grid=None, method="interp")
+  from foodspec import harmonize_datasets
+  aligned = harmonize_datasets([ds1, ds2])
   ```
 - **More:** [hsi_and_harmonization.md](../05-advanced-topics/hsi_and_harmonization.md), [harmonization_theory.md](../07-theory-and-background/harmonization_theory.md)

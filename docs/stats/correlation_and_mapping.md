@@ -70,6 +70,52 @@ flowchart LR
 - Report r and p-value; for Spearman, emphasize monotonicity rather than linear slope.
 - Use heatmaps for multiple features; annotate significant associations cautiously to avoid over-interpretation.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for correlation validity:**
+
+1. **High correlation without checking causation (r = 0.95 does not prove causation)**
+   - Correlation measures association, not causation
+   - Confounders can create spurious correlations (e.g., both variables driven by batch)
+   - **Fix:** Report correlation as descriptive statistic; discuss confounders; use causal inference methods if causal claims intended
+
+2. **Testing many correlations without multiple-test correction (100 features → 100 pairwise tests, report r > 0.3 as significant)**
+   - Uncorrected significance levels inflate with test count
+   - 100 independent tests expect ~5 false positives at α = 0.05
+   - **Fix:** Apply FDR correction or permutation tests; report Benjamini–Hochberg adjusted p-values
+
+3. **Outliers dominating correlation (r = 0.9 driven by 2 extreme points)**
+   - Pearson r is sensitive to outliers; single outlier can reverse correlation sign
+   - Spearman is more robust but still affected by extreme ranks
+   - **Fix:** Visualize scatter plot; compute robust correlation (e.g., percentage bend); report with/without outliers
+
+4. **Non-linear relationship misrepresented as linear (r = 0.3, but relationship is U-shaped)**
+   - Pearson r assumes linear association; nonlinear relationships may show low r despite strong association
+   - Spearman captures monotonicity but misses U-shaped or other patterns
+   - **Fix:** Visualize relationships; consider nonparametric association measures; test for quadratic terms
+
+5. **Sample size too small for reliable p-value (n = 5, r = 0.6, p = 0.28)**
+   - Correlation p-values depend heavily on n; small samples have low power
+   - Correlation estimated from tiny samples doesn't generalize
+   - **Fix:** Report confidence intervals around r; plan for adequate sample size; consider cross-validation
+
+6. **Pseudo-replication in correlation (correlating batch means instead of individual samples)**
+   - Reducing data (averaging replicates) inflates correlation and deflates uncertainty
+   - Over-aggregation creates artificial certainty
+   - **Fix:** Analyze at the level of individual measurements; use mixed-effects models if nested structure present
+
+7. **Batch confounding in correlation (all samples from Device A have high ratio, all from Device B have low ratio)**
+   - Batch effects can create spurious correlations
+   - Correlation may reflect device differences, not biological association
+   - **Fix:** Include batch in analysis (partial correlation, batch-adjusted residuals); visualize by batch
+
+8. **Interpreting absence of correlation as independence (r ≈ 0 means "not related")**
+   - Pearson r ≈ 0 means no linear relationship; nonlinear associations may exist
+   - Spearman ρ ≈ 0 means no monotonic relationship; complex patterns may be present
+   - **Fix:** Visualize relationships; test for nonlinear patterns; report p-value with scatter plot
+
 ## Further reading
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [Study design](study_design_and_data_requirements.md)

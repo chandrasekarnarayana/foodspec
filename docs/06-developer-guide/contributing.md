@@ -1,42 +1,28 @@
-# Developer Guide – Contributing
+# Contributing
 
-This page distills the key contributor practices for FoodSpec. For the canonical rules, see [contributing.md](../contributing.md).
+FoodSpec is a research project led by Chandrasekar Subramani Narayan. External collaborators are welcome; please align with the style and testing expectations to keep the protocol robust.
 
-## Quick links
-- Contribution guide: `CONTRIBUTING.md`
-- Coding style: defined in `pyproject.toml` (check lint/format settings). Follow readable, well-documented code with minimal external deps.
-- Testing & CI: see `06-developer-guide/testing_and_ci.md`
+## How to propose changes
+- Open an issue to discuss new features or bugs before a major change.
+- Fork and submit PRs for code/docs improvements; keep changes focused and documented.
 
-## Local checklist (abridged)
-1) Create a venv and install dev extras:
+## Development setup
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # or .venv\\Scripts\\activate on Windows
+git clone https://github.com/chandrasekarnarayana/foodspec.git
+cd foodspec
 pip install -e ".[dev]"
 ```
-2) Run lint/format (if configured) and tests:
+Run formatting/linting/tests before PRs:
 ```bash
-pytest                  # full suite
+black .
+ruff check .
+pytest
 ```
-3) Build docs (optional but recommended for doc changes):
-```bash
-mkdocs build
-```
-4) Update docs when you change protocols, steps, or CLIs (see `docs/04-user-guide/` and `docs/05-advanced-topics/`).
-5) Open a PR with a concise summary, link related issues, and note any new protocols/plugins or breaking changes.
 
-## Selected test targets
-- Core logic: `tests/test_preprocessing_*.py`, `tests/test_rq_*.py`
-- Harmonization/HSI: `tests/test_harmonization*.py`, `tests/test_hsi*.py`
-- Validation: `tests/test_validation_strategies.py`
-- CLIs: `tests/test_cli_*.py`
-- Registry/plugins/bundle: `tests/test_registry.py`, `tests/test_output_bundle.py`, `tests/test_cli_plugin.py`
- 
+## Style and scope
+- Follow existing type hints and sklearn-like patterns.
+- Keep tests deterministic (no network) and add coverage for new public APIs.
+- Update docs when adding user-facing features or CLI flags.
+- For coding standards and architecture, see [Developer Notes](../dev/developer_notes.md).
 
-Run specific files with `pytest tests/test_validation_strategies.py -k batch`.
-
-## Filing issues
-- Use the GitHub issue templates (Bug/Feature). Include OS, Python version, command invoked, protocol name, and minimal data if possible.
-
-## Releases
-- Follow `RELEASE_CHECKLIST.md` and ensure CI is green before tagging and publishing to PyPI/TestPyPI.
+Contact: chandrasekarnarayana@gmail.com for coordination or questions.

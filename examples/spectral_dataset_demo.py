@@ -2,7 +2,7 @@
 Notebook-style demo: load spectra, preprocess, extract peaks, run RQ engine.
 """
 
-from foodspec.core.spectral_dataset import PreprocessOptions
+from foodspec.core.spectral_dataset import PreprocessingConfig
 from foodspec.features.rq import PeakDefinition, RatioDefinition, RatioQualityEngine, RQConfig
 from foodspec.spectral_io import load_any_spectra
 

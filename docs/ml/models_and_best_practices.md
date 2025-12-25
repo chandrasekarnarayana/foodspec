@@ -199,9 +199,55 @@ For common pitfalls and fixes (imbalance, overfitting, data leakage), see [Commo
 
 For broader workflow context, see [oil authentication](../workflows/oil_authentication.md) and [calibration/regression example](../workflows/calibration_regression_example.md).
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for model development and best practices:**
+
+1. **Model selection based on training set performance only (highest training accuracy → choose that model)**
+   - Training metrics inflate; overly complex models fit noise
+   - Test set performance is ground truth
+   - **Fix:** Use validation/test set or cross-validation; report both training and validation metrics; prefer simpler models if performance similar
+
+2. **Hyperparameter tuning with no held-out test set (tune on full data, report metrics on same data)**
+   - Optimized hyperparameters overfit; test metrics inflated
+   - Proper workflow requires train/tune/test separation
+   - **Fix:** Use nested CV (inner loop: tune; outer loop: evaluate); or hold out independent test set
+
+3. **Complex model chosen for small dataset (1000 samples, 5000 features → use deep neural network)**
+   - High model complexity risks overfitting on small data
+   - Simpler models (linear, tree) generalize better with limited samples
+   - **Fix:** Use regularization; prefer interpretable models; validate carefully; increase sample size
+
+4. **Preprocessing not included in pipeline (baseline correction outside CV loop, then train/test split)**
+   - Statistics computed on all data (leakage) inflate metrics
+   - Data leakage through preprocessing is subtle but impactful
+   - **Fix:** Use sklearn Pipeline; fit preprocessing only on training data; ensure preprocessing parameters not shared across CV folds
+
+5. **Class imbalance not addressed (95% class A, 5% class B, train without resampling/weighting)**
+   - Imbalanced data causes classifier to ignore minority class
+   - Standard metrics (accuracy) misleading; F1 or balanced accuracy better
+   - **Fix:** Stratify CV; use class weights or resampling; report per-class metrics and confusion matrix
+
+6. **Feature scaling forgotten for distance-based models (raw spectra to KNN/SVM without normalization)**
+   - Distance-based models sensitive to feature magnitude
+   - Features with larger ranges dominate distance computation
+   - **Fix:** Standardize or normalize features before KNN/SVM/clustering; include scaling in pipeline
+
+7. **No baseline comparison (reporting model accuracy 0.85 without context)**
+   - Accuracy depends on problem difficulty
+   - Simple baseline (random guess, majority class, previous model) needed for context
+   - **Fix:** Report baseline metrics alongside model metrics; compare relative improvement
+
+8. **Reproducibility not ensured (no random seed, config not documented, code not versioned)**
+   - Results can't be reproduced if random state varies
+   - Parameters documented differently by different team members
+   - **Fix:** Set random seeds; save config files; version code; report computational environment
+
 ## 7. Summary and pointers
 - Choose the simplest model that answers the question; benchmark against baselines.
 - Use the right metrics for the task and class balance; see [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
 - Keep preprocessing in pipelines to avoid leakage; see [Preprocessing & chemometrics](../preprocessing/feature_extraction.md).
-- Record configs and export run metadata for reproducibility; see [Reporting guidelines](../reporting_guidelines.md).
+- Record configs and export run metadata for reproducibility; see [Reporting guidelines](../troubleshooting/reporting_guidelines.md).
 - For model theory and tuning, continue to [Model evaluation & validation](model_evaluation_and_validation.md).

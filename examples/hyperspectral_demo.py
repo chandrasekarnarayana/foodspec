@@ -4,7 +4,7 @@ Hyperspectral demo: load cube, preprocess, segment, extract ROI spectra, run RQ.
 import numpy as np
 import pandas as pd
 
-from foodspec.core.spectral_dataset import HyperspectralDataset, PreprocessOptions
+from foodspec.core.spectral_dataset import HyperspectralDataset, PreprocessingConfig
 from foodspec.features.rq import PeakDefinition, RatioDefinition, RatioQualityEngine, RQConfig
 
 
@@ -17,7 +17,7 @@ def main():
     hsi = HyperspectralDataset.from_cube(cube, wn, metadata=meta)
 
     # Preprocess
-    hsi_proc = hsi.preprocess(PreprocessOptions(normalization="vector", smoothing_method="moving_average", smoothing_window=3))
+    hsi_proc = hsi.preprocess(PreprocessingConfig(normalization="vector", smoothing_method="moving_average", smoothing_window=3))
 
     # Segment
     labels = hsi_proc.segment(method="kmeans", n_clusters=2)

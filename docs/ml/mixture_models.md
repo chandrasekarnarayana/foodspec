@@ -2,7 +2,7 @@
 
 Compositional analysis decomposes mixtures into fractions of known or unknown components, while fingerprinting compares spectra for QC or search. This page follows the WHAT/WHY/WHEN/WHERE template.
 
-> For notation see the [Glossary](../glossary.md). For plots and metrics see [Metrics & Evaluation](../metrics/metrics_and_evaluation.md) and [Visualization](../visualization/plotting_with_foodspec.md).
+> For notation see the [Glossary](../09-reference/glossary.md). For plots and metrics see [Metrics & Evaluation](../metrics/metrics_and_evaluation.md) and [Visualization](../visualization/plotting_with_foodspec.md).
 
 ## What?
 Defines NNLS (non-negative least squares) for single mixtures with known references, MCR-ALS for unsupervised mixtures, and fingerprint similarity (cosine/correlation). Inputs: preprocessed spectra, reference spectra, or libraries. Outputs: fractions/coefficients, reconstructed spectra, similarity scores, and metrics (RMSE/R²).
@@ -73,10 +73,56 @@ fractions = coeffs / coeffs.sum()
 - Optional: residual distribution to spot systematic misfit.
 
 ## Practical guidance
-- Align wavenumbers and preprocessing between mixtures and references.  
-- Normalize or scatter-correct before NNLS to reduce scale effects.  
-- Start MCR-ALS with sensible initial guesses; check for rotations/scale indeterminacy.  
-- Pair visuals with metrics (RMSE/R²) and, if comparing groups, use stats tests on coefficients/ratios (ANOVA/Games–Howell).  
+- Align wavenumbers and preprocessing between mixtures and references.
+- Normalize or scatter-correct before NNLS to reduce scale effects.
+- Start MCR-ALS with sensible initial guesses; check for rotations/scale indeterminacy.
+- Pair visuals with metrics (RMSE/R²) and, if comparing groups, use stats tests on coefficients/ratios (ANOVA/Games–Howell).
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for mixture decomposition validity:**
+
+1. **Reference spectra mismatched to real mixtures (using pure oil standards to decompose adulterated oils with unexpected components)**
+   - NNLS/MCR-ALS estimates are only valid if reference set spans true composition space
+   - Missing components force solution to fit residuals with existing references, producing wrong fractions
+   - **Fix:** Ensure reference library includes all expected components; validate against known mixtures
+
+2. **Degenerate solutions (fractions sum to 1.0 with near-zero negative values, suggesting numerical instability)**
+   - Ill-conditioning (nearly collinear references) allows multiple valid solutions
+   - Small perturbations in data yield different solutions
+   - **Fix:** Check condition number of reference matrix; validate solution stability with bootstrap or cross-validation
+
+3. **Estimated fractions outside [0, 1] (negative fraction or >100% total) reported without warning**
+   - NNLS constrains to non-negative, but if total doesn't equal 1.0, assumes unaccounted component
+   - Unconstrained solving (OLS) may produce negative fractions, indicating poor fit or leakage
+   - **Fix:** Use constrained solver (NNLS); check sum-to-1 constraint; validate on known mixtures
+
+4. **Rotational ambiguity in MCR-ALS unresolved (multiple equivalent solutions with same fit, different spectra)**
+   - MCR can have rank deficiency → multiple (A, S) pairs fit data equally well
+   - Reported spectra may not be true pure component spectra
+   - **Fix:** Test for rotational ambiguity; use constraints (non-negativity, bounds) to enforce unique solution; validate spectra chemically
+
+5. **Preprocessing choices not disclosed or not matched to references**
+   - If samples preprocessed differently from references, NNLS produces biased fractions
+   - Example: baseline correction on samples but not references → fractions shift
+   - **Fix:** Preprocess samples and references identically; freeze preprocessing before decomposition
+
+6. **No validation on known mixtures (deploying model without testing on mixtures of known composition)**
+   - NNLS/MCR can produce chemically plausible fractions even on synthetic data
+   - Only validation on truly known mixtures confirms model works
+   - **Fix:** Test on lab-prepared mixtures of known composition; report agreement (RMSE, R²) against true fractions
+
+7. **Small number of references (2 pure components) used to estimate many mixture fractions**
+   - With only 2 references and many wavenumbers, system is typically underdetermined; many solutions fit
+   - Tiny errors in spectra or preprocessing cause large fraction changes
+   - **Fix:** Increase reference library; use more wavenumber regions; apply regularization
+
+8. **Visualization doesn't match quantitative metrics (visual inspection suggests good fit, but RMSE is high)**
+   - Residual plots can be misleading; always pair with numeric metrics
+   - High RMSE despite visually acceptable fit may indicate systematic bias (e.g., baseline residual)
+   - **Fix:** Report both visual residuals and RMSE/R²; visualize all mixtures, not just representative ones
 - Document reference provenance; mismatched references yield biased fractions.
 
 ## See also

@@ -136,6 +136,52 @@ flowchart LR
 - Provide p-values and post-hoc results; include means/SD per group.
 - Visuals: boxplots/mean plots with CIs; Tukey pairwise table/plot.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for ANOVA/MANOVA reliability:**
+
+1. **Assumptions violated and ignored (non-normal data, unequal variances, non-independence)**
+   - ANOVA assumes normality, homoscedasticity, and independence
+   - Violating these inflates Type I error (false positives)
+   - **Fix:** Check Q-Q plots, Levene's test, autocorrelation; use Games–Howell (heteroscedastic ANOVA) or Kruskal–Wallis
+
+2. **Extreme sample size imbalance (n_A = 100, n_B = 3)**
+   - Power limited by smallest group; ANOVA assumptions broken
+   - May mask or exaggerate group differences
+   - **Fix:** Aim for balanced or near-balanced designs; use Welch's ANOVA if imbalanced
+
+3. **No correction for multiple post-hoc comparisons (Tukey test on 10 pairwise comparisons, report p < 0.05 without correction)**
+   - 10 comparisons expect ~0.5 false positives at uncorrected α = 0.05
+   - Tukey correction prevents this, but only if applied consistently
+   - **Fix:** Always use multiple-comparison correction (Tukey HSD, Scheffe, Dunnett); report adjusted p-values
+
+4. **Batch confounding (all samples of type A processed Day 1, type B processed Day 2)**
+   - Group differences may reflect batch drift, not biology
+   - Impossible to disentangle batch from treatment
+   - **Fix:** Randomize sample order; include batch as factor in ANOVA; use batch-aware CV
+
+5. **MANOVA with high-dimensional data, low replication (p = 500 wavenumbers, n = 20 samples)**
+   - MANOVA assumes p < n for invertibility; high-dimensional, low-n data produces unstable results
+   - May yield spurious significance due to overfitting
+   - **Fix:** Use dimensionality reduction (PCA) before MANOVA; or use univariate ANOVA with FDR correction
+
+6. **Pseudo-replication (3 technical replicates of 1 sample per group treated as 3 independent observations)**
+   - Technical replicates (scans of same aliquot) are autocorrelated
+   - ANOVA assumes independence; violating this inflates false positives
+   - **Fix:** Analyze ≥3 distinct samples; document which measurements are technical vs biological replicates
+
+7. **Outliers removed selectively to achieve significance**
+   - Removing extreme values to improve results is data fabrication
+   - Robustness requires pre-specified outlier criteria
+   - **Fix:** Define outlier criteria before analysis (e.g., >3 SD); document and report all removals
+
+8. **Perfect or near-perfect separation of groups (MANOVA: 100% group separation)**
+   - May indicate overfitting, data entry errors, or artificial separation
+   - Real food data rarely separates perfectly across many features
+   - **Fix:** Visualize data; check for errors; validate on independent test set
+
 ## Further reading
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)

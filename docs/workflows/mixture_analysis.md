@@ -100,6 +100,52 @@ print(corr)
 ```
 - **Interpretation:** High correlation (and low residual norms) indicates accurate mixture estimation. Report RMSE/MAE and consider ANOVA if comparing multiple pipelines.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for mixture analysis workflow:**
+
+1. **Pure component references not validated (assuming reference spectra are true pure components)**
+   - Impure references (contamination, oxidation, partial adulteration) bias fraction estimates
+   - NNLS/MCR produces wrong fractions if references don't span true composition
+   - **Fix:** Validate references independently (HPLC, mass spec); document purity
+
+2. **Mixture fractions estimated without checking constraints (fractions sum to >100% or include negative values)**
+   - Unconstrained solving produces chemically implausible solutions
+   - Indicates ill-conditioning, missing components, or data errors
+   - **Fix:** Use constrained NNLS; enforce sum-to-1 constraint; investigate violations
+
+3. **Model tested only on synthetic mixtures or known reference blends (not real food samples)**
+   - Real samples have components not in reference library
+   - Forcing solution into limited reference set produces biased fractions
+   - **Fix:** Test on real food samples; compare estimates to orthogonal method (HPLC, GC-MS); report agreement
+
+4. **Number of components not determined independently (assuming n_components = n_references without validation)**
+   - Rank deficiency can hide true component number
+   - Assuming fixed components may miss unexpected contaminants
+   - **Fix:** Estimate rank from data (SVD, scree plot); validate with independent chemical analysis
+
+5. **Preprocessing applied to mixture differently than references (sample has baseline correction, references don't)**
+   - Spectral mismatch produces biased fractions
+   - NNLS cannot compensate for preprocessing inconsistency
+   - **Fix:** Preprocess samples and references identically; freeze parameters before mixture analysis
+
+6. **Mixture proportions highly variable across replicates without investigation**
+   - High fold-to-fold variability (e.g., 30% ± 20%) indicates method instability
+   - May reflect preprocessing sensitivity or noise
+   - **Fix:** Investigate variability sources; test preprocessing robustness; increase replication/averaging
+
+7. **No detection limit study (claiming method can measure 1% admixture without validation)**
+   - Method uncertainty depends on noise, reference quality, and mixture complexity
+   - Claimed precision may exceed actual detectability
+   - **Fix:** Test on mixtures near suspected limit; report limit of detection/quantitation; validate with orthogonal methods
+
+8. **Residuals not visualized or checked (only RMSE reported, no residual spectrum inspection)**
+   - Systematic residuals indicate model failure or missing components
+   - Residual spectra reveal what the mixture model can't explain
+   - **Fix:** Plot residuals vs wavenumber; inspect for systematic patterns; investigate large residuals
+
 ## Further reading
 - [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
 - [Mixture models & fingerprinting](../ml/mixture_models.md)

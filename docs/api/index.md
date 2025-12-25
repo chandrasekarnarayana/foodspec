@@ -15,5 +15,5 @@ This hub links to mkdocstrings-generated API pages for the main FoodSpec modules
 Functions referenced in narrative docs—e.g., `run_pca`, `ALSBaseline`, IO readers, `run_mannwhitney_u`, `bootstrap_metric`, workflow helpers—are documented in these API pages with parameters, returns, and See also links back to the relevant chapters.
 
 ## See also
-- Keyword search and [Keyword index](../keyword_index.md) for quick lookups.
+- Keyword search and [Keyword index](../09-reference/keyword_index.md) for quick lookups.
 - Workflow chapters for applied examples and context.

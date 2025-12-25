@@ -2,7 +2,7 @@
 **🗄️ ARCHIVED DOCUMENT**
 
 This document is archived for historical reference and is no longer actively maintained. 
-For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_STRUCTURE.md).
+For current documentation, see [docs/README_DOCS_STRUCTURE.md](README_DOCS_STRUCTURE.md).
 
 ---
 
@@ -758,7 +758,7 @@ tests/
    ```
 
 ### Medium Priority (Documentation)
-1. Update [`CONTRIBUTING.md`](../contributing.md) with new test organization
+1. Update [`CONTRIBUTING.md`](../06-developer-guide/contributing.md) with new test organization
 2. Create test development guide in `docs/06-developer-guide/`
 3. Add examples of running tests by module
 

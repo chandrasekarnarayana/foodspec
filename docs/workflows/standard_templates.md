@@ -47,4 +47,50 @@ This page lists concise templates you can adapt for common tasks. Each template 
 
 ## Reporting essentials
 - Record preprocessing parameters, model choices, metrics with uncertainty, plots, and configs; export run metadata/model artifacts.
-- Consult [Reporting guidelines](../reporting_guidelines.md) and [Troubleshooting](../troubleshooting/common_problems_and_solutions.md) when issues arise.
+- Consult [Reporting guidelines](../troubleshooting/reporting_guidelines.md) and [Troubleshooting](../troubleshooting/common_problems_and_solutions.md) when issues arise.
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for template-based workflows:**
+
+1. **Using template with different domain/instrument without revalidation (oil template applied to dairy without testing)**
+   - Templates are domain-specific; spectral signatures, sample prep, and matrix effects differ
+   - Model trained on oils won't work on milk or meat
+   - **Fix:** Validate template on target domain before use; test on 10+ samples to confirm applicability
+
+2. **Template preprocessing parameters not adjusted for new matrix (using oil normalization on dairy proteins)**
+   - Preprocessing optimal for one food type may be poor for another
+   - Different absorbance ranges, solubility, fluorescence require different settings
+   - **Fix:** Test preprocessing on new matrix; adjust parameters (baseline lambda, smoothing); freeze before analysis
+
+3. **Template model directly deployed without cross-validation on new data (assuming old model works)**
+   - Model trained on past data; generalization to new batches/instruments unverified
+   - Drift, seasonal changes, or instrumental variation can invalidate model
+   - **Fix:** Cross-validate model on representative new samples; retrain if performance drops >10%
+
+4. **Features/ratios from template used blindly without domain interpretation**
+   - Template features may be arbitrary (optimized for one dataset, not chemically meaningful)
+   - Different food type may have different separating features
+   - **Fix:** Validate template features are chemically plausible for new domain; check loadings/importance
+
+5. **Metrics thresholds from template applied without local calibration (using template accuracy cutoff 0.85 for new domain)**
+   - Template thresholds calibrated on template data; new domain may need adjustment
+   - Class distributions and difficulty differ across domains
+   - **Fix:** Recalibrate decision thresholds on new data; validate at operational point (sensitivity/specificity target)
+
+6. **Template applied to imbalanced data without rebalancing**
+   - Templates often assume balanced classes; imbalanced deployment inflates majority class accuracy
+   - Minority class performance may be poor
+   - **Fix:** Stratify CV; use class weights; retrain if classes severely imbalanced
+
+7. **No documentation of why template was chosen or when it's appropriate**
+   - Templates are gray boxes; unclear which template fits which problem
+   - Can lead to inappropriate template selection
+   - **Fix:** Document template scope (domain, food type, spectroscopy method); include decision flowchart
+
+8. **Template results trusted without sensitivity analysis (no testing on edge cases or outliers)**
+   - Templates may fail on unusual samples (off-spec, oxidized, contaminated)
+   - Real samples have variability beyond template training distribution
+   - **Fix:** Test template on challenging samples (old oils, mixed types, degraded); document failure modes

@@ -108,6 +108,52 @@ print(corr)
 ```
 - **Interpretation:** Significant negative/positive correlation implies the ratio changes with time (degradation/oxidation). Report slope and p-value from the trend model; use ANOVA across grouped stages if discretized.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for heating quality monitoring workflow:**
+
+1. **Heating experiment conducted without temperature monitoring (assuming oven temperature is constant)**
+   - Temperature variation causes spectral changes independent of chemical degradation
+   - Can't distinguish heating effects from temperature effects
+   - **Fix:** Monitor oven/oil temperature throughout experiment; report actual temperature profile
+
+2. **Single oil sample heated repeatedly, spectra treated as independent replicates**
+   - Repeated scans of same sample are autocorrelated, not independent
+   - Statistical tests assuming independence produce inflated significance
+   - **Fix:** Include ≥3 distinct oil samples; average technical replicates before analysis
+
+3. **Ratios used without baseline correction or normalization (peak heights compared directly)**
+   - Baseline shifts can create apparent ratio changes
+   - Normalization differences between time points affect interpretation
+   - **Fix:** Apply consistent baseline correction and normalization to all spectra; use corrected peaks/ratios
+
+4. **No control for natural oil variability (all oils from same source/variety)**
+   - Inter-source variability in unheated oils unknown
+   - Can't distinguish heating changes from source differences
+   - **Fix:** Include oils from different sources; quantify baseline variability before heating
+
+5. **Heating trend extrapolated beyond measured times (model trained on 0–2 hours, predicting 10-hour stability)**
+   - Extrapolation assumes trend continues linearly; may plateau, accelerate, or reverse
+   - Real degradation kinetics may be non-monotonic
+   - **Fix:** Only infer within measured time range; test extended heating if predictions needed
+
+6. **No moisture/oxygen control (heating in open vs sealed container, humidity varies)**
+   - Oxygen availability affects oxidation rates; moisture affects hydrolysis
+   - Confounding factors dominate spectrum changes
+   - **Fix:** Control atmosphere (sealed, N₂ atmosphere, or open with defined airflow); document conditions
+
+7. **Statistical significance mistaken for practical quality change (p < 0.05 ratio change, but <1% magnitude)**
+   - Tiny changes can be statistically significant with enough replication
+   - Practically, oil may still be acceptable
+   - **Fix:** Report effect sizes alongside p-values; define actionable quality thresholds independent of statistics
+
+8. **No replication or confidence intervals on trend (reporting mean ratio at each time, no variability bands)**
+   - Variability across samples unknown; trend appears more certain than it is
+   - Can't assess whether trend is consistent or noisy
+   - **Fix:** Include error bars (± SD) or confidence bands; report n per timepoint; fit trend with CI
+
 ## Further reading
 - [Baseline correction](../preprocessing/baseline_correction.md)
 - [Normalization & smoothing](../preprocessing/normalization_smoothing.md)

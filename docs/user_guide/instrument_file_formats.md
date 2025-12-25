@@ -105,6 +105,6 @@ Synthetic spectra (mimicking SPC/OPUS after normalization) overlaid to illustrat
 ## See also
 - [Workflow design](../workflows/workflow_design_and_reporting.md)
 - [Oil authentication workflow](../workflows/oil_authentication.md) for an end-to-end run after vendor ingest
-- [Libraries & public datasets](../libraries.md)
-- [CSV → HDF5 pipeline](../csv_to_library.md)
+- [Libraries & public datasets](../04-user-guide/libraries.md)
+- [CSV → HDF5 pipeline](../04-user-guide/csv_to_library.md)
 - [API: IO & data](../api/io.md)

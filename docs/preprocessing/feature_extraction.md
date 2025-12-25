@@ -148,12 +148,58 @@ print(ratio_summary.head())
 **Cross-links**
 - Vibrational assignments: [Spectroscopy basics](../foundations/spectroscopy_basics.md#3a-vibrational-modes-and-spectral-signatures).
 - Workflows using these ratios: [Oil authentication](../workflows/oil_authentication.md), [Heating quality monitoring](../workflows/heating_quality_monitoring.md).
-- Chemometric context: [Chemometrics guide](../chemometrics_guide.md).
+- Chemometric context: [Chemometrics guide](../03-cookbook/chemometrics_guide.md).
 
 ## Summary
 - Peaks capture localized functional groups; bands capture broader features; ratios emphasize relative chemistry; fingerprints support similarity/QC tasks.
 - Good preprocessing (baseline, normalization) is critical before feature extraction.
 - Choose features to match the scientific question: authentication (peaks/ratios), mixtures (areas, similarity), degradation (time-trend ratios).
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for feature extraction validity:**
+
+1. **Peak locations assumed fixed across samples (peak at 1742 cm⁻¹ in all oils; no variation checking)**
+   - Peak positions shift with sample composition, temperature, and state
+   - Fixed peak windows may miss or capture wrong peaks
+   - **Fix:** Estimate peak positions per sample; allow small range; visualize peaks in all samples
+
+2. **Features extracted from noisy regions (very low SNR peaks treated as signals)**
+   - Noisy features have high fold-to-fold variability
+   - Unstable for modeling
+   - **Fix:** Check SNR per feature; exclude features with SNR < 10; use multiple replicates
+
+3. **Ratio denominators close to zero (ratio A/B where B is tiny; ratio inflated by noise)**
+   - Division by small numbers amplifies denominator noise
+   - Ratio unstable
+   - **Fix:** Ensure denominators > 10% of range; avoid ratios of weak features; use robust statistics
+
+4. **Features selected post-hoc to separate groups (choosing peaks after seeing group differences)**
+   - Data-dependent feature selection overfits; features don't generalize
+   - Reproducibility compromised
+   - **Fix:** Select features a priori based on chemistry or previous literature; or use statistical selection within cross-validation
+
+5. **Feature scaling/normalization not reported (unclear whether features are absolute intensities, ratios, or scaled)**
+   - Downstream models depend on feature scale
+   - Reproducibility requires documentation
+   - **Fix:** Document feature definitions and units; report any scaling applied
+
+6. **Overlapping peaks not resolved (assuming single peak in region where two peaks overlap)**
+   - Feature represents mixture of compounds
+   - Chemical interpretation ambiguous
+   - **Fix:** Use deconvolution or higher-resolution spectra; use multiple features from overlapping regions
+
+7. **Features correlated but both used in model (multicollinearity undetected)**
+   - Correlated features inflate coefficients; model unstable
+   - Importance scores unreliable
+   - **Fix:** Check feature correlations; remove or combine correlated features; use regularization (PCA, Lasso)
+
+8. **Feature robustness not tested across batches/instruments/times**
+   - Features may be batch-dependent artifacts, not true signals
+   - Models trained on feature artifacts don't generalize
+   - **Fix:** Validate features across multiple batches/instruments; check feature stability over time
 
 ## Further reading
 - [Baseline correction](baseline_correction.md)

@@ -102,6 +102,52 @@ print(res.summary)
 ```
 - **Interpretation:** If t-test shows a significant shift in ratio between reference and evaluation, it supports the QC suspicion; otherwise the spectral difference may be minor.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for batch QC workflow:**
+
+1. **Reference spectra collected on different day/instrument than evaluation batch**
+   - Drift or calibration differences can exceed batch differences
+   - Impossible to know if detected difference is real or instrumental
+   - **Fix:** Collect reference and evaluation on same instrument/conditions; include instrumental blanks and controls
+
+2. **QC decision boundary chosen post-hoc to match batch labels (tuning threshold after seeing results)**
+   - Data-dependent thresholds overfit; new batches won't match boundary
+   - Reproducibility requires pre-set criteria
+   - **Fix:** Define QC limits (control chart bounds, ratio thresholds) before batch evaluation; document basis
+
+3. **No positive/negative controls in QC run (no known good/bad sample for comparison)**
+   - Without internal controls, drift or contamination goes undetected
+   - Can't distinguish batch failure from instrumental failure
+   - **Fix:** Include positive control (pass standard), negative control (fail standard), and blank in each QC run
+
+4. **Single metric used for QC without redundancy (only peak ratio A/B, ignore others)**
+   - Single metric can be confounded (e.g., peak A sensitive to pH, peak B to temperature)
+   - Multiple metrics provide robustness
+   - **Fix:** Use multiple orthogonal metrics (e.g., 2–3 independent ratios); flag if metrics disagree
+
+5. **Batch-to-batch variation in spectra (different operators, times, prep) not quantified**
+   - Unknown normal variation; can't distinguish batch issues from daily noise
+   - QC limits set too tight (false failures) or too loose (miss real problems)
+   - **Fix:** Quantify batch variability over time; set QC control limits based on baseline distribution
+
+6. **QC workflow applied without periodic revalidation (model trained in 2023, used in 2024 without retesting)**
+   - Instrument drift, aging, or calibration changes model assumptions
+   - Old QC limits may become inappropriate
+   - **Fix:** Periodically revalidate QC criteria; plot control charts; retrain if drift detected
+
+7. **Failed batches discarded without investigation (batch fails QC, gets tossed, no root cause analysis)**
+   - Miss opportunities to understand failure modes
+   - Same problem may recur
+   - **Fix:** Document failure reason for every failed batch; track trends; address root causes
+
+8. **QC decision time too tight (decide batch pass/fail in minutes based on single measurement)**
+   - Insufficient time for replication, controls, or troubleshooting
+   - Pressure to pass can lead to overlooking problems
+   - **Fix:** Build in time for replication (≥3 repeats); require agreement before batch acceptance
+
 ## Further reading
 - [Normalization & smoothing](../preprocessing/normalization_smoothing.md)  
 - [Classification & regression](../ml/classification_regression.md)  

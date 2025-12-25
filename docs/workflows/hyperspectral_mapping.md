@@ -64,7 +64,51 @@ fig = plot_hyperspectral_intensity_map(cube, target_wavenumber=1655, window=5)
 - **Qualitative:** Intensity/ratio maps reveal spatial patterns; cluster maps show segmentation; inspect representative pixel spectra for classes.  
 - **Quantitative:** Report pixel accuracy/IoU (if masks); silhouette/between-within metrics on PCA pixel scores for cluster separability; confusion matrix for pixel labels. Link to [Metrics & evaluation](../metrics/metrics_and_evaluation.md).  
 - **Reviewer phrasing:** “Ratio maps highlight localized high-intensity regions; clustering yields k segments with silhouette ≈ …; pixel-level IoU vs reference mask = …; representative spectra confirm chemical plausibility.”
+---
 
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for hyperspectral imaging workflow:**
+
+1. **Pixel-level clustering applied without accounting for spatial correlation**
+   - Adjacent pixels are highly correlated (same region); standard clustering assumes independence
+   - Produces inflated silhouette scores and overstated cluster separation
+   - **Fix:** Use spatially-aware clustering (morphological operations, connected-component labeling) or validate with spatial replicates
+
+2. **Preprocessing applied to entire cube, then segmentation (baseline fitting influences all pixels)**
+   - Preprocessing parameters (baseline correction, normalization) affect spectral patterns
+   - Results sensitive to preprocessing choices; different parameters → different maps
+   - **Fix:** Freeze preprocessing parameters before analysis; test sensitivity to preprocessing; report parameter choices
+
+3. **Number of clusters chosen post-hoc to match visual appearance ("k=5 looks right")**
+   - Data-dependent k selection overfits; new samples won't have same cluster structure
+   - Subjective choice lacks reproducibility
+   - **Fix:** Use objective criteria (elbow method, silhouette score, gap statistic) on held-out region; pre-specify k
+
+4. **Maps show high contrast without ground truth validation (visual "separation" not confirmed)**
+   - Maps can be visually striking yet incorrect
+   - Missing ground truth (chemical analysis, reference masks) leaves interpretation unverified
+   - **Fix:** Compare segmentation to chemical reference (e.g., LC-MS localization, histology); report accuracy metrics
+
+5. **Spatial resolution insufficient for features of interest (pixel size 100 µm, structure size 10 µm)**
+   - Cannot resolve fine structures; maps appear coarser than reality
+   - Information loss: true heterogeneity hidden
+   - **Fix:** Ensure pixel size ≤10x smaller than features of interest; document spatial resolution limits
+
+6. **Spectral bands with low signal-to-noise included in analysis (noisy wavenumber regions dominate)**
+   - Noise dominates signal; clustering/classification unreliable
+   - May produce artifact maps reflecting noise patterns
+   - **Fix:** Mask low-SNR regions; consider denoising (PCA, wavelets); report signal-to-noise by band
+
+7. **Reference sample not imaged alongside test sample (no batch/day control)**
+   - Instrumental drift, lens contamination, or alignment changes between measurements
+   - Can't distinguish sample differences from instrumental artifacts
+   - **Fix:** Include reference sample in imaging run; check for drift; normalize by reference
+
+8. **Classification/clustering applied without balancing classes (one region massive, another tiny)**
+   - Classifier biased toward majority class; minority class misclassified
+   - Metrics (overall accuracy) misleading
+   - **Fix:** Report per-class metrics (precision/recall); show pixel confusion matrix; use weighted or balanced loss
 ## Summary
 - Preprocess → rebuild cube → ratios/PCs → clustering/classification → maps + metrics.  
 - Pair maps with pixel spectra and QC plots; report preprocessing and class definitions.

@@ -80,23 +80,94 @@ def compute_calibration_diagnostics(
     n_bins: int = 10,
     strategy: Literal["uniform", "quantile"] = "uniform",
 ) -> CalibrationDiagnostics:
-    """Compute comprehensive calibration metrics.
-
-    Parameters
-    ----------
-    y_true : np.ndarray
-        True binary labels (0 or 1).
-    y_proba : np.ndarray
-        Predicted probabilities for positive class.
-    n_bins : int
-        Number of bins for ECE calculation.
-    strategy : Literal["uniform", "quantile"]
-        Binning strategy: uniform width or quantile-based.
-
-    Returns
-    -------
-    CalibrationDiagnostics
-        Calibration quality metrics.
+    """Compute comprehensive calibration metrics for probabilistic classifier.
+    
+    Assesses whether predicted probabilities match true frequencies. Critical for
+    FoodSpec authenticity classifiers: a poorly calibrated model might predict
+    90% confidence but be correct only 60% of the time.
+    
+    **What is Calibration?**
+    When model predicts P(authentic)=0.8, authentic samples should occur ~80% of the time.
+    ╔════════════════════════════════════════════════╗
+    │ Well-Calibrated (trustworthy):                 │
+    │ P(pred)=0.8 → 78-82% correct                   │
+    ├────────────────────────────────────────────────┤
+    │ Overconfident (unreliable):                     │
+    │ P(pred)=0.8 → 55-60% correct (false confidence)│
+    ├────────────────────────────────────────────────┤
+    │ Underconfident (wasteful):                      │
+    │ P(pred)=0.8 → 92-98% correct (overly cautious) │
+    ╚════════════════════════════════════════════════╝
+    
+    **Key Metrics (in order of importance):**
+    1. **ECE (Expected Calibration Error)**: 0-1 scale, lower is better
+       - ECE = 0.05: For predictions of 80%, true frequency is ~75-85%
+       - ECE = 0.20: For predictions of 80%, true frequency could be 60-90%
+    
+    2. **Bias**: Mean predicted prob - mean true frequency (-1 to +1)
+       - Bias = +0.10: Model is too confident by ~10 percentage points
+       - Bias = -0.05: Model is too conservative by ~5 percentage points
+    
+    3. **Brier Score**: Mean squared error (0-1), lower is better
+       - 0.05: Predictions are very good
+       - 0.25: Predictions are poorly calibrated
+    
+    4. **Slope & Intercept**: Linear regression P(true) ~ a*P(pred) + b
+       - Ideal: slope=1.0, intercept=0.0
+       - Slope < 1: Overconfident (predictions too extreme)
+       - Slope > 1: Underconfident (predictions too close to 0.5)
+    
+    **Binning Strategies:**
+    - **uniform**: Equal-width bins [0-0.1, 0.1-0.2, ..., 0.9-1.0]
+        Good for evenly distributed predictions
+    - **quantile**: Each bin contains ~same number of predictions
+        Good for clustered predictions (e.g., all near 0.95)
+    
+    **When to Use:**
+    - Post-model evaluation: Check calibration on validation set
+    - Before deployment: Miscalibration can lead to false confidence in decisions
+    - Model comparison: Choose model with lower ECE for better reliability
+    
+    **Real Example:**
+    Oil authentication classifier:
+    ├─ SVM: ECE=0.03, Bias=0.01 → trustworthy (deploy as-is)
+    └─ Neural Net: ECE=0.15, Bias=0.25 → overconfident (apply Platt scaling)
+    
+    **Red Flags:**
+    - ECE > 0.15: Model is unreliable; consider recalibration
+    - Bias > 0.20 or < -0.20: Systematic under/overconfidence
+    - MCE > 0.5: At least one probability bin is severely miscalibrated
+    - reliability_curve shows J-shape: Model is overconfident at extremes
+    
+    Parameters:
+        y_true (np.ndarray): True binary labels (0 or 1), shape (n_samples,)
+        y_proba (np.ndarray): Predicted probabilities [0-1], shape (n_samples,)
+        n_bins (int, default 10): Number of bins for ECE calculation
+            Higher bins → more detail but noisier estimates (use 10-20)
+        strategy (str, default "uniform"): Binning strategy
+            "uniform": Equal-width bins
+            "quantile": Quantile-based bins (recommended for imbalanced predictions)
+    
+    Returns:
+        CalibrationDiagnostics: Dataclass with metrics:
+            - slope, intercept: Linear regression coefficients
+            - bias: Calibration-in-the-large (mean difference)
+            - ece: Expected Calibration Error [0-1]
+            - mce: Maximum Calibration Error [0-1]
+            - brier_score: Mean squared error [0-1]
+            - reliability_curve: DataFrame with calibration details per bin
+    
+    Examples:
+        >>> from foodspec.ml.calibration import compute_calibration_diagnostics\n        >>> import numpy as np\n        >>> y_true = np.array([1, 0, 1, 1, 0, 1, 0, 0])\n        >>> y_proba = np.array([0.9, 0.1, 0.85, 0.8, 0.2, 0.95, 0.15, 0.05])\n        >>> diag = compute_calibration_diagnostics(y_true, y_proba, n_bins=4)\n        >>> print(f\"ECE: {diag.ece:.3f}, Bias: {diag.bias:.3f}\")\n        >>> print(diag.reliability_curve)\n    
+    See Also:
+        - [Calibration Guide](../04-user-guide/probability_calibration.md) — Recalibration methods
+        - recalibrate_classifier() — Apply Platt/isotonic scaling
+        - CalibrationDiagnostics.is_well_calibrated() — Check if acceptable
+        - plot_calibration_curve() — Visualization [in plotting module]
+    
+    References:
+        Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017).
+        On calibration of modern neural networks. ICML.
     """
     from sklearn.metrics import brier_score_loss
 

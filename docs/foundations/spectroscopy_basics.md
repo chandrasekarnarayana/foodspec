@@ -29,12 +29,12 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
   - **FTIR synthetic example (generated via `generate_synthetic_ftir_spectrum`):** O–H stretch (~3300), C–H stretches (2800–3000), ester C=O (~1740), CH₂ bend (~1450), C–O stretch (~1050), fingerprint 800–1500. Plot wavenumber vs absorbance and label each band with the mode and a food interpretation (e.g., ester C=O in lipids).
   - **Raman synthetic example (generated via `generate_synthetic_raman_spectrum`):** discrete peaks at ~717 (C–C stretch), 1265 (cis =C–H bend), 1440 (CH₂ bend), 1655 (C=C stretch). Annotate peaks and note how intensity shifts relate to unsaturation/saturation.
 - **Interpretation:** shifts or intensity changes in these bands map to composition (unsaturation, ester content, moisture). Synthetic plots (see plotting helpers) mirror real bands observed in oils/fats.
-- For notation/abbreviations, see the [Glossary](../glossary.md). For a practical bands/ratios guide, see [Feature extraction](../preprocessing/feature_extraction.md#how-to-choose-bands-and-ratios-decision-mini-guide).
+- For notation/abbreviations, see the [Glossary](../09-reference/glossary.md). For a practical bands/ratios guide, see [Feature extraction](../preprocessing/feature_extraction.md#how-to-choose-bands-and-ratios-decision-mini-guide).
 
 ## 4. Sampling and instrument notes
 - Laser wavelength (Raman) affects fluorescence and penetration; ATR crystal choice (FTIR) affects depth of penetration.
 - Resolution: finer spacing yields more data points but may increase noise.
-- Export formats: vendor-specific to TXT/CSV. FoodSpec standardizes via CSV → HDF5; see [CSV → HDF5 pipeline](../csv_to_library.md).
+- Export formats: vendor-specific to TXT/CSV. FoodSpec standardizes via CSV → HDF5; see [CSV → HDF5 pipeline](../04-user-guide/csv_to_library.md).
 
 ## 5. Choosing a modality for food tasks
 - **Authentication/adulteration:** Raman/FTIR fingerprint region for oils, spices; NIR for rapid screening.
@@ -56,4 +56,40 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
 - [Baseline correction](../preprocessing/baseline_correction.md)
 - [Normalization & smoothing](../preprocessing/normalization_smoothing.md)
 - [PCA and dimensionality reduction](../ml/pca_and_dimensionality_reduction.md)
-- [CSV → HDF5 pipeline](../csv_to_library.md)
+- [CSV → HDF5 pipeline](../04-user-guide/csv_to_library.md)
+
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for spectroscopy basics application:**
+
+1. **Spectral resolution insufficient for features of interest (broad bands analyzed as if sharp peaks)**
+   - Overlapping peaks unresolved; chemical assignment ambiguous
+   - Information loss
+   - **Fix:** Use higher-resolution spectrometer; deconvolve overlapping peaks; document resolution limits
+
+2. **Peak assignments based on single literature source without validation**
+   - Literature assignments may be context-dependent (different matrix, conditions)
+   - Misassignment common
+   - **Fix:** Cross-reference multiple sources; validate with isotopic substitution or known standards
+
+3. **Temperature not controlled (samples measured at varying room temperatures)**
+   - Temperature affects peak positions and intensities
+   - Introduces uncontrolled variability
+   - **Fix:** Control sample temperature; document temperature; use thermostated stage
+
+4. **Spectral saturation undetected (detector saturated; spectra clipped)**
+   - Saturated spectra lose quantitative information
+   - Ratios biased by clipping
+   - **Fix:** Check detector counts; reduce integration time or laser power if saturated; re-measure
+
+5. **Fluorescence not distinguished from Raman/FTIR signal (strong background mistaken for chemical information)**
+   - Fluorescence dominates weak Raman; obscures peaks
+   - Can create false features
+   - **Fix:** Use longer-wavelength excitation; subtract fluorescence baseline; validate with fluorescence measurement
+
+6. **No replicate measurements (single spectrum treated as ground truth)**
+   - Measurement noise unquantified; reproducibility unknown
+   - Single outlier can bias analysis
+   - **Fix:** Measure ≥3 replicates; report SD; average replicates for analysis

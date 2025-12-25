@@ -1,9 +1,16 @@
 # FAQ (Basic)
 
-- **Columns required?** See quickstart_protocol.md and protocol YAML `expected_columns`.
-- **Missing dependency?** Run `--check-env` on CLIs to verify.
-- **Which preset to use?** Start with the “oil_basic” protocol or the edible oil discrimination templates.
-# FAQ (Basic)
+<!-- CONTEXT BLOCK (mandatory) -->
+**Who needs this?** Beginners with common questions; users encountering issues during first use.
+**What problem does this solve?** Quick answers to frequent questions without reading full documentation.
+**When to use this?** When stuck on installation, data format, or basic workflow questions.
+**Why it matters?** Saves time by addressing common confusion points upfront.
+**Time to complete:** 5-10 minutes.
+**Prerequisites:** None
+
+---
+
+## Common Questions
 
 **Do I need ML experience to use FoodSpec?**  
 No. Protocols are predefined recipes. You pick one (e.g., oil discrimination), map your columns, and run. Defaults include sensible validation and minimal panels. See [first-steps_cli.md](first-steps_cli.md).

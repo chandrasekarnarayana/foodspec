@@ -1,45 +1,43 @@
 # Installation
 
+<!-- CONTEXT BLOCK (mandatory) -->
+**Who needs this?** Anyone wanting to install FoodSpec for food spectroscopy analysis.  
+**What problem does this solve?** Setting up FoodSpec and its dependencies correctly.  
+**When to use this?** First-time installation or upgrading to a new version.  
+**Why it matters?** Proper installation ensures all features work correctly and avoids dependency conflicts.  
+**Time to complete:** 5-10 minutes  
+**Prerequisites:** Python 3.10 or 3.11 installed; pip package manager; terminal/command-line access
+
+---
+
+## Requirements
+- Python 3.10 or 3.11 (recommended).
+- Typical scientific stack: NumPy, SciPy, scikit-learn, pandas, matplotlib, h5py (installed as dependencies).
+
+## User installation
 ```bash
 pip install foodspec
 ```
 
-See README for platform notes and docs/cli_help.md for CLI flags.
-# Installation (101)
-
-This page walks you through installing FoodSpec and verifying your environment so you can run your first protocol.
-
-## Requirements (and why)
-- Python: 3.10–3.12 (tested matrix) – for dependency compatibility.
-- OS: Windows, macOS, or Linux.
-- RAM: ≥8 GB recommended for moderate datasets; more for large HSI cubes (HSI segmentation and harmonization can be memory-heavy).
-
-## Install FoodSpec
-FoodSpec provides a CLI-first workflow. Install the core package:
+Verify:
 ```bash
-pip install foodspec
+foodspec about
 ```
-Optional dev/docs extras: see `pyproject.toml` for `[dev]`.
 
-> Tip: Use a fresh virtual environment (`python -m venv .venv && source .venv/bin/activate` on macOS/Linux, `.venv\\Scripts\\activate` on Windows).
+## Optional extras
+- Deep learning (1D CNN prototype):  
+  ```bash
+  pip install "foodspec[deep]"
+  ```  
+  Calling `Conv1DSpectrumClassifier` without TensorFlow installed will raise a clear ImportError suggesting this extra.
 
-## Check your environment
-Verify what’s available:
+## Developer installation
 ```bash
-foodspec-run-protocol --check-env
-# or
-foodspec-predict --check-env
+git clone https://github.com/chandrasekarnarayana/foodspec.git
+cd foodspec
+pip install -e ".[dev]"
 ```
-Expected output (abbreviated):
+Run tests to confirm:
+```bash
+pytest
 ```
-Python: 3.11
-Core deps: OK
-```
-Use this to confirm you installed the right extras.
-
-## If you see error X, do Y
-- **Protocol version error**: Your protocol’s `min_foodspec_version` exceeds the installed version; upgrade: `pip install --upgrade foodspec`.
-- **Permission issues on Windows**: Run the shell as Administrator or install into a user venv.
-If issues persist, capture the full error and open an issue with your command, OS, Python version, and a small data sample if possible.
-
-If issues persist, capture the full error and open an issue with your command, OS, Python version, and a small data sample if possible.

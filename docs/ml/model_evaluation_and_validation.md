@@ -2,7 +2,7 @@
 
 Robust evaluation is essential for trustworthy food spectroscopy models. This page follows the WHAT/WHY/WHEN/WHERE template and adds concrete guidance for visualizing cross-validation (CV) results.
 
-> For notation see the [Glossary](../glossary.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
+> For notation see the [Glossary](../09-reference/glossary.md). Metrics: [Metrics & Evaluation](../metrics/metrics_and_evaluation.md).
 
 ## What?
 Defines validation schemes (train/test, stratified CV, group-aware CV, permutation tests), the metrics to report, and how to visualize per-fold outcomes (confusion matrices, residuals, calibration).
@@ -83,8 +83,54 @@ cv = cross_validate_pipeline(pls_reg, X_feat, y_cont, cv_splits=5, scoring="neg_
 - Avoid leakage; report seeds/splits/preprocessing.  
 - Visualize per-fold behavior to reveal instability or class-specific failures.
 
-## Further reading
-- [Classification & regression](classification_regression.md)  
-- [Metrics & evaluation](../metrics/metrics_and_evaluation.md)  
-- [Reproducibility checklist](../protocols/reproducibility_checklist.md)  
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for validation design and model evaluation:**
+
+1. **Data leakage in preprocessing (mean/std computed on entire dataset before train/test split)**
+   - Information from test set influences training, inflating metrics
+   - Leakage can be subtle; preprocessing should be inside CV loop
+   - **Fix:** Use sklearn Pipeline to chain preprocessing + model; fit only on training folds; compute statistics on training data only
+
+2. **Same data used for hyperparameter tuning and final evaluation**
+   - Hyperparameters optimized on test set produce inflated performance estimates
+   - Proper workflow: use training set for tuning, held-out test set for final evaluation
+   - **Fix:** Use nested CV (outer folds for evaluation, inner folds for tuning) or separate tune/test sets
+
+3. **Stratification not applied to small, imbalanced datasets**
+   - Random train/test splits of imbalanced data can yield train set with even worse imbalance
+   - Causes high fold-to-fold variability
+   - **Fix:** Use stratified CV (StratifiedKFold); ensures all folds have similar class distribution
+
+4. **Metrics reported without uncertainty (accuracy = 0.92, no confidence interval or SD across folds)**
+   - Point estimates hide fold-to-fold variability; single fold may differ significantly
+   - No uncertainty makes it impossible to assess significance of differences between models
+   - **Fix:** Report mean ± SD across folds; compute bootstrap CI; show per-fold metrics in plot
+
+5. **Batch structure ignored in CV (all samples from Device A in train, all from Device B in test)**
+   - Temporal or instrument drift confounds model learning
+   - Model may learn device artifacts, not generalizable patterns
+   - **Fix:** Use GroupKFold to keep batches together in splits; validate across batch/device boundaries
+
+6. **Perfect metrics on test set (accuracy 1.0, AUC 1.0) without investigation**
+   - Too-perfect results suggest overfitting, data leakage, or class separation artifacts
+   - Real food data rarely separates perfectly
+   - **Fix:** Check for leakage; visualize test set; validate on completely independent, external data
+
+7. **Class-specific metrics not reported (overall accuracy = 0.90, but minority class recall = 0.10)**
+   - Aggregate metrics mask poor performance on minority class
+   - Misleading for imbalanced tasks
+   - **Fix:** Report per-class precision/recall/F1; use confusion matrix; consider weighted F1 or balanced accuracy
+
+8. **Cross-validation with single fold or unrepeated splits**
+   - 1-fold CV gives no sense of variability; non-repeated splits depend on random seed
+   - Small datasets need more folds (5–10) for stable estimates
+   - **Fix:** Use at least 5-fold CV; consider RepeatedStratifiedKFold for small datasets; report mean across repeats
+
+9. **Temporal structure ignored (time-series data: train on future, test on past)**
+   - Leakage through time leads to optimistic metrics
+   - Temporal CV (train on earlier times, test on later) is more realistic
+   - **Fix:** Use time-aware CV (TimeSeriesSplit) for sequential data; no forward-looking information in training
 - [Workflows](../workflows/oil_authentication.md)

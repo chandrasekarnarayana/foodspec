@@ -58,4 +58,4 @@ Use this checklist to ensure FoodSpec analyses are transparent and repeatable. I
 ## Further reading
 
 - [Benchmarking framework](benchmarking_framework.md)
-- [Reporting guidelines](../reporting_guidelines.md)
+- [Reporting guidelines](../troubleshooting/reporting_guidelines.md)

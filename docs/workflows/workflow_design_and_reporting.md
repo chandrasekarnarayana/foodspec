@@ -124,6 +124,52 @@ Expected details: axes labels (units), legends, group labels, sample sizes, conf
 - Ask the right questions at each stage; use FoodSpec tools (preprocessing, features, ML, stats) accordingly.
 - Report instruments, preprocessing, features, analysis methods, metrics, and figures transparently.
 
+---
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for workflow validity:**
+
+1. **Instrument or preprocessing not documented ("we used standard Raman; no special preprocessing")**
+   - Results depend critically on instrument settings and preprocessing choices
+   - Undisclosed choices prevent reproduction or cross-instrument validation
+   - **Fix:** Document laser wavelength, power, integration time, baseline correction (parameters), smoothing, normalization, peak alignment
+
+2. **No reference sample or control in workflow (no validation against known composition)**
+   - Unknown whether conclusions apply to intended samples or are artifacts
+   - Control validates method, detector, and preprocessing
+   - **Fix:** Include positive control (known authentic/adulterant), negative control (pure reference), and blank (empty cuvette)
+
+3. **Workflow tested only on same instrument/day/operator**
+   - Results don't generalize to other labs or future analyses
+   - Batch effects (drift, calibration) confound biological effects
+   - **Fix:** Validate on data from different instruments, days, or operators; use batch-aware CV; test generalization
+
+4. **Preprocessing parameters tuned on same data used for model evaluation**
+   - Overfitting in preprocessing (hyperparameter tuning) inflates metrics
+   - Parameters optimized on test data don't generalize
+   - **Fix:** Freeze preprocessing parameters before data splitting; include preprocessing in CV loop
+
+5. **Results meeting workflow goals without investigating outliers or failures**
+   - Some samples may fail preprocessing (e.g., fluorescing oils, broken cuvette)
+   - Ignoring failures overestimates success rate
+   - **Fix:** Document failure modes; report success rate; investigate failed samples
+
+6. **No comparison to baseline or previous method (reporting new workflow accuracy with no context)**
+   - Accuracy/precision depend on problem difficulty; comparison shows improvement
+   - New workflow may be worse than old if not benchmarked
+   - **Fix:** Compare metrics to baseline (previous method, random guess, published results); report relative improvement
+
+7. **Temporal structure ignored (time-series workflow: training on future data, testing on past)**
+   - Leakage through time produces overoptimistic metrics
+   - For trending workflows (heating quality), time-aware CV needed
+   - **Fix:** Use temporal CV (train on past, test on future); no forward-looking leakage
+
+8. **Interpretation relies only on model metrics without visual/chemical validation**
+   - Metrics alone don't confirm biological/chemical validity
+   - Workflow producing high accuracy on noise still worthless
+   - **Fix:** Visualize outputs (spectra, residuals, predictions); validate top features chemically; involve domain experts
+
 ## See also
 - [Workflows](./oil_authentication.md)
 - [Statistics overview](../stats/overview.md)

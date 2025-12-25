@@ -2,7 +2,7 @@
 
 This page summarizes common plot types in FoodSpec and the helper functions to generate them. All helpers return Matplotlib Axes and use simple defaults suitable for scientific reporting.
 
-> For notation see the [Glossary](../glossary.md). Pair every plot with the quantitative metric it supports (see [Metrics & Evaluation](../metrics/metrics_and_evaluation.md)).
+> For notation see the [Glossary](../09-reference/glossary.md). Pair every plot with the quantitative metric it supports (see [Metrics & Evaluation](../metrics/metrics_and_evaluation.md)).
 
 ## What?
 Catalog of visualization helpers for spectra, embeddings, classification/regression diagnostics, ratios, and hyperspectral maps.
