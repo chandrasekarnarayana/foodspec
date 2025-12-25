@@ -6,6 +6,7 @@ Examples:
     foodspec-plugin list
     foodspec-plugin install my_foodspec_plugin
 """
+
 from __future__ import annotations
 
 import argparse

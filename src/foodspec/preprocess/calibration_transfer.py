@@ -385,9 +385,7 @@ def compute_transfer_success_metrics(
     cov = np.cov(X_centered, rowvar=False)
     cov_inv = np.linalg.pinv(cov)
 
-    leverage = np.array([
-        x @ cov_inv @ x for x in X_centered
-    ])
+    leverage = np.array([x @ cov_inv @ x for x in X_centered])
     leverage_norm = leverage / leverage.mean()
     high_leverage_count = (leverage_norm > leverage_threshold).sum()
 

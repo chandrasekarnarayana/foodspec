@@ -7,10 +7,12 @@ from foodspec.preprocessing_pipeline import PreprocessingConfig, run_full_prepro
 def test_spike_removal_toggle_affects_output_and_counts():
     # Construct a tiny wide-format dataframe with a clear spike
     wn = [1000, 1005, 1010, 1015, 1020]
-    X = np.array([
-        [1.0, 1.2, 50.0, 1.1, 1.0],  # row with spike at 1010
-        [0.9, 1.1, 0.95, 1.0, 0.97],  # normal row
-    ])
+    X = np.array(
+        [
+            [1.0, 1.2, 50.0, 1.1, 1.0],  # row with spike at 1010
+            [0.9, 1.1, 0.95, 1.0, 0.97],  # normal row
+        ]
+    )
     meta = pd.DataFrame({"oil_type": ["A", "B"]})
     df = pd.concat([meta, pd.DataFrame(X, columns=[str(w) for w in wn])], axis=1)
 

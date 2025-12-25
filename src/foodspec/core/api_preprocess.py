@@ -49,12 +49,16 @@ class FoodSpecPreprocessMixin:
         # Record metrics and diagnostics
         self.bundle.add_metrics("qc_health", report.health.aggregates)
         self.bundle.add_metrics("qc_outliers", {"outlier_rate": float(report.outliers.labels.mean())})
-        self.bundle.add_metrics("qc_drift", {"drift_score": report.drift.drift_score, "trend_slope": report.drift.trend_slope})
+        self.bundle.add_metrics(
+            "qc_drift", {"drift_score": report.drift.drift_score, "trend_slope": report.drift.trend_slope}
+        )
         self.bundle.add_diagnostic("qc_health_table", report.health.table.to_dict(orient="list"))
         self.bundle.add_diagnostic("qc_outlier_scores", report.outliers.scores.tolist())
         self.bundle.add_diagnostic("qc_recommendation", report.recommendations)
 
-        step_hash = hashlib.sha256(json.dumps({"method": method, "recommendation": report.recommendations}, sort_keys=True).encode()).hexdigest()[:8]
+        step_hash = hashlib.sha256(
+            json.dumps({"method": method, "recommendation": report.recommendations}, sort_keys=True).encode()
+        ).hexdigest()[:8]
         self.bundle.run_record.add_step(
             "qc",
             step_hash,
@@ -83,7 +87,6 @@ class FoodSpecPreprocessMixin:
         FoodSpec
             Self (for chaining).
         """
-
 
         # Use AutoPreprocess as the default preset (Phase 3).
         if preset == "auto":
@@ -263,6 +266,7 @@ class FoodSpecPreprocessMixin:
         # Generate simple HTML dashboard if metrics include success metrics
         try:
             from foodspec.calibration_transfer_dashboard import build_dashboard_html
+
             html = build_dashboard_html(ct_metrics)
             self.bundle.add_diagnostic("calibration_transfer_dashboard", html)
         except Exception:

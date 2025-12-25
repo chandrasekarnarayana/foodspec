@@ -35,12 +35,14 @@ def test_foodspec_init_with_dataframe():
     """Test FoodSpec initialization with DataFrame."""
     # DataFrame format: first column is "wavenumber", remaining columns are samples
     # Each row represents a wavenumber, each column (after first) is a sample
-    df = pd.DataFrame({
-        "wavenumber": [500, 600, 700],
-        "sample1": [1.0, 2.0, 3.0],
-        "sample2": [1.5, 2.5, 3.5],
-        "sample3": [1.2, 2.2, 3.2],
-    })
+    df = pd.DataFrame(
+        {
+            "wavenumber": [500, 600, 700],
+            "sample1": [1.0, 2.0, 3.0],
+            "sample2": [1.5, 2.5, 3.5],
+            "sample3": [1.2, 2.2, 3.2],
+        }
+    )
 
     fs = FoodSpec(df, modality="raman")
     # With 3 wavenumber rows and 3 sample columns, we should get 3 spectra
@@ -85,12 +87,14 @@ def test_rq_engine_add_ratio_definitions():
 
 def test_rq_engine_compute_ratios():
     """Test computing ratios from peak table."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "I_1000": [10.0, 12.0, 11.0],
-        "I_1200": [5.0, 6.0, 5.5],
-        "I_1400": [8.0, 9.0, 8.5],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "I_1000": [10.0, 12.0, 11.0],
+            "I_1200": [5.0, 6.0, 5.5],
+            "I_1400": [8.0, 9.0, 8.5],
+        }
+    )
 
     peaks = [
         PeakDefinition(name="peak1", column="I_1000", wavenumber=1000),
@@ -111,11 +115,7 @@ def test_rq_engine_compute_ratios():
 
 def test_ratio_definition():
     """Test RatioDefinition dataclass."""
-    ratio = RatioDefinition(
-        name="test_ratio",
-        numerator="peak1",
-        denominator="peak2"
-    )
+    ratio = RatioDefinition(name="test_ratio", numerator="peak1", denominator="peak2")
 
     assert ratio.name == "test_ratio"
     assert ratio.numerator == "peak1"
@@ -133,13 +133,7 @@ def test_peak_definition_defaults():
 
 def test_peak_definition_with_window():
     """Test PeakDefinition with window."""
-    peak = PeakDefinition(
-        name="test",
-        column="I_1000",
-        wavenumber=1000,
-        window=(950, 1050),
-        mode="area"
-    )
+    peak = PeakDefinition(name="test", column="I_1000", wavenumber=1000, window=(950, 1050), mode="area")
 
     assert peak.wavenumber == 1000
     assert peak.window == (950, 1050)
@@ -156,10 +150,7 @@ def test_rqconfig_defaults():
 
 def test_rqconfig_custom_values():
     """Test RQConfig with custom values."""
-    config = RQConfig(
-        oil_col="oil_type",
-        matrix_col="sample_matrix"
-    )
+    config = RQConfig(oil_col="oil_type", matrix_col="sample_matrix")
 
     assert config.oil_col == "oil_type"
     assert config.matrix_col == "sample_matrix"
@@ -191,10 +182,12 @@ def test_foodspec_config_tracking():
 
 def test_rq_engine_with_empty_dataframe():
     """Test RQ engine with empty peaks/ratios."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "I_1000": [10.0, 12.0],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "I_1000": [10.0, 12.0],
+        }
+    )
 
     engine = RatioQualityEngine(peaks=[], ratios=[])
 
@@ -205,11 +198,13 @@ def test_rq_engine_with_empty_dataframe():
 
 def test_rq_engine_ratio_with_zero_denominator():
     """Test RQ engine handles division by zero."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "I_1000": [10.0, 12.0],
-        "I_1200": [5.0, 0.0],  # Zero denominator
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "I_1000": [10.0, 12.0],
+            "I_1200": [5.0, 0.0],  # Zero denominator
+        }
+    )
 
     ratios = [
         RatioDefinition(name="R_test", numerator="I_1000", denominator="I_1200"),

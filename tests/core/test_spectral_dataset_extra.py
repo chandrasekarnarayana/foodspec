@@ -46,7 +46,9 @@ def test_preprocess_pipeline_runs_and_logs():
     wn = np.linspace(500.0, 1500.0, 100)
     X = np.random.RandomState(7).randn(5, wn.size)
     ds = SpectralDataset(wn, X, pd.DataFrame({"id": range(5)}), {})
-    opts = PreprocessingConfig(baseline_method="polynomial", baseline_order=2, smoothing_method="savgol", normalization="vector")
+    opts = PreprocessingConfig(
+        baseline_method="polynomial", baseline_order=2, smoothing_method="savgol", normalization="vector"
+    )
     ds2 = ds.preprocess(opts)
     assert ds2.spectra.shape == X.shape
     assert any("preprocess:" in log for log in ds2.logs)

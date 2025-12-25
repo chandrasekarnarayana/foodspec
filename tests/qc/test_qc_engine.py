@@ -16,7 +16,9 @@ def _toy_ds(n: int = 8, m: int = 40) -> FoodSpectrumSet:
     for i in range(n):
         spectra.append(np.sin(x_axis) + 0.05 * np.random.randn(m) + 0.1 * i)
     spectra = np.vstack(spectra)
-    meta = pd.DataFrame({"sample_id": [f"s{i}" for i in range(n)], "batch_id": ["b1"] * (n // 2) + ["b2"] * (n - n // 2)})
+    meta = pd.DataFrame(
+        {"sample_id": [f"s{i}" for i in range(n)], "batch_id": ["b1"] * (n // 2) + ["b2"] * (n - n // 2)}
+    )
     return FoodSpectrumSet(x=spectra, wavenumbers=x_axis, metadata=meta, modality="raman", batch_col="batch_id")
 
 

@@ -55,9 +55,7 @@ def nested_cross_validate(
 
         # Inner CV
         inner_cv = StratifiedKFold(n_splits=cv_inner, shuffle=True, random_state=outer_idx)
-        cross_val_score(
-            clone(estimator), X_train, y_train, cv=inner_cv, scoring=scoring
-        )
+        cross_val_score(clone(estimator), X_train, y_train, cv=inner_cv, scoring=scoring)
 
         # Outer evaluation
         est = clone(estimator)
@@ -168,9 +166,7 @@ def nested_cross_validate_regression(
         y_train, y_test = y[train_idx], y[test_idx]
 
         inner_cv = KFold(n_splits=cv_inner, shuffle=True, random_state=outer_idx)
-        cross_val_score(
-            clone(estimator), X_train, y_train, cv=inner_cv, scoring=scoring
-        )
+        cross_val_score(clone(estimator), X_train, y_train, cv=inner_cv, scoring=scoring)
 
         est = clone(estimator)
         est.fit(X_train, y_train)

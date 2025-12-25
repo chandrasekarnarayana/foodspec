@@ -226,14 +226,10 @@ def compare_champion_challenger(
 
     # Promotion recommendation (prioritize negative performance declines)
     if improvement < 0:
-        recommendation = (
-            f"❌ REJECT: Challenger underperforms champion "
-            f"({improvement_pct:+.2f}%, p={pvalue:.4f})."
-        )
+        recommendation = f"❌ REJECT: Challenger underperforms champion ({improvement_pct:+.2f}%, p={pvalue:.4f})."
     elif is_significant and improvement >= min_improvement:
         recommendation = (
-            f"✅ PROMOTE: Challenger significantly outperforms champion "
-            f"({improvement_pct:+.2f}%, p={pvalue:.4f})."
+            f"✅ PROMOTE: Challenger significantly outperforms champion ({improvement_pct:+.2f}%, p={pvalue:.4f})."
         )
     elif improvement >= min_improvement:
         recommendation = (
@@ -243,13 +239,10 @@ def compare_champion_challenger(
     elif is_significant:
         recommendation = (
             f"⚠️ CAUTION: Statistically significant but improvement too small "
-            f"({improvement_pct:+.2f}% < {min_improvement*100:.1f}%)."
+            f"({improvement_pct:+.2f}% < {min_improvement * 100:.1f}%)."
         )
     else:
-        recommendation = (
-            f"❌ REJECT: No significant improvement "
-            f"({improvement_pct:+.2f}%, p={pvalue:.4f})."
-        )
+        recommendation = f"❌ REJECT: No significant improvement ({improvement_pct:+.2f}%, p={pvalue:.4f})."
 
     return ChampionChallengerComparison(
         champion_metric=champion_metric,
@@ -326,4 +319,3 @@ def promote_challenger(
         shutil.copy2(challenger_meta_path, champion_meta_path)
 
     return True
-

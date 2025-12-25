@@ -224,6 +224,7 @@ def _capture_environment() -> Dict[str, Any]:
     # Capture key package versions
     try:
         import foodspec
+
         env["foodspec_version"] = getattr(foodspec, "__version__", "unknown")
     except ImportError:
         pass

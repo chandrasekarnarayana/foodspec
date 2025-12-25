@@ -109,17 +109,21 @@ def test_detect_drift_continuous():
 def test_detect_feature_drift():
     """Test feature-level drift detection."""
     np.random.seed(42)
-    reference = pd.DataFrame({
-        "feat1": np.random.randn(200),
-        "feat2": np.random.randn(200),
-        "feat3": np.random.randn(200),
-    })
+    reference = pd.DataFrame(
+        {
+            "feat1": np.random.randn(200),
+            "feat2": np.random.randn(200),
+            "feat3": np.random.randn(200),
+        }
+    )
 
-    current = pd.DataFrame({
-        "feat1": np.random.randn(200),  # No drift
-        "feat2": np.random.randn(200) + 2.0,  # Significant drift
-        "feat3": np.random.randn(200) * 2,  # Scale drift
-    })
+    current = pd.DataFrame(
+        {
+            "feat1": np.random.randn(200),  # No drift
+            "feat2": np.random.randn(200) + 2.0,  # Significant drift
+            "feat3": np.random.randn(200) * 2,  # Scale drift
+        }
+    )
 
     reports = detect_feature_drift(reference, current, psi_threshold=0.25)
 
@@ -137,17 +141,21 @@ def test_detect_feature_drift():
 def test_detect_feature_drift_subset():
     """Test drift detection on specific features only."""
     np.random.seed(42)
-    reference = pd.DataFrame({
-        "feat1": np.random.randn(100),
-        "feat2": np.random.randn(100),
-        "feat3": np.random.randn(100),
-    })
+    reference = pd.DataFrame(
+        {
+            "feat1": np.random.randn(100),
+            "feat2": np.random.randn(100),
+            "feat3": np.random.randn(100),
+        }
+    )
 
-    current = pd.DataFrame({
-        "feat1": np.random.randn(100) + 1,
-        "feat2": np.random.randn(100),
-        "feat3": np.random.randn(100),
-    })
+    current = pd.DataFrame(
+        {
+            "feat1": np.random.randn(100) + 1,
+            "feat2": np.random.randn(100),
+            "feat3": np.random.randn(100),
+        }
+    )
 
     reports = detect_feature_drift(reference, current, features=["feat1", "feat2"])
 
@@ -161,9 +169,7 @@ def test_should_recalibrate_performance_drop():
     reference_perf = 0.90
     current_perf = 0.84  # 6% drop
 
-    should_recal = should_recalibrate(
-        reference_perf, current_perf, performance_threshold=0.05
-    )
+    should_recal = should_recalibrate(reference_perf, current_perf, performance_threshold=0.05)
 
     assert should_recal  # Should trigger recalibration
 

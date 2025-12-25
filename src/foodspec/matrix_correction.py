@@ -4,6 +4,7 @@ Backward-compatibility shim for matrix_correction module.
 This module has been moved to foodspec.preprocess.matrix_correction.
 This shim will be removed in a future version.
 """
+
 import warnings
 
 warnings.warn(

@@ -64,12 +64,14 @@ def test_correlation_similarity_matrix():
 
 def test_compute_peak_stats():
     """Test computing peak statistics."""
-    peak_data = pd.DataFrame({
-        "spectrum_id": [1, 1, 2, 2, 3],
-        "peak_id": ["p1", "p2", "p1", "p2", "p1"],
-        "position": [1000.0, 1200.0, 1005.0, 1198.0, 1002.0],
-        "intensity": [10.0, 8.0, 12.0, 9.0, 11.0],
-    })
+    peak_data = pd.DataFrame(
+        {
+            "spectrum_id": [1, 1, 2, 2, 3],
+            "peak_id": ["p1", "p2", "p1", "p2", "p1"],
+            "position": [1000.0, 1200.0, 1005.0, 1198.0, 1002.0],
+            "intensity": [10.0, 8.0, 12.0, 9.0, 11.0],
+        }
+    )
 
     stats = compute_peak_stats(peak_data, metadata=None)
 
@@ -80,11 +82,13 @@ def test_compute_peak_stats():
 
 def test_compute_ratio_table():
     """Test computing ratio table."""
-    ratio_data = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "R_1000_1200": [1.25, 1.33, 1.29],
-        "R_1400_1600": [0.95, 1.05, 1.00],
-    })
+    ratio_data = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "R_1000_1200": [1.25, 1.33, 1.29],
+            "R_1400_1600": [0.95, 1.05, 1.00],
+        }
+    )
 
     result = compute_ratio_table(ratio_data, metadata=None)
 
@@ -93,12 +97,14 @@ def test_compute_ratio_table():
 
 def test_compute_ratios():
     """Test computing ratios from dataframe."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "I_1000": [10.0, 12.0, 11.0],
-        "I_1200": [5.0, 6.0, 5.5],
-        "I_1400": [8.0, 9.0, 8.5],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "I_1000": [10.0, 12.0, 11.0],
+            "I_1200": [5.0, 6.0, 5.5],
+            "I_1400": [8.0, 9.0, 8.5],
+        }
+    )
 
     ratio_def = {
         "R_1000_1200": ("I_1000", "I_1200"),
@@ -150,8 +156,7 @@ def test_novelty_score_single():
 
 def test_generate_synthetic_raman_spectrum():
     """Test generating synthetic Raman spectrum."""
-    peaks = [PeakSpec(position=800, amplitude=10.0, width=20),
-             PeakSpec(position=1200, amplitude=8.0, width=15)]
+    peaks = [PeakSpec(position=800, amplitude=10.0, width=20), PeakSpec(position=1200, amplitude=8.0, width=15)]
 
     wn, spectrum = generate_synthetic_raman_spectrum(peaks=peaks, noise_level=0.1)
 
@@ -161,8 +166,7 @@ def test_generate_synthetic_raman_spectrum():
 
 def test_generate_synthetic_ftir_spectrum():
     """Test generating synthetic FTIR spectrum."""
-    bands = [PeakSpec(position=1000, amplitude=0.5, width=20),
-             PeakSpec(position=1600, amplitude=0.7, width=30)]
+    bands = [PeakSpec(position=1000, amplitude=0.5, width=20), PeakSpec(position=1600, amplitude=0.7, width=30)]
 
     wn, spectrum = generate_synthetic_ftir_spectrum(bands=bands, noise_level=0.05)
 

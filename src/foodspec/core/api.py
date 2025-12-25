@@ -82,9 +82,7 @@ class FoodSpec(
         """Initialize FoodSpec with data source."""
 
         # Load data via ingestion registry (captures I/O quality metrics)
-        self.data, ingest_metrics, ingest_diagnostics = self._load_data(
-            source, wavenumbers, metadata, modality
-        )
+        self.data, ingest_metrics, ingest_diagnostics = self._load_data(source, wavenumbers, metadata, modality)
 
         # Setup output directory
         self.output_dir = Path(output_dir or "foodspec_runs")

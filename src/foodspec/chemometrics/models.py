@@ -60,7 +60,7 @@ class _PLSProjector(BaseEstimator, TransformerMixin):
         return self.vip_scores_
 
     def get_feature_names_out(self, input_features=None):
-        return [f"pls_pc{i+1}" for i in range(self.n_components)]
+        return [f"pls_pc{i + 1}" for i in range(self.n_components)]
 
 
 def make_pls_regression(n_components: int = 10) -> Pipeline:

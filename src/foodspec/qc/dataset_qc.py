@@ -86,9 +86,7 @@ def check_class_balance(
     minority_class = min(class_counts, key=class_counts.get)
 
     # Undersized classes
-    undersized = [
-        cls for cls, count in class_counts.items() if count < min_samples_per_class
-    ]
+    undersized = [cls for cls, count in class_counts.items() if count < min_samples_per_class]
 
     # Severe imbalance flag
     severe = imbalance_ratio > severe_threshold
@@ -102,8 +100,7 @@ def check_class_balance(
         )
     elif severe:
         recommendation = (
-            f"⚠️ Severe imbalance ({imbalance_ratio:.1f}:1). "
-            "Use stratified splitting and class_weight='balanced'."
+            f"⚠️ Severe imbalance ({imbalance_ratio:.1f}:1). Use stratified splitting and class_weight='balanced'."
         )
     elif undersized:
         recommendation = (

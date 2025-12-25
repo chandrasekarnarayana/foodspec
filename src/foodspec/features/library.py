@@ -70,7 +70,12 @@ def similarity_search(
     top_k: int = 5,
 ) -> pd.DataFrame:
     lib = LibraryIndex.from_dataset(library_ds)
-    return lib.search(query_ds.x, metric=metric, top_k=top_k, query_ids=list(query_ds.metadata.get("sample_id", pd.Series(np.arange(len(query_ds))).astype(str))))
+    return lib.search(
+        query_ds.x,
+        metric=metric,
+        top_k=top_k,
+        query_ids=list(query_ds.metadata.get("sample_id", pd.Series(np.arange(len(query_ds))).astype(str))),
+    )
 
 
 def overlay_plot(query_x: np.ndarray, match_x: np.ndarray, wavenumbers: np.ndarray):
@@ -82,6 +87,7 @@ def overlay_plot(query_x: np.ndarray, match_x: np.ndarray, wavenumbers: np.ndarr
     meta = pd.DataFrame({"role": ["query", "match"]})
     ds = FoodSpectrumSet(x=X, wavenumbers=wavenumbers, metadata=meta)
     import matplotlib.pyplot as plt
+
     fig, ax = plt.subplots(figsize=(6, 4))
     plot_spectra(ds, sample_indices=[0, 1], color_by="role", ax=ax)
     ax.set_title("Query vs. Match")

@@ -4,6 +4,7 @@ Backward-compatibility shim for heating_trajectory module.
 This module has been moved to foodspec.workflows.heating_trajectory.
 This shim will be removed in a future version.
 """
+
 import warnings
 
 warnings.warn(

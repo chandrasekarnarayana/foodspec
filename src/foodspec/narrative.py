@@ -38,16 +38,16 @@ def generate_methods_text(run_dir: Path) -> str:
     if preprocessing:
         lines.append(
             "- Baseline: "
-            f"{preprocessing.get('baseline_method','als')}, "
-            f"lambda={preprocessing.get('baseline_lambda','')}, "
-            f"p={preprocessing.get('baseline_p','')}"
+            f"{preprocessing.get('baseline_method', 'als')}, "
+            f"lambda={preprocessing.get('baseline_lambda', '')}, "
+            f"p={preprocessing.get('baseline_p', '')}"
         )
         lines.append(
             "- Smoothing: "
-            f"window={preprocessing.get('smooth_window','')}, "
-            f"poly={preprocessing.get('smooth_polyorder','')}"
+            f"window={preprocessing.get('smooth_window', '')}, "
+            f"poly={preprocessing.get('smooth_polyorder', '')}"
         )
-        lines.append(f"- Normalization: {preprocessing.get('normalization','reference')}")
+        lines.append(f"- Normalization: {preprocessing.get('normalization', 'reference')}")
     else:
         lines.append("- See run report for preprocessing details.")
     lines.append("")

@@ -194,9 +194,7 @@ def check_version_compatibility(
 
     # Check major version compatibility (MUST match)
     if s_major != c_major:
-        errors_list.append(
-            f"Major version mismatch: artifact={s_major}.x.x, runtime={c_major}.x.x"
-        )
+        errors_list.append(f"Major version mismatch: artifact={s_major}.x.x, runtime={c_major}.x.x")
         errors_list.append("Breaking API changes between major versions prevent safe loading")
         recommendations.append(f"Re-train model with FoodSpec {c_major}.x.x")
         recommendations.append(f"Or downgrade runtime to FoodSpec {s_major}.x.x")
@@ -215,9 +213,7 @@ def check_version_compatibility(
     # Check minor version compatibility
     if s_minor > c_minor:
         if not allow_future_minor:
-            errors_list.append(
-                f"Artifact from future minor version: {s_major}.{s_minor}.x > {c_major}.{c_minor}.x"
-            )
+            errors_list.append(f"Artifact from future minor version: {s_major}.{s_minor}.x > {c_major}.{c_minor}.x")
             errors_list.append("Runtime may be missing features required by the artifact")
             recommendations.append(f"Upgrade FoodSpec to >={saved_version}")
 
@@ -232,15 +228,11 @@ def check_version_compatibility(
                 recommendations=recommendations,
             )
         else:
-            warnings_list.append(
-                f"Loading artifact from future minor version ({saved_version} on {current_version})"
-            )
+            warnings_list.append(f"Loading artifact from future minor version ({saved_version} on {current_version})")
             warnings_list.append("allow_future_minor=True; some features may not work correctly")
 
     elif s_minor < c_minor:
-        warnings_list.append(
-            f"Artifact from older minor version: {saved_version} < {current_version}"
-        )
+        warnings_list.append(f"Artifact from older minor version: {saved_version} < {current_version}")
         warnings_list.append("Artifact uses older API; should work but may miss improvements")
         recommendations.append("Consider re-training model with current version for latest features")
 

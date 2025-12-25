@@ -4,6 +4,7 @@ Backward-compatibility shim for calibration_transfer module.
 This module has been moved to foodspec.preprocess.calibration_transfer.
 This shim will be removed in a future version.
 """
+
 import warnings
 
 warnings.warn(

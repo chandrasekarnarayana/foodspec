@@ -111,8 +111,16 @@ class PeakFeatureExtractor(BaseEstimator, TransformerMixin):
                         idx = np.where(above)[0]
                         width = local_w[idx[-1]] - local_w[idx[0]]
                     centroid = float(np.sum(local_w * local_y) / (np.sum(local_y) + 1e-12))
-                    left_area = np.trapezoid(local_y[local_w <= centroid], x=local_w[local_w <= centroid]) if np.any(local_w <= centroid) else 0.0
-                    right_area = np.trapezoid(local_y[local_w >= centroid], x=local_w[local_w >= centroid]) if np.any(local_w >= centroid) else 0.0
+                    left_area = (
+                        np.trapezoid(local_y[local_w <= centroid], x=local_w[local_w <= centroid])
+                        if np.any(local_w <= centroid)
+                        else 0.0
+                    )
+                    right_area = (
+                        np.trapezoid(local_y[local_w >= centroid], x=local_w[local_w >= centroid])
+                        if np.any(local_w >= centroid)
+                        else 0.0
+                    )
                     denom = left_area + right_area + 1e-12
                     symmetry = 1.0 - abs(left_area - right_area) / denom
 

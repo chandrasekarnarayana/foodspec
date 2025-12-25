@@ -5,6 +5,7 @@ Apply a frozen FoodSpec model to new data.
 Example:
     foodspec-predict --model runs/model --input data/new.csv --output preds.csv
 """
+
 from __future__ import annotations
 
 import argparse
@@ -44,6 +45,7 @@ def main(argv=None):
         return 1
 
     model = FrozenModel.load(Path(args.model))
+
     def _apply_qc(preds_df: pd.DataFrame) -> pd.DataFrame:
         """Attach QC flags and notes if probabilities are available."""
 
@@ -67,8 +69,7 @@ def main(argv=None):
         flagged = preds_df["qc_do_not_trust"].sum()
         if flagged:
             print(
-                f"⚠️  Prediction guard: {flagged} rows flagged as 'do not trust'. "
-                "See qc_notes column for details.",
+                f"⚠️  Prediction guard: {flagged} rows flagged as 'do not trust'. See qc_notes column for details.",
                 file=sys.stderr,
             )
         return preds_df

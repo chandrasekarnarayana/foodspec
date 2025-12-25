@@ -49,8 +49,18 @@ def test_harmonize_advanced_residual_diag():
 def test_calibration_curve_estimation_workflow():
     wn_ref = np.array([1000.0, 1010.0, 1020.0, 1030.0])
     wn_shifted = wn_ref + 2.0
-    ref = SpectralDataset(wn_ref, np.array([[1.0, 2.0, 3.0, 4.0]]), pd.DataFrame({"sample": [1]}), instrument_meta={"instrument_id": "ref"})
-    tgt = SpectralDataset(wn_shifted, np.array([[1.0, 2.0, 3.0, 4.0]]), pd.DataFrame({"sample": [1]}), instrument_meta={"instrument_id": "tgt"})
+    ref = SpectralDataset(
+        wn_ref,
+        np.array([[1.0, 2.0, 3.0, 4.0]]),
+        pd.DataFrame({"sample": [1]}),
+        instrument_meta={"instrument_id": "ref"},
+    )
+    tgt = SpectralDataset(
+        wn_shifted,
+        np.array([[1.0, 2.0, 3.0, 4.0]]),
+        pd.DataFrame({"sample": [1]}),
+        instrument_meta={"instrument_id": "tgt"},
+    )
 
     curve, diag = estimate_calibration_curve(ref, tgt, max_shift_points=5)
     assert isinstance(curve, CalibrationCurve)

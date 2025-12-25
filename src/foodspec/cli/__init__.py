@@ -11,5 +11,4 @@ from foodspec.cli.main import app
 # Backward-compatibility re-export for tests that monkeypatch FoodSpec
 from foodspec.core.api import FoodSpec
 
-__all__ = ['app', 'FoodSpec']
-
+__all__ = ["app", "FoodSpec"]

@@ -5,6 +5,7 @@ A workflow can be any callable or lightweight object encapsulating a
 multi-step run (e.g., AutoML or harmonization pipelines). The registry stores
 these by name for discovery from entry points.
 """
+
 from __future__ import annotations
 
 from typing import Dict, Optional

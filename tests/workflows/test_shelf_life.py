@@ -14,11 +14,7 @@ def test_estimate_remaining_shelf_life_linear():
     for ent in ["A", "B"]:
         for t in t_points:
             X.append(np.zeros_like(wn))
-            meta_rows.append({
-                "sample_id": ent,
-                "time": t,
-                "deg": 0.5 * t + (0.1 if ent == "B" else 0.0)
-            })
+            meta_rows.append({"sample_id": ent, "time": t, "deg": 0.5 * t + (0.1 if ent == "B" else 0.0)})
     X = np.vstack(X)
     meta = pd.DataFrame(meta_rows)
     ds = TimeSpectrumSet(x=X, wavenumbers=wn, metadata=meta, modality="raman", time_col="time", entity_col="sample_id")

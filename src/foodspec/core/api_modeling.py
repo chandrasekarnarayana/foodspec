@@ -48,11 +48,34 @@ class FoodSpecModelingMixin:
             # Minimal defaults for quick/standard presets using bands and peak heights
             default_specs = {
                 "quick": [
-                    FeatureSpec(name="band_full", ftype="band", regions=[(float(self.data.wavenumbers.min()), float(self.data.wavenumbers.max()))]),
+                    FeatureSpec(
+                        name="band_full",
+                        ftype="band",
+                        regions=[(float(self.data.wavenumbers.min()), float(self.data.wavenumbers.max()))],
+                    ),
                 ],
                 "standard": [
-                    FeatureSpec(name="band_mid", ftype="band", regions=[(float(np.percentile(self.data.wavenumbers, 25)), float(np.percentile(self.data.wavenumbers, 75)))]),
-                    FeatureSpec(name="peak_max", ftype="peak", regions=[(float(self.data.wavenumbers[np.argmax(self.data.x.mean(axis=0))]) - 5, float(self.data.wavenumbers[np.argmax(self.data.x.mean(axis=0))]) + 5)], params={"tolerance": 5.0, "metrics": ("height",)}),
+                    FeatureSpec(
+                        name="band_mid",
+                        ftype="band",
+                        regions=[
+                            (
+                                float(np.percentile(self.data.wavenumbers, 25)),
+                                float(np.percentile(self.data.wavenumbers, 75)),
+                            )
+                        ],
+                    ),
+                    FeatureSpec(
+                        name="peak_max",
+                        ftype="peak",
+                        regions=[
+                            (
+                                float(self.data.wavenumbers[np.argmax(self.data.x.mean(axis=0))]) - 5,
+                                float(self.data.wavenumbers[np.argmax(self.data.x.mean(axis=0))]) + 5,
+                            )
+                        ],
+                        params={"tolerance": 5.0, "metrics": ("height",)},
+                    ),
                 ],
             }
             chosen = default_specs.get(preset)
@@ -65,7 +88,9 @@ class FoodSpecModelingMixin:
         self.bundle.add_metrics("features", {"n_features": features_df.shape[1]})
 
         spec_hashes = [s.hash() for s in (specs or [])]
-        step_hash = hashlib.sha256(json.dumps({"preset": preset, "spec_hashes": spec_hashes}, sort_keys=True).encode()).hexdigest()[:8]
+        step_hash = hashlib.sha256(
+            json.dumps({"preset": preset, "spec_hashes": spec_hashes}, sort_keys=True).encode()
+        ).hexdigest()[:8]
         self.bundle.run_record.add_step(
             "features",
             step_hash,
@@ -168,9 +193,7 @@ class FoodSpecModelingMixin:
 
         # Build library index and compute similarity table
         lib = LibraryIndex.from_dataset(library)
-        query_ids = list(
-            self.data.metadata.get("sample_id", pd.Series(np.arange(len(self.data))).astype(str))
-        )
+        query_ids = list(self.data.metadata.get("sample_id", pd.Series(np.arange(len(self.data))).astype(str)))
         sim_table = lib.search(self.data.x, metric=metric, top_k=top_k, query_ids=query_ids)
 
         # Confidence and decision mapping

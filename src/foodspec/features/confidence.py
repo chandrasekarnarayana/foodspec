@@ -43,7 +43,11 @@ def add_confidence(
     """
     if "distance" not in sim_table.columns:
         raise ValueError("similarity table must contain a 'distance' column")
-    ref_scale = float(np.median(reference_distances)) if reference_distances is not None else float(np.median(sim_table["distance"]))
+    ref_scale = (
+        float(np.median(reference_distances))
+        if reference_distances is not None
+        else float(np.median(sim_table["distance"]))
+    )
     scores = [_scale_distance_to_confidence(d, ref_scale) for d in sim_table["distance"].to_numpy()]
     decisions = [decision_from_confidence(s, thresholds) for s in scores]
     out = sim_table.copy()

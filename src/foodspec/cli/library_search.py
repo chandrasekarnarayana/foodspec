@@ -8,6 +8,7 @@ Outputs top-k matches with scores and optional overlay plot saved to a file.
 Usage:
     foodspec-library-search --query query.csv --library lib.csv --label-col label --k 5 --metric cosine --overlay-out overlay.png
 """
+
 from __future__ import annotations
 
 import argparse
@@ -39,7 +40,12 @@ def main(argv=None) -> int:
     p.add_argument("--library", required=True, help="Path to library CSV (rows of spectra).")
     p.add_argument("--label-col", default="label", help="Label column name in library CSV (optional).")
     p.add_argument("--k", type=int, default=5, help="Top-k matches to return.")
-    p.add_argument("--metric", default="cosine", choices=["cosine","pearson","euclidean","sid","sam"], help="Similarity metric.")
+    p.add_argument(
+        "--metric",
+        default="cosine",
+        choices=["cosine", "pearson", "euclidean", "sid", "sam"],
+        help="Similarity metric.",
+    )
     p.add_argument("--overlay-out", default=None, help="Path to save overlay plot (optional).")
     args = p.parse_args(argv)
 
@@ -67,7 +73,9 @@ def main(argv=None) -> int:
         print(f"- {m.label}: score={m.score:.4f} confidence={m.confidence:.2f} metric={m.metric}")
 
     if args.overlay_out:
-        overlay = overlay_plot(query_vec, wn, [(m.label, lib[m.index]) for m in matches], title=f"Top-{args.k} ({args.metric})")
+        overlay = overlay_plot(
+            query_vec, wn, [(m.label, lib[m.index]) for m in matches], title=f"Top-{args.k} ({args.metric})"
+        )
         out_path = Path(args.overlay_out)
         overlay.savefig(out_path)
         print(f"Saved overlay plot to {out_path}")

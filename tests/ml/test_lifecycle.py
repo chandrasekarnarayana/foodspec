@@ -221,12 +221,8 @@ def test_get_performance_history():
         baseline_performance=0.90,
     )
 
-    tracker.record_performance(
-        timestamp=datetime(2025, 1, 2), metric_value=0.88, n_samples=100, batch="A"
-    )
-    tracker.record_performance(
-        timestamp=datetime(2025, 1, 3), metric_value=0.87, n_samples=150, batch="B"
-    )
+    tracker.record_performance(timestamp=datetime(2025, 1, 2), metric_value=0.88, n_samples=100, batch="A")
+    tracker.record_performance(timestamp=datetime(2025, 1, 3), metric_value=0.87, n_samples=150, batch="B")
 
     history = tracker.get_performance_history()
 

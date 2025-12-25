@@ -37,7 +37,13 @@ def _to_series(x) -> pd.Series:
     return pd.Series(np.asarray(x), dtype=float)
 
 
-def run_ttest(sample1, sample2: Optional[Iterable] = None, popmean: Optional[float] = None, paired: bool = False, alternative: str = "two-sided") -> TestResult:
+def run_ttest(
+    sample1,
+    sample2: Optional[Iterable] = None,
+    popmean: Optional[float] = None,
+    paired: bool = False,
+    alternative: str = "two-sided",
+) -> TestResult:
     """
     t-tests: one-sample, two-sample (Welch), or paired.
     """
@@ -56,7 +62,9 @@ def run_ttest(sample1, sample2: Optional[Iterable] = None, popmean: Optional[flo
         df_val = len(s1) + len(s2) - 2
     else:
         raise ValueError("Provide popmean for one-sample or sample2 for two-sample/paired tests.")
-    summary = pd.DataFrame([{"test": "t-test", "statistic": stat, "pvalue": p, "df": df_val, "alternative": alternative}])
+    summary = pd.DataFrame(
+        [{"test": "t-test", "statistic": stat, "pvalue": p, "df": df_val, "alternative": alternative}]
+    )
     return TestResult(statistic=float(stat), pvalue=float(p), df=df_val, summary=summary)
 
 
@@ -99,6 +107,7 @@ def run_manova(
     """
     if MANOVA is None:
         from statsmodels.multivariate.manova import MANOVA as _MANOVA  # type: ignore
+
         globals()["MANOVA"] = _MANOVA
 
     # Case 1: group_col is a column name in df (formula interface)
@@ -234,7 +243,9 @@ def games_howell(values, groups, alpha: float = 0.05) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["group1", "group2", "meandiff", "p_adj", "lower", "upper", "reject"])
 
 
-def run_mannwhitney_u(data, group_col: object | None = None, value_col: str | None = None, alternative: str = "two-sided") -> TestResult:
+def run_mannwhitney_u(
+    data, group_col: object | None = None, value_col: str | None = None, alternative: str = "two-sided"
+) -> TestResult:
     if isinstance(data, pd.DataFrame):
         if group_col is None or value_col is None:
             raise ValueError("Provide group_col and value_col when passing a DataFrame.")
@@ -254,9 +265,13 @@ def run_mannwhitney_u(data, group_col: object | None = None, value_col: str | No
             try:
                 g1, g2 = data
             except Exception as exc:
-                raise ValueError("Provide either a DataFrame with group/value columns, two arrays, or call with (array1, array2).") from exc
+                raise ValueError(
+                    "Provide either a DataFrame with group/value columns, two arrays, or call with (array1, array2)."
+                ) from exc
     stat, p = stats.mannwhitneyu(g1, g2, alternative=alternative)
-    summary = pd.DataFrame([{"test": "mannwhitney_u", "statistic": stat, "pvalue": p, "df": None, "alternative": alternative}])
+    summary = pd.DataFrame(
+        [{"test": "mannwhitney_u", "statistic": stat, "pvalue": p, "df": None, "alternative": alternative}]
+    )
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
 
 
@@ -264,7 +279,9 @@ def run_wilcoxon_signed_rank(sample_before, sample_after, alternative: str = "tw
     s1 = _to_series(sample_before)
     s2 = _to_series(sample_after)
     stat, p = stats.wilcoxon(s1, s2, alternative=alternative)
-    summary = pd.DataFrame([{"test": "wilcoxon_signed_rank", "statistic": stat, "pvalue": p, "df": None, "alternative": alternative}])
+    summary = pd.DataFrame(
+        [{"test": "wilcoxon_signed_rank", "statistic": stat, "pvalue": p, "df": None, "alternative": alternative}]
+    )
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
 
 

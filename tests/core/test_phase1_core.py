@@ -196,10 +196,12 @@ class TestFoodSpec:
         """Test that FoodSpec methods are chainable."""
         x = np.random.randn(10, 50)
         wn = np.linspace(500, 1000, 50)
-        meta = pd.DataFrame({
-            "sample_id": [f"s{i}" for i in range(10)],
-            "label": ["A", "B"] * 5,
-        })
+        meta = pd.DataFrame(
+            {
+                "sample_id": [f"s{i}" for i in range(10)],
+                "label": ["A", "B"] * 5,
+            }
+        )
 
         fs = FoodSpec(x, wavenumbers=wn, metadata=meta)
 
@@ -251,11 +253,13 @@ class TestPhase1Integration:
             n_wn = 100
             x = np.random.randn(n_samples, n_wn)
             wn = np.linspace(500, 2000, n_wn)
-            meta = pd.DataFrame({
-                "sample_id": [f"sample_{i:03d}" for i in range(n_samples)],
-                "oil_type": ["olive", "sunflower", "canola"] * 5,
-                "batch": [1, 1, 1, 2, 2, 2, 3, 3, 3, 1, 2, 3, 1, 2, 3],
-            })
+            meta = pd.DataFrame(
+                {
+                    "sample_id": [f"sample_{i:03d}" for i in range(n_samples)],
+                    "oil_type": ["olive", "sunflower", "canola"] * 5,
+                    "batch": [1, 1, 1, 2, 2, 2, 3, 3, 3, 1, 2, 3, 1, 2, 3],
+                }
+            )
 
             # Initialize FoodSpec
             fs = FoodSpec(

@@ -5,6 +5,7 @@ Provides similarity metrics (cosine, Pearson, Euclidean, SID, SAM) and
 search over a library to return top-k matches with confidence and an
 optional overlay plot.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -88,7 +89,9 @@ def search_library(
     return out
 
 
-def overlay_plot(query: np.ndarray, wavenumbers: np.ndarray, matches: List[Tuple[str, np.ndarray]], title: str = "Overlay"):
+def overlay_plot(
+    query: np.ndarray, wavenumbers: np.ndarray, matches: List[Tuple[str, np.ndarray]], title: str = "Overlay"
+):
     plt.figure(figsize=(8, 4))
     plt.plot(wavenumbers, query, label="query", lw=2)
     for label, spectrum in matches:

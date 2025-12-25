@@ -19,7 +19,9 @@ def make_synthetic_time_series(n_samples=30, n_wn=150):
 def test_analyze_heating_trajectory_basic():
     X, wn, meta = make_synthetic_time_series()
     fs = FoodSpec(X, wavenumbers=wn, metadata=meta, modality="raman")
-    res = fs.analyze_heating_trajectory(time_column="time_hours", indices=["pi", "tfc"], classify_stages=False, estimate_shelf_life=False)
+    res = fs.analyze_heating_trajectory(
+        time_column="time_hours", indices=["pi", "tfc"], classify_stages=False, estimate_shelf_life=False
+    )
     assert "trajectory" in res
     # Bundle should have heating trajectory metrics recorded
     assert "heating_trajectory" in fs.bundle.metrics

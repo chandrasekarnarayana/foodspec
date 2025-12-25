@@ -4,6 +4,7 @@ Backward-compatibility shim for cli.py module.
 This module has been moved to foodspec.cli.main.
 This shim will be removed in a future version.
 """
+
 import warnings
 
 warnings.warn(

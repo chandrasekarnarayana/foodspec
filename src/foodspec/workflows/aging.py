@@ -47,12 +47,16 @@ def compute_degradation_trajectories(
         if method == "linear":
             m, b = linear_slope(times, values)
             fitted = m * times + b
-            fits[ent] = TrajectoryFit(method="linear", params={"slope": m, "intercept": b}, times=times, values=values, fitted=fitted)
+            fits[ent] = TrajectoryFit(
+                method="linear", params={"slope": m, "intercept": b}, times=times, values=values, fitted=fitted
+            )
         elif method == "spline":
             s = UnivariateSpline(times, values, s=0.0)
             fitted = s(times)
             acc = float(np.mean(s.derivative(n=2)(times)))
-            fits[ent] = TrajectoryFit(method="spline", params={"acceleration_mean": acc}, times=times, values=values, fitted=fitted)
+            fits[ent] = TrajectoryFit(
+                method="spline", params={"acceleration_mean": acc}, times=times, values=values, fitted=fitted
+            )
         else:
             raise ValueError("method must be 'linear' or 'spline'.")
         slope, _ = linear_slope(times, values)

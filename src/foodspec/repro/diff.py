@@ -39,7 +39,9 @@ def diff_runs(run_a: Union[RunRecord, str, Path], run_b: Union[RunRecord, str, P
                 expected.append(consequence)
 
     _add_change("dataset_hash", rec_a.dataset_hash, rec_b.dataset_hash, "Dataset changed; model metrics may shift.")
-    _add_change("config_hash", rec_a.config_hash, rec_b.config_hash, "Configuration changed; pipeline behavior differs.")
+    _add_change(
+        "config_hash", rec_a.config_hash, rec_b.config_hash, "Configuration changed; pipeline behavior differs."
+    )
 
     if rec_a.step_records != rec_b.step_records:
         changes.append({"field": "step_records", "run_a": rec_a.step_records, "run_b": rec_b.step_records})

@@ -83,9 +83,8 @@ def run_experiment(
     fs = FoodSpec(cfg.dataset.path, modality=cfg.dataset.modality)
     fs.bundle.run_record = record  # Attach provenance built from exp.yml
 
-    label_column = (
-        (cfg.modeling.get("label_column") if cfg.modeling else None)
-        or cfg.dataset.schema.get("label_column", "label")
+    label_column = (cfg.modeling.get("label_column") if cfg.modeling else None) or cfg.dataset.schema.get(
+        "label_column", "label"
     )
 
     # QC
@@ -147,9 +146,7 @@ def run_experiment(
         source_standards = _load_matrix(ct.get("source_standards")) if ct.get("source_standards") else None
         target_standards = _load_matrix(ct.get("target_standards")) if ct.get("target_standards") else None
         if source_standards is None or target_standards is None:
-            raise typer.BadParameter(
-                "calibration_transfer requires source_standards and target_standards paths"
-            )
+            raise typer.BadParameter("calibration_transfer requires source_standards and target_standards paths")
         fs.apply_calibration_transfer(
             source_standards=source_standards,
             target_standards=target_standards,

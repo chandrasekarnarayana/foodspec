@@ -50,10 +50,7 @@ def late_fusion_concat(
         if n_samples is None:
             n_samples = X.shape[0]
         elif X.shape[0] != n_samples:
-            raise ValueError(
-                f"Feature matrix for {modality} has {X.shape[0]} samples, "
-                f"expected {n_samples}."
-            )
+            raise ValueError(f"Feature matrix for {modality} has {X.shape[0]} samples, expected {n_samples}.")
     matrices: List[np.ndarray] = []
     boundaries: Dict[str, tuple[int, int]] = {}
     names: List[str] = []
@@ -66,9 +63,7 @@ def late_fusion_concat(
         names.extend([f"{modality}_f{i}" for i in range(n_feat)])
         offset += n_feat
     X_fused = np.hstack(matrices)
-    return LateFusionResult(
-        X_fused=X_fused, feature_names=names, modality_boundaries=boundaries
-    )
+    return LateFusionResult(X_fused=X_fused, feature_names=names, modality_boundaries=boundaries)
 
 
 @dataclass
@@ -109,6 +104,7 @@ def decision_fusion_vote(
     stacked = np.vstack(pred_arrays).T  # shape (n_samples, n_modalities)
     if strategy == "majority":
         from scipy.stats import mode
+
         fused, _ = mode(stacked, axis=1, keepdims=False)
         fused = fused.ravel()
     elif strategy == "unanimous":
@@ -157,17 +153,12 @@ def decision_fusion_weighted(
             raise ValueError(f"Modality '{modality}' not in weights.")
         P = proba_dict[modality]
         if P.ndim != 2 or P.shape != (n_samples, n_classes):
-            raise ValueError(
-                f"Probability matrix for {modality} must be shape "
-                f"({n_samples}, {n_classes})."
-            )
+            raise ValueError(f"Probability matrix for {modality} must be shape ({n_samples}, {n_classes}).")
     P_fused = np.zeros((n_samples, n_classes), dtype=float)
     for modality in modalities:
         P_fused += weights[modality] * proba_dict[modality]
     preds = np.argmax(P_fused, axis=1)
-    return DecisionFusionResult(
-        predictions=preds, probabilities=P_fused, method="weighted_average"
-    )
+    return DecisionFusionResult(predictions=preds, probabilities=P_fused, method="weighted_average")
 
 
 __all__ = [

@@ -125,7 +125,6 @@ def test_protocol_benchmarks_missing(monkeypatch, tmp_path):
     assert "mixture_error" in summary
 
 
-
 def test_mixture_workflow_nnls_smoke():
     wn = np.linspace(600, 800, 20)
     s1 = np.exp(-0.5 * ((wn - 650) / 5) ** 2)

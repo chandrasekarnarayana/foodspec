@@ -204,5 +204,3 @@ def test_cli_hyperspectral(tmp_path: Path):
     )
     assert result.exit_code == 0, result.output
     _assert_report_created(out_dir)
-
-

@@ -22,7 +22,9 @@ def test_band_and_peak_specs():
     ds = _ds()
     specs = [
         FeatureSpec(name="band_area", ftype="band", regions=[(1030, 1060)]),
-        FeatureSpec(name="peak1050", ftype="peak", regions=[(1048, 1052)], params={"tolerance": 3.0, "metrics": ("height",)}),
+        FeatureSpec(
+            name="peak1050", ftype="peak", regions=[(1048, 1052)], params={"tolerance": 3.0, "metrics": ("height",)}
+        ),
     ]
     engine = FeatureEngine(specs)
     feats, diag = engine.evaluate(ds)

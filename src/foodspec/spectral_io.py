@@ -64,7 +64,7 @@ def load_opus(path: Union[str, Path]) -> SpectralDataset:
         return ds
     except Exception as exc:
         raise ValueError(
-            "This file looks like OPUS but parsing failed. Ensure you export as ASCII/CSV. " f"Details: {exc}"
+            f"This file looks like OPUS but parsing failed. Ensure you export as ASCII/CSV. Details: {exc}"
         )
 
 
@@ -78,9 +78,7 @@ def load_wire(path: Union[str, Path]) -> SpectralDataset:
             raise ValueError("No numeric wavenumber columns found.")
         return ds
     except Exception as exc:
-        raise ValueError(
-            "This file looks like a WiRE export but parsing failed. Try exporting as CSV. " f"Details: {exc}"
-        )
+        raise ValueError(f"This file looks like a WiRE export but parsing failed. Try exporting as CSV. Details: {exc}")
 
 
 def load_envi(path_hdr: Union[str, Path], path_dat: Optional[Union[str, Path]] = None) -> SpectralDataset:

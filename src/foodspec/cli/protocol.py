@@ -15,6 +15,7 @@ Overrides:
     foodspec-run-protocol --input data/oils.csv --protocol EdibleOil_Classification_v1 --output-dir runs \\
         --seed 42 --cv-folds 3 --normalization-mode vector --baseline-method rubberband
 """
+
 from __future__ import annotations
 
 import argparse

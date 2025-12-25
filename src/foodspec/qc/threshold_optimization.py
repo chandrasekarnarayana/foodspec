@@ -54,6 +54,7 @@ def estimate_threshold_elbow(
 
     try:
         from sklearn.cluster import KMeans
+
         km = KMeans(n_clusters=n_clusters, random_state=0, n_init=10)
         km.fit_predict(sorted_scores.reshape(-1, 1))
         centers = np.sort(km.cluster_centers_.flatten())

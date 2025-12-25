@@ -8,11 +8,13 @@ from foodspec.stats.hypothesis_tests import pairwise_tukeyhsd, run_manova, tukey
 def test_run_manova_and_tukey():
     # Synthetic small dataset
     rng = np.random.default_rng(0)
-    df = pd.DataFrame({
-        "group": np.repeat(["A", "B", "C"], 10),
-        "f1": np.concatenate([rng.normal(0, 1, 10), rng.normal(1, 1, 10), rng.normal(2, 1, 10)]),
-        "f2": np.concatenate([rng.normal(0, 1, 10), rng.normal(1, 1, 10), rng.normal(2, 1, 10)]),
-    })
+    df = pd.DataFrame(
+        {
+            "group": np.repeat(["A", "B", "C"], 10),
+            "f1": np.concatenate([rng.normal(0, 1, 10), rng.normal(1, 1, 10), rng.normal(2, 1, 10)]),
+            "f2": np.concatenate([rng.normal(0, 1, 10), rng.normal(1, 1, 10), rng.normal(2, 1, 10)]),
+        }
+    )
     res = run_manova(df, group_col="group", dependent_cols=["f1", "f2"])
     assert "group" in str(res)
 

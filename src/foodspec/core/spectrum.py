@@ -108,6 +108,7 @@ class Spectrum:
             SHA256 hash of metadata JSON.
         """
         import json
+
         meta_str = json.dumps(self.metadata, sort_keys=True, default=str)
         return hashlib.sha256(meta_str.encode()).hexdigest()[:8]
 
@@ -123,7 +124,7 @@ class Spectrum:
             y=self.y.copy(),
             kind=self.kind,
             x_unit=self.x_unit,
-            metadata={k: (v.copy() if hasattr(v, 'copy') else v) for k, v in self.metadata.items()},
+            metadata={k: (v.copy() if hasattr(v, "copy") else v) for k, v in self.metadata.items()},
         )
 
     def crop_wavenumber(self, x_min: float, x_max: float) -> Spectrum:
@@ -193,6 +194,5 @@ class Spectrum:
     def __repr__(self) -> str:
         """String representation."""
         return (
-            f"Spectrum({self.kind}, n={self.n_points}, "
-            f"x_range=[{self.x.min():.1f}, {self.x.max():.1f}] {self.x_unit})"
+            f"Spectrum({self.kind}, n={self.n_points}, x_range=[{self.x.min():.1f}, {self.x.max():.1f}] {self.x_unit})"
         )

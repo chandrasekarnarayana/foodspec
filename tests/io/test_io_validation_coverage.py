@@ -75,11 +75,7 @@ def test_detect_format_txt(tmp_path):
 def test_read_spectra_csv(tmp_path):
     """Test reading spectra from CSV."""
     csv_file = tmp_path / "test.csv"
-    df = pd.DataFrame({
-        "wavenumber": [500, 600, 700],
-        "sample1": [1.0, 2.0, 3.0],
-        "sample2": [1.5, 2.5, 3.5]
-    })
+    df = pd.DataFrame({"wavenumber": [500, 600, 700], "sample1": [1.0, 2.0, 3.0], "sample2": [1.5, 2.5, 3.5]})
     df.to_csv(csv_file, index=False)
 
     ds = read_spectra(csv_file, modality="raman")

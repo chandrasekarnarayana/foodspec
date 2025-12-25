@@ -33,7 +33,7 @@ def _write_exp(tmp_path: Path, dataset_path: Path) -> Path:
         reporting:
           targets: [metrics]
         outputs:
-          base_dir: {tmp_path/'runs'}
+          base_dir: {tmp_path / "runs"}
         """
     ).strip()
     exp_path = tmp_path / "exp.yml"
@@ -80,13 +80,14 @@ def test_run_exp_executes_pipeline(monkeypatch, tmp_path):
     dataset_path = tmp_path / "data.csv"
     csv_content = "wavenumber,sample1,sample2,sample3\n"
     for wn in range(500, 1100, 50):  # 500, 550, ..., 1050 (12 points)
-        csv_content += f"{wn},{wn/500.0},{wn/500.0 + 0.5},{wn/500.0 + 0.2}\n"
+        csv_content += f"{wn},{wn / 500.0},{wn / 500.0 + 0.5},{wn / 500.0 + 0.2}\n"
     dataset_path.write_text(csv_content)
     exp_path = _write_exp(tmp_path, dataset_path)
 
     DummyFoodSpec.instances.clear()
     # Monkeypatch FoodSpec in the workflow module where it's actually imported
     from foodspec.cli.commands import workflow
+
     monkeypatch.setattr(workflow, "FoodSpec", DummyFoodSpec)
 
     result = runner.invoke(cli.app, ["run-exp", str(exp_path), "--output-dir", str(tmp_path / "out")])
@@ -104,7 +105,7 @@ def test_run_exp_dry_run(monkeypatch, tmp_path):
     dataset_path = tmp_path / "data.csv"
     csv_content = "wavenumber,sample1,sample2,sample3\n"
     for wn in range(500, 1100, 50):  # 500, 550, ..., 1050 (12 points)
-        csv_content += f"{wn},{wn/500.0},{wn/500.0 + 0.5},{wn/500.0 + 0.2}\n"
+        csv_content += f"{wn},{wn / 500.0},{wn / 500.0 + 0.5},{wn / 500.0 + 0.2}\n"
     dataset_path.write_text(csv_content)
     exp_path = _write_exp(tmp_path, dataset_path)
 
@@ -113,6 +114,7 @@ def test_run_exp_dry_run(monkeypatch, tmp_path):
         raise AssertionError("FoodSpec should not be instantiated during dry-run")
 
     from foodspec.cli.commands import workflow
+
     monkeypatch.setattr(workflow, "FoodSpec", _boom)
 
     result = runner.invoke(cli.app, ["run-exp", str(exp_path), "--dry-run"])

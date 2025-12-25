@@ -41,7 +41,11 @@ def statistical_justification(
 
     rationale = TEST_RATIONALES.get(test.lower(), f"{test} was applied per study design.")
     parts = [rationale]
-    parts.append(f"Family-wise error controlled at alpha={alpha:.3f} using {correction} where applicable." if correction else f"Significance threshold set at alpha={alpha:.3f} without multiplicity correction.")
+    parts.append(
+        f"Family-wise error controlled at alpha={alpha:.3f} using {correction} where applicable."
+        if correction
+        else f"Significance threshold set at alpha={alpha:.3f} without multiplicity correction."
+    )
     parts.append(f"Design: {design}.")
     if effect_size:
         parts.append(f"Effect sizes reported as {effect_size} with confidence intervals.")

@@ -77,7 +77,7 @@ def compute_replicate_consistency(
     high_variability = []
 
     for rep_id in unique_replicates:
-        rep_mask = (replicate_ids == rep_id)
+        rep_mask = replicate_ids == rep_id
         rep_spectra = spectra[rep_mask]
 
         if rep_spectra.shape[0] < 2:
@@ -101,9 +101,9 @@ def compute_replicate_consistency(
         warnings.warn(f"No replicate groups with ≥2 measurements found in '{replicate_column}'.")
         return {
             "cv_per_replicate": {},
-            "median_cv": float('nan'),
-            "mean_cv": float('nan'),
-            "max_cv": float('nan'),
+            "median_cv": float("nan"),
+            "mean_cv": float("nan"),
+            "max_cv": float("nan"),
             "high_variability_replicates": [],
             "n_replicates": 0,
         }
@@ -188,7 +188,7 @@ def assess_variability_sources(
 
         within_class_std = []
         for cls in unique_classes:
-            cls_mask = (labels == cls)
+            cls_mask = labels == cls
             cls_spectra = spectra[cls_mask]
 
             if cls_spectra.shape[0] < 2:
@@ -235,10 +235,7 @@ def assess_variability_sources(
                 batch_var = {
                     "mean_f_statistic": float(np.mean(f_stats)),
                     "median_f_statistic": float(np.median(f_stats)),
-                    "interpretation": (
-                        "F > 2: significant batch effects. "
-                        "F < 1.5: batch effects negligible."
-                    ),
+                    "interpretation": ("F > 2: significant batch effects. F < 1.5: batch effects negligible."),
                 }
                 diagnostics["batch_variability"] = batch_var
 

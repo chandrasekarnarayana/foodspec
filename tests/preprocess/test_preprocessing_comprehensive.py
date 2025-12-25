@@ -1,4 +1,5 @@
 """Comprehensive tests for preprocessing modules to achieve 90%+ coverage."""
+
 import numpy as np
 
 from foodspec.preprocess.baseline import ALSBaseline, PolynomialBaseline, RubberbandBaseline
@@ -125,11 +126,7 @@ def test_snv_normalizer():
 def test_msc_normalizer():
     rng = np.random.RandomState(55)
     reference = rng.randn(100)
-    X = np.vstack([
-        reference * 1.2 + 0.5,
-        reference * 0.8 + 0.3,
-        reference * 1.5 + 0.1
-    ])
+    X = np.vstack([reference * 1.2 + 0.5, reference * 0.8 + 0.3, reference * 1.5 + 0.1])
 
     msc = MSCNormalizer()
     msc.fit(X)

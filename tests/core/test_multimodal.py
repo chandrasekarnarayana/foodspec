@@ -16,18 +16,17 @@ def test_multimodal_dataset_construction():
     X_raman = np.random.randn(n_samples, len(wn_raman))
     X_ftir = np.random.randn(n_samples, len(wn_ftir))
 
-    meta = pd.DataFrame({
-        "sample_id": [f"S{i}" for i in range(n_samples)],
-        "label": ["A"] * 5 + ["B"] * 5,
-    })
+    meta = pd.DataFrame(
+        {
+            "sample_id": [f"S{i}" for i in range(n_samples)],
+            "label": ["A"] * 5 + ["B"] * 5,
+        }
+    )
 
     ds_raman = FoodSpectrumSet(x=X_raman, wavenumbers=wn_raman, metadata=meta.copy(), modality="raman")
     ds_ftir = FoodSpectrumSet(x=X_ftir, wavenumbers=wn_ftir, metadata=meta.copy(), modality="ftir")
 
-    mmd = MultiModalDataset.from_datasets(
-        {"raman": ds_raman, "ftir": ds_ftir},
-        sample_id_col="sample_id"
-    )
+    mmd = MultiModalDataset.from_datasets({"raman": ds_raman, "ftir": ds_ftir}, sample_id_col="sample_id")
 
     assert len(mmd.modalities()) == 2
     assert "raman" in mmd.modalities()
@@ -41,10 +40,12 @@ def test_multimodal_subset():
     n_samples = 6
     X1 = np.random.randn(n_samples, len(wn))
     X2 = np.random.randn(n_samples, len(wn))
-    meta = pd.DataFrame({
-        "sample_id": [f"S{i}" for i in range(n_samples)],
-        "label": ["A", "A", "B", "B", "C", "C"],
-    })
+    meta = pd.DataFrame(
+        {
+            "sample_id": [f"S{i}" for i in range(n_samples)],
+            "label": ["A", "A", "B", "B", "C", "C"],
+        }
+    )
     ds1 = FoodSpectrumSet(x=X1, wavenumbers=wn, metadata=meta.copy(), modality="raman")
     ds2 = FoodSpectrumSet(x=X2, wavenumbers=wn, metadata=meta.copy(), modality="ftir")
     mmd = MultiModalDataset.from_datasets({"raman": ds1, "ftir": ds2})

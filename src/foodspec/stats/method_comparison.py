@@ -1,6 +1,7 @@
 """
 Bland–Altman analysis for method comparison.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

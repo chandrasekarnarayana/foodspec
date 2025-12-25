@@ -19,7 +19,7 @@ def test_cli_end_to_end(tmp_path):
     labels = ["OilA"] * 5 + ["OilB"] * 5
     files = []
     for i, lbl in enumerate(labels):
-        fname = f"s{i+1}.txt"
+        fname = f"s{i + 1}.txt"
         path = raw_dir / fname
         if lbl == "OilA":
             intensities = 1.0 + np.exp(-0.5 * ((wavenumbers - 1000) / 20) ** 2)

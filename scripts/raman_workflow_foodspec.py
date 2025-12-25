@@ -1490,8 +1490,8 @@ the most stable features (lowest global CV) were:
     {low_cv_list}
 
 When intra-class variability was evaluated per oil, the mean CV across ratiometric features ranged from
-{intraclass_df['mean_cv_percent'].min():.1f}% (most homogeneous oil) to
-{intraclass_df['mean_cv_percent'].max():.1f}% (most heterogeneous oil).
+{intraclass_df["mean_cv_percent"].min():.1f}% (most homogeneous oil) to
+{intraclass_df["mean_cv_percent"].max():.1f}% (most heterogeneous oil).
 
 The three most reproducible oils (lowest intra-class CV) were:
 {best_stable_oils.to_string(index=False)}
@@ -1583,16 +1583,16 @@ in the per-oil / per-chips regression tables) quantify how strongly each ratio b
     # RQ5 – Minimal feature set
     rq5_text = f"""
 Using a greedy, cross-validated feature-selection strategy based on Random Forest accuracy, we evaluated subsets of the
-ratiometric features ordered by RF importance. The full feature set achieved a mean accuracy of {minimal_panel['best_acc']:.3f}.
+ratiometric features ordered by RF importance. The full feature set achieved a mean accuracy of {minimal_panel["best_acc"]:.3f}.
 
-A minimal panel of k = {minimal_panel['chosen_k']} features
+A minimal panel of k = {minimal_panel["chosen_k"]} features
 
-    {', '.join(minimal_panel['chosen_features'])}
+    {", ".join(minimal_panel["chosen_features"])}
 
-already attained {minimal_panel['chosen_mean_acc']:.3f} ± {minimal_panel['chosen_std_acc']:.3f}, i.e. within 0.02 of the best
+already attained {minimal_panel["chosen_mean_acc"]:.3f} ± {minimal_panel["chosen_std_acc"]:.3f}, i.e. within 0.02 of the best
 full-feature accuracy.
 
-Thus, a compact marker panel of {minimal_panel['chosen_k']} ratios is sufficient to maintain near-optimal discrimination between oils,
+Thus, a compact marker panel of {minimal_panel["chosen_k"]} ratios is sufficient to maintain near-optimal discrimination between oils,
 offering a practical compromise between analytical complexity and performance.
     """
     add("RQ5 – Minimal feature set", rq5_text)
@@ -1604,8 +1604,8 @@ offering a practical compromise between analytical complexity and performance.
     if clustering_metrics is not None:
         rq6_text = f"""
 K-means clustering was performed directly in standardized ratiometric feature space (number of clusters = number of oils).
-The unsupervised cluster quality (silhouette) was {clustering_metrics['silhouette']:.3f}, and consistency with true labels
-(Adjusted Rand Index) was {clustering_metrics['ari']:.3f}.
+The unsupervised cluster quality (silhouette) was {clustering_metrics["silhouette"]:.3f}, and consistency with true labels
+(Adjusted Rand Index) was {clustering_metrics["ari"]:.3f}.
 
 These values indicate that oils naturally group into well-defined clusters in Raman feature space even without label information.
 Mis-clustered samples, if any, likely correspond to oils with borderline composition or higher intra-class variability (see RQ8).
@@ -1659,8 +1659,8 @@ and chain packing.
     # RQ8 – Intra-class spectral variability
     rq8_text = f"""
 Intra-class spectral variability was quantified as the mean coefficient of variation (CV) across ratiometric features within each oil.
-The most homogeneous oils exhibited mean CVs near {intraclass_df['mean_cv_percent'].min():.1f}%, whereas the most heterogeneous oils
-approached {intraclass_df['mean_cv_percent'].max():.1f}%.
+The most homogeneous oils exhibited mean CVs near {intraclass_df["mean_cv_percent"].min():.1f}%, whereas the most heterogeneous oils
+approached {intraclass_df["mean_cv_percent"].max():.1f}%.
 
 Sorted intra-class variability (lower = more homogeneous):
 

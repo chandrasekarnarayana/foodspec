@@ -6,6 +6,7 @@ Examples:
     foodspec-registry --registry registry.json --query-feature I_1742
     foodspec-registry --registry registry.json --query-protocol EdibleOil_Classification_v1 --version 0.1.0
 """
+
 from __future__ import annotations
 
 import argparse

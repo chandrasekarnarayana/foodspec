@@ -130,12 +130,8 @@ def compute_calibration_diagnostics(
     bin_counts = np.bincount(bin_indices, minlength=n_bins)
 
     # Avoid division by zero
-    bin_means_true = np.divide(
-        bin_sums_true, bin_counts, out=np.zeros(n_bins), where=bin_counts > 0
-    )
-    bin_means_pred = np.divide(
-        bin_sums_pred, bin_counts, out=np.zeros(n_bins), where=bin_counts > 0
-    )
+    bin_means_true = np.divide(bin_sums_true, bin_counts, out=np.zeros(n_bins), where=bin_counts > 0)
+    bin_means_pred = np.divide(bin_sums_pred, bin_counts, out=np.zeros(n_bins), where=bin_counts > 0)
 
     # ECE: weighted average absolute difference
     bin_weights = bin_counts / bin_counts.sum()
@@ -214,17 +210,13 @@ def recalibrate_classifier(
     method_map = {"platt": "sigmoid", "isotonic": "isotonic"}
     sklearn_method = method_map[method]
 
-    calibrated_clf = CalibratedClassifierCV(
-        clf, method=sklearn_method, cv=cv, ensemble=True
-    )
+    calibrated_clf = CalibratedClassifierCV(clf, method=sklearn_method, cv=cv, ensemble=True)
     calibrated_clf.fit(X_cal, y_cal)
 
     return calibrated_clf
 
 
-def calibration_slope_intercept(
-    y_true: np.ndarray, y_proba: np.ndarray
-) -> Tuple[float, float]:
+def calibration_slope_intercept(y_true: np.ndarray, y_proba: np.ndarray) -> Tuple[float, float]:
     """Compute calibration slope and intercept via logistic regression.
 
     Parameters

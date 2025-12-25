@@ -75,15 +75,18 @@ def test_vendor_routing_toy_suffix(monkeypatch, tmp_path):
 
     # Create a minimal .toy file that the plugin expects (CSV columns: meta,int1,int2)
     toy_path = tmp_path / "sample.toy"
-    df = pd.DataFrame({
-        "meta": ["A", "B"],
-        "int1": [1.0, 3.0],
-        "int2": [2.0, 4.0],
-        "int3": [5.0, 6.0],
-    })
+    df = pd.DataFrame(
+        {
+            "meta": ["A", "B"],
+            "int1": [1.0, 3.0],
+            "int2": [2.0, 4.0],
+            "int3": [5.0, 6.0],
+        }
+    )
     df.to_csv(toy_path, index=False)
 
     from foodspec.io.ingest import load_vendor
+
     res = load_vendor(str(toy_path))
     ds = res.dataset
     # Verify shape and axis metrics exist

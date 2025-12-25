@@ -76,7 +76,9 @@ class ArtifactMetadata:
 class Predictor:
     """Lightweight predictor restored from a .foodspec artifact."""
 
-    def __init__(self, model: Any, metadata: ArtifactMetadata, run_record: RunRecord, target_grid: Optional[np.ndarray]):
+    def __init__(
+        self, model: Any, metadata: ArtifactMetadata, run_record: RunRecord, target_grid: Optional[np.ndarray]
+    ):
         self.model = model
         self.metadata = metadata
         self.run_record = run_record

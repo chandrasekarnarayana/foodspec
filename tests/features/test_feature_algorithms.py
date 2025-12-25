@@ -23,7 +23,9 @@ def _ds():
         spectra.append(base)
     spectra = np.vstack(spectra)
     meta = pd.DataFrame({"label": labels, "group": ["g1"] * 3 + ["g2"] * 3})
-    return FoodSpectrumSet(x=spectra, wavenumbers=x_axis, metadata=meta, modality="raman", label_col="label", group_col="group")
+    return FoodSpectrumSet(
+        x=spectra, wavenumbers=x_axis, metadata=meta, modality="raman", label_col="label", group_col="group"
+    )
 
 
 def test_band_features_include_mean_max_slope():
@@ -35,7 +37,9 @@ def test_band_features_include_mean_max_slope():
 
 def test_peak_extractor_width_centroid_symmetry():
     ds = _ds()
-    extractor = PeakFeatureExtractor([1050], tolerance=5.0, features=("height", "area", "width", "centroid", "symmetry"))
+    extractor = PeakFeatureExtractor(
+        [1050], tolerance=5.0, features=("height", "area", "width", "centroid", "symmetry")
+    )
     feats = extractor.transform(ds.x, wavenumbers=ds.wavenumbers)
     cols = extractor.get_feature_names_out()
     assert "peak_1050_width" in cols

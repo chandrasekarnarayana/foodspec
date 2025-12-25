@@ -182,7 +182,7 @@ def adaptive_baseline_correction(
         corrected[i] = y - z
 
     baseline_mean = baselines.mean()
-    correction_magnitude = np.sqrt((baselines ** 2).mean())
+    correction_magnitude = np.sqrt((baselines**2).mean())
 
     metrics = {
         "baseline_intensity_mean": float(baseline_mean),
@@ -267,7 +267,9 @@ def robust_scale_per_matrix(
         elif method == "mcd":
             # Minimum Covariance Determinant (multivariate robust)
             if n_matrix < 10:
-                warnings.warn(f"MCD scaling requires ≥10 samples; {n_matrix} found for '{matrix}'. Falling back to median_mad.")
+                warnings.warn(
+                    f"MCD scaling requires ≥10 samples; {n_matrix} found for '{matrix}'. Falling back to median_mad."
+                )
                 median = np.median(X, axis=0)
                 mad = np.median(np.abs(X - median), axis=0)
                 mad = np.where(mad == 0, 1.0, mad)
@@ -348,13 +350,13 @@ def domain_adapt_subspace_alignment(
     U_s, s_s, Vt_s = np.linalg.svd(X_s, full_matrices=False)
     U_s = U_s[:, :n_components]
     Vt_s = Vt_s[:n_components, :]
-    explained_var_s = (s_s[:n_components] ** 2).sum() / (s_s ** 2).sum()
+    explained_var_s = (s_s[:n_components] ** 2).sum() / (s_s**2).sum()
 
     # PCA on target
     U_t, s_t, Vt_t = np.linalg.svd(X_t, full_matrices=False)
     U_t = U_t[:, :n_components]
     Vt_t = Vt_t[:n_components, :]
-    explained_var_t = (s_t[:n_components] ** 2).sum() / (s_t ** 2).sum()
+    explained_var_t = (s_t[:n_components] ** 2).sum() / (s_t**2).sum()
 
     # Compute alignment matrix: M = Vt_s @ Vt_t.T
     M = Vt_s @ Vt_t.T
@@ -413,7 +415,7 @@ def compute_matrix_effect_magnitude(
         - 'per_matrix_correction' (if labels provided): correction magnitude per matrix
     """
     delta = spectra_before - spectra_after
-    correction_magnitude = np.sqrt((delta ** 2).mean())
+    correction_magnitude = np.sqrt((delta**2).mean())
 
     baseline_before = np.median(spectra_before, axis=1).mean()
     baseline_after = np.median(spectra_after, axis=1).mean()
@@ -429,7 +431,7 @@ def compute_matrix_effect_magnitude(
         for matrix in np.unique(matrix_labels):
             mask = matrix_labels == matrix
             delta_m = delta[mask]
-            mag_m = np.sqrt((delta_m ** 2).mean())
+            mag_m = np.sqrt((delta_m**2).mean())
             per_matrix[str(matrix)] = float(mag_m)
         metrics["per_matrix_correction"] = per_matrix
 

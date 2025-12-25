@@ -7,11 +7,13 @@ def test_search_library_topk_confidence():
     # Build a tiny library with a close match
     wn = np.linspace(1000, 1020, 5)
     query = np.array([1, 2, 3, 4, 5]).astype(float)
-    lib = np.stack([
-        query + 0.01,  # closest
-        query[::-1],   # far
-        query + 1.0,   # medium
-    ])
+    lib = np.stack(
+        [
+            query + 0.01,  # closest
+            query[::-1],  # far
+            query + 1.0,  # medium
+        ]
+    )
     labels = ["close", "reverse", "shifted"]
     matches = search_library(query, lib, labels=labels, k=2, metric="cosine")
     assert len(matches) == 2

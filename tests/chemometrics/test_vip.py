@@ -46,10 +46,7 @@ class TestCalculateVIP:
         y = X[:, 0] + 2 * X[:, 1] + np.random.randn(100) * 0.1
 
         # Create pipeline
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('pls', PLSRegression(n_components=2))
-        ])
+        pipeline = Pipeline([("scaler", StandardScaler()), ("pls", PLSRegression(n_components=2))])
         pipeline.fit(X, y)
 
         # Calculate VIP
@@ -76,10 +73,7 @@ class TestCalculateVIP:
         """Test VIP with multi-target regression."""
         np.random.seed(42)
         X = np.random.randn(100, 8)
-        y = np.column_stack([
-            X[:, 0] + X[:, 1],
-            X[:, 2] + X[:, 3]
-        ])
+        y = np.column_stack([X[:, 0] + X[:, 1], X[:, 2] + X[:, 3]])
 
         pls = PLSRegression(n_components=3)
         pls.fit(X, y)
@@ -102,7 +96,7 @@ class TestCalculateVIP:
 
         # Mean of squared VIP scores should be approximately 1
         # (this is a theoretical property of VIP)
-        mean_squared_vip = np.mean(vip_scores ** 2)
+        mean_squared_vip = np.mean(vip_scores**2)
         assert 0.5 < mean_squared_vip < 1.5, f"Mean VIP^2 should be ~1, got {mean_squared_vip}"
 
     def test_vip_not_fitted_error(self):
@@ -135,10 +129,7 @@ class TestCalculateVIP:
         X = np.random.randn(10, 5)
         y = np.random.randn(10)
 
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('ridge', Ridge())
-        ])
+        pipeline = Pipeline([("scaler", StandardScaler()), ("ridge", Ridge())])
         pipeline.fit(X, y)
 
         with pytest.raises(TypeError, match="Expected Pipeline's last step to be PLSRegression"):
@@ -157,6 +148,7 @@ class TestCalculateVIPDA:
         # For PLS-DA, fit PLS step separately (LogisticRegression expects PLS scores as input)
         pls_step = PLSRegression(n_components=3)
         from sklearn.preprocessing import LabelBinarizer
+
         lb = LabelBinarizer()
         y_encoded = lb.fit_transform(y)
         if y_encoded.shape[1] == 1:
@@ -164,13 +156,10 @@ class TestCalculateVIPDA:
         pls_step.fit(X, y_encoded)
 
         # Create pipeline with fitted PLS
-        pls_da = Pipeline([
-            ('pls', pls_step),
-            ('clf', LogisticRegression())
-        ])
+        pls_da = Pipeline([("pls", pls_step), ("clf", LogisticRegression())])
         # Fit only the classifier on PLS scores
         X_pls = pls_step.transform(X)
-        pls_da.named_steps['clf'].fit(X_pls, y)
+        pls_da.named_steps["clf"].fit(X_pls, y)
 
         # Calculate VIP
         vip_scores = calculate_vip_da(pls_da, X, y)
@@ -190,16 +179,14 @@ class TestCalculateVIPDA:
         # Fit PLS step separately
         pls_step = PLSRegression(n_components=2)
         from sklearn.preprocessing import LabelBinarizer
+
         lb = LabelBinarizer()
         y_encoded = lb.fit_transform(y)
         pls_step.fit(X, y_encoded)
 
-        pls_da = Pipeline([
-            ('pls', pls_step),
-            ('clf', LogisticRegression())
-        ])
+        pls_da = Pipeline([("pls", pls_step), ("clf", LogisticRegression())])
         X_pls = pls_step.transform(X)
-        pls_da.named_steps['clf'].fit(X_pls, y)
+        pls_da.named_steps["clf"].fit(X_pls, y)
 
         vip_scores = calculate_vip_da(pls_da, X, y)
 
@@ -213,10 +200,7 @@ class TestCalculateVIPDA:
         X = np.random.randn(50, 5)
         y = np.random.randint(0, 2, 50)
 
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('clf', LogisticRegression())
-        ])
+        pipeline = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression())])
         pipeline.fit(X, y)
 
         with pytest.raises(ValueError, match="must contain a PLSRegression step"):
@@ -229,30 +213,30 @@ class TestInterpretVIP:
     def test_interpret_basic(self):
         """Test basic VIP interpretation."""
         vip_scores = np.array([1.5, 0.9, 0.3, 1.8, 0.7, 1.2])
-        feature_names = [f'F{i}' for i in range(6)]
+        feature_names = [f"F{i}" for i in range(6)]
 
         result = interpret_vip(vip_scores, feature_names)
 
         # Check structure
-        assert 'highly_important' in result
-        assert 'moderately_important' in result
-        assert 'low_importance' in result
-        assert 'top_10' in result
-        assert 'all_sorted' in result
+        assert "highly_important" in result
+        assert "moderately_important" in result
+        assert "low_importance" in result
+        assert "top_10" in result
+        assert "all_sorted" in result
 
         # Check highly important (VIP > 1.0)
-        highly_important = result['highly_important']
+        highly_important = result["highly_important"]
         assert len(highly_important) == 3  # F0, F3, F5
-        assert highly_important[0][0] == 'F3'  # Highest VIP
+        assert highly_important[0][0] == "F3"  # Highest VIP
         assert highly_important[0][1] == 1.8
 
         # Check moderately important (0.8 < VIP <= 1.0)
-        moderately_important = result['moderately_important']
+        moderately_important = result["moderately_important"]
         assert len(moderately_important) == 1  # F1
-        assert moderately_important[0][0] == 'F1'
+        assert moderately_important[0][0] == "F1"
 
         # Check low importance (VIP <= 0.8)
-        low_importance = result['low_importance']
+        low_importance = result["low_importance"]
         assert len(low_importance) == 2  # F2, F4
 
     def test_interpret_without_names(self):
@@ -262,19 +246,19 @@ class TestInterpretVIP:
         result = interpret_vip(vip_scores)
 
         # Should auto-generate names
-        assert result['highly_important'][0][0] == 'Feature_2'
-        assert result['highly_important'][1][0] == 'Feature_0'
+        assert result["highly_important"][0][0] == "Feature_2"
+        assert result["highly_important"][1][0] == "Feature_0"
 
     def test_interpret_top_10(self):
         """Test top 10 feature selection."""
         vip_scores = np.random.rand(50)
-        feature_names = [f'Feature_{i}' for i in range(50)]
+        feature_names = [f"Feature_{i}" for i in range(50)]
 
         result = interpret_vip(vip_scores, feature_names)
 
-        assert len(result['top_10']) == 10
+        assert len(result["top_10"]) == 10
         # Should be sorted descending
-        top_10_scores = [score for _, score in result['top_10']]
+        top_10_scores = [score for _, score in result["top_10"]]
         assert top_10_scores == sorted(top_10_scores, reverse=True)
 
     def test_interpret_all_sorted(self):
@@ -283,7 +267,7 @@ class TestInterpretVIP:
 
         result = interpret_vip(vip_scores)
 
-        all_sorted = result['all_sorted']
+        all_sorted = result["all_sorted"]
         assert len(all_sorted) == 5
 
         # Check descending order
@@ -350,6 +334,7 @@ class TestVIPIntegration:
         # Fit PLS step separately
         pls_step = PLSRegression(n_components=3)
         from sklearn.preprocessing import LabelBinarizer
+
         lb = LabelBinarizer()
         y_encoded = lb.fit_transform(y)
         if y_encoded.shape[1] == 1:
@@ -357,12 +342,9 @@ class TestVIPIntegration:
         pls_step.fit(X, y_encoded)
 
         # PLS-DA pipeline
-        pls_da = Pipeline([
-            ('pls', pls_step),
-            ('clf', LogisticRegression())
-        ])
+        pls_da = Pipeline([("pls", pls_step), ("clf", LogisticRegression())])
         X_pls = pls_step.transform(X)
-        pls_da.named_steps['clf'].fit(X_pls, y)
+        pls_da.named_steps["clf"].fit(X_pls, y)
 
         # Calculate VIP
         vip_scores = calculate_vip_da(pls_da, X, y)
@@ -371,8 +353,9 @@ class TestVIPIntegration:
         discriminating_indices = [10, 20, 30]
         discriminating_vips = vip_scores[discriminating_indices]
 
-        assert np.mean(discriminating_vips) > np.mean(vip_scores), \
+        assert np.mean(discriminating_vips) > np.mean(vip_scores), (
             "Discriminating features should have higher VIP than average"
+        )
 
 
 class TestVIPEdgeCases:
@@ -419,5 +402,4 @@ class TestVIPEdgeCases:
         vip1 = calculate_vip(pls, X, y)
         vip2 = calculate_vip(pls, X, y)
 
-        np.testing.assert_array_equal(vip1, vip2,
-                                       err_msg="VIP calculation should be deterministic")
+        np.testing.assert_array_equal(vip1, vip2, err_msg="VIP calculation should be deterministic")

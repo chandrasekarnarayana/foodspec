@@ -82,12 +82,14 @@ class SpectrumHealthScore:
             except Exception:
                 n = 0
 
-        df = pd.DataFrame({
-            "snr": np.zeros(n, dtype=float),
-            "baseline_drift": np.zeros(n, dtype=float),
-            "spike_count": np.zeros(n, dtype=int),
-            "flags": ["" for _ in range(n)],
-        })
+        df = pd.DataFrame(
+            {
+                "snr": np.zeros(n, dtype=float),
+                "baseline_drift": np.zeros(n, dtype=float),
+                "spike_count": np.zeros(n, dtype=int),
+                "flags": ["" for _ in range(n)],
+            }
+        )
         return df
 
     def validate(self) -> Dict[str, Any]:
@@ -118,8 +120,11 @@ class SpectrumHealthScore:
 
     def __hash__(self) -> int:
         """Stable hash based on configuration."""
-        key = (self.modality, tuple(self.reference_grid) if self.reference_grid is not None else None,
-               tuple(sorted(self.thresholds.items())))
+        key = (
+            self.modality,
+            tuple(self.reference_grid) if self.reference_grid is not None else None,
+            tuple(sorted(self.thresholds.items())),
+        )
         return hash(key)
 
 

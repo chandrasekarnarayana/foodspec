@@ -138,10 +138,7 @@ class OutputBundle:
         # JSON export
         if "json" in formats:
             metrics_serializable = self._make_serializable(self.metrics)
-            (metrics_dir / "metrics.json").write_text(
-                json.dumps(metrics_serializable, indent=2),
-                encoding="utf-8"
-            )
+            (metrics_dir / "metrics.json").write_text(json.dumps(metrics_serializable, indent=2), encoding="utf-8")
 
         # CSV export for DataFrames
         if "csv" in formats:
@@ -179,10 +176,7 @@ class OutputBundle:
             elif isinstance(value, dict):
                 if "json" in formats:
                     serializable = self._make_serializable(value)
-                    (diag_dir / f"{name}.json").write_text(
-                        json.dumps(serializable, indent=2),
-                        encoding="utf-8"
-                    )
+                    (diag_dir / f"{name}.json").write_text(json.dumps(serializable, indent=2), encoding="utf-8")
             # Plain strings (write as HTML by default)
             elif isinstance(value, str):
                 # Save as .html for dashboard-like diagnostics
@@ -199,10 +193,12 @@ class OutputBundle:
         for name, value in self.artifacts.items():
             if "joblib" in formats:
                 import joblib
+
                 joblib.dump(value, artifacts_dir / f"{name}.joblib")
 
             if "pickle" in formats:
                 import pickle
+
                 with open(artifacts_dir / f"{name}.pkl", "wb") as f:
                     pickle.dump(value, f)
 

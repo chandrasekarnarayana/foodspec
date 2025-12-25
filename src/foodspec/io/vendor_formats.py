@@ -19,8 +19,7 @@ def _require(pkg_names: list[str], extra: str):
         except ImportError:
             continue
     raise ImportError(
-        f"{extra.upper()} support requires optional packages {pkg_names}. "
-        f"Install with: pip install foodspec[{extra}]"
+        f"{extra.upper()} support requires optional packages {pkg_names}. Install with: pip install foodspec[{extra}]"
     )
 
 

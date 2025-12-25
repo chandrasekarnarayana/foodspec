@@ -31,11 +31,13 @@ def test_stats_report_per_feature_two_groups():
 
 def test_stats_report_table_multi_feature():
     rng = np.random.default_rng(2)
-    df = pd.DataFrame({
-        "group": np.repeat(["x", "y", "z"], 10),
-        "f1": rng.normal(0, 1, size=30),
-        "f2": rng.normal(1, 1, size=30),
-    })
+    df = pd.DataFrame(
+        {
+            "group": np.repeat(["x", "y", "z"], 10),
+            "f1": rng.normal(0, 1, size=30),
+            "f2": rng.normal(1, 1, size=30),
+        }
+    )
     report = stats_report_for_features_table(df, group_col="group", alpha=0.1)
     assert set(report["feature"]) == {"f1", "f2"}
     assert "p_adj" in report.columns

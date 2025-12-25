@@ -43,7 +43,7 @@ def plot_pca_loadings(loadings: np.ndarray, wavenumbers: np.ndarray, ax=None):
         raise ValueError("loadings rows must match wavenumbers length.")
     ax = ax or plt.gca()
     for i in range(loadings.shape[1]):
-        ax.plot(wavenumbers, loadings[:, i], label=f"PC{i+1}")
+        ax.plot(wavenumbers, loadings[:, i], label=f"PC{i + 1}")
     ax.set_xlabel("Wavenumber (cm$^{-1}$)")
     ax.set_ylabel("Loading")
     ax.invert_xaxis()

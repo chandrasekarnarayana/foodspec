@@ -1,4 +1,5 @@
 """Tests for FoodSpectrumSet methods to increase coverage."""
+
 import numpy as np
 import pandas as pd
 

@@ -86,9 +86,7 @@ class TestCheckVersionCompatibility:
 
     def test_newer_minor_allowed_with_flag(self):
         """Test allow_future_minor flag permits newer versions."""
-        report = check_version_compatibility(
-            "1.5.0", "1.2.0", allow_future_minor=True
-        )
+        report = check_version_compatibility("1.5.0", "1.2.0", allow_future_minor=True)
 
         assert report.compatible
         assert report.level == CompatibilityLevel.COMPATIBLE_WITH_WARNINGS
@@ -181,25 +179,19 @@ class TestValidateArtifactCompatibility:
 
     def test_compatible_versions_no_error(self):
         """Test compatible versions don't raise errors."""
-        report = validate_artifact_compatibility(
-            "1.2.3", "1.2.5", raise_on_incompatible=True
-        )
+        report = validate_artifact_compatibility("1.2.3", "1.2.5", raise_on_incompatible=True)
 
         assert report.compatible
 
     def test_incompatible_raises_error(self):
         """Test incompatible versions raise ValueError."""
         with pytest.raises(ValueError, match="major version"):
-            validate_artifact_compatibility(
-                "2.0.0", "1.5.0", raise_on_incompatible=True
-            )
+            validate_artifact_compatibility("2.0.0", "1.5.0", raise_on_incompatible=True)
 
     def test_incompatible_no_raise_with_flag(self):
         """Test raise_on_incompatible=False doesn't raise."""
         with pytest.warns(UserWarning):
-            report = validate_artifact_compatibility(
-                "2.0.0", "1.5.0", raise_on_incompatible=False
-            )
+            report = validate_artifact_compatibility("2.0.0", "1.5.0", raise_on_incompatible=False)
 
         assert not report.compatible
 
@@ -211,9 +203,7 @@ class TestValidateArtifactCompatibility:
     def test_strict_mode_raises_on_patch_difference(self):
         """Test strict mode raises even for patch differences."""
         with pytest.raises(ValueError, match="Strict mode"):
-            validate_artifact_compatibility(
-                "1.2.3", "1.2.5", strict=True, raise_on_incompatible=True
-            )
+            validate_artifact_compatibility("1.2.3", "1.2.5", strict=True, raise_on_incompatible=True)
 
 
 class TestVersionCompatibilityEdgeCases:

@@ -196,61 +196,45 @@ SPC_BLOCK_TYPES_SUPPORTED: Dict[str, BlockTypeSupportEntry] = {
 
 def get_opus_support_summary() -> str:
     """Get human-readable OPUS block type support summary."""
-    supported = [
-        k
-        for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items()
-        if v.supported and v.tested
-    ]
-    supported_untested = [
-        k
-        for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items()
-        if v.supported and not v.tested
-    ]
-    unsupported = [
-        k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if not v.supported
-    ]
+    supported = [k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if v.supported and v.tested]
+    supported_untested = [k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if v.supported and not v.tested]
+    unsupported = [k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if not v.supported]
 
     return f"""
 OPUS Block Type Support Summary:
-- Fully Supported & Tested: {', '.join(supported) or 'None'}
-- Supported but Untested: {', '.join(supported_untested) or 'None'}
-- Unsupported: {', '.join(unsupported) or 'None'}
+- Fully Supported & Tested: {", ".join(supported) or "None"}
+- Supported but Untested: {", ".join(supported_untested) or "None"}
+- Unsupported: {", ".join(unsupported) or "None"}
 
 Known Limitations:
-{chr(10).join(
-    f"  - {k}: {v.known_limitations}"
-    for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items()
-    if v.known_limitations
-) or '  None'}
+{
+        chr(10).join(
+            f"  - {k}: {v.known_limitations}" for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if v.known_limitations
+        )
+        or "  None"
+    }
 """
 
 
 def get_spc_support_summary() -> str:
     """Get human-readable SPC block type support summary."""
-    supported = [
-        k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if v.supported and v.tested
-    ]
-    supported_untested = [
-        k
-        for k, v in SPC_BLOCK_TYPES_SUPPORTED.items()
-        if v.supported and not v.tested
-    ]
-    unsupported = [
-        k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if not v.supported
-    ]
+    supported = [k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if v.supported and v.tested]
+    supported_untested = [k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if v.supported and not v.tested]
+    unsupported = [k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if not v.supported]
 
     return f"""
 SPC Block Type Support Summary:
-- Fully Supported & Tested: {', '.join(supported) or 'None'}
-- Supported but Untested: {', '.join(supported_untested) or 'None'}
-- Unsupported: {', '.join(unsupported) or 'None'}
+- Fully Supported & Tested: {", ".join(supported) or "None"}
+- Supported but Untested: {", ".join(supported_untested) or "None"}
+- Unsupported: {", ".join(unsupported) or "None"}
 
 Known Limitations:
-{chr(10).join(
-    f"  - {k}: {v.known_limitations}"
-    for k, v in SPC_BLOCK_TYPES_SUPPORTED.items()
-    if v.known_limitations
-) or '  None'}
+{
+        chr(10).join(
+            f"  - {k}: {v.known_limitations}" for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if v.known_limitations
+        )
+        or "  None"
+    }
 """
 
 

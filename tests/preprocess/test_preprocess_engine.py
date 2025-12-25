@@ -25,12 +25,14 @@ def _toy_dataset(n_samples: int = 4, n_points: int = 50) -> FoodSpectrumSet:
 
 def test_pipeline_steps_run_and_produce_metrics():
     ds = _toy_dataset()
-    pipe = PreprocessPipeline([
-        BaselineStep("rubberband"),
-        SmoothingStep("moving_average", window=3),
-        NormalizationStep("vector"),
-        DerivativeStep(order=1, window_length=7, polyorder=2),
-    ])
+    pipe = PreprocessPipeline(
+        [
+            BaselineStep("rubberband"),
+            SmoothingStep("moving_average", window=3),
+            NormalizationStep("vector"),
+            DerivativeStep(order=1, window_length=7, polyorder=2),
+        ]
+    )
     transformed, metrics = pipe.transform(ds)
     assert transformed.x.shape == ds.x.shape
     assert "baseline" in metrics

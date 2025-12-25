@@ -263,9 +263,7 @@ def detect_leakage(
 
     # Replicate leakage
     if replicate_column is not None:
-        rep_leak = detect_replicate_leakage(
-            metadata, replicate_column, train_indices, test_indices
-        )
+        rep_leak = detect_replicate_leakage(metadata, replicate_column, train_indices, test_indices)
         leakage_report["replicate_leakage"] = rep_leak
 
         if rep_leak["leakage_risk"] == "high":

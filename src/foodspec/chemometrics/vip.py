@@ -92,15 +92,11 @@ def calculate_vip(
         # Get the last step (should be PLS)
         pls = pls_model.steps[-1][1]
         if not isinstance(pls, PLSRegression):
-            raise TypeError(
-                f"Expected Pipeline's last step to be PLSRegression, got {type(pls).__name__}"
-            )
+            raise TypeError(f"Expected Pipeline's last step to be PLSRegression, got {type(pls).__name__}")
     elif isinstance(pls_model, PLSRegression):
         pls = pls_model
     else:
-        raise TypeError(
-            f"pls_model must be PLSRegression or Pipeline, got {type(pls_model).__name__}"
-        )
+        raise TypeError(f"pls_model must be PLSRegression or Pipeline, got {type(pls_model).__name__}")
 
     # Check if model is fitted
     if not hasattr(pls, "x_weights_"):
@@ -126,11 +122,11 @@ def calculate_vip(
 
     # Calculate sum of squares for each component
     # SS_a = sum of squared scores for component a
-    SS = np.sum(T ** 2, axis=0)  # Shape: (n_components,)
+    SS = np.sum(T**2, axis=0)  # Shape: (n_components,)
 
     # Calculate VIP scores for each variable
     # VIP_j = sqrt(p * sum_a(SS_a * w_ja^2) / sum_a(SS_a))
-    W_squared = W ** 2  # Shape: (n_features, n_components)
+    W_squared = W**2  # Shape: (n_features, n_components)
 
     # Weighted sum across components
     numerator = np.sum(SS * W_squared, axis=1)  # Shape: (n_features,)
@@ -204,6 +200,7 @@ def calculate_vip_da(
 
     # For PLS-DA, encode y as dummy variables for the PLS step
     from sklearn.preprocessing import LabelBinarizer
+
     lb = LabelBinarizer()
     y_encoded = lb.fit_transform(y)
 
@@ -258,11 +255,11 @@ def interpret_vip(vip_scores: np.ndarray, feature_names: list[str] = None) -> di
     low_importance = [(name, score) for name, score in sorted_features if score <= 0.8]
 
     return {
-        'highly_important': highly_important,
-        'moderately_important': moderately_important,
-        'low_importance': low_importance,
-        'top_10': sorted_features[:10],
-        'all_sorted': sorted_features,
+        "highly_important": highly_important,
+        "moderately_important": moderately_important,
+        "low_importance": low_importance,
+        "top_10": sorted_features[:10],
+        "all_sorted": sorted_features,
     }
 
 

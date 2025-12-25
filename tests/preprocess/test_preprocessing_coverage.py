@@ -108,8 +108,8 @@ class TestRubberbandBaseline:
     def test_rubberband_init(self):
         """Test Rubberband initialization."""
         rb = RubberbandBaseline()
-        assert hasattr(rb, 'fit')
-        assert hasattr(rb, 'transform')
+        assert hasattr(rb, "fit")
+        assert hasattr(rb, "transform")
 
     def test_rubberband_transform(self):
         """Test Rubberband transform on data."""
@@ -132,8 +132,8 @@ class TestPolynomialBaseline:
     def test_polynomial_init_default(self):
         """Test Polynomial baseline init."""
         pb = PolynomialBaseline()
-        assert hasattr(pb, 'fit')
-        assert hasattr(pb, 'transform')
+        assert hasattr(pb, "fit")
+        assert hasattr(pb, "transform")
 
     def test_polynomial_transform(self):
         """Test Polynomial baseline transform."""
@@ -149,7 +149,7 @@ class TestVectorNormalizer:
     def test_vector_norm_l2_default(self):
         """Test L2 normalization (default)."""
         X = np.array([[3.0, 4.0], [1.0, 1.0]])
-        vn = VectorNormalizer(norm='l2')
+        vn = VectorNormalizer(norm="l2")
         Y = vn.transform(X)
 
         # Check L2 norm of each row
@@ -159,7 +159,7 @@ class TestVectorNormalizer:
     def test_vector_norm_l1(self):
         """Test L1 normalization."""
         X = np.array([[2.0, 3.0], [1.0, 1.0]])
-        vn = VectorNormalizer(norm='l1')
+        vn = VectorNormalizer(norm="l1")
         Y = vn.transform(X)
 
         # Check L1 norm of each row
@@ -169,7 +169,7 @@ class TestVectorNormalizer:
     def test_vector_norm_max(self):
         """Test max normalization."""
         X = np.array([[2.0, 4.0], [1.0, 3.0]])
-        vn = VectorNormalizer(norm='max')
+        vn = VectorNormalizer(norm="max")
         Y = vn.transform(X)
 
         # Check max abs of each row
@@ -179,7 +179,7 @@ class TestVectorNormalizer:
     def test_vector_norm_invalid_norm(self):
         """Test invalid norm type."""
         X = np.random.randn(5, 10)
-        vn = VectorNormalizer(norm='invalid')
+        vn = VectorNormalizer(norm="invalid")
         with pytest.raises(ValueError, match="norm must be one of"):
             vn.transform(X)
 
@@ -204,8 +204,8 @@ class TestAreaNormalizer:
     def test_area_normalizer_init(self):
         """Test AreaNormalizer initialization."""
         an = AreaNormalizer()
-        assert hasattr(an, 'fit')
-        assert hasattr(an, 'transform')
+        assert hasattr(an, "fit")
+        assert hasattr(an, "transform")
 
     def test_area_normalizer_transform(self):
         """Test AreaNormalizer transform."""
@@ -291,7 +291,7 @@ class TestSavitzkyGolaySmoother:
     def test_savitzky_golay_noise_reduction(self):
         """Test that SG reduces noise."""
         # Create noisy signal
-        x = np.linspace(0, 4*np.pi, 100)
+        x = np.linspace(0, 4 * np.pi, 100)
         signal = np.sin(x)
         noise = np.random.randn(100) * 0.1
         X = (signal + noise).reshape(1, -1)
@@ -337,7 +337,7 @@ class TestMovingAverageSmoother:
     def test_moving_average_noise_reduction(self):
         """Test that MA reduces noise."""
         # Create noisy signal
-        x = np.linspace(0, 4*np.pi, 100)
+        x = np.linspace(0, 4 * np.pi, 100)
         signal = np.sin(x)
         noise = np.random.randn(100) * 0.1
         X = (signal + noise).reshape(1, -1)
@@ -347,7 +347,6 @@ class TestMovingAverageSmoother:
 
         # Should reduce variance
         assert np.var(Y) < np.var(X)
-
 
 
 class TestSpikeCorrectionModule:
@@ -429,12 +428,12 @@ class TestPreprocessingPipeline:
         als = ALSBaseline(lambda_=1e4, p=0.01, max_iter=3)
         X_baseline = als.transform(X)
 
-        vn = VectorNormalizer(norm='l2')
+        vn = VectorNormalizer(norm="l2")
         X_final = vn.transform(X_baseline)
 
         assert X_final.shape == X.shape
         norms = np.linalg.norm(X_final, axis=1)
-        np.testing.assert_array_almost_equal(norms, [1.0]*5)
+        np.testing.assert_array_almost_equal(norms, [1.0] * 5)
 
     def test_smoothing_normalization_pipeline(self):
         """Test smoothing followed by normalization."""
@@ -474,12 +473,12 @@ class TestPreprocessingPipeline:
         sg = SavitzkyGolaySmoother(window_length=7, polyorder=2)
         X = sg.transform(X)
 
-        vn = VectorNormalizer(norm='l2')
+        vn = VectorNormalizer(norm="l2")
         X = vn.transform(X)
 
         assert X.shape == (5, 100)
         norms = np.linalg.norm(X, axis=1)
-        np.testing.assert_array_almost_equal(norms, [1.0]*5)
+        np.testing.assert_array_almost_equal(norms, [1.0] * 5)
 
 
 if __name__ == "__main__":

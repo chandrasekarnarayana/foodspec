@@ -181,9 +181,7 @@ class ModelLifecycleTracker:
         if current_time is None:
             current_time = datetime.now()
 
-        latest_snapshot_time = (
-            max(s.timestamp for s in self.snapshots) if self.snapshots else current_time
-        )
+        latest_snapshot_time = max(s.timestamp for s in self.snapshots) if self.snapshots else current_time
         ref_time = min(current_time, latest_snapshot_time)
         age_days = (ref_time - self.deployment_date).total_seconds() / 86400.0
 
@@ -209,9 +207,7 @@ class ModelLifecycleTracker:
                 for s in self.snapshots
             ]
         )
-        df["days_since_deploy"] = (
-            df["timestamp"] - self.deployment_date
-        ).dt.total_seconds() / 86400.0
+        df["days_since_deploy"] = (df["timestamp"] - self.deployment_date).dt.total_seconds() / 86400.0
 
         # Performance decay (relative to baseline)
         current_perf = df["value"].iloc[-1]

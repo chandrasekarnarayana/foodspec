@@ -2,6 +2,7 @@
 NNLS mixture unmixing: solve x ≈ A·c with c ≥ 0 and compute reconstruction error
 and bootstrap confidence intervals for concentrations.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

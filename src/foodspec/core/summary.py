@@ -82,7 +82,7 @@ def compute_samples_per_class(
             "n_classes": 0,
             "min_class_size": 0,
             "max_class_size": 0,
-            "imbalance_ratio": float('inf'),
+            "imbalance_ratio": float("inf"),
             "missing_labels": int(missing_count),
         }
 

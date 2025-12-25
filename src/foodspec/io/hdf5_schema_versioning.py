@@ -84,10 +84,7 @@ def get_compatibility_level(
     key = (file_schema_version, code_schema_version)
 
     if key not in COMPATIBILITY_MATRIX:
-        raise ValueError(
-            f"Unknown version pair: file={file_schema_version}, "
-            f"code={code_schema_version}"
-        )
+        raise ValueError(f"Unknown version pair: file={file_schema_version}, code={code_schema_version}")
 
     return COMPATIBILITY_MATRIX[key]
 
@@ -128,8 +125,7 @@ def check_schema_compatibility(
         import warnings
 
         warnings.warn(
-            f"File uses deprecated schema v{file_schema_version}. "
-            f"Recommend updating to v{code_schema_version}.",
+            f"File uses deprecated schema v{file_schema_version}. Recommend updating to v{code_schema_version}.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -263,9 +259,7 @@ def migrate_schema(
         elif step_from == "1.2" and step_to == "2.0":
             migrate_schema_v1_2_to_v2_0(group)
         else:
-            raise ValueError(
-                f"No migration path from schema v{step_from} to v{step_to}"
-            )
+            raise ValueError(f"No migration path from schema v{step_from} to v{step_to}")
 
     # Update schema version
     group.attrs["schema_version"] = to_version
@@ -292,14 +286,10 @@ def _get_migration_path(from_version: str, to_version: str) -> list:
         start_idx = versions.index(from_version)
         end_idx = versions.index(to_version)
     except ValueError:
-        raise ValueError(
-            f"Unknown version in migration: from={from_version}, to={to_version}"
-        )
+        raise ValueError(f"Unknown version in migration: from={from_version}, to={to_version}")
 
     if start_idx >= end_idx:
-        raise ValueError(
-            f"Cannot migrate backwards: {from_version} → {to_version}"
-        )
+        raise ValueError(f"Cannot migrate backwards: {from_version} → {to_version}")
 
     return [(versions[i], versions[i + 1]) for i in range(start_idx, end_idx)]
 

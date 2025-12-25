@@ -46,10 +46,7 @@ class MultiModalDataset:
         n_samples = len(self.metadata)
         for modality, ds in self.datasets.items():
             if len(ds) != n_samples:
-                raise ValueError(
-                    f"Dataset for {modality} has {len(ds)} samples, "
-                    f"but metadata has {n_samples} rows."
-                )
+                raise ValueError(f"Dataset for {modality} has {len(ds)} samples, but metadata has {n_samples} rows.")
 
     def modalities(self) -> List[Modality]:
         """Return list of available modalities."""
@@ -67,9 +64,7 @@ class MultiModalDataset:
         if np.any(indices_arr < 0) or np.any(indices_arr >= len(self.metadata)):
             raise ValueError("indices contain out-of-range values.")
         meta_sub = self.metadata.iloc[indices_arr].reset_index(drop=True)
-        datasets_sub = {
-            modality: ds.subset(indices=indices_arr.tolist()) for modality, ds in self.datasets.items()
-        }
+        datasets_sub = {modality: ds.subset(indices=indices_arr.tolist()) for modality, ds in self.datasets.items()}
         return MultiModalDataset(
             datasets=datasets_sub,
             metadata=meta_sub,

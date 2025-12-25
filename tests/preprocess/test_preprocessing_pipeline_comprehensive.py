@@ -1,4 +1,5 @@
 """Comprehensive tests for preprocessing_pipeline to increase coverage."""
+
 import numpy as np
 import pandas as pd
 
@@ -14,11 +15,13 @@ from foodspec.preprocessing_pipeline import (
 
 def test_detect_input_mode_peak_table():
     """Test detection of peak table format."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "I_1000": [10.0, 12.0, 11.0],
-        "I_1200": [8.0, 9.0, 8.5],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "I_1000": [10.0, 12.0, 11.0],
+            "I_1200": [8.0, 9.0, 8.5],
+        }
+    )
 
     mode = detect_input_mode(df)
     assert mode == "peak_table"
@@ -26,13 +29,15 @@ def test_detect_input_mode_peak_table():
 
 def test_detect_input_mode_raw_spectra():
     """Test detection of raw spectra format."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "500.0": [1.0, 1.1, 1.2],
-        "600.0": [2.0, 2.1, 2.2],
-        "700.0": [3.0, 3.1, 3.2],
-        "800.0": [4.0, 4.1, 4.2],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "500.0": [1.0, 1.1, 1.2],
+            "600.0": [2.0, 2.1, 2.2],
+            "700.0": [3.0, 3.1, 3.2],
+            "800.0": [4.0, 4.1, 4.2],
+        }
+    )
 
     mode = detect_input_mode(df)
     assert mode == "raw_spectra"
@@ -40,10 +45,12 @@ def test_detect_input_mode_raw_spectra():
 
 def test_detect_input_mode_fallback():
     """Test fallback to peak_table."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "value": [10.0, 12.0, 11.0],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "value": [10.0, 12.0, 11.0],
+        }
+    )
 
     mode = detect_input_mode(df)
     assert mode == "peak_table"
@@ -61,15 +68,17 @@ def test_baseline_als_correction():
 
 def test_extract_peaks_from_spectra():
     """Test peak extraction from raw spectra."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "500.0": [1.0, 1.1, 1.2],
-        "600.0": [2.0, 2.1, 2.2],
-        "700.0": [3.0, 3.1, 3.2],
-        "800.0": [4.0, 4.1, 4.2],
-        "900.0": [5.0, 5.1, 5.2],
-        "1000.0": [6.0, 6.1, 6.2],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "500.0": [1.0, 1.1, 1.2],
+            "600.0": [2.0, 2.1, 2.2],
+            "700.0": [3.0, 3.1, 3.2],
+            "800.0": [4.0, 4.1, 4.2],
+            "900.0": [5.0, 5.1, 5.2],
+            "1000.0": [6.0, 6.1, 6.2],
+        }
+    )
 
     peaks = [
         PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750)),
@@ -87,12 +96,14 @@ def test_extract_peaks_from_spectra():
 
 def test_extract_peaks_peak_outside_range():
     """Test peak extraction when peak is outside wavenumber range."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "500.0": [1.0, 1.1],
-        "600.0": [2.0, 2.1],
-        "700.0": [3.0, 3.1],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "500.0": [1.0, 1.1],
+            "600.0": [2.0, 2.1],
+            "700.0": [3.0, 3.1],
+        }
+    )
 
     peaks = [PeakDefinition(name="out_of_range", column="I_2000", wavenumber=2000, window=(1950, 2050))]
     wavenumber_cols = ["500.0", "600.0", "700.0"]
@@ -105,11 +116,13 @@ def test_extract_peaks_peak_outside_range():
 
 def test_extract_peaks_no_wavenumber():
     """Test peak extraction when peak has no wavenumber."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "500.0": [1.0, 1.1],
-        "600.0": [2.0, 2.1],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "500.0": [1.0, 1.1],
+            "600.0": [2.0, 2.1],
+        }
+    )
 
     peaks = [PeakDefinition(name="no_wn", column="I_none", wavenumber=None)]
     wavenumber_cols = ["500.0", "600.0"]
@@ -122,11 +135,13 @@ def test_extract_peaks_no_wavenumber():
 
 def test_run_full_preprocessing_peak_table():
     """Test full preprocessing with peak table input."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "I_1000": [10.0, 12.0, 11.0],
-        "I_1200": [8.0, 9.0, 8.5],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "I_1000": [10.0, 12.0, 11.0],
+            "I_1200": [8.0, 9.0, 8.5],
+        }
+    )
 
     config = PreprocessingConfig()
     result = run_full_preprocessing(df, config)
@@ -138,20 +153,22 @@ def test_run_full_preprocessing_peak_table():
 
 def test_run_full_preprocessing_raw_spectra():
     """Test full preprocessing with raw spectra input."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2, 3],
-        "500.0": [1.0, 1.1, 1.2],
-        "550.0": [1.5, 1.6, 1.7],
-        "600.0": [2.0, 2.1, 2.2],
-        "650.0": [2.5, 2.6, 2.7],
-        "700.0": [3.0, 3.1, 3.2],
-        "750.0": [3.5, 3.6, 3.7],
-        "800.0": [4.0, 4.1, 4.2],
-        "850.0": [4.5, 4.6, 4.7],
-        "900.0": [5.0, 5.1, 5.2],
-        "950.0": [5.5, 5.6, 5.7],
-        "1000.0": [6.0, 6.1, 6.2],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2, 3],
+            "500.0": [1.0, 1.1, 1.2],
+            "550.0": [1.5, 1.6, 1.7],
+            "600.0": [2.0, 2.1, 2.2],
+            "650.0": [2.5, 2.6, 2.7],
+            "700.0": [3.0, 3.1, 3.2],
+            "750.0": [3.5, 3.6, 3.7],
+            "800.0": [4.0, 4.1, 4.2],
+            "850.0": [4.5, 4.6, 4.7],
+            "900.0": [5.0, 5.1, 5.2],
+            "950.0": [5.5, 5.6, 5.7],
+            "1000.0": [6.0, 6.1, 6.2],
+        }
+    )
 
     peaks = [
         PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750)),
@@ -173,20 +190,22 @@ def test_run_full_preprocessing_raw_spectra():
 
 def test_run_full_preprocessing_with_spike_removal():
     """Test preprocessing with spike removal enabled."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "500.0": [1.0, 1.1],
-        "550.0": [1.5, 1.6],
-        "600.0": [100.0, 2.1],  # Spike in first sample
-        "650.0": [2.5, 2.6],
-        "700.0": [3.0, 3.1],
-        "750.0": [3.5, 3.6],
-        "800.0": [4.0, 4.1],
-        "850.0": [4.5, 4.6],
-        "900.0": [5.0, 5.1],
-        "950.0": [5.5, 5.6],
-        "1000.0": [6.0, 6.1],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "500.0": [1.0, 1.1],
+            "550.0": [1.5, 1.6],
+            "600.0": [100.0, 2.1],  # Spike in first sample
+            "650.0": [2.5, 2.6],
+            "700.0": [3.0, 3.1],
+            "750.0": [3.5, 3.6],
+            "800.0": [4.0, 4.1],
+            "850.0": [4.5, 4.6],
+            "900.0": [5.0, 5.1],
+            "950.0": [5.5, 5.6],
+            "1000.0": [6.0, 6.1],
+        }
+    )
 
     peaks = [PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750))]
 
@@ -202,20 +221,22 @@ def test_run_full_preprocessing_with_spike_removal():
 
 def test_run_full_preprocessing_different_baseline_methods():
     """Test preprocessing with different baseline methods."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "500.0": [1.0, 1.1],
-        "550.0": [1.5, 1.6],
-        "600.0": [2.0, 2.1],
-        "650.0": [2.5, 2.6],
-        "700.0": [3.0, 3.1],
-        "750.0": [3.5, 3.6],
-        "800.0": [4.0, 4.1],
-        "850.0": [4.5, 4.6],
-        "900.0": [5.0, 5.1],
-        "950.0": [5.5, 5.6],
-        "1000.0": [6.0, 6.1],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "500.0": [1.0, 1.1],
+            "550.0": [1.5, 1.6],
+            "600.0": [2.0, 2.1],
+            "650.0": [2.5, 2.6],
+            "700.0": [3.0, 3.1],
+            "750.0": [3.5, 3.6],
+            "800.0": [4.0, 4.1],
+            "850.0": [4.5, 4.6],
+            "900.0": [5.0, 5.1],
+            "950.0": [5.5, 5.6],
+            "1000.0": [6.0, 6.1],
+        }
+    )
 
     peaks = [PeakDefinition(name="peak1", column="I_700", wavenumber=700, window=(650, 750))]
 
@@ -247,20 +268,22 @@ def test_run_full_preprocessing_different_baseline_methods():
 
 def test_run_full_preprocessing_different_normalizations():
     """Test preprocessing with different normalization modes."""
-    df = pd.DataFrame({
-        "sample_id": [1, 2],
-        "500.0": [1.0, 1.1],
-        "550.0": [1.5, 1.6],
-        "600.0": [2.0, 2.1],
-        "650.0": [2.5, 2.6],
-        "700.0": [3.0, 3.1],
-        "750.0": [3.5, 3.6],
-        "800.0": [4.0, 4.1],
-        "850.0": [4.5, 4.6],
-        "900.0": [5.0, 5.1],
-        "950.0": [5.5, 5.6],
-        "1000.0": [6.0, 6.1],
-    })
+    df = pd.DataFrame(
+        {
+            "sample_id": [1, 2],
+            "500.0": [1.0, 1.1],
+            "550.0": [1.5, 1.6],
+            "600.0": [2.0, 2.1],
+            "650.0": [2.5, 2.6],
+            "700.0": [3.0, 3.1],
+            "750.0": [3.5, 3.6],
+            "800.0": [4.0, 4.1],
+            "850.0": [4.5, 4.6],
+            "900.0": [5.0, 5.1],
+            "950.0": [5.5, 5.6],
+            "1000.0": [6.0, 6.1],
+        }
+    )
 
     peaks = [PeakDefinition(name="peak1", column="I_600", wavenumber=600, window=(550, 650))]
 

@@ -26,7 +26,7 @@ def compute_band_features(
         raise ValueError("wavenumbers must be 1D and match number of columns in X.")
 
     metrics = list(metrics)
-    single_integral = (len(metrics) == 1 and metrics[0] == "integral")
+    single_integral = len(metrics) == 1 and metrics[0] == "integral"
     data = {}
     for label, min_wn, max_wn in bands:
         if min_wn >= max_wn:

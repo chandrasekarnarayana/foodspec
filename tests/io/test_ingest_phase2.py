@@ -18,10 +18,12 @@ def test_csv_loader_infers_delimiter_and_metrics():
     with TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
         wn = np.linspace(500, 600, 5)
-        spectra = np.array([
-            [1, 2, 3, 4, 5],
-            [2, 3, 4, 5, 6],
-        ])
+        spectra = np.array(
+            [
+                [1, 2, 3, 4, 5],
+                [2, 3, 4, 5, 6],
+            ]
+        )
         csv_path = tmp_path / "spectra.csv"
         _write_csv(csv_path, wn, spectra)
 

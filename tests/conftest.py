@@ -8,7 +8,7 @@ import os
 import sys
 
 # Add the src directory to path so imports work correctly
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # Pytest plugins and fixtures
 pytest_plugins = []

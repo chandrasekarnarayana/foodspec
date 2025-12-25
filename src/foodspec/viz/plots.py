@@ -307,7 +307,7 @@ def plot_calibration_with_ci(
     hi = np.quantile(band, 1 - alpha / 2, axis=0)
 
     ax.plot(xx, yy, color="C1", label="Fit")
-    ax.fill_between(xx, lo, hi, color="C1", alpha=0.2, label=f"{int((1-alpha)*100)}% CI")
+    ax.fill_between(xx, lo, hi, color="C1", alpha=0.2, label=f"{int((1 - alpha) * 100)}% CI")
     ax.set_xlabel("True")
     ax.set_ylabel("Predicted")
     ax.set_title(title or "Calibration with confidence band")

@@ -18,7 +18,9 @@ def make_synthetic_matrix_dataset(n_per_matrix=10, n_wn=200):
 def test_apply_matrix_correction_runs_and_records_metrics():
     X, wn, meta = make_synthetic_matrix_dataset()
     fs = FoodSpec(X, wavenumbers=wn, metadata=meta, modality="raman")
-    fs.apply_matrix_correction(method="adaptive_baseline", scaling="median_mad", domain_adapt=True, matrix_column="matrix_type")
+    fs.apply_matrix_correction(
+        method="adaptive_baseline", scaling="median_mad", domain_adapt=True, matrix_column="matrix_type"
+    )
     # Invariants: shape preserved
     assert fs.data.x.shape == X.shape
     # Metrics recorded

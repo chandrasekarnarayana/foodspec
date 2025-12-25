@@ -124,7 +124,9 @@ def compute_regression_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> pd.Ser
     std = float(np.std(resid))
     skew = float(np.mean(((resid - np.mean(resid)) / (std + 1e-12)) ** 3))
     kurtosis = float(np.mean(((resid - np.mean(resid)) / (std + 1e-12)) ** 4)) - 3.0
-    return pd.Series({"rmse": rmse, "mae": mae, "r2": r2, "bias": bias, "residual_skew": skew, "residual_kurtosis": kurtosis})
+    return pd.Series(
+        {"rmse": rmse, "mae": mae, "r2": r2, "bias": bias, "residual_skew": skew, "residual_kurtosis": kurtosis}
+    )
 
 
 def regression_report_full(y_true: np.ndarray, y_pred: np.ndarray) -> pd.Series:
@@ -318,13 +320,15 @@ def hotelling_t2_q_residuals(pca: PCA, X: np.ndarray) -> Tuple[np.ndarray, np.nd
     X = np.asarray(X, dtype=float)
     scores = pca.transform(X)
     eigvals = pca.explained_variance_
-    t2 = np.sum((scores ** 2) / eigvals, axis=1)
+    t2 = np.sum((scores**2) / eigvals, axis=1)
     recon = pca.inverse_transform(scores)
     q_res = np.sum((X - recon) ** 2, axis=1)
     return t2, q_res
 
 
-def permutation_pls_da(pipeline, X: np.ndarray, y: np.ndarray, n_permutations: int = 100, random_state: Optional[int] = None):
+def permutation_pls_da(
+    pipeline, X: np.ndarray, y: np.ndarray, n_permutations: int = 100, random_state: Optional[int] = None
+):
     """Permutation test specialized for PLS-DA pipelines (accuracy scoring)."""
 
     return permutation_test_score_wrapper(
@@ -332,7 +336,9 @@ def permutation_pls_da(pipeline, X: np.ndarray, y: np.ndarray, n_permutations: i
     )
 
 
-def permutation_importance_wrapper(estimator, X: np.ndarray, y: np.ndarray, n_repeats: int = 10, random_state: Optional[int] = None):
+def permutation_importance_wrapper(
+    estimator, X: np.ndarray, y: np.ndarray, n_repeats: int = 10, random_state: Optional[int] = None
+):
     """Convenience wrapper for permutation_importance (classification or regression)."""
 
     result = permutation_importance(estimator, X, y, n_repeats=n_repeats, random_state=random_state)

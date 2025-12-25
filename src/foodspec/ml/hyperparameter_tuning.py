@@ -269,6 +269,7 @@ def quick_tune_classifier(
 
 try:
     import optuna  # type: ignore
+
     HAS_OPTUNA = True
 except ImportError:
     HAS_OPTUNA = False

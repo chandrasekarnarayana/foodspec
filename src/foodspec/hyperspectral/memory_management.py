@@ -216,7 +216,7 @@ def estimate_memory_usage(
     """
     itemsize = np.dtype(dtype).itemsize
     total_bytes = height * width * bands * itemsize
-    memory_mb = total_bytes / (1024 ** 2)
+    memory_mb = total_bytes / (1024**2)
 
     if memory_mb < 1024:
         return memory_mb, f"{memory_mb:.2f} MB"
@@ -250,7 +250,7 @@ def recommend_chunk_size(
     # Rough estimate: each dimension roughly sqrt(available * safety_factor / itemsize)
     chunk_size_mb = available_memory_mb * safety_factor
     # Assuming 4 bytes/pixel and 100 bands typical
-    pixels_per_chunk = (chunk_size_mb * 1024 ** 2) / (4 * 100)
+    pixels_per_chunk = (chunk_size_mb * 1024**2) / (4 * 100)
     chunk_dim = int(np.sqrt(pixels_per_chunk))
     # Round to power of 2 for efficiency
     chunk_dim = max(32, int(2 ** np.floor(np.log2(chunk_dim))))

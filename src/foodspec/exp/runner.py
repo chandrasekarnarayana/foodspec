@@ -70,7 +70,14 @@ class ExperimentSpec:
         }
 
     def __hash__(self) -> int:
-        key = (self.name, self.version, str(self.protocol), tuple(str(p) for p in self.inputs), tuple(sorted(self.overrides.items())), self.seed)
+        key = (
+            self.name,
+            self.version,
+            str(self.protocol),
+            tuple(str(p) for p in self.inputs),
+            tuple(sorted(self.overrides.items())),
+            self.seed,
+        )
         return hash(key)
 
 

@@ -5,6 +5,7 @@ Plugin bootstrap helpers.
 registers vendor loaders, feature indices, and workflows into runtime
 registries for use across the library.
 """
+
 from __future__ import annotations
 
 from foodspec.plugin import PluginManager

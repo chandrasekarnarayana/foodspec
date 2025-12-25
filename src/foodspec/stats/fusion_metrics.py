@@ -100,6 +100,7 @@ def cross_modality_correlation(
                     raise ValueError("Feature matrices must have same number of samples.")
                 # Compute correlation between all pairs of features
                 from scipy.stats import pearsonr, spearmanr
+
                 corr_func = pearsonr if method == "pearson" else spearmanr
                 corrs = []
                 for f1 in range(X1.shape[1]):

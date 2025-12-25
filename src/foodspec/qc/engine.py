@@ -228,7 +228,11 @@ def detect_drift(
         slope = float(np.polyfit(np.arange(len(scores)), scores, 1)[0])
         details = {"cusum_max": drift_score, "score_trend_slope": slope}
     elif method == "batch_shift":
-        batches = meta.get(ds.batch_col, pd.Series(["batch0"] * len(meta))) if ds.batch_col else pd.Series(["batch0"] * len(meta))
+        batches = (
+            meta.get(ds.batch_col, pd.Series(["batch0"] * len(meta)))
+            if ds.batch_col
+            else pd.Series(["batch0"] * len(meta))
+        )
         means = []
         for b in batches.unique():
             means.append(np.mean(X[batches == b], axis=0))

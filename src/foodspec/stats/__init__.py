@@ -72,19 +72,19 @@ __all__ = [
     "benjamini_hochberg",
     "stats_report_for_feature",
     "stats_report_for_features_table",
-     # distances
-     "euclidean_distance",
-     "cosine_distance",
-     "pearson_distance",
-     "sid_distance",
-     "sam_angle",
-     "compute_distances",
-     # time metrics
-     "linear_slope",
-     "quadratic_acceleration",
-     "rolling_slope",
-     # fusion metrics
-     "modality_agreement_kappa",
-     "modality_consistency_rate",
-     "cross_modality_correlation",
+    # distances
+    "euclidean_distance",
+    "cosine_distance",
+    "pearson_distance",
+    "sid_distance",
+    "sam_angle",
+    "compute_distances",
+    # time metrics
+    "linear_slope",
+    "quadratic_acceleration",
+    "rolling_slope",
+    # fusion metrics
+    "modality_agreement_kappa",
+    "modality_consistency_rate",
+    "cross_modality_correlation",
 ]

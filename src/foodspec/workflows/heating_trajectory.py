@@ -388,7 +388,7 @@ def _estimate_shelf_life(
     # Confidence interval (bootstrap or parametric approximation)
     # Simplified: use residual standard error and t-distribution
     residuals = index_values - fitted
-    residual_se = np.sqrt((residuals ** 2).sum() / (len(residuals) - 2))
+    residual_se = np.sqrt((residuals**2).sum() / (len(residuals) - 2))
     n = len(time)
     t_crit = t_dist.ppf((1 + confidence_level) / 2, df=n - 2)
 

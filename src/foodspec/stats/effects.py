@@ -42,6 +42,7 @@ def compute_cohens_d(group1, group2, pooled: bool = True) -> float:
         d = (m1 - m2) / ((s1 + s2) / 2.0)
     return float(d)
 
+
 def compute_anova_effect_sizes(ss_between: float, ss_total: float, ss_within: float | None = None) -> pd.Series:
     """
     Compute eta-squared and partial eta-squared for ANOVA.

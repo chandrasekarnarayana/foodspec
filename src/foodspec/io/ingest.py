@@ -216,7 +216,9 @@ def _coerce_ingest_result(result: object, fmt: str, modality: str) -> IngestResu
     else:
         raise TypeError(f"Vendor loader for format '{fmt}' must return IngestResult or spectrum-like object")
 
-    metrics = _finalize_metrics({"total_files": 1, "parsed_files": 1, "flagged_files": 0, "resampled_spectra": 0}, dataset)
+    metrics = _finalize_metrics(
+        {"total_files": 1, "parsed_files": 1, "flagged_files": 0, "resampled_spectra": 0}, dataset
+    )
     return IngestResult(dataset=dataset, metrics=metrics, diagnostics={"format": fmt})
 
 
@@ -270,7 +272,9 @@ def save_hdf5(dataset: FoodSpectrumSet, path: str | Path) -> Path:
     return p
 
 
-def load_spectral_cube(path: str | Path, wavenumbers: Optional[np.ndarray] = None, modality: str = "hsi") -> IngestResult:
+def load_spectral_cube(
+    path: str | Path, wavenumbers: Optional[np.ndarray] = None, modality: str = "hsi"
+) -> IngestResult:
     p = Path(path)
     if p.suffix.lower() in {".npz"}:
         data = np.load(p)["cube"]
@@ -284,10 +288,12 @@ def load_spectral_cube(path: str | Path, wavenumbers: Optional[np.ndarray] = Non
     cube_reshaped = data.reshape(rows * cols, bands)
     if wavenumbers is None:
         wavenumbers = np.linspace(0, bands - 1, bands)
-    metadata = pd.DataFrame({
-        "row": np.repeat(np.arange(rows), cols),
-        "col": np.tile(np.arange(cols), rows),
-    })
+    metadata = pd.DataFrame(
+        {
+            "row": np.repeat(np.arange(rows), cols),
+            "col": np.tile(np.arange(cols), rows),
+        }
+    )
     ds = FoodSpectrumSet(x=cube_reshaped, wavenumbers=wavenumbers, metadata=metadata, modality=modality)
     raw = {
         "total_files": 1,
@@ -321,6 +327,8 @@ def _auto_loader(path: str | Path, **kwargs) -> IngestResult:
     if fmt == "unknown":
         # Fallback to generic core reader
         ds = read_spectra(path, **kwargs)
-        metrics = _finalize_metrics({"total_files": 1, "parsed_files": 1, "flagged_files": 0, "resampled_spectra": 0}, ds)
+        metrics = _finalize_metrics(
+            {"total_files": 1, "parsed_files": 1, "flagged_files": 0, "resampled_spectra": 0}, ds
+        )
         return IngestResult(dataset=ds, metrics=metrics, diagnostics={"format": "auto"})
     return load_csv_or_txt(path, **kwargs)

@@ -3,6 +3,7 @@
 Delegates to the canonical argparse CLI in `foodspec.cli.registry`.
 This shim will be removed in a future major release.
 """
+
 from __future__ import annotations
 
 import sys

@@ -309,9 +309,7 @@ def compute_readiness_score(
     dimension_scores["leakage"] = leakage_score
 
     # Overall weighted score
-    overall_score = sum(
-        dimension_scores[dim] * weights.get(dim, 0.0) for dim in dimension_scores
-    )
+    overall_score = sum(dimension_scores[dim] * weights.get(dim, 0.0) for dim in dimension_scores)
 
     # Passed/failed criteria (threshold = 70)
     passed = [dim for dim, score in dimension_scores.items() if score >= 70]
@@ -319,10 +317,7 @@ def compute_readiness_score(
 
     # Recommendation
     if overall_score >= 80:
-        recommendation = (
-            "✓ Dataset is production-ready for ML deployment. "
-            "Proceed with model training and validation."
-        )
+        recommendation = "✓ Dataset is production-ready for ML deployment. Proceed with model training and validation."
     elif overall_score >= 60:
         recommendation = (
             f"⚠️ Dataset is usable with caveats. Failed criteria: {failed}. "

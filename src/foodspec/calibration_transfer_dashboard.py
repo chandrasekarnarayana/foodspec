@@ -67,6 +67,7 @@ def build_dashboard_html(metrics: Dict[str, Any]) -> str:
     - 'rmse_improvement', 'r2_improvement', 'mae_improvement'
     - 'n_standards', 'condition_number'
     """
+
     def get(k):
         v = metrics.get(k)
         return f"{v:.4f}" if isinstance(v, (int, float)) else (str(v) if v is not None else "N/A")

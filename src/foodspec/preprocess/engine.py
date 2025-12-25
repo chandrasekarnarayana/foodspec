@@ -251,7 +251,9 @@ class NormalizationStep(Step):
 
 class DerivativeStep(Step):
     def __init__(self, order: int = 1, window_length: int = 7, polyorder: int = 2):
-        super().__init__(name="derivative", config={"order": order, "window_length": window_length, "polyorder": polyorder})
+        super().__init__(
+            name="derivative", config={"order": order, "window_length": window_length, "polyorder": polyorder}
+        )
 
     def transform(self, ds: FoodSpectrumSet) -> FoodSpectrumSet:
         X = _ensure_2d(ds.x)
@@ -305,7 +307,9 @@ class AlignmentStep(Step):
 
 class ResampleStep(Step):
     def __init__(self, grid: Optional[np.ndarray] = None, method: str = "linear"):
-        super().__init__(name="resample", config={"method": method, "grid": grid.tolist() if isinstance(grid, np.ndarray) else grid})
+        super().__init__(
+            name="resample", config={"method": method, "grid": grid.tolist() if isinstance(grid, np.ndarray) else grid}
+        )
         self.grid = grid
 
     def transform(self, ds: FoodSpectrumSet) -> FoodSpectrumSet:
@@ -319,8 +323,10 @@ class ResampleStep(Step):
             def interp_fn(row):
                 return np.interp(target, source_grid, row)
         else:
+
             def interp_fn(row):
                 return np.interp(target, source_grid, row)
+
         Xr = np.vstack([interp_fn(row) for row in X])
         return _clone_ds(ds, Xr, wavenumbers=target)
 
@@ -486,7 +492,14 @@ class AutoPreprocess:
             {"order": 1, "window_length": 9, "polyorder": 2},
         ]
 
-    def _build_pipeline(self, b_cfg: Dict[str, Any], s_cfg: Dict[str, Any], a_cfg: Dict[str, Any], n_cfg: Dict[str, Any], d_cfg: Dict[str, Any]) -> PreprocessPipeline:
+    def _build_pipeline(
+        self,
+        b_cfg: Dict[str, Any],
+        s_cfg: Dict[str, Any],
+        a_cfg: Dict[str, Any],
+        n_cfg: Dict[str, Any],
+        d_cfg: Dict[str, Any],
+    ) -> PreprocessPipeline:
         steps: List[Step] = []
         if b_cfg.get("method", "none") != "none":
             steps.append(BaselineStep(**b_cfg))

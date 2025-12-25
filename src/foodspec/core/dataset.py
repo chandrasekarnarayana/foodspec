@@ -241,10 +241,10 @@ class FoodSpectrumSet:
             raise ValueError("wavenumbers must be strictly increasing (monotonic).")
         if len(self.metadata) != n_samples:
             raise ValueError(
-                "metadata length does not match number of rows in x " f"({len(self.metadata)} != {n_samples})."
+                f"metadata length does not match number of rows in x ({len(self.metadata)} != {n_samples})."
             )
         if self.modality not in {"raman", "ftir", "nir"}:
-            raise ValueError("modality must be one of {'raman', 'ftir', 'nir'}; " f"got '{self.modality}'.")
+            raise ValueError(f"modality must be one of {{'raman', 'ftir', 'nir'}}; got '{self.modality}'.")
         for col_name in [self.label_col, self.group_col, self.batch_col]:
             if col_name is not None and col_name not in self.metadata.columns:
                 raise ValueError(f"metadata column '{col_name}' not found for configured annotations.")
@@ -528,7 +528,9 @@ def from_sklearn(
     meta = pd.DataFrame(index=np.arange(X.shape[0]))
     if y is not None:
         meta[labels_name] = list(y)
-    return FoodSpectrumSet(x=X, wavenumbers=wn, metadata=meta, modality=modality, label_col=(labels_name if y is not None else None))
+    return FoodSpectrumSet(
+        x=X, wavenumbers=wn, metadata=meta, modality=modality, label_col=(labels_name if y is not None else None)
+    )
 
 
 __all__ = ["FoodSpectrumSet", "to_sklearn", "from_sklearn"]

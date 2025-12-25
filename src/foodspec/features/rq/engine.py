@@ -477,5 +477,3 @@ class RatioQualityEngine:
         sil = silhouette_score(Xz, labels)
         ari = adjusted_rand_score(y, labels)
         return {"silhouette": float(sil), "ari_vs_oil": float(ari), "n_clusters": int(n_clusters)}
-
-

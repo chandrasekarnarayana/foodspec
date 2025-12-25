@@ -17,6 +17,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 try:
     from foodspec.features.rq import RatioDefinition
 except Exception:  # pragma: no cover - scaffold fallback
+
     @dataclass
     class RatioDefinition:  # minimal placeholder for type hints
         name: str

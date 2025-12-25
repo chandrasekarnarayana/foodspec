@@ -82,7 +82,7 @@ def generate_text_report(
     tpl.append(f"Samples: {ctx.get('n_samples', 'na')}, Features: {ctx.get('n_features', 'na')}")
     for k, v in ctx.items():
         if k.endswith("_counts") and hasattr(v, "to_string"):
-            tpl.append(f"{k.replace('_counts','')} counts:\n{v.to_string()}")
+            tpl.append(f"{k.replace('_counts', '')} counts:\n{v.to_string()}")
     if "const_features" in ctx:
         tpl.append(f"Constant features: {', '.join(ctx['const_features'][:5])}")
     if "validation_metrics" in ctx:

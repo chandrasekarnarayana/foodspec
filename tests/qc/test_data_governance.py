@@ -15,7 +15,7 @@ def make_governance_dataset(n=60, n_wn=100):
     sample_ids = [f"s{i}" for i in range(n)]
     for i in range(0, n, 10):
         if i + 1 < n:
-            sample_ids[i+1] = sample_ids[i]
+            sample_ids[i + 1] = sample_ids[i]
     meta = pd.DataFrame({"label": labels, "batch": batches, "sample_id": sample_ids})
     return X, wn, meta
 

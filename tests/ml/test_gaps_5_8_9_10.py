@@ -43,6 +43,7 @@ from foodspec.qc.threshold_optimization import (
 # GAP 5: Threshold Optimization Tests
 # ============================================================================
 
+
 class TestThresholdOptimization:
     """Test automated threshold tuning for QC metrics."""
 
@@ -121,6 +122,7 @@ class TestThresholdOptimization:
 # GAP 8: Hyperparameter Tuning Tests
 # ============================================================================
 
+
 class TestHyperparameterTuning:
     """Test automated hyperparameter optimization."""
 
@@ -154,14 +156,14 @@ class TestHyperparameterTuning:
         """Test grid search for classifier."""
         X, y = clf_data
 
-        pipeline = Pipeline([
-            ("scaler", StandardScaler()),
-            ("model", RandomForestClassifier(random_state=0)),
-        ])
-
-        best_model, results = grid_search_classifier(
-            pipeline, X, y, "rf", cv=2, n_jobs=1
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("model", RandomForestClassifier(random_state=0)),
+            ]
         )
+
+        best_model, results = grid_search_classifier(pipeline, X, y, "rf", cv=2, n_jobs=1)
 
         assert "best_params" in results
         assert "best_score" in results
@@ -172,10 +174,12 @@ class TestHyperparameterTuning:
         """Test quick tuning with RandomizedSearchCV."""
         X, y = clf_data
 
-        pipeline = Pipeline([
-            ("scaler", StandardScaler()),
-            ("model", RandomForestClassifier(random_state=0)),
-        ])
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("model", RandomForestClassifier(random_state=0)),
+            ]
+        )
 
         best_model = quick_tune_classifier(pipeline, X, y, "rf", cv=2)
         assert hasattr(best_model, "predict")
@@ -184,6 +188,7 @@ class TestHyperparameterTuning:
 # ============================================================================
 # GAP 10: Nested Cross-Validation Tests
 # ============================================================================
+
 
 class TestNestedCV:
     """Test nested cross-validation for unbiased model selection."""
@@ -236,9 +241,7 @@ class TestNestedCV:
             "Tree": DecisionTreeClassifier(random_state=0),
         }
 
-        results = compare_models_nested_cv(
-            models, X, y, cv_outer=2, cv_inner=2, task="classification"
-        )
+        results = compare_models_nested_cv(models, X, y, cv_outer=2, cv_inner=2, task="classification")
 
         assert "RF" in results
         assert "Tree" in results
@@ -248,6 +251,7 @@ class TestNestedCV:
 # ============================================================================
 # GAP 9: Memory Management Tests
 # ============================================================================
+
 
 class TestMemoryManagement:
     """Test memory-efficient hyperspectral processing."""
@@ -298,14 +302,11 @@ class TestMemoryManagement:
 
     def test_process_chunks(self, small_cube):
         """Test processing chunks."""
-        def normalize_chunk(chunk):
-            return (chunk - chunk.mean(axis=(0, 1), keepdims=True)) / (
-                chunk.std(axis=(0, 1), keepdims=True) + 1e-8
-            )
 
-        output = process_hyperspectral_chunks(
-            small_cube, normalize_chunk, chunk_height=32, chunk_width=32
-        )
+        def normalize_chunk(chunk):
+            return (chunk - chunk.mean(axis=(0, 1), keepdims=True)) / (chunk.std(axis=(0, 1), keepdims=True) + 1e-8)
+
+        output = process_hyperspectral_chunks(small_cube, normalize_chunk, chunk_height=32, chunk_width=32)
 
         assert output.shape == small_cube.shape
         # Check normalization worked
@@ -334,6 +335,7 @@ class TestMemoryManagement:
 # Integration Tests
 # ============================================================================
 
+
 class TestIntegration:
     """Integration tests combining multiple gap implementations."""
 
@@ -358,10 +360,12 @@ class TestIntegration:
         X, y = make_classification(n_samples=100, n_features=20, n_classes=2, random_state=0)
 
         # Simple nested CV (no explicit tuning, but demonstrates unbiased evaluation)
-        pipeline = Pipeline([
-            ("scaler", StandardScaler()),
-            ("model", RandomForestClassifier(random_state=0)),
-        ])
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("model", RandomForestClassifier(random_state=0)),
+            ]
+        )
 
         # This tests the nested CV workflow
         results = nested_cross_validate(pipeline, X, y, cv_outer=3, cv_inner=2)

@@ -39,7 +39,9 @@ class LibrarySearchWorkflow:
     metric: str = "cosine"
     top_k: int = 5
 
-    def run(self, library_df: pd.DataFrame, query: np.ndarray, wavenumbers: Optional[np.ndarray] = None) -> pd.DataFrame:
+    def run(
+        self, library_df: pd.DataFrame, query: np.ndarray, wavenumbers: Optional[np.ndarray] = None
+    ) -> pd.DataFrame:
         """Execute the library search (placeholder).
 
         Parameters
@@ -60,13 +62,15 @@ class LibrarySearchWorkflow:
         labels = [str(i) for i in range(len(library_df))]
         scores = np.zeros(len(labels), dtype=float)
         conf = np.zeros(len(labels), dtype=float)
-        out = pd.DataFrame({
-            "index": list(range(len(labels))),
-            "label": labels,
-            "score": scores,
-            "confidence": conf,
-            "metric": [self.metric] * len(labels),
-        })
+        out = pd.DataFrame(
+            {
+                "index": list(range(len(labels))),
+                "label": labels,
+                "score": scores,
+                "confidence": conf,
+                "metric": [self.metric] * len(labels),
+            }
+        )
         return out.head(self.top_k)
 
     def validate(self) -> Dict[str, Any]:

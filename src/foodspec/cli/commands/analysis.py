@@ -55,7 +55,9 @@ def _to_serializable(obj: Any) -> Any:
     return obj
 
 
-def _write_oil_report(result, spectra, label_column: str, output_report: Path, classifier_name: str, run_metadata: Optional[dict] = None) -> Path:
+def _write_oil_report(
+    result, spectra, label_column: str, output_report: Path, classifier_name: str, run_metadata: Optional[dict] = None
+) -> Path:
     """Write oil authentication report folder and return its path."""
     report_dir = create_report_folder(output_report.parent, "oil_auth")
     # Summary
@@ -165,7 +167,9 @@ def _write_domain_report(result, output_dir: Path, domain: str, classifier_name:
     return report_dir
 
 
-def _write_mixture_report(spectrum_index: int, coeffs: np.ndarray, residual: float, pure_labels: Optional[pd.Series], output_dir: Path) -> Path:
+def _write_mixture_report(
+    spectrum_index: int, coeffs: np.ndarray, residual: float, pure_labels: Optional[pd.Series], output_dir: Path
+) -> Path:
     """Write mixture decomposition report."""
     report_dir = create_report_folder(output_dir, "mixture")
     labels = list(pure_labels) if pure_labels is not None else [f"comp_{i}" for i in range(len(coeffs))]
@@ -182,7 +186,9 @@ def _write_mixture_report(spectrum_index: int, coeffs: np.ndarray, residual: flo
     return report_dir
 
 
-def _write_hyperspectral_report(cube: HyperSpectralCube, target_wavenumber: float, window: float, output_dir: Path) -> Path:
+def _write_hyperspectral_report(
+    cube: HyperSpectralCube, target_wavenumber: float, window: float, output_dir: Path
+) -> Path:
     """Write hyperspectral report."""
     report_dir = create_report_folder(output_dir, "hyperspectral")
     mask = np.abs(cube.wavenumbers - target_wavenumber) <= window
@@ -219,7 +225,9 @@ def oil_auth(
     label_column: str = typer.Option("oil_type", help="Metadata column for class labels."),
     cv_splits: int = typer.Option(5, help="CV splits for classifier."),
     output_report: str = typer.Option("oil_auth_report.html", help="Output HTML report path."),
-    save_model_path: Optional[str] = typer.Option(None, "--save-model", help="Optional base path to save the trained model (without extension)."),
+    save_model_path: Optional[str] = typer.Option(
+        None, "--save-model", help="Optional base path to save the trained model (without extension)."
+    ),
     model_version: str = typer.Option(__version__, help="Model version tag."),
     config: Optional[str] = typer.Option(None, "--config", help="Optional YAML/JSON config file."),
 ):
@@ -292,7 +300,9 @@ def domains_command(
     classifier_name: str = typer.Option("rf", help="Classifier name."),
     cv_splits: int = typer.Option(5, help="Number of CV splits."),
     output_dir: str = typer.Option("./out", help="Base output directory."),
-    save_model_path: Optional[str] = typer.Option(None, "--save-model", help="Optional base path to save the trained model (without extension)."),
+    save_model_path: Optional[str] = typer.Option(
+        None, "--save-model", help="Optional base path to save the trained model (without extension)."
+    ),
     model_version: str = typer.Option(__version__, help="Model version tag."),
 ):
     """Run domain-specific authentication templates and write report."""

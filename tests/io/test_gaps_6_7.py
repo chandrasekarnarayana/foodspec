@@ -35,6 +35,7 @@ from foodspec.io.vendor_format_support import (
 # GAP 6: OPUS/SPC Vendor Format Support Tests
 # ============================================================================
 
+
 class TestOPUSBlockTypeSupport:
     """Test OPUS block type support matrix."""
 
@@ -145,12 +146,8 @@ class TestVendorBlockValidation:
 
         # Should include HX, OP, RX (supported but untested)
         assert len(untested) > 0
-        assert all(
-            OPUS_BLOCK_TYPES_SUPPORTED[b].supported for b in untested
-        )
-        assert all(
-            not OPUS_BLOCK_TYPES_SUPPORTED[b].tested for b in untested
-        )
+        assert all(OPUS_BLOCK_TYPES_SUPPORTED[b].supported for b in untested)
+        assert all(not OPUS_BLOCK_TYPES_SUPPORTED[b].tested for b in untested)
 
     def test_get_untested_spc_blocks(self):
         """Test retrieval of untested SPC blocks."""
@@ -164,6 +161,7 @@ class TestVendorBlockValidation:
 # ============================================================================
 # GAP 7: HDF5 Schema Versioning Tests
 # ============================================================================
+
 
 class TestHDF5SchemaVersioning:
     """Test HDF5 schema versioning and compatibility."""
@@ -195,47 +193,23 @@ class TestSchemaCompatibility:
 
     def test_same_version_compatible(self):
         """Test that same versions are compatible."""
-        assert (
-            get_compatibility_level("1.0", "1.0")
-            == CompatibilityLevel.COMPATIBLE
-        )
-        assert (
-            get_compatibility_level("1.2", "1.2")
-            == CompatibilityLevel.COMPATIBLE
-        )
-        assert (
-            get_compatibility_level("2.0", "2.0")
-            == CompatibilityLevel.COMPATIBLE
-        )
+        assert get_compatibility_level("1.0", "1.0") == CompatibilityLevel.COMPATIBLE
+        assert get_compatibility_level("1.2", "1.2") == CompatibilityLevel.COMPATIBLE
+        assert get_compatibility_level("2.0", "2.0") == CompatibilityLevel.COMPATIBLE
 
     def test_older_versions_readable(self):
         """Test that older stable versions are readable."""
-        assert (
-            get_compatibility_level("1.0", "1.1")
-            == CompatibilityLevel.READABLE
-        )
-        assert (
-            get_compatibility_level("1.1", "1.2")
-            == CompatibilityLevel.READABLE
-        )
+        assert get_compatibility_level("1.0", "1.1") == CompatibilityLevel.READABLE
+        assert get_compatibility_level("1.1", "1.2") == CompatibilityLevel.READABLE
 
     def test_newer_versions_incompatible(self):
         """Test that newer file versions are incompatible."""
-        assert (
-            get_compatibility_level("1.1", "1.0")
-            == CompatibilityLevel.INCOMPATIBLE
-        )
-        assert (
-            get_compatibility_level("2.0", "1.2")
-            == CompatibilityLevel.INCOMPATIBLE
-        )
+        assert get_compatibility_level("1.1", "1.0") == CompatibilityLevel.INCOMPATIBLE
+        assert get_compatibility_level("2.0", "1.2") == CompatibilityLevel.INCOMPATIBLE
 
     def test_major_version_jump_requires_migration(self):
         """Test that major version jumps require migration."""
-        assert (
-            get_compatibility_level("1.0", "2.0")
-            == CompatibilityLevel.REQUIRES_MIGRATION
-        )
+        assert get_compatibility_level("1.0", "2.0") == CompatibilityLevel.REQUIRES_MIGRATION
 
     def test_check_compatibility_compatible(self):
         """Test compatibility check for compatible versions."""
@@ -256,9 +230,7 @@ class TestSchemaCompatibility:
     def test_check_compatibility_migration_with_flag(self):
         """Test that migration-required versions work with flag."""
         with pytest.warns(UserWarning):
-            result = check_schema_compatibility(
-                "1.0", "1.2", allow_incompatible=True
-            )
+            result = check_schema_compatibility("1.0", "1.2", allow_incompatible=True)
             assert result is True
 
     def test_check_compatibility_incompatible_fails(self):
@@ -269,9 +241,7 @@ class TestSchemaCompatibility:
     def test_check_compatibility_incompatible_with_flag(self):
         """Test that incompatible versions warn with flag."""
         with pytest.warns(UserWarning):
-            result = check_schema_compatibility(
-                "2.0", "1.0", allow_incompatible=True
-            )
+            result = check_schema_compatibility("2.0", "1.0", allow_incompatible=True)
             assert result is True
 
 
