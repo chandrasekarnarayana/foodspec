@@ -117,7 +117,7 @@ docs/
 
 ### Example Catalog
 
-16 examples documented in [example_catalog.md](../docs/06-tutorials/example_catalog.md):
+16 examples documented in [example_catalog.md](../../06-tutorials/example_catalog.md):
 
 **Quickstarts:**
 1. Oil authentication (Raman)

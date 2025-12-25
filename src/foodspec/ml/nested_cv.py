@@ -85,10 +85,6 @@ def nested_cross_validate(
 
     Examples:
         >>> from foodspec.ml import nested_cross_validate\n        >>> from sklearn.svm import SVC\n        >>> from sklearn.datasets import make_classification\n        >>> X, y = make_classification(n_samples=100, n_features=20)\n        >>> svc = SVC(kernel='rbf')\n        >>> result = nested_cross_validate(svc, X, y, cv_outer=5, cv_inner=3)\n        >>> print(f\"Realistic accuracy: {result['mean_test_score']:.3f} ± {result['std_test_score']:.3f}\")\n
-    See Also:
-        - [Model Selection Guide](../04-user-guide/model_selection.md) — When to use nested CV
-        - [Hyperparameter Tuning](hyperparameter_tuning.py) — GridSearchCV, RandomizedSearchCV
-        - [Model Lifecycle](lifecycle.py) — Full training pipeline
 
     References:
         Varma, S., & Simon, R. (2006). Bias in error estimation when using

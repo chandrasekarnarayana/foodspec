@@ -401,6 +401,6 @@ For each new batch:
 
 - [Study Design](../stats/study_design_and_data_requirements.md) — How to plan FoodSpec studies
 - [Model Evaluation](../ml/model_evaluation_and_validation.md) — Validation metrics and interpretation
-- [Workflows](../workflows/) — Domain-specific examples
+- [Workflows](../workflows/workflow_design_and_reporting.md) — Domain-specific examples
 - [Non-Goals and Limitations](../non_goals_and_limitations.md) — What FoodSpec cannot do
 

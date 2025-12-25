@@ -44,7 +44,7 @@ Decision-level fusion with majority voting.
 
 ### Nested Cross-Validation
 
-> **Note**: Nested cross-validation functionality is available through scikit-learn's `GridSearchCV` with nested CV loops. See FoodSpec examples for implementation patterns.
+Nested cross-validation functionality is available through scikit-learn's `GridSearchCV` with nested CV loops. See FoodSpec examples for implementation patterns.
 
 ```python
 from sklearn.model_selection import cross_val_score, GridSearchCV

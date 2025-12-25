@@ -160,7 +160,7 @@ def compute_calibration_diagnostics(
     Examples:
         >>> from foodspec.ml.calibration import compute_calibration_diagnostics\n        >>> import numpy as np\n        >>> y_true = np.array([1, 0, 1, 1, 0, 1, 0, 0])\n        >>> y_proba = np.array([0.9, 0.1, 0.85, 0.8, 0.2, 0.95, 0.15, 0.05])\n        >>> diag = compute_calibration_diagnostics(y_true, y_proba, n_bins=4)\n        >>> print(f\"ECE: {diag.ece:.3f}, Bias: {diag.bias:.3f}\")\n        >>> print(diag.reliability_curve)\n
     See Also:
-        - [Calibration Guide](../04-user-guide/probability_calibration.md) — Recalibration methods
+
         - recalibrate_classifier() — Apply Platt/isotonic scaling
         - CalibrationDiagnostics.is_well_calibrated() — Check if acceptable
         - plot_calibration_curve() — Visualization [in plotting module]
