@@ -1,39 +1,12 @@
 """
-Ratio-Quality (RQ) Engine
-=========================
+Ratio-Quality (RQ) Engine - Main Engine Class
+==============================================
 
-Lightweight, dependency-minimal analysis of Raman/FTIR peak ratios for oils/chips.
-The engine is DataFrame-first (no file I/O) and returns structured results that
-can be rendered in GUI/report layers.
-
-Example
--------
->>> import pandas as pd
->>> from foodspec.features.rq import (
-...     PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
-... )
->>> df = pd.DataFrame({
-...     "sample_id": [1, 2, 3, 4],
-...     "oil_type": ["A", "A", "B", "B"],
-...     "matrix": ["oil", "oil", "oil", "oil"],
-...     "heating_stage": [0, 1, 0, 1],
-...     "I_1742": [10, 9, 6, 5],
-...     "I_1652": [4, 3, 8, 7],
-... })
->>> peaks = [
-...     PeakDefinition(name="I_1742", column="I_1742"),
-...     PeakDefinition(name="I_1652", column="I_1652"),
-... ]
->>> ratios = [RatioDefinition(name="1742/1652", numerator="I_1742", denominator="I_1652")]
->>> cfg = RQConfig(oil_col="oil_type", matrix_col="matrix", heating_col="heating_stage")
->>> engine = RatioQualityEngine(peaks=peaks, ratios=ratios, config=cfg)
->>> results = engine.run_all(df)
->>> print(results.text_report[:120])
+Core engine for ratio analysis.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
@@ -47,132 +20,9 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler
 from statsmodels.stats.multitest import multipletests
 
-# ---------------------------------------------------------------------------
-# Data definitions
-# ---------------------------------------------------------------------------
-
-
-@dataclass
-class PeakDefinition:
-    """Named peak/intensity column."""
-
-    name: str
-    column: str
-    wavenumber: Optional[float] = None
-    window: Optional[Tuple[float, float]] = None  # Optional metadata for UI/reporting
-    mode: str = "max"  # max | area
-
-
-@dataclass
-class RatioDefinition:
-    """Numerator / denominator ratio built from PeakDefinition names or raw columns."""
-
-    name: str
-    numerator: str
-    denominator: str
-
-
-@dataclass
-class RQConfig:
-    """Column naming conventions and options."""
-
-    oil_col: str = "Oil_Name"
-    matrix_col: str = "matrix"
-    heating_col: str = "Heating_Stage"
-    replicate_col: str = "replicate_id"
-    sample_col: str = "sample_id"
-    # Whether to include classifier-based feature importance
-    compute_feature_importance: bool = True
-    random_state: int = 0
-    n_splits: int = 5
-    normalization_modes: List[str] = field(default_factory=lambda: ["reference"])
-    minimal_panel_target_accuracy: float = 0.9
-    enable_clustering: bool = True
-    adjust_p_values: bool = True
-    max_features: Optional[int] = None
-
-
-@dataclass
-class RatioQualityResult:
-    ratio_table: pd.DataFrame
-    stability_summary: pd.DataFrame
-    discriminative_summary: pd.DataFrame
-    feature_importance: Optional[pd.DataFrame]
-    heating_trend_summary: pd.DataFrame
-    oil_vs_chips_summary: pd.DataFrame
-    normalization_comparison: Optional[pd.DataFrame]
-    minimal_panel: Optional[pd.DataFrame]
-    clustering_metrics: Optional[Dict]
-    warnings: List[str]
-    text_report: str
-
-
-# ---------------------------------------------------------------------------
-# Utility helpers
-# ---------------------------------------------------------------------------
-
-
-def _cv(series: pd.Series) -> Dict[str, float]:
-    vals = series.dropna().astype(float)
-    if len(vals) == 0:
-        return {"mean": np.nan, "std": np.nan, "cv_percent": np.nan, "mad": np.nan, "mad_over_mean": np.nan}
-    mean = vals.mean()
-    std = vals.std(ddof=1) if len(vals) > 1 else 0.0
-    mad = (vals - mean).abs().median()
-    return {
-        "mean": mean,
-        "std": std,
-        "cv_percent": (std / mean * 100) if mean != 0 else np.nan,
-        "mad": mad,
-        "mad_over_mean": (mad / mean) if mean != 0 else np.nan,
-    }
-
-
-def _safe_group_vectors(df: pd.DataFrame, group_col: str, feature: str) -> List[np.ndarray]:
-    vectors = []
-    for _, sub in df.groupby(group_col):
-        vec = sub[feature].dropna().to_numpy(dtype=float)
-        if len(vec) > 1:
-            vectors.append(vec)
-    return vectors
-
-
-def _monotonic_label(slope: float, p_value: float, alpha: float = 0.05) -> str:
-    if np.isnan(p_value):
-        return "no clear trend"
-    if p_value >= alpha:
-        return "no clear trend"
-    return "increases with heating" if slope > 0 else "decreases with heating"
-
-
-def _rf_accuracy(df: pd.DataFrame, features: List[str], label_col: str, random_state: int, n_splits: int) -> float:
-    X = df[features].astype(float)
-    y = df[label_col].astype(str)
-    mask = ~X.isna().any(axis=1) & ~y.isna()
-    X = X.loc[mask]
-    y = y.loc[mask]
-    class_counts = y.value_counts(dropna=True)
-    if len(class_counts) < 2 or X.empty:
-        return np.nan
-    min_class = class_counts.min()
-    if min_class < 2:
-        return np.nan
-    scaler = StandardScaler()
-    Xz = scaler.fit_transform(X)
-    cv_splits = max(2, min(int(min_class), len(y), len(class_counts), n_splits))
-    cv = StratifiedKFold(
-        n_splits=cv_splits,
-        shuffle=True,
-        random_state=random_state,
-    )
-    rf = RandomForestClassifier(n_estimators=300, random_state=random_state, n_jobs=-1)
-    scores = cross_val_score(rf, Xz, y, cv=cv)
-    return float(scores.mean())
-
-
-# ---------------------------------------------------------------------------
-# Core engine
-# ---------------------------------------------------------------------------
+# Import from package modules
+from .types import PeakDefinition, RatioDefinition, RQConfig, RatioQualityResult
+from .utils import _cv, _safe_group_vectors, _monotonic_label, _rf_accuracy
 
 
 class RatioQualityEngine:
@@ -862,10 +712,3 @@ class RatioQualityEngine:
         return {"silhouette": float(sil), "ari_vs_oil": float(ari), "n_clusters": int(n_clusters)}
 
 
-__all__ = [
-    "PeakDefinition",
-    "RatioDefinition",
-    "RQConfig",
-    "RatioQualityEngine",
-    "RatioQualityResult",
-]
