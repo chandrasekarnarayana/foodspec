@@ -83,7 +83,7 @@ __all__ = [
 ]
 
 # Single source of truth for the package version.
-__version__ = "0.2.1"
+__version__ = "1.0.0"
 
 # Phase 1: Core unified entry point and provenance
 from .artifact import Predictor, load_artifact, save_artifact

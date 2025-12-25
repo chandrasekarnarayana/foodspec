@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "foodspec"
-version = "0.2.1"
+version = "1.0.0"
 description = "Gold-standard Raman and FTIR spectroscopy toolkit for food science."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,7 +13,7 @@ authors = [
   { name = "foodspec authors" }
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
@@ -48,10 +48,16 @@ dev = [
   "pytest-timeout>=2.1.0",
   "build>=1.0.0",
   "twine>=4.0.0",
-  "mkdocs>=1.6.0",
-  "mkdocs-material>=9.5.0",
-  "mkdocstrings-python>=1.10.0",
-  "mkdocs-git-revision-date-localized-plugin>=1.2.0",
+  "mkdocs>=1.6.0,<2.0",
+  "mkdocs-material>=9.5.0,<10.0",
+  "mkdocstrings-python>=1.10.0,<2.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
+]
+docs = [
+  "mkdocs>=1.6.0,<2.0",
+  "mkdocs-material>=9.5.0,<10.0",
+  "mkdocstrings-python>=1.10.0,<2.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
 ]
 viz = [
   "matplotlib>=3.8",
