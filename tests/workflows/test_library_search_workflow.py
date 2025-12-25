@@ -24,11 +24,13 @@ class TestLibrarySearchWorkflow:
     def test_run_basic(self):
         """Test run method returns correct structure."""
         workflow = LibrarySearchWorkflow(metric="cosine", top_k=2)
-        library_df = pd.DataFrame({
-            "name": ["A", "B", "C"],
-            "col1": [1.0, 2.0, 3.0],
-            "col2": [4.0, 5.0, 6.0],
-        })
+        library_df = pd.DataFrame(
+            {
+                "name": ["A", "B", "C"],
+                "col1": [1.0, 2.0, 3.0],
+                "col2": [4.0, 5.0, 6.0],
+            }
+        )
         query = np.array([1.0, 2.0, 3.0])
 
         result = workflow.run(library_df, query)

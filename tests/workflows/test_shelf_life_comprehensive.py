@@ -80,11 +80,13 @@ class TestEstimateRemainingSelfLife:
         for ent in entities:
             for t in t_points:
                 X.append(np.zeros_like(wn))
-                meta_rows.append({
-                    "sample_id": ent,
-                    "time": t,
-                    "value": y_func(t, ent),
-                })
+                meta_rows.append(
+                    {
+                        "sample_id": ent,
+                        "time": t,
+                        "value": y_func(t, ent),
+                    }
+                )
         X = np.vstack(X)
         meta = pd.DataFrame(meta_rows)
         return TimeSpectrumSet(
@@ -98,6 +100,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_single_entity(self):
         """Test with single entity."""
+
         def y_func(t, ent):
             return 2.0 * t + 1.0
 
@@ -110,6 +113,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_multiple_entities(self):
         """Test with multiple entities."""
+
         def y_func(t, ent):
             offset = {"A": 0.0, "B": 0.5, "C": 1.0}.get(ent, 0.0)
             return 1.5 * t + offset
@@ -126,6 +130,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_output_dataframe_structure(self):
         """Test output DataFrame has correct structure."""
+
         def y_func(t, ent):
             return 0.3 * t
 
@@ -146,6 +151,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_different_thresholds(self):
         """Test with different threshold values."""
+
         def y_func(t, ent):
             return 1.0 * t
 
@@ -159,6 +165,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_ci_bounds_consistency(self):
         """Test that CI low < t_star < CI high."""
+
         def y_func(t, ent):
             return 0.5 * t + 0.1
 
@@ -176,10 +183,12 @@ class TestEstimateRemainingSelfLife:
         """Test that error is raised when entity_col is None."""
         wn = np.linspace(800, 1800, 21)
         X = np.zeros((5, 21))
-        meta = pd.DataFrame({
-            "time": np.array([0, 1, 2, 3, 4], dtype=float),
-            "value": np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
-        })
+        meta = pd.DataFrame(
+            {
+                "time": np.array([0, 1, 2, 3, 4], dtype=float),
+                "value": np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
+            }
+        )
 
         ds = TimeSpectrumSet(
             x=X,
@@ -195,6 +204,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_negative_slope(self):
         """Test with negative slope (degradation decreasing)."""
+
         def y_func(t, ent):
             return 10.0 - 0.5 * t  # Decreasing value
 
@@ -207,6 +217,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_large_dataset(self):
         """Test with larger dataset."""
+
         def y_func(t, ent):
             return 0.1 * t + float(ord(ent[0])) / 100.0
 
@@ -222,6 +233,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_all_values_finite(self):
         """Test that all output values are finite."""
+
         def y_func(t, ent):
             return 0.2 * t + 0.5
 
@@ -236,6 +248,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_output_values_are_float(self):
         """Test that all numeric output values are float type."""
+
         def y_func(t, ent):
             return 0.5 * t
 
@@ -250,6 +263,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_intercept_handling(self):
         """Test that intercepts are correctly calculated."""
+
         def y_func(t, ent):
             if ent == "X":
                 return 1.0 * t + 5.0  # intercept = 5.0
@@ -266,6 +280,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_short_time_series(self):
         """Test with minimal time points (3 points)."""
+
         def y_func(t, ent):
             return 0.5 * t
 
@@ -277,6 +292,7 @@ class TestEstimateRemainingSelfLife:
 
     def test_entity_names_preserved(self):
         """Test that entity names are preserved in output."""
+
         def y_func(t, ent):
             return 0.1 * t
 
