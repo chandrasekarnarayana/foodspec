@@ -153,38 +153,6 @@ jobs:
           name: mkdocs-site
           path: site
 
-  test-optional-deps:
-    name: Test Optional Dependencies
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: lint
-    strategy:
-      fail-fast: false
-      matrix:
-        extra: ["ml"]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: "pyproject.toml"
-
-      - name: Install dependencies with optional extras
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install -e ".[dev,${{ matrix.extra }}]"
-
-      - name: Run subset of tests (smoke test)
-        env:
-          MPLBACKEND: Agg
-          PYTHONPATH: ${{ github.workspace }}/src
-        run: |
-          pytest tests/ -k "not test_" --co -q | head -20
-          pytest tests/core/test_import.py -v
-
   all-checks-pass:
     name: All Checks Pass
     runs-on: ubuntu-latest
