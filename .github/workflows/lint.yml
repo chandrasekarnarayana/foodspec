@@ -1,22 +1,17 @@
-name: Lint
+name: Lint (Legacy - Use ci.yml)
 
-name: Lint
+# This workflow is deprecated. Linting is now part of ci.yml.
+# This file is kept for reference only.
 
 on:
   workflow_dispatch:
 
 jobs:
-  ruff:
+  deprecated:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install ruff
+      - name: Note
         run: |
-          python -m pip install --upgrade pip
-          pip install ruff
-      - name: Run ruff
-        run: |
-          ruff check src tests
+          echo "This workflow is deprecated. Linting is now part of ci.yml."
+          echo "Run: git push or create a PR to trigger the full CI pipeline."
+

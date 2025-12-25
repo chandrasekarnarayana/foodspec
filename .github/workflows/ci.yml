@@ -1,0 +1,201 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+
+      - name: Install ruff
+        run: python -m pip install --upgrade pip && pip install ruff
+
+      - name: Ruff check
+        run: ruff check src tests scripts
+
+      - name: Ruff format
+        run: ruff format --check src tests scripts
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e ".[dev]"
+
+      - name: Run pytest with coverage
+        env:
+          MPLBACKEND: Agg
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          pytest \
+            --cov=foodspec \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-report=html \
+            --junitxml=junit-${{ matrix.python-version }}.xml \
+            --tb=short \
+            tests
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: junit-${{ matrix.python-version }}.xml
+
+  packaging:
+    name: Packaging & Installation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+
+      - name: Install build tools
+        run: python -m pip install --upgrade pip && pip install build twine
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Check package metadata
+        run: twine check dist/*
+
+      - name: Test import and version
+        run: |
+          pip install dist/foodspec-*.whl
+          python -c "import foodspec; print(f'foodspec {foodspec.__version__}')"
+
+  docs:
+    name: Docs (MkDocs)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Build MkDocs site (strict mode)
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: mkdocs build --clean --strict --site-dir site
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mkdocs-site
+          path: site
+
+  test-optional-deps:
+    name: Test Optional Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        extra: ["ml"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+
+      - name: Install dependencies with optional extras
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e ".[dev,${{ matrix.extra }}]"
+
+      - name: Run subset of tests (smoke test)
+        env:
+          MPLBACKEND: Agg
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          pytest tests/ -k "not test_" --co -q | head -20
+          pytest tests/core/test_import.py -v
+
+  all-checks-pass:
+    name: All Checks Pass
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [lint, test, packaging, docs]
+    if: always()
+    steps:
+      - name: Decide whether all checks passed
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then echo "Lint failed"; exit 1; fi
+          if [[ "${{ needs.test.result }}" != "success" ]]; then echo "Tests failed"; exit 1; fi
+          if [[ "${{ needs.packaging.result }}" != "success" ]]; then echo "Packaging failed"; exit 1; fi
+          if [[ "${{ needs.docs.result }}" != "success" ]]; then echo "Docs failed"; exit 1; fi
+          echo "All checks passed!"
