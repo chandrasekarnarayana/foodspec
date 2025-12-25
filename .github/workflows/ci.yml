@@ -167,26 +167,36 @@ jobs:
           
           # Extract all links from generated HTML
           for html_file in site_dir.rglob("*.html"):
+              # Skip 404.html as it contains absolute paths with /foodspec/ prefix
+              if html_file.name == "404.html":
+                  continue
+              
               content = html_file.read_text()
               # Find href="..." patterns (both relative and absolute)
               for match in re.finditer(r'href=["\']([^"\']+)["\']', content):
                   href = match.group(1)
-                  # Skip external links, anchors, and special protocols
+                  # Skip external links, anchors-only, and special protocols
                   if href.startswith(("http://", "https://", "mailto:", "#", "javascript:")):
                       continue
+                  
+                  # Strip anchor/fragment for file existence check
+                  href_no_anchor = href.split('#')[0]
+                  if not href_no_anchor:  # Was just an anchor
+                      continue
+                  
                   # Resolve relative path
-                  if href.startswith("/"):
-                      target = site_dir / href.lstrip("/")
+                  if href_no_anchor.startswith("/"):
+                      target = site_dir / href_no_anchor.lstrip("/")
                   else:
-                      target = html_file.parent / href
-                  # Normalize and check existence
+                      target = html_file.parent / href_no_anchor
+                  
+                  # Normalize and check existence (file or directory)
                   target = target.resolve()
                   if not target.exists():
-                      # Report paths relative to the site root to avoid absolute/relative mismatches
+                      # Report paths relative to the site root
                       try:
                           resolved_rel = target.relative_to(site_dir)
                       except Exception:
-                          # If target isn't under site_dir, just show absolute path
                           resolved_rel = target
                       errors.append(f"{html_file.relative_to(site_dir)}: link to {href} (resolved to {resolved_rel})")
           
