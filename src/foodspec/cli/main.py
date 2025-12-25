@@ -11,6 +11,9 @@ This module assembles CLI commands organized into logical groups:
 
 from __future__ import annotations
 
+from typing import Optional
+from importlib.metadata import PackageNotFoundError, version as pkg_version
+
 import matplotlib
 import typer
 
@@ -24,6 +27,25 @@ from foodspec.cli.commands.utils import utils_app
 from foodspec.cli.commands.workflow import workflow_app
 
 app = typer.Typer(help="foodspec command-line interface")
+
+# Global options for root command
+@app.callback(invoke_without_command=True)
+def root_callback(
+    version: Optional[bool] = typer.Option(
+        None,
+        "--version",
+        "-V",
+        help="Show FoodSpec version and exit",
+    )
+):
+    """Root-level options for the foodspec CLI."""
+    if version:
+        try:
+            v = pkg_version("foodspec")
+        except PackageNotFoundError:
+            v = "unknown"
+        typer.echo(v)
+        raise typer.Exit()
 
 # Register command groups
 # Data commands
