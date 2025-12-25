@@ -18,6 +18,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 from scipy import sparse
+from scipy.integrate import trapezoid
 from scipy.signal import savgol_filter
 from scipy.sparse.linalg import spsolve
 
@@ -239,7 +240,7 @@ class SpectralDataset:
                 continue
             region = self.spectra[:, mask]
             if peak.mode == "area":
-                vals = np.trapz(region, wn[mask], axis=1)
+                vals = trapezoid(region, wn[mask], axis=1)
             else:
                 max_idx = np.nanargmax(region, axis=1)
                 vals = region[np.arange(region.shape[0]), max_idx]
