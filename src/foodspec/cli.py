@@ -38,6 +38,7 @@ from foodspec.io.loaders import load_folder
 from foodspec.logging_utils import get_logger, log_run_metadata
 from foodspec.model_registry import load_model as registry_load_model
 from foodspec.model_registry import save_model as registry_save_model
+from foodspec.model_lifecycle import FrozenModel
 from foodspec.preprocess.baseline import ALSBaseline
 from foodspec.preprocess.cropping import RangeCropper
 from foodspec.preprocess.normalization import VectorNormalizer
@@ -59,6 +60,8 @@ from foodspec.viz.report import render_html_report_oil_auth
 from foodspec.core.time import TimeSpectrumSet
 from foodspec.workflows.aging import compute_degradation_trajectories
 from foodspec.workflows.shelf_life import estimate_remaining_shelf_life
+from foodspec.library_search import search_library, overlay_plot
+from foodspec.report.methods import MethodsConfig, generate_methods_text
 
 app = typer.Typer(help="foodspec command-line interface")
 logger = get_logger(__name__)
@@ -998,6 +1001,168 @@ def protocol_benchmarks(
     meta_path.write_text(json.dumps(run_meta, indent=2), encoding="utf-8")
     typer.echo("Protocol benchmarks summary:")
     typer.echo(json.dumps(summary, indent=2))
+
+
+@app.command("bench")
+def bench():
+    """Run protocol benchmarks (alias for protocol-benchmarks)."""
+    run_protocol_benchmarks(Path("./protocol_benchmarks"))
+
+
+@app.command("predict")
+def predict(
+    model: str = typer.Option(..., help="Path prefix to frozen model (.json/.pkl)."),
+    input: list[str] = typer.Option(None, help="Input CSV/HDF5 files; can be provided multiple times."),
+    input_dir: Optional[str] = typer.Option(None, help="Directory of inputs; used with --glob."),
+    glob: str = typer.Option("*.csv", help="Glob for --input-dir."),
+    output: Optional[str] = typer.Option(None, help="Output CSV for single input."),
+    output_dir: Optional[str] = typer.Option(None, help="Directory for batch predictions."),
+):
+    """Apply a frozen FoodSpec model to new data (unified CLI)."""
+    inputs: list[Path] = []
+    if input:
+        inputs.extend([Path(p) for p in input])
+    if input_dir:
+        inputs.extend([Path(p) for p in Path(input_dir).glob(glob)])
+    if not inputs:
+        raise typer.BadParameter("Provide --input or --input-dir.")
+
+    fm = FrozenModel.load(Path(model))
+
+    def _apply_qc(preds_df: pd.DataFrame) -> pd.DataFrame:
+        if not hasattr(fm.model, "classes_"):
+            return preds_df
+        classes = list(fm.model.classes_)
+        proba_cols = [f"proba_{cls}" for cls in classes]
+        if not set(proba_cols).issubset(preds_df.columns):
+            return preds_df
+        from foodspec.qc import evaluate_prediction_qc
+
+        qc_flags = []
+        for _, row in preds_df.iterrows():
+            probs = row[proba_cols].to_numpy(dtype=float)
+            qc = evaluate_prediction_qc(probs)
+            qc_flags.append(qc)
+        out = preds_df.copy()
+        out["qc_do_not_trust"] = [r.do_not_trust for r in qc_flags]
+        out["qc_notes"] = ["; ".join(r.reasons or r.warnings) for r in qc_flags]
+        return out
+
+    if len(inputs) == 1:
+        df = pd.read_csv(inputs[0])
+        preds = fm.predict(df)
+        preds = _apply_qc(preds)
+        out_path = Path(output or "predictions.csv")
+        preds.to_csv(out_path, index=False)
+        print(f"Predictions saved to {out_path}")
+    else:
+        out_dir_path = Path(output_dir or "predictions_batch")
+        out_dir_path.mkdir(parents=True, exist_ok=True)
+        for inp in inputs:
+            df = pd.read_csv(inp)
+            preds = fm.predict(df)
+            preds = _apply_qc(preds)
+            out_path = out_dir_path / f"{inp.stem}_preds.csv"
+            preds.to_csv(out_path, index=False)
+            print(f"[{inp.name}] -> {out_path}")
+
+
+@app.command("library-search")
+def library_search_command(
+    query: str = typer.Option(..., help="Path to query CSV (one spectrum row)."),
+    library: str = typer.Option(..., help="Path to library CSV (rows of spectra)."),
+    label_col: str = typer.Option("label", help="Label column in library CSV."),
+    k: int = typer.Option(5, help="Top-k matches to return."),
+    metric: str = typer.Option("cosine", help="Similarity metric: cosine|pearson|euclidean|sid|sam"),
+    overlay_out: Optional[str] = typer.Option(None, help="Save overlay plot (optional)."),
+):
+    """Spectral library search (unified CLI)."""
+    qdf = pd.read_csv(query)
+    ldf = pd.read_csv(library)
+    def _num_cols(df: pd.DataFrame) -> list[str]:
+        cols: list[str] = []
+        for c in df.columns:
+            try:
+                float(c)
+                cols.append(c)
+            except Exception:
+                continue
+        if len(cols) < 3:
+            raise typer.BadParameter("CSV must contain numeric wavenumber columns.")
+        return cols
+    q_cols = _num_cols(qdf)
+    l_cols = _num_cols(ldf)
+    if set(q_cols) != set(l_cols):
+        raise typer.BadParameter("Query and library must have the same wavenumber columns.")
+    wn = np.array(sorted([float(c) for c in q_cols]))
+    cols_sorted = [str(c) for c in sorted([float(c) for c in q_cols])]
+    query_vec = qdf[cols_sorted].to_numpy(dtype=float)
+    if query_vec.shape[0] != 1:
+        raise typer.BadParameter("Query CSV should contain exactly one spectrum row.")
+    lib = ldf[cols_sorted].to_numpy(dtype=float)
+    labels = ldf[label_col].tolist() if label_col in ldf.columns else None
+
+    matches = search_library(query_vec[0], lib, labels=labels, k=k, metric=metric)
+    print("Top matches:")
+    for m in matches:
+        print(f"- {m.label}: score={m.score:.4f} confidence={m.confidence:.2f} metric={m.metric}")
+    if overlay_out:
+        fig = overlay_plot(query_vec[0], wn, [(m.label, lib[m.index]) for m in matches], title=f"Top-{k} ({metric})")
+        out_path = Path(overlay_out)
+        fig.savefig(out_path)
+        print(f"Saved overlay plot to {out_path}")
+
+
+@app.command("fit")
+def fit_qc(
+    input_hdf5: str = typer.Option(..., help="Input HDF5 library path."),
+    label_col: Optional[str] = typer.Option(None, help="Label column; auto-detected if None."),
+    train_label: Optional[str] = typer.Option(None, help="Train only on rows where label_col==train_label."),
+    model_type: str = typer.Option("oneclass_svm", help="QC model: oneclass_svm|isolation_forest"),
+    out_dir: str = typer.Option("qc_model", help="Output directory for saved model."),
+):
+    """Train a QC novelty detector and save model (unified CLI)."""
+    ds = load_library(Path(input_hdf5))
+    if label_col:
+        ds.label_col = label_col
+    mask = None
+    if train_label and ds.labels is not None:
+        mask = ds.labels == train_label
+    model = train_qc_model(ds, train_mask=mask, model_type=model_type)
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    registry_save_model(model, Path(out_dir), name=f"qc_{model_type}")
+    print(f"Saved QC model to {out_dir}")
+
+
+@app.command("report")
+def report(
+    dataset: str = typer.Option(..., help="Dataset name."),
+    sample_size: int = typer.Option(..., help="Number of samples."),
+    target: str = typer.Option(..., help="Target variable description."),
+    modality: str = typer.Option("raman", help="Modality: raman|ftir|nir"),
+    instruments: Optional[str] = typer.Option(None, help="Comma-separated instruments."),
+    preprocessing: Optional[str] = typer.Option(None, help="Comma-separated preprocessing steps."),
+    models: Optional[str] = typer.Option(None, help="Comma-separated models."),
+    metrics: Optional[str] = typer.Option("accuracy", help="Comma-separated metrics."),
+    out_dir: str = typer.Option("report_methods", help="Output directory for methods.md."),
+    style: str = typer.Option("journal", help="Style: journal|concise|bullet"),
+):
+    """Generate a paper-ready methods.md from structured inputs."""
+    cfg = MethodsConfig(
+        dataset=dataset,
+        sample_size=sample_size,
+        target=target,
+        modality=modality,
+        instruments=[s.strip() for s in (instruments or "").split(",") if s.strip()],
+        preprocessing=[s.strip() for s in (preprocessing or "").split(",") if s.strip()],
+        models=[s.strip() for s in (models or "").split(",") if s.strip()],
+        metrics=[s.strip() for s in (metrics or "").split(",") if s.strip()],
+    )
+    text = generate_methods_text(cfg, style=style)  # type: ignore[arg-type]
+    out_path = Path(out_dir)
+    out_path.mkdir(parents=True, exist_ok=True)
+    write_markdown_report(out_path / "methods.md", title="Methods", sections={"Methods": text})
+    print(f"Wrote methods.md to {out_path}")
 
 
 

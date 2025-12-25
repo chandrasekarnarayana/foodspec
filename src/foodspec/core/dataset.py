@@ -471,4 +471,64 @@ class FoodSpectrumSet:
         )
 
 
-__all__ = ["FoodSpectrumSet"]
+def to_sklearn(
+    ds: FoodSpectrumSet,
+    label_col: Optional[str] = None,
+) -> tuple[np.ndarray, Optional[np.ndarray]]:
+    """Return (X, y) arrays suitable for scikit-learn.
+
+    Parameters
+    ----------
+    ds : FoodSpectrumSet
+        Dataset to convert.
+    label_col : Optional[str]
+        Column to use for labels; if None, uses ds.label_col if available.
+
+    Returns
+    -------
+    (X, y)
+        X shape (n_samples, n_features). y is None if label column not found.
+    """
+
+    X = np.asarray(ds.x, dtype=float)
+    col = label_col or ds.label_col
+    y = None
+    if col and col in ds.metadata.columns:
+        y = ds.metadata[col].to_numpy()
+    return X, y
+
+
+def from_sklearn(
+    X: np.ndarray,
+    y: Optional[Sequence] = None,
+    wavenumbers: Sequence[float] = (),
+    modality: Modality = "raman",
+    labels_name: str = "label",
+) -> FoodSpectrumSet:
+    """Create a FoodSpectrumSet from scikit-learn style inputs.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Feature matrix of shape (n_samples, n_wavenumbers).
+    y : Optional[Sequence]
+        Optional labels aligned to rows in X.
+    wavenumbers : Sequence[float]
+        Spectral axis values; if empty, uses 0..n_features-1.
+    modality : Modality
+        Modality tag (e.g., 'raman').
+    labels_name : str
+        Name of the label column in metadata if y is provided.
+    """
+
+    X = np.asarray(X, dtype=float)
+    wn = np.asarray(wavenumbers, dtype=float)
+    if wn.size == 0:
+        wn = np.arange(X.shape[1], dtype=float)
+    meta = pd.DataFrame(index=np.arange(X.shape[0]))
+    if y is not None:
+        meta[labels_name] = list(y)
+    return FoodSpectrumSet(x=X, wavenumbers=wn, metadata=meta, modality=modality, label_col=(labels_name if y is not None else None))
+
+
+__all__ = ["FoodSpectrumSet", "to_sklearn", "from_sklearn"]
