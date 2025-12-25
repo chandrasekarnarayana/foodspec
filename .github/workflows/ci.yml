@@ -180,14 +180,14 @@ jobs:
                   else:
                       target = html_file.parent / href
                   # Normalize and check existence
-                    target = target.resolve()
+                  target = target.resolve()
                   if not target.exists():
                       # Report paths relative to the site root to avoid absolute/relative mismatches
                       try:
-                        resolved_rel = target.relative_to(site_dir)
+                          resolved_rel = target.relative_to(site_dir)
                       except Exception:
-                        # If target isn't under site_dir, just show absolute path
-                        resolved_rel = target
+                          # If target isn't under site_dir, just show absolute path
+                          resolved_rel = target
                       errors.append(f"{html_file.relative_to(site_dir)}: link to {href} (resolved to {resolved_rel})")
           
           if errors:
