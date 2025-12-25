@@ -183,7 +183,7 @@ All moat metrics automatically saved to:
 ## Documentation
 
 ### User-Facing Documentation
-- **[docs/moats_overview.md](docs/moats_overview.md)**: Comprehensive guide with:
+- **[Moats Overview](../moats_overview.md)**: Comprehensive guide with:
   - Feature descriptions
   - Key assumptions (⚠️ warnings)
   - Python API examples
@@ -192,9 +192,8 @@ All moat metrics automatically saved to:
   - Performance considerations
   - Validation references
 
-- **[README.md](README.md)**: Updated with "Differentiating Capabilities" section highlighting all three moats with quick examples
- - **[docs/data_governance.md](docs/data_governance.md)**: Full guide to governance tools, assumptions, usage, best practices
- - **[README.md](README.md)**: Updated with "Differentiating Capabilities" to include governance moat
+- README: Top-level highlights (not part of docs site)
+ - **[Data Governance & Quality](../data_governance.md)**: Full guide to governance tools, assumptions, usage, best practices
 
 ### Code Documentation
 - **Module-level docstrings**: Full assumptions, usage examples, typical workflows

@@ -131,6 +131,6 @@ print(harmonized_datasets[0].history)
 ```
 
 ## See Also
-- [Multi-Instrument HSI Workflows](../hsi_and_harmonization.md)
+- [Multi-Instrument HSI Workflows](hsi_and_harmonization.md)
 - [Calibration Transfer](calibration_transfer.md)
-- [Data Governance & Quality](../data_governance.md)
+- [Data Governance & Quality](data_governance.md)

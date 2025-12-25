@@ -57,7 +57,7 @@ readiness = fs.compute_readiness_score(label_column="oil_type", batch_column="ba
 Saved to `OutputBundle`:
 - `dataset_summary`, `class_balance`, `replicate_consistency`, `leakage_detection`, `readiness_score`
 
-See detailed guide in [docs/data_governance.md](docs/data_governance.md).
+See detailed guide in [Data Governance & Quality](data_governance.md).
   base_dir: ./results
 ```
 

@@ -1,6 +1,6 @@
 # Developer Guide – Contributing
 
-This page distills the key contributor practices for FoodSpec. For the canonical rules, see the top-level [CONTRIBUTING.md](../../CONTRIBUTING.md).
+This page distills the key contributor practices for FoodSpec. For the canonical rules, see [contributing.md](../contributing.md).
 
 ## Quick links
 - Contribution guide: `CONTRIBUTING.md`
