@@ -162,7 +162,7 @@ jobs:
           import re
           from pathlib import Path
           
-          site_dir = Path("site")
+          site_dir = Path("site").resolve()
           errors = []
           
           # Extract all links from generated HTML
@@ -180,9 +180,15 @@ jobs:
                   else:
                       target = html_file.parent / href
                   # Normalize and check existence
-                  target = target.resolve()
+                    target = target.resolve()
                   if not target.exists():
-                      errors.append(f"{html_file.relative_to(site_dir)}: link to {href} (resolved to {target.relative_to(site_dir.parent)})")
+                      # Report paths relative to the site root to avoid absolute/relative mismatches
+                      try:
+                        resolved_rel = target.relative_to(site_dir)
+                      except Exception:
+                        # If target isn't under site_dir, just show absolute path
+                        resolved_rel = target
+                      errors.append(f"{html_file.relative_to(site_dir)}: link to {href} (resolved to {resolved_rel})")
           
           if errors:
               print(f"ERROR: Found {len(errors)} broken internal links:")
