@@ -758,7 +758,7 @@ tests/
    ```
 
 ### Medium Priority (Documentation)
-1. Update [CONTRIBUTING.md](CONTRIBUTING.md) with new test organization
+1. Update [`CONTRIBUTING.md`](../contributing.md) with new test organization
 2. Create test development guide in `docs/06-developer-guide/`
 3. Add examples of running tests by module
 

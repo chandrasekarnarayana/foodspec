@@ -295,7 +295,7 @@ Recommended additions:
 ### Assumptions Highlighted
 - ⚠️ Module docstrings start with "Key Assumptions" section
 - ⚠️ Function docstrings include "Assumptions" parameter description
-- ⚠️ [docs/moats_overview.md](docs/moats_overview.md) has prominent "Key Assumptions" blocks with warning emoji
+- ⚠️ [../moats_overview.md](../moats_overview.md) has prominent "Key Assumptions" blocks with warning emoji
 - ⚠️ README.md quick examples note "Key assumptions documented"
 
 ### Error Messages
@@ -304,7 +304,7 @@ Recommended additions:
 
 ### Documentation Accessibility
 - Quickstart examples in README
-- Full guide in docs/moats_overview.md
+- Full guide in ../moats_overview.md
 - Module docstrings accessible via `help(foodspec.preprocess.matrix_correction)` (deprecated: `foodspec.matrix_correction`)
 - Online docs deployment at chandrasekarnarayana.github.io/foodspec/
 
@@ -341,7 +341,7 @@ Recommended additions:
  - `src/foodspec/qc/readiness.py`
  - `examples/governance_demo.py`
 - `src/foodspec/calibration_transfer.py` (515 lines)
-- `docs/moats_overview.md` (comprehensive user guide)
+- `../moats_overview.md` (comprehensive user guide)
 - `MOATS_IMPLEMENTATION.md` (this file)
 
 **Modified Files:**
@@ -365,7 +365,7 @@ All three moats are **production-ready** and **fully integrated** into FoodSpec:
 
 Users are made aware of assumptions through:
 - Module/function docstrings
-- Comprehensive docs/moats_overview.md guide
+- Comprehensive ../moats_overview.md guide
 - README quick examples
 - Runtime validation checks and warnings
 

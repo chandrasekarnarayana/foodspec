@@ -29,7 +29,7 @@ flowchart LR
 - Outputs: scores (sample coordinates) and loadings (wavenumber weights); explained variance via scree.  
 - Interpretation: clusters in scores → similarity/differences; high loadings near bands → chemically relevant drivers. Pair with silhouette/between-within metrics from the metrics chapter.
 
-## PLS / PLS-DA
+## PLS and PLS-DA
 - PLS regression links spectra \(X\) to y (continuous); PLS-DA couples PLS scores with a classifier.  
 - Good for correlated predictors and modest sample size; validate with CV and report RMSE/R² (and calibration plots with CI).
 

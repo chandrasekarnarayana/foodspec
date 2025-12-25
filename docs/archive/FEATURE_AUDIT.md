@@ -178,48 +178,48 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_ST
 ## C) Completed High-Impact Improvements (Dec 25, 2025)
 
 ### ✅ 1. **Automated Hyperparameter Tuning + Model Selection** ✓ COMPLETED
-   - **Implementation:** [src/foodspec/ml/hyperparameter_tuning.py](src/foodspec/ml/hyperparameter_tuning.py)
+   - **Implementation:** `src/foodspec/ml/hyperparameter_tuning.py`
    - **Functions:** Grid search, randomized search, Bayesian optimization (Optuna)
    - **Models:** RF, SVM, GBoost, MLP, KNN, LogReg, Ridge, Lasso
-   - **Tests:** 4 tests in [tests/ml/test_hyperparameter_tuning.py](tests/ml/test_hyperparameter_tuning.py)
+   - **Tests:** 4 tests in `tests/ml/test_hyperparameter_tuning.py`
    - **Status:** Production-ready; integration pending
    - **Impact:** Users can now auto-tune models instead of manual trial-and-error
 
 ### ✅ 2. **Threshold Tuning Automation** ✓ COMPLETED
-   - **Implementation:** [src/foodspec/qc/threshold_optimization.py](src/foodspec/qc/threshold_optimization.py)
+   - **Implementation:** `src/foodspec/qc/threshold_optimization.py`
    - **Methods:** Quantile (95th percentile), Youden's J, F1-score, elbow detection
-   - **Tests:** 6 tests in [tests/qc/test_threshold_optimization.py](tests/qc/test_threshold_optimization.py)
+   - **Tests:** 6 tests in `tests/qc/test_threshold_optimization.py`
    - **Use Cases:** Health scoring, outlier detection, novelty detection, drift detection
    - **Status:** Production-ready; integration with QC engine pending
    - **Impact:** Automated threshold selection eliminates manual tuning for QC metrics
 
 ### ✅ 3. **Vendor Format Support Matrix (OPUS/SPC)** ✓ COMPLETED
-   - **Implementation:** [src/foodspec/io/vendor_format_support.py](src/foodspec/io/vendor_format_support.py)
+   - **Implementation:** `src/foodspec/io/vendor_format_support.py`
    - **Coverage:** OPUS (16 block types), SPC (6 block types)
    - **Documentation:** Support/tested/limited status for each block type
-   - **Tests:** 13 tests in [tests/io_tests/test_vendor_format_support.py](tests/io_tests/test_vendor_format_support.py)
+   - **Tests:** 13 tests in `tests/io_tests/test_vendor_format_support.py`
    - **Status:** Production-ready
    - **Impact:** Users have transparency into supported vendor formats
 
 ### ✅ 4. **HDF5 Schema Versioning with Auto-Migration** ✓ COMPLETED
-   - **Implementation:** [src/foodspec/io/hdf5_schema_versioning.py](src/foodspec/io/hdf5_schema_versioning.py)
+   - **Implementation:** `src/foodspec/io/hdf5_schema_versioning.py`
    - **Features:** Forward/backward compatibility, auto-migration (1.0→1.1→1.2→2.0)
-   - **Tests:** 19 tests in [tests/io_tests/test_hdf5_schema_versioning.py](tests/io_tests/test_hdf5_schema_versioning.py)
+   - **Tests:** 19 tests in `tests/io_tests/test_hdf5_schema_versioning.py`
    - **Status:** Production-ready; integration with to_hdf5()/from_hdf5() pending
    - **Impact:** Users can upgrade FoodSpec without losing HDF5 files
 
 ### ✅ 5. **Memory Management for Large Hyperspectral Cubes** ✓ COMPLETED
-   - **Implementation:** [src/foodspec/hyperspectral/memory_management.py](src/foodspec/hyperspectral/memory_management.py)
+   - **Implementation:** `src/foodspec/hyperspectral/memory_management.py`
    - **Features:** Streaming reader, tiling with overlap, chunk size auto-recommendation
    - **Capacity:** Process 512×512×1000 cubes on <4GB RAM machines
-   - **Tests:** 7 tests in [tests/hyperspectral/test_memory_management.py](tests/hyperspectral/test_memory_management.py)
+   - **Tests:** 7 tests in `tests/hyperspectral/test_memory_management.py`
    - **Status:** Production-ready; integration with HyperspectralDataset.segment() pending
    - **Impact:** Large HSI datasets processable on resource-constrained systems
 
 ### ✅ 6. **Nested Cross-Validation** ✓ COMPLETED
-   - **Implementation:** [src/foodspec/ml/nested_cv.py](src/foodspec/ml/nested_cv.py)
+   - **Implementation:** `src/foodspec/ml/nested_cv.py`
    - **Features:** Outer eval loop + inner tuning loop; prevents selection bias
-   - **Tests:** 3 tests in [tests/ml/test_nested_cv.py](tests/ml/test_nested_cv.py)
+   - **Tests:** 3 tests in `tests/ml/test_nested_cv.py`
    - **Status:** Production-ready; integration with model selection workflows pending
    - **Impact:** Unbiased model performance estimation (critical for publications)
 
@@ -291,55 +291,55 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_ST
 ### ✅ ML/QC Automation Suite
 
 **Gap 5: Threshold Tuning Automation** ✓ CLOSED
-- **Implementation:** [src/foodspec/qc/threshold_optimization.py](src/foodspec/qc/threshold_optimization.py)
+- **Implementation:** `src/foodspec/qc/threshold_optimization.py`
 - **Functions:** 
   - `estimate_threshold_quantile()` - Percentile-based thresholds (default 95th)
   - `estimate_threshold_youden()` - Youden's J-statistic optimization (TPR - FPR)
   - `estimate_threshold_f1()` - F1-score maximization (balanced precision/recall)
   - `estimate_threshold_elbow()` - Unsupervised elbow detection for unlabeled data
   - `validate_threshold()` - Compute sensitivity, specificity, precision, F1, accuracy
-- **Tests:** 6 tests in [tests/qc/test_threshold_optimization.py](tests/qc/test_threshold_optimization.py), 100% pass
+- **Tests:** 6 tests in `tests/qc/test_threshold_optimization.py`, 100% pass
 - **Impact:** Automated threshold tuning for QC health scoring, outlier detection, novelty detection, drift detection, prediction QC
 - **Status:** Ready for production; integration into QC engine pending
 
 **Gap 8: Hyperparameter Tuning Automation** ✓ CLOSED
-- **Implementation:** [src/foodspec/ml/hyperparameter_tuning.py](src/foodspec/ml/hyperparameter_tuning.py)
+- **Implementation:** `src/foodspec/ml/hyperparameter_tuning.py`
 - **Functions:**
   - `get_search_space_classifier()` / `get_search_space_regressor()` - Domain-specific search spaces for RF, SVM, GBoost, MLP, KNN, LogReg, Ridge, Lasso
   - `grid_search_classifier()` / `grid_search_regressor()` - Exhaustive grid search with cross-validation
   - `quick_tune_classifier()` - RandomizedSearchCV for rapid iteration (10 trials)
   - `bayesian_tune_classifier()` - Optuna-based Bayesian optimization (if optuna installed)
-- **Tests:** 4 tests in [tests/ml/test_hyperparameter_tuning.py](tests/ml/test_hyperparameter_tuning.py), 100% pass
+- **Tests:** 4 tests in `tests/ml/test_hyperparameter_tuning.py`, 100% pass
 - **Models Covered:** Random Forest, SVM, Gradient Boosting, MLP, KNN, Logistic Regression, Ridge, Lasso
 - **Status:** Ready for production; integration with model factories pending
 
 **Gap 9: Memory Management for Large Hyperspectral Cubes** ✓ CLOSED
-- **Implementation:** [src/foodspec/hyperspectral/memory_management.py](src/foodspec/hyperspectral/memory_management.py)
+- **Implementation:** `src/foodspec/hyperspectral/memory_management.py`
 - **Classes/Functions:**
   - `HyperspectralStreamReader` - Chunk-by-chunk streaming (configurable chunk size)
   - `HyperspectralTiler` - Tiling with overlap support for convolution operations
   - `process_hyperspectral_chunks()` - Apply function to chunks and reassemble
   - `estimate_memory_usage()` - Calculate cube memory footprint (MB/GB)
   - `recommend_chunk_size()` - Auto-recommend chunk size based on available RAM
-- **Tests:** 7 tests in [tests/hyperspectral/test_memory_management.py](tests/hyperspectral/test_memory_management.py), 100% pass
+- **Tests:** 7 tests in `tests/hyperspectral/test_memory_management.py`, 100% pass
 - **Use Cases:** 512×512×1000 cubes (262M pixels) processable on machines with <4GB RAM
 - **Status:** Ready for production; integration with HyperspectralDataset.segment() pending
 
 **Gap 10: Nested Cross-Validation for Unbiased Model Selection** ✓ CLOSED
-- **Implementation:** [src/foodspec/ml/nested_cv.py](src/foodspec/ml/nested_cv.py)
+- **Implementation:** `src/foodspec/ml/nested_cv.py`
 - **Functions:**
   - `nested_cross_validate()` - Classification nested CV (outer: eval, inner: tuning)
   - `nested_cross_validate_regression()` - Regression nested CV
   - `nested_cross_validate_custom()` - Custom train/eval functions for non-sklearn models
   - `compare_models_nested_cv()` - Compare multiple models with nested CV
-- **Tests:** 3 tests in [tests/ml/test_nested_cv.py](tests/ml/test_nested_cv.py), 100% pass
+- **Tests:** 3 tests in `tests/ml/test_nested_cv.py`, 100% pass
 - **Impact:** Prevents selection bias when tuning on same data used for evaluation
 - **Status:** Ready for production; integration with model selection workflows pending
 
 ### ✅ Vendor Format & Schema Support
 
 **Gap 6: OPUS/SPC Vendor Format Support Matrix** ✓ CLOSED
-- **Implementation:** [src/foodspec/io/vendor_format_support.py](src/foodspec/io/vendor_format_support.py)
+- **Implementation:** `src/foodspec/io/vendor_format_support.py`
 - **Block Type Matrices:**
   - OPUS: 16 block types documented (AB, BA, CH, DX, FX, IN, PA, SX, TM fully supported/tested; HX, OP, RX supported/untested; BC, GX, LX, OB, PE unsupported)
   - SPC: 6 block types documented (data, x_axis, log_data, timestamp fully supported; sample_info supported/untested; interferogram unsupported)
@@ -347,12 +347,12 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_ST
   - `get_opus_support_summary()` / `get_spc_support_summary()` - Human-readable support matrices
   - `validate_opus_blocks()` / `validate_spc_blocks()` - Validate detected block types against support matrix
   - `get_untested_blocks_opus()` / `get_untested_blocks_spc()` - Identify supported-but-untested blocks for warnings
-- **Tests:** 13 tests in [tests/io_tests/test_vendor_format_support.py](tests/io_tests/test_vendor_format_support.py), 100% pass
+- **Tests:** 13 tests in `tests/io_tests/test_vendor_format_support.py`, 100% pass
 - **Impact:** Users now have clear visibility into which OPUS/SPC block types are supported, tested, and known-limited. Reduces frustration from unsupported formats.
 - **Status:** Production-ready; integration into opus/spc import functions pending
 
 **Gap 7: HDF5 Schema Versioning with Forward/Backward Compatibility** ✓ CLOSED
-- **Implementation:** [src/foodspec/io/hdf5_schema_versioning.py](src/foodspec/io/hdf5_schema_versioning.py)
+- **Implementation:** `src/foodspec/io/hdf5_schema_versioning.py`
 - **Features:**
   - Schema versions: V1.0 (initial), V1.1 (history tracking), V1.2 (artifact versioning), V2.0 (streaming support)
   - Compatibility matrix: COMPATIBLE, READABLE, REQUIRES_MIGRATION, INCOMPATIBLE
@@ -362,7 +362,7 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_ST
   - `migrate_schema_v1_0_to_v1_1()` - Add preprocessing_history group
   - `migrate_schema_v1_1_to_v1_2()` - Add artifact_version and foodspec_version attributes
   - `migrate_schema_v1_2_to_v2_0()` - Add streaming_capable metadata
-- **Tests:** 19 tests in [tests/io_tests/test_hdf5_schema_versioning.py](tests/io_tests/test_hdf5_schema_versioning.py), 100% pass
+- **Tests:** 19 tests in `tests/io_tests/test_hdf5_schema_versioning.py`, 100% pass
 - **Impact:** Forward/backward compatibility guaranteed. Users can upgrade FoodSpec without losing HDF5 files. Older files auto-migrate on load.
 - **Status:** Production-ready; integration with `spectral_dataset.to_hdf5()` and `from_hdf5()` pending
 
@@ -395,25 +395,25 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](../README_DOCS_ST
   - `process_hyperspectral_chunks()` - Apply function to chunks and reassemble
   - `estimate_memory_usage()` - Calculate cube memory footprint (MB/GB)
   - `recommend_chunk_size()` - Auto-recommend chunk size based on available RAM
-- **Tests:** [tests/test_gaps_5_8_9_10.py](tests/test_gaps_5_8_9_10.py) (7 tests, 100% pass)
+- **Tests:** `tests/test_gaps_5_8_9_10.py` (7 tests, 100% pass)
 - **Use Cases:** 512×512×1000 cubes (262M pixels) processable on machines with <4GB RAM
 - **Status:** Ready for production; integration with HyperspectralDataset.segment() pending
 
 **Gap 10: Nested Cross-Validation for Unbiased Model Selection** ✓ CLOSED
-- **Implementation:** [src/foodspec/ml/nested_cv.py](src/foodspec/ml/nested_cv.py)
+- **Implementation:** `src/foodspec/ml/nested_cv.py`
 - **Functions:**
   - `nested_cross_validate()` - Classification nested CV (outer: eval, inner: tuning)
   - `nested_cross_validate_regression()` - Regression nested CV
   - `nested_cross_validate_custom()` - Custom train/eval functions for non-sklearn models
   - `compare_models_nested_cv()` - Compare multiple models with nested CV
-- **Tests:** [tests/test_gaps_5_8_9_10.py](tests/test_gaps_5_8_9_10.py) (3 tests, 100% pass)
+- **Tests:** `tests/test_gaps_5_8_9_10.py` (3 tests, 100% pass)
 - **Impact:** Prevents selection bias when tuning on same data used for evaluation
 - **Status:** Ready for production; integration with model selection workflows pending
 
 ### Test Coverage
 - **Total Tests Added:** 22 (all passing)
 - **Coverage Improvement:** +3.73% (from 13.42% → 15.15%)
-- **Test File:** [tests/test_gaps_5_8_9_10.py](tests/test_gaps_5_8_9_10.py)
+- **Test File:** `tests/test_gaps_5_8_9_10.py`
 - **Test Classes:** 5 (Threshold, Hyperparameter, NestedCV, Memory, Integration)
 
 ### Next Integration Steps

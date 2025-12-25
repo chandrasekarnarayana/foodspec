@@ -54,6 +54,4 @@ predictor = load_artifact("old_model.foodspec", allow_incompatible=True)
    ```
 
 ## See Also
-- [Artifact Save/Load](artifact_export.md)
 - [Model Registry](model_registry.md)
-- [Reproducibility](../repro/run_record.md)
