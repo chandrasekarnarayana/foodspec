@@ -9,7 +9,7 @@ from foodspec.spectral_io import load_any_spectra
 
 def main():
     ds = load_any_spectra("examples/demo_spectra.csv")  # replace with your path
-    pp = PreprocessOptions(
+    pp = PreprocessingConfig(
         baseline_method="als",
         baseline_lambda=1e5,
         baseline_p=0.01,

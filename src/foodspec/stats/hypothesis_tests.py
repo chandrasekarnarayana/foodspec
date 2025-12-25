@@ -27,31 +27,31 @@ except Exception:  # pragma: no cover
 @dataclass
 class TestResult:
     """Immutable result container for hypothesis tests.
-    
+
     Stores test statistics, p-values, degrees of freedom, and summary tables
     from all statistical tests. Designed for reproducibility and regulatory
     compliance (FDA 21 CFR Part 11).
-    
+
     **Interpretation Guide:**
     p-value (pvalue) alone is insufficient. Always check:
     1. **Effect size:** Is the difference practically meaningful?
     2. **Sample size:** Large n → small p even for trivial effects
     3. **Assumptions:** Are test assumptions met? (Normality, equal variance, etc.)
     4. **Multiple testing:** Correct p-value for multiple comparisons (FDR/Bonferroni)
-    
+
     **When to Trust p-value:**
     - p < 0.001: Highly significant, but check effect size
     - p < 0.01: Significant, likely real effect
     - p < 0.05: Marginally significant, interpret with caution
     - p > 0.05: Not significant (≠ proof of no effect; may be underpowered)
-    
+
     Attributes:
         statistic (float): Test statistic (t, F, χ², U, etc.)
         pvalue (float): p-value from test (0–1)
         df (float, optional): Degrees of freedom (if applicable)
         summary (pd.DataFrame): Human-readable results table
         term (str, optional): MANOVA term name (e.g., "group", "time")
-    
+
     See Also:
         - [Metric Significance Tables](../09-reference/metric_significance_tables.md)
     """
@@ -74,33 +74,33 @@ def run_ttest(
     alternative: str = "two-sided",
 ) -> TestResult:
     """t-test: one-sample, paired, or two-sample (Welch's).
-    
+
     Tests whether sample mean(s) differ significantly from a population mean
     or each other. Welch's t-test (default for two-sample) does NOT assume
     equal variances, making it more robust than Student's t-test.
-    
+
     **Test Selection:**
     - One-sample: `run_ttest(x, popmean=5)` — Does x differ from 5?
     - Paired: `run_ttest(before, after, paired=True)` — Before vs. after?
     - Two-sample: `run_ttest(groupA, groupB)` — Do groups differ?
-    
+
     **Assumptions:** Normality (robust if n > 30), independence, random sampling
-    
+
     **Significance:** See [Metric Significance Tables](../09-reference/metric_significance_tables.md)
-    
+
     Parameters:
         sample1 (array-like): First sample
         sample2 (array-like, optional): Second sample
         popmean (float, optional): Population mean (for one-sample)
         paired (bool): Whether samples are paired
         alternative (str): "two-sided", "less", or "greater"
-    
+
     Returns:
         TestResult with t-statistic, p-value, df
-    
+
     Examples:
         >>> from foodspec.stats import run_ttest
-        >>> result = run_ttest([1, 2, 3], [4, 5, 6])\n        >>> print(f"p = {result.pvalue:.3f}")\n    
+        >>> result = run_ttest([1, 2, 3], [4, 5, 6])\n        >>> print(f"p = {result.pvalue:.3f}")\n
     See Also:
         - [T-tests & Effect Sizes](../stats/t_tests_effect_sizes_and_power.md)
         - run_mannwhitney_u(): Non-parametric alternative
@@ -128,38 +128,38 @@ def run_ttest(
 
 def run_anova(data, groups) -> TestResult:
     """One-way ANOVA: test if 3+ groups have different means.
-    
+
     Tests null hypothesis that all group means are equal. ANOVA partitions
     variance into between-group and within-group components. F-statistic is
     their ratio: large F → significant difference.
-    
+
     **When to Use:**
     - 3+ groups (use t-test for 2 groups)
     - Roughly equal sample sizes per group
     - Data approximately normal (robust if n > 20 per group)
-    
+
     **Assumptions:** Normality, homogeneity of variance, independence
-    
+
     **Post-hoc Tests (if p < 0.05):**
     - Balanced design: Tukey HSD (run_tukey_hsd)
     - Unequal variances: Games-Howell (games_howell)
     - Multiple hypotheses: Benjamini-Hochberg FDR (benjamini_hochberg)
-    
+
     **Red Flags:**
     - Significant ANOVA but non-significant post-hoc: likely Type I error
     - Large effect size (η² > 0.14) but p > 0.05: underpowered
-    
+
     Parameters:
         data (array-like): All observations
         groups (array-like): Group labels (same length as data)
-    
+
     Returns:
         TestResult with F-statistic, p-value
-    
+
     Examples:
         >>> from foodspec.stats import run_anova
         >>> result = run_anova([1, 2, 1, 5, 6, 5, 9, 10, 9],
-        ...                    ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C'])\n        >>> assert result.pvalue < 0.05  # Groups differ\n    
+        ...                    ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C'])\n        >>> assert result.pvalue < 0.05  # Groups differ\n
     See Also:
         - [ANOVA & MANOVA](../stats/anova_and_manova.md)
         - [Metric Significance Tables](../09-reference/metric_significance_tables.md) — Effect size (η²)
@@ -174,36 +174,36 @@ def run_anova(data, groups) -> TestResult:
 
 def run_shapiro(values) -> TestResult:
     """Shapiro-Wilk test for normality of data.
-    
+
     Tests whether data comes from a normal distribution. Many parametric
     tests (t-test, ANOVA) assume normality; use this to check assumptions.
-    
+
     **Null Hypothesis:** Data is normally distributed
-    
+
     **Interpretation:**
     - p < 0.05: Data significantly non-normal → consider non-parametric test
     - p > 0.05: Data consistent with normal distribution
-    
+
     **Important:** p-value does NOT guarantee normality (just no evidence against).
     Also, large samples (n > 100) show p < 0.05 even for tiny departures.
     Always pair with visual inspection (Q-Q plot).
-    
+
     **Robust Alternatives:** t-test robust if n > 30 (CLT applies)
-    
+
     **Red Flags:**
     - p-value < 0.05 + clear outliers: outliers causing non-normality
     - p-value < 0.05 + n > 500: minor non-normality (parametric test still OK)
     - p-value > 0.05 + bimodal plot: multimodal data (visual check matters!)
-    
+
     Parameters:
         values (array-like): Data to test
-    
+
     Returns:
         TestResult with Shapiro-Wilk statistic and p-value
-    
+
     Examples:
         >>> from foodspec.stats import run_shapiro
-        >>> import numpy as np\n        >>> normal = np.random.normal(100, 10, 30)\n        >>> result = run_shapiro(normal)\n        >>> assert result.pvalue > 0.05  # Normally distributed\n    
+        >>> import numpy as np\n        >>> normal = np.random.normal(100, 10, 30)\n        >>> result = run_shapiro(normal)\n        >>> assert result.pvalue > 0.05  # Normally distributed\n
     See Also:
         - [Non-parametric Methods](../stats/nonparametric_methods_and_robustness.md)
     """
@@ -215,42 +215,42 @@ def run_shapiro(values) -> TestResult:
 
 def benjamini_hochberg(pvalues: Iterable[float], alpha: float = 0.05) -> pd.DataFrame:
     """Benjamini-Hochberg FDR correction for multiple hypothesis testing.
-    
+
     Controls False Discovery Rate (FDR): expected proportion of false positives
     among rejected hypotheses. Less conservative than Bonferroni, allowing more
     rejections while controlling error rate.
-    
+
     **When to Use:**
     Testing 20+ hypotheses: expect ~1 false positive by chance (α=0.05)
-    
+
     **Comparison:**
     - No correction: All significant at α=0.05 (high false positive rate)
     - Bonferroni: α/m threshold → few rejections but low false positive rate
     - Benjamini-Hochberg: Adaptive threshold → balanced rejections/errors
-    
+
     **Output Interpretation:**
     - p_adj < α: Reject hypothesis (significant after correction)
     - p_adj ≥ α: Fail to reject (not significant)
     - reject: Boolean column (True/False for easy filtering)
-    
+
     **Red Flags:**
     - All p-values > 0.99: Invalid test assumptions or independence violated
     - p-values bimodal (spike at 0 and 1): mixture of true/false positives
     - Very conservative results: consider if α too small
-    
+
     Parameters:
         pvalues (iterable): Raw p-values from multiple tests (0–1)
         alpha (float, default 0.05): Target FDR level
-    
+
     Returns:
         pd.DataFrame with columns: pvalue, p_adj, reject
-    
+
     Examples:
-        >>> from foodspec.stats import benjamini_hochberg\n        >>> pvalues = [0.001, 0.01, 0.03, 0.05, 0.1, 0.5] * 3\n        >>> result = benjamini_hochberg(pvalues, alpha=0.05)\n        >>> significant = result[result['reject']]\n        >>> print(f"Significant: {len(significant)}/{len(result)}")\n    
+        >>> from foodspec.stats import benjamini_hochberg\n        >>> pvalues = [0.001, 0.01, 0.03, 0.05, 0.1, 0.5] * 3\n        >>> result = benjamini_hochberg(pvalues, alpha=0.05)\n        >>> significant = result[result['reject']]\n        >>> print(f"Significant: {len(significant)}/{len(result)}")\n
     References:
         Benjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery
         rate: a practical and powerful approach to multiple testing.
-    
+
     See Also:
         - [Metric Significance Tables](../09-reference/metric_significance_tables.md) — Multiple testing
     """

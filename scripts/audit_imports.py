@@ -3,8 +3,9 @@
 
 import re
 import sys
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 # Find all Python imports in markdown and Python files
 def extract_imports_from_md(content: str) -> list[str]:
@@ -17,10 +18,10 @@ def extract_imports_from_md(content: str) -> list[str]:
         block_lines = block.split('\n')
         current_import = []
         in_multiline = False
-        
+
         for line in block_lines:
             stripped = line.strip()
-            
+
             # Start of import
             if stripped.startswith(('from foodspec', 'import foodspec')):
                 current_import = [line]
@@ -39,7 +40,7 @@ def extract_imports_from_md(content: str) -> list[str]:
                     imports.append(full_import)
                     current_import = []
                     in_multiline = False
-                    
+
     return imports
 
 def extract_imports_from_py(content: str) -> list[str]:
@@ -79,16 +80,16 @@ def test_import(import_stmt: str) -> tuple[bool, str]:
 
 def main():
     repo_root = Path(__file__).parent.parent
-    
+
     # Scan locations
     locations = {
         'docs': repo_root / 'docs',
         'examples': repo_root / 'examples',
     }
-    
+
     all_imports = defaultdict(list)
     failed_imports = defaultdict(list)
-    
+
     # Scan markdown files
     for md_file in locations['docs'].rglob('*.md'):
         if 'archive' in str(md_file):
@@ -97,7 +98,7 @@ def main():
         imports = extract_imports_from_md(content)
         for imp in imports:
             all_imports[imp].append(str(md_file.relative_to(repo_root)))
-    
+
     # Scan Python files
     for py_file in locations['examples'].rglob('*.py'):
         if '__pycache__' in str(py_file):
@@ -106,20 +107,20 @@ def main():
         imports = extract_imports_from_py(content)
         for imp in imports:
             all_imports[imp].append(str(py_file.relative_to(repo_root)))
-    
+
     # Test all unique imports
     print("=" * 80)
     print("IMPORT AUDIT REPORT")
     print("=" * 80)
     print()
-    
+
     unique_imports = sorted(all_imports.keys())
     total = len(unique_imports)
     passed = 0
     failed = 0
-    
+
     print(f"Testing {total} unique import statements...\n")
-    
+
     for imp in unique_imports:
         success, error = test_import(imp)
         if success:
@@ -133,12 +134,12 @@ def main():
             if len(all_imports[imp]) > 3:
                 print(f"           ... and {len(all_imports[imp]) - 3} more files")
             print()
-    
+
     print("=" * 80)
     print(f"SUMMARY: {passed}/{total} imports work ({passed*100//total}%)")
     print(f"         {failed} imports FAILED")
     print("=" * 80)
-    
+
     if failed > 0:
         print("\nFailed imports need to be fixed:")
         for imp, (error, files) in failed_imports.items():

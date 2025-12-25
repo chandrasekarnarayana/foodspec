@@ -17,7 +17,7 @@ errors = []
 for example_file in sorted(examples_dir.glob('*.py')):
     if example_file.name.startswith('_'):
         continue
-        
+
     try:
         # Read and compile the file (this checks syntax and imports at module level)
         code = example_file.read_text()

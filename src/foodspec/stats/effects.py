@@ -13,16 +13,16 @@ import pandas as pd
 
 def compute_cohens_d(group1, group2, pooled: bool = True) -> float:
     """Compute Cohen's d effect size for comparing two groups.
-    
+
     Quantifies the magnitude of difference between two groups independent of
     sample size. Essential for evaluating whether statistically significant
     differences are also practically significant.
-    
+
     Parameters:
         group1 (array-like): First group numerical samples for comparison
         group2 (array-like): Second group numerical samples for comparison
         pooled (bool): Use pooled std (assume equal variances). If False, average unpooled std.
-    
+
     Returns:
         float: Cohen's d effect size (unbounded; can be negative)
     """
@@ -45,13 +45,13 @@ def compute_anova_effect_sizes(ss_between: float, ss_total: float, ss_within: fl
     """Compute eta-squared and partial eta-squared for ANOVA.
 
     Quantifies proportion of variance explained by group differences.
-    
+
     Interpretation Scale:
     - eta-squared < 0.01: Negligible effect
     - 0.01 <= eta-squared < 0.06: Small effect
     - 0.06 <= eta-squared < 0.14: Medium effect
     - eta-squared >= 0.14: Large effect
-    
+
     Parameters:
         ss_between: Sum of squares between groups (treatment effect)
         ss_total: Total sum of squares (all variation in data)
