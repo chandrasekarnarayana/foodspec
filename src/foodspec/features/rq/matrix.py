@@ -135,7 +135,7 @@ def compare_oil_vs_chips(df: pd.DataFrame, config: RQConfig, features: Sequence[
         df_out["significant_trend_fdr"] = reject
 
     # Interpretation tags
-    tags: List[str] = []
+    tags: list[str] = []
     for _, r in df_out.iterrows():
         tag = "matrix-robust marker"
         if r.get("significant_trend_fdr") and np.sign(r["oil_slope"]) != np.sign(r["chips_slope"]):

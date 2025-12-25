@@ -65,6 +65,7 @@ import pandas as pd
 import scipy.sparse as sparse
 import seaborn as sns
 from scipy import stats
+from scipy.sparse import spsolve
 from scipy.stats import linregress
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA

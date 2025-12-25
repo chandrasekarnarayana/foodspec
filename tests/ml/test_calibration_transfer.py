@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 
+from foodspec import FoodSpec
 from foodspec.preprocess.calibration_transfer import (
     adapt_calibration_incremental,
     calibration_transfer_workflow,

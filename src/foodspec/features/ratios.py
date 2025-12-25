@@ -8,9 +8,11 @@ robust handling are intentionally left TODO.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 
 try:
     from foodspec.features.rq import RatioDefinition
@@ -130,13 +132,9 @@ class RatioEngine:
         return hash(key)
 
 
-__all__ = ["RatioEngine", "RatioDefinition", "compute_ratios", "RatioFeatureGenerator"]
 """Ratio feature utilities."""
 
-from typing import Tuple
-
-import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
+__all__ = ["RatioEngine", "RatioDefinition", "compute_ratios", "RatioFeatureGenerator"]
 
 
 def compute_ratios(df: pd.DataFrame, ratio_def: Dict[str, Tuple[str, str]]) -> pd.DataFrame:
