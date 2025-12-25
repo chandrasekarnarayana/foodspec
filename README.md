@@ -4,205 +4,153 @@
   <img src="docs/assets/foodspec_logo.png" alt="FoodSpec logo" width="200">
 </p>
 
-> “Food decides the nature of your mind… Mind is born of the food you take.”  
+> "Food decides the nature of your mind… Mind is born of the food you take."  
 > — Sri Sathya Sai Baba, *Effect of Food on the Mind*, Summer Showers 1993 – Indian Culture and Spirituality (29 May 1993)
 
-Headless, research-grade Python toolkit for Raman/FTIR (and NIR) spectroscopy in food science. FoodSpec provides a consistent data model, reproducible preprocessing, feature extraction, statistics, ML/chemometrics, and reporting—documented as a textbook-style guide.
+Headless, research-grade Python toolkit for Raman/FTIR/NIR spectroscopy in food science. FoodSpec provides reproducible workflows for preprocessing, feature extraction, statistics, and machine learning, with built-in support for protocol-driven analysis, model management, and automated reporting.
 
-**Docs:** https://chandrasekarnarayana.github.io/foodspec/  
-**Status:** Public-usage ready (v0.2.0) – tested on Windows/macOS/Linux with example datasets. Vendor binaries: some formats require CSV/HDF5 export.
+## What problems does FoodSpec solve?
 
-## Project Intention & Philosophy
-- Open, clear, reproducible workflows with strong scientific grounding (physics + chemistry + statistics + ML).
-- Real-world usability in labs and QA/QC; interpretable and transparent outputs.
-- Accessible to beginners and experts; teaches best practices alongside runnable protocols.
-- Vision: a reference toolkit, teaching resource, shared computational language across interdisciplinary teams, and a long-term foundation for reproducible food-science analytics.
+- **Fragmented workflows:** Vendor-specific formats, ad hoc preprocessing, irreproducible scripts.
+- **Lack of standards:** No consistent data model across labs or instruments.
+- **Manual documentation:** Time-consuming figure and report generation.
+- **Reproducibility challenges:** Difficulty sharing, versioning, and archiving analyses.
 
-## Why FoodSpec?
-- Spectroscopy workflows are often fragmented (vendor formats, ad hoc preprocessing, irreproducible scripts).  
-- FoodSpec standardizes ingestion (CSV/JCAMP/vendor) into `FoodSpectrumSet`/HDF5 libraries, offers reproducible pipelines, domain workflows (oils, heating, mixtures, QC), and reporting helpers.  
-- Documentation serves both as teaching material and protocol-grade guidance.
+## What does FoodSpec provide?
 
-## Automated analysis
-- **CLI + publish:** run a protocol via `foodspec-run-protocol`, then generate narrative/figures with `foodspec-publish` for a fully automated bundle.
+**Data & Import**
+- Unified data model for Raman, FTIR, and NIR spectroscopy
+- CSV/TXT/JCAMP loaders; optional vendor support (SPC, OPUS)
+- HDF5 spectral libraries for reference materials and calibration
 
-## Key capabilities
-- **Data & IO:** CSV/TXT/JCAMP, optional vendor loaders (SPC/OPUS), HDF5 spectral libraries; wavenumber-aware validation.
-- **Preprocessing:** Baseline (ALS, rubberband, polynomial), smoothing, normalization (vector/area/SNV/MSC), derivatives, cropping, FTIR/Raman helpers, cosmic-ray removal.
-- **Features & interpretability:** Peaks/bands/ratios, fingerprint similarity, PCA/PLS scores/loadings, RF importances, peak/ratio summary tables; visualization gallery.
-- **Statistics & metrics:** Parametric/nonparametric tests (ANOVA/MANOVA, Tukey, Games–Howell, Mann–Whitney, Kruskal), robustness (bootstrap/permutation), classification/regression metrics, embedding metrics (silhouette, between/within), calibration CIs, Bland–Altman.
-- **ML/Chemometrics:** Logistic/SVM (linear/RBF), RF, Gradient Boosting, optional XGBoost/LightGBM, kNN; PLS regression/PLS-DA; optional DL (Conv1D/MLP) with clear cautions; mixture models (NNLS, MCR-ALS).
-- **Workflows:** Oil authentication, heating/degradation, mixtures, batch QC/novelty, hyperspectral mapping, calibration/regression—each with plots + metrics + qualitative/quantitative interpretation.
-- **Reproducibility & reporting:** CLI/ configs, run metadata, metrics/plots/report.md, model registry, reproducibility checklist, reporting guidelines, troubleshooting/FAQ.
-- **Trust & guardrails:** Friendly error messages with auto-fix hints, prediction QC guards (confidence/entropy/margin) that emit `qc_do_not_trust`/`qc_notes` columns in CLI predictions.
+**Preprocessing**
+- Baseline correction, smoothing, normalization, derivatives, cropping
+- Cosmic-ray removal and modality-specific helpers
+- Wavenumber-aware validation
 
-## 🎯 Differentiating Capabilities ("Moats")
+**Feature Extraction & Interpretation**
+- Peak, band, and ratio detection with library-based chemical interpretation
+- PCA/PLS scores, fingerprint similarity, feature importance summaries
+- Visualization gallery
 
-FoodSpec provides three unique, production-grade toolkits that set it apart in food spectroscopy:
+**Statistics & Quality Control**
+- Parametric and nonparametric hypothesis tests
+- Classification and regression metrics
+- Bootstrap and permutation-based robustness
+- Batch QC, novelty detection, drift monitoring
 
-### 1. Matrix Correction
-Correct for matrix effects (chips vs. pure oil, emulsions, etc.) with:
-- Background subtraction (air/dark/foil references, adaptive baseline via ALS)
-- Robust per-matrix scaling (median/MAD, Huber, MCD)
-- Domain adaptation via subspace alignment
-- Matrix effect magnitude metric for QC
+**Machine Learning**
+- Classification: logistic, SVM, random forest, gradient boosting
+- Regression: linear, partial least squares, random forest
+- Optional: XGBoost, LightGBM, Conv1D, and MLP deep learning
+- Model registry and versioning
 
-**Key assumptions documented:** Background references measured under identical conditions; matrix types known; ≥10 samples per matrix for adaptation.
+**Domain Workflows**
+- Oil authentication and quality assessment
+- Heating/oxidation trajectory analysis
+- Mixture composition estimation
+- Hyperspectral imaging and mapping
+- Calibration transfer between instruments
 
-```python
-fs.apply_matrix_correction(
-    method="adaptive_baseline",
-    scaling="median_mad",
-    domain_adapt=True,
-    matrix_column="matrix_type"
-)
-```
+**Reproducibility & Reporting**
+- Protocol-driven execution (YAML configuration)
+- Automated narrative reports with metrics, tables, and figures
+- Run metadata capture and versioning
+- Prediction confidence guards
+- Reproducibility checklists
 
-### 2. Heating/Oxidation Trajectory Analysis
-Track degradation over time with:
-- Oxidation index extraction (PI, TFC, OIT proxy, C=C stretch)
-- Trajectory modeling (linear/exponential/sigmoidal fits)
-- Degradation stage classifier (RandomForest on index features)
-- Shelf-life estimation with confidence intervals
+## Supported modalities
 
-**Key assumptions documented:** Time column numeric; longitudinal data; ≥5 time points; monotonic degradation.
-
-```python
-traj = fs.analyze_heating_trajectory(
-    time_column="time_hours",
-    indices=["pi", "tfc"],
-    estimate_shelf_life=True,
-    shelf_life_threshold=2.0
-)
-```
-
-### 3. Calibration Transfer Toolkit
-Transfer models between instruments with:
-- Direct Standardization (DS) and Piecewise DS (PDS) v2 with robust regression
-- Drift detection (mean shift + variance ratio)
-- Incremental reference updates (exponential weighting)
-- Transfer success dashboard (pre/post RMSE/R²/MAE, leverage/outlier counts)
-
-**Key assumptions documented:** Paired standards; spectral alignment done separately; gradual drift; representative transfer samples.
-
-```python
-fs.apply_calibration_transfer(
-    source_standards=source_std,
-    target_standards=target_std,
-    method="pds",
-    pds_window_size=11
-)
-```
-
-**See [docs/moats_overview.md](docs/moats_overview.md) for full details, assumptions, and validation.**
-
----
+| Modality | Input | Preprocessing | Workflows |
+|----------|-------|---|---|
+| **Raman** | Vendor/CSV/HDF5 | Baseline, smoothing, cosmic-ray removal | Authentication, heating, mixtures, QC |
+| **FTIR** | Vendor/CSV/HDF5 | Baseline, normalization, cropping | Authentication, heating, QC |
+| **NIR** | CSV/HDF5 | Smoothing, derivatives, SNV | Calibration, regression, quality |
+| **Hyperspectral** | HDF5 | Per-pixel preprocessing | Mapping, segmentation, classification |
 
 ## Installation
+
 ```bash
 pip install foodspec
+
 # Optional extras
-pip install 'foodspec[ml]'      # xgboost/lightgbm
-pip install 'foodspec[deep]'    # Conv1D/MLP deep models
-pip install 'foodspec[dev]'     # docs/tests/lint (mkdocs, ruff, pytest)
+pip install 'foodspec[ml]'      # XGBoost, LightGBM
+pip install 'foodspec[deep]'    # Conv1D, MLP deep learning
+pip install 'foodspec[dev]'     # Documentation, tests, linting
 ```
 
-## Quickstart (Python)
+## Quickstart
+
+### Python (5 minutes)
+
 ```python
 from foodspec.data.loader import load_example_oils
 from foodspec.apps.oils import run_oil_authentication_quickstart
-from foodspec.metrics import compute_classification_metrics
 
 fs = load_example_oils()
-res = run_oil_authentication_quickstart(fs, label_column="oil_type")
-print(res.cv_metrics)
-```
-For calibration/regression, see `docs/workflows/calibration_regression_example.md` and the PLS example in `docs/ml/classification_regression.md`.
-
-## Quickstart (CLI)
-```bash
-foodspec preprocess raw_folder preprocessed.h5 --metadata-csv meta.csv --modality raman
-foodspec oil-auth preprocessed.h5 --label-column oil_type --output-report report.html
-```
-See `docs/cli.md` and workflow pages for full CLI configs and outputs (metrics.json, plots, report.md).
-
-Single-command reproducibility: place dataset, QC, preprocessing, features, modeling, and outputs in `exp.yml`, then run `foodspec run-exp exp.yml` (or `--dry-run` to validate and view hashes). See `docs/quickstart_cli.md` for the schema and example.
-Add `--artifact-path myrun.foodspec` to emit a single-file deployment artifact (model + pipeline hashes + provenance) loadable via `foodspec.load_artifact`.
-
-## Protocol engine quickstart
-
-Run a YAML protocol end-to-end (bundled report, tables, figures):
-```bash
-foodspec-run-protocol \
-  --input data/oils.csv \
-  --protocol examples/protocols/EdibleOil_Classification_v1.yml \
-  --output-dir runs
+result = run_oil_authentication_quickstart(fs, label_column="oil_type")
+print(result.cv_metrics)
 ```
 
-## Create Demo Libraries
-
-Several example configs reference HDF5 spectral libraries under `libraries/` (e.g., `libraries/oils.h5`). If the folder doesn’t exist yet, generate demo libraries using the built-in example dataset:
+### CLI (5 minutes)
 
 ```bash
-python - <<'PY'
-from foodspec.data.loader import load_example_oils
-from foodspec.io.exporters import to_hdf5
-import os
-ds = load_example_oils()
-os.makedirs('libraries', exist_ok=True)
-to_hdf5(ds, 'libraries/oils.h5')
-to_hdf5(ds, 'libraries/qc_ref.h5')
-to_hdf5(ds, 'libraries/oils_heating.h5')
-print('Created libraries: oils.h5, qc_ref.h5, oils_heating.h5')
-PY
+# Preprocess a dataset
+foodspec preprocess raw_folder preprocessed.h5 \
+  --metadata-csv meta.csv --modality raman
+
+# Run an oil authentication workflow
+foodspec oil-auth preprocessed.h5 \
+  --label-column oil_type --output-report report.html
 ```
 
-Mixture demos require pure component references; provide a small pure-set CSV in long format (`sample_id,wavenumber,intensity,label`) and convert it via:
+For more examples and tutorials, see the [documentation](https://chandrasekarnarayana.github.io/foodspec/).
+
+## Documentation
+
+- **Getting started:** [Installation](https://chandrasekarnarayana.github.io/foodspec/installation/)
+- **Quickstart guides:** [Python](https://chandrasekarnarayana.github.io/foodspec/quickstart_python/) • [CLI](https://chandrasekarnarayana.github.io/foodspec/quickstart_cli/) • [Protocols](https://chandrasekarnarayana.github.io/foodspec/quickstart_protocol/)
+- **Data & IO:** [CSV import](https://chandrasekarnarayana.github.io/foodspec/csv_to_library/) • [Vendor formats](https://chandrasekarnarayana.github.io/foodspec/vendor_io/) • [Libraries](https://chandrasekarnarayana.github.io/foodspec/libraries/)
+- **Preprocessing:** [Complete guide](https://chandrasekarnarayana.github.io/foodspec/preprocessing_guide/)
+- **Features & Analysis:** [Feature extraction](https://chandrasekarnarayana.github.io/foodspec/ml_model_vip_scores/) • [Interpretation](https://chandrasekarnarayana.github.io/foodspec/advanced_deep_learning/)
+- **Workflows:** [Oil authentication](https://chandrasekarnarayana.github.io/foodspec/protocols_overview/) • [Heating analysis](https://chandrasekarnarayana.github.io/foodspec/aging_workflows/) • [Mixtures](https://chandrasekarnarayana.github.io/foodspec/multimodal_workflows/) • [Calibration](https://chandrasekarnarayana.github.io/foodspec/workflows_harmonization_automated_calibration/)
+- **ML & Statistics:** [Methods](https://chandrasekarnarayana.github.io/foodspec/method_comparison/) • [Metrics](https://chandrasekarnarayana.github.io/foodspec/validation_baseline/)
+- **Advanced:** [Protocols & automation](https://chandrasekarnarayana.github.io/foodspec/protocols_overview/) • [Registry & plugins](https://chandrasekarnarayana.github.io/foodspec/registry_and_plugins/) • [Deployment](https://chandrasekarnarayana.github.io/foodspec/deployment_artifact_versioning/)
+- **Reference:** [Glossary](https://chandrasekarnarayana.github.io/foodspec/glossary/) • [API](https://chandrasekarnarayana.github.io/foodspec/api/) • [Troubleshooting](https://chandrasekarnarayana.github.io/foodspec/troubleshooting_faq/)
+
+## Testing
 
 ```bash
-foodspec csv-to-library pure_long.csv libraries/pure_refs.h5 --format long --modality raman --wavenumber-column wavenumber --sample-id-column sample_id --intensity-column intensity --label-column label
-```
-
-See the Smoke Test in [docs/integration_checklist.md](docs/integration_checklist.md) for quick end-to-end verification commands (protocol run with spike toggles, QC, library search, experiment dry-run).
-
-## Prediction service
-- CLI: `foodspec-predict` for batch/offline scoring of frozen models.
-
-## Registry & Plugins
-- Runs/models can be logged to a registry (`FeatureModelRegistry`). CLI: `foodspec-registry` to list/query.
-- Extend FoodSpec via plugins (protocols, vendor loaders, harmonization). CLI: `foodspec-plugin list`. See `examples/plugins/` for starter templates.
-  - Documentation: [docs/registry_and_plugins.md](docs/registry_and_plugins.md)
-
-## Related Docs
-- Spectral Library Search: [docs/library_search.md](docs/library_search.md)
-- Method Comparison (Bland–Altman): [docs/method_comparison.md](docs/method_comparison.md)
-
-## Try these notebooks first
-- `examples/notebooks/01_oil_discrimination_basic.ipynb`
-- `examples/notebooks/02_oil_vs_chips_matrix_effects.ipynb`
-- `examples/notebooks/03_hsi_surface_mapping.ipynb`
-
-## Testing & lint
-```bash
-pytest --cov      # coverage >90%
-ruff check        # lint
-mkdocs build      # docs/link check
+pytest --cov          # Run tests with coverage report
+ruff check            # Lint checks
+mkdocs build          # Build documentation locally
 ```
 
 ## Citation
-If you use FoodSpec, please cite the software (see `CITATION.cff`).
+
+If you use FoodSpec in your research, please cite the software. See [CITATION.cff](CITATION.cff) for full details.
 
 ## Contributing
-Follow the standards in `docs/dev/developer_notes.md`: clear docstrings with examples, tests for new features, and reproducible workflows. Open an issue/PR with a concise description, and ensure lint/tests/docs pass.  
+
+We welcome contributions. Before submitting, please:
+- Follow guidelines in [docs/contributing.md](https://chandrasekarnarayana.github.io/foodspec/contributing/)
+- Write clear code with docstrings and examples
+- Add tests for new features
+- Ensure `pytest`, `ruff`, and `mkdocs build` pass
+
+Open issues and pull requests with concise, clear descriptions.
 
 ## Collaborators
+
 - Dr. Jhinuk Gupta, Department of Food and Nutritional Sciences, Sri Sathya Sai Institute of Higher Learning (SSSIHL), Andhra Pradesh, India — [LinkedIn](https://www.linkedin.com/in/dr-jhinuk-gupta-a7070141/)
 - Dr. Sai Muthukumar V, Department of Physics, SSSIHL, Andhra Pradesh, India — [LinkedIn](https://www.linkedin.com/in/sai-muthukumar-v-ab78941b/)
 - Ms. Amrita Shaw, Department of Food and Nutritional Sciences, SSSIHL, Andhra Pradesh, India — [LinkedIn](https://www.linkedin.com/in/amrita-shaw-246491213/)
 - Deepak L. N. Kallepalli, Cognievolve AI Inc., Canada & HCL Technologies Ltd., Bangalore, India — [LinkedIn](https://www.linkedin.com/in/deepak-kallepalli/)
 
 ## Author
+
 - Chandrasekar SUBRAMANI NARAYANA, Aix-Marseille University, Marseille, France — [LinkedIn](https://www.linkedin.com/in/snchandrasekar/)
 
 ---
-FoodSpec aligns spectroscopy, chemometrics, and ML into reproducible, well-documented pipelines for food science. Dive into the docs for detailed theory, examples, and workflow guidance.
+
+FoodSpec aligns spectroscopy, chemometrics, and ML into reproducible, well-documented pipelines for food science. Dive into the [documentation](https://chandrasekarnarayana.github.io/foodspec/) for detailed theory, examples, and workflow guidance.
