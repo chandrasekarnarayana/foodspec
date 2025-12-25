@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 try:
-    from foodspec.protocol_engine import ProtocolRunner, ProtocolConfig
+    from foodspec.protocol import ProtocolRunner, ProtocolConfig
 except Exception as exc:  # pragma: no cover
     raise SystemExit(f"Cannot import FoodSpec protocol engine: {exc}")
 

@@ -15,8 +15,8 @@ from scipy import sparse
 from scipy.signal import savgol_filter
 from scipy.sparse.linalg import spsolve
 
-from foodspec.rq import PeakDefinition
-from foodspec.spectral_dataset import PreprocessingConfig, baseline_polynomial, baseline_rubberband  # reuse same config
+from foodspec.features.rq import PeakDefinition
+from foodspec.core.spectral_dataset import PreprocessingConfig, baseline_polynomial, baseline_rubberband  # reuse same config
 from foodspec.preprocess.spikes import correct_cosmic_rays
 
 

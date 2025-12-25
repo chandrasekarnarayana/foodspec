@@ -2,7 +2,7 @@
 Example protocol plugin for FoodSpec.
 Registers a trivial protocol template.
 """
-from foodspec.protocol_engine import ProtocolConfig
+from foodspec.protocol import ProtocolConfig
 
 
 def get_plugins():

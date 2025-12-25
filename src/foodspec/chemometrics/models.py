@@ -17,6 +17,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC, OneClassSVM
 from sklearn.decomposition import PCA
 
+from foodspec.chemometrics.validation import compute_vip_scores
+
 __all__ = [
     "make_pls_regression",
     "make_pls_da",
@@ -35,10 +37,12 @@ class _PLSProjector(BaseEstimator, TransformerMixin):
     def __init__(self, n_components: int = 10):
         self.n_components = n_components
         self.model_: PLSRegression | None = None
+        self.vip_scores_: np.ndarray | None = None
 
     def fit(self, X, y):
         self.model_ = PLSRegression(n_components=self.n_components)
         self.model_.fit(X, y)
+        self.vip_scores_ = compute_vip_scores(self.model_, X, y)
         return self
 
     def transform(self, X):
@@ -50,6 +54,11 @@ class _PLSProjector(BaseEstimator, TransformerMixin):
         else:
             x_scores = out
         return x_scores
+
+    def get_vip_scores(self) -> np.ndarray:
+        if self.model_ is None or self.vip_scores_ is None:
+            raise RuntimeError("PLSProjector not fitted; call fit before requesting VIP scores.")
+        return self.vip_scores_
 
     def get_feature_names_out(self, input_features=None):
         return [f"pls_pc{i+1}" for i in range(self.n_components)]

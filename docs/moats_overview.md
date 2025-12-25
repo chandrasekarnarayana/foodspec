@@ -12,7 +12,7 @@ This document describes FoodSpec's differentiating "moat" capabilities that prov
 #### Drift Detection & Adaptation
 
 ```python
-from foodspec.calibration_transfer import detect_drift, adapt_calibration_incremental
+from foodspec.preprocess.calibration_transfer import detect_drift, adapt_calibration_incremental
 ```
 
 ---
@@ -230,7 +230,7 @@ fs.apply_calibration_transfer(
 #### Drift Detection & Adaptation
 
 ```python
-from foodspec.calibration_transfer import detect_drift, adapt_calibration_incremental
+from foodspec.preprocess.calibration_transfer import detect_drift, adapt_calibration_incremental
 
 # Check if new batch has drifted from reference
 drift_detected, drift_metrics = detect_drift(

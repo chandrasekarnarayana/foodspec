@@ -103,7 +103,7 @@ class ExperimentRunner:
 
         Returns a dict summary with keys like 'name', 'protocol', 'inputs', 'status'.
         """
-        # TODO: Wire into foodspec.protocol_engine.ProtocolRunner and execute
+        # TODO: Wire into foodspec.protocol.ProtocolRunner and execute
         self.last_result = {
             "name": spec.name,
             "protocol": str(spec.protocol),

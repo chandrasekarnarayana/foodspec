@@ -6,7 +6,7 @@ from pathlib import Path
 
 from foodspec.core.api import FoodSpec
 from foodspec.core.dataset import FoodSpectrumSet
-from foodspec.rq import RatioQualityEngine, RatioDefinition, PeakDefinition, RQConfig
+from foodspec.features.rq import RatioQualityEngine, RatioDefinition, PeakDefinition, RQConfig
 
 
 def test_foodspec_init_with_dataset():

@@ -11,7 +11,7 @@ from typing import List, Optional, Union
 import numpy as np
 import pandas as pd
 
-from foodspec.spectral_dataset import SpectralDataset
+from foodspec.core.spectral_dataset import SpectralDataset
 
 
 def load_any_spectra(path: Union[str, Path], format_hint: Optional[str] = None) -> SpectralDataset:

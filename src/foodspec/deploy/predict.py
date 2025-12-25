@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 
-from foodspec.artifact import load_artifact
+from foodspec.deploy.artifact import load_artifact
 
 
 @dataclass

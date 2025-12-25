@@ -23,7 +23,7 @@ This document covers the Ratio-Quality Engine in FoodSpec. It is a pure-Python, 
 ## Minimal example
 ```python
 import pandas as pd
-from foodspec.rq import (
+from foodspec.features.rq import (
     PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
 )
 
@@ -59,7 +59,7 @@ print(res.text_report)
 ```python
 import pandas as pd
 from foodspec.preprocessing_pipeline import PreprocessingConfig, run_full_preprocessing
-from foodspec.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
+from foodspec.features.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
 
 # Wide-format spectra (wavenumber columns)
 df_raw = pd.read_csv("raman_raw.csv")  # columns: sample_id, oil_type, matrix, heating_stage, 500.0, 501.0, ...

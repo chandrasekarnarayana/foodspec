@@ -581,7 +581,7 @@ class FoodSpec:
         FoodSpec
             Self (for chaining).
         """
-        from foodspec.matrix_correction import apply_matrix_correction as _apply_mc
+        from foodspec.preprocess.matrix_correction import apply_matrix_correction as _apply_mc
         
         self.data, mc_metrics = _apply_mc(
             self.data,
@@ -625,7 +625,7 @@ class FoodSpec:
         - ≥5 time points per sample/group for reliable regression
         - No major batch effects confounding time trends
         
-        See foodspec.heating_trajectory module docstring for full details.
+        See foodspec.workflows.heating_trajectory module docstring for full details.
         
         Parameters
         ----------
@@ -652,7 +652,7 @@ class FoodSpec:
             - 'stage_classification' (if enabled): classification metrics
             - 'shelf_life' (if enabled): shelf-life estimation
         """
-        from foodspec.heating_trajectory import analyze_heating_trajectory as _analyze_ht
+        from foodspec.workflows.heating_trajectory import analyze_heating_trajectory as _analyze_ht
         
         results = _analyze_ht(
             self.data,
@@ -722,7 +722,7 @@ class FoodSpec:
         FoodSpec
             Self (for chaining).
         """
-        from foodspec.calibration_transfer import calibration_transfer_workflow
+        from foodspec.preprocess.calibration_transfer import calibration_transfer_workflow
         
         self.data.x, ct_metrics = calibration_transfer_workflow(
             source_standards,

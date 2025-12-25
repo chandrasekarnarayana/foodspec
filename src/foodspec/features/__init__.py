@@ -22,6 +22,13 @@ from foodspec.features.interpretation import (
     explain_feature_spec,
     explain_feature_set,
 )
+from foodspec.features.rq import (
+    PeakDefinition,
+    RatioDefinition,
+    RQConfig,
+    RatioQualityEngine,
+    RatioQualityResult,
+)
 
 __all__ = [
     "integrate_bands",
@@ -49,4 +56,9 @@ __all__ = [
     "find_chemical_meanings",
     "explain_feature_spec",
     "explain_feature_set",
+    "PeakDefinition",
+    "RatioDefinition",
+    "RQConfig",
+    "RatioQualityEngine",
+    "RatioQualityResult",
 ]

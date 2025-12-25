@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from foodspec.spectral_dataset import SpectralDataset
+from foodspec.core.spectral_dataset import SpectralDataset
 
 
 @dataclass
@@ -43,6 +43,74 @@ def intensity_normalize_by_power(ds: SpectralDataset, power_mw: Optional[float])
     ds_norm.logs.append(f"intensity_normalized_by_power={power_mw}mW")
     ds_norm.history.append({"step": "intensity_norm_power", "power_mw": power_mw})
     return ds_norm
+
+
+def estimate_calibration_curve(
+    reference: SpectralDataset,
+    target: SpectralDataset,
+    *,
+    max_shift_points: int = 25,
+) -> Tuple[CalibrationCurve, Dict[str, float]]:
+    """Estimate a calibration curve by maximizing mean-spectrum correlation vs. the reference.
+
+    Uses integer point shifts (±max_shift_points) on the target mean spectrum to find the best
+    correlation with the reference mean, then maps wavenumbers via the inferred shift.
+    """
+
+    ref_mean = np.nanmean(reference.spectra, axis=0)
+    tgt_mean = np.nanmean(target.spectra, axis=0)
+    if ref_mean.shape[0] != tgt_mean.shape[0]:
+        raise ValueError("Reference and target spectra must share the same length for curve estimation.")
+
+    wn_step = float(np.median(np.diff(reference.wavenumbers)))
+    best_shift = 0
+    best_corr = -np.inf
+    for shift in range(-max_shift_points, max_shift_points + 1):
+        shifted = np.roll(tgt_mean, shift)
+        corr = np.corrcoef(ref_mean, shifted)[0, 1]
+        if np.isnan(corr):
+            continue
+        if corr > best_corr:
+            best_corr = float(corr)
+            best_shift = shift
+
+    shift_cm = best_shift * wn_step
+    wn_target = target.wavenumbers + shift_cm
+    curve = CalibrationCurve(
+        instrument_id=target.instrument_meta.get("instrument_id", "unknown"),
+        wn_source=target.wavenumbers,
+        wn_target=wn_target,
+    )
+    diag = {"best_shift_points": int(best_shift), "shift_cm": float(shift_cm), "corr_coeff": float(best_corr)}
+    return curve, diag
+
+
+def generate_calibration_curves(
+    datasets: List[SpectralDataset], reference_instrument_id: str, *, max_shift_points: int = 25
+) -> Tuple[Dict[str, CalibrationCurve], Dict[str, Dict[str, float]]]:
+    """Generate calibration curves for all datasets relative to the reference instrument.
+
+    Returns (curves, diagnostics) keyed by instrument_id.
+    """
+
+    ref = None
+    for ds in datasets:
+        if ds.instrument_meta.get("instrument_id") == reference_instrument_id:
+            ref = ds
+            break
+    if ref is None:
+        raise ValueError(f"reference_instrument_id '{reference_instrument_id}' not found in datasets")
+
+    curves: Dict[str, CalibrationCurve] = {}
+    diagnostics: Dict[str, Dict[str, float]] = {}
+    for ds in datasets:
+        inst_id = ds.instrument_meta.get("instrument_id", "unknown")
+        if inst_id == reference_instrument_id:
+            continue
+        curve, diag = estimate_calibration_curve(ref, ds, max_shift_points=max_shift_points)
+        curves[inst_id] = curve
+        diagnostics[inst_id] = diag
+    return curves, diagnostics
 
 
 def harmonize_datasets_advanced(

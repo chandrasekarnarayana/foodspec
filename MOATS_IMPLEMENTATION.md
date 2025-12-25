@@ -306,7 +306,7 @@ Recommended additions:
 ### Documentation Accessibility
 - Quickstart examples in README
 - Full guide in docs/moats_overview.md
-- Module docstrings accessible via `help(foodspec.matrix_correction)`
+- Module docstrings accessible via `help(foodspec.preprocess.matrix_correction)` (deprecated: `foodspec.matrix_correction`)
 - Online docs deployment at chandrasekarnarayana.github.io/foodspec/
 
 ---

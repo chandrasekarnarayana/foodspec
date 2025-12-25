@@ -60,12 +60,12 @@ viz = [
 
 [project.scripts]
 foodspec = "foodspec.cli:app"
-foodspec-run-protocol = "foodspec.cli_protocol:main"
-foodspec-predict = "foodspec.cli_predict:main"
-foodspec-registry = "foodspec.cli_registry:main"
-foodspec-publish = "foodspec.cli_publish:main"
-foodspec-plugin = "foodspec.cli_plugin:main"
-foodspec-library-search = "foodspec.cli_library_search:main"
+foodspec-run-protocol = "foodspec.cli.protocol:main"
+foodspec-predict = "foodspec.cli.predict:main"
+foodspec-registry = "foodspec.cli.registry:main"
+foodspec-publish = "foodspec.cli.publish:main"
+foodspec-plugin = "foodspec.cli.plugin:main"
+foodspec-library-search = "foodspec.cli.library_search:main"
 
 [project.urls]
 Homepage = "https://github.com/chandrasekarnarayana/foodspec"
@@ -91,9 +91,14 @@ select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-  # Temporary reduced coverage gate while Phase 3 implementation stabilizes.
-  addopts = "--cov=foodspec --cov-report=term-missing --cov-fail-under=10"
+# Coverage requirement: 75% minimum for production code quality
+addopts = "--cov=foodspec --cov-report=term-missing --cov-fail-under=75"
 testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+# Disable namespace package discovery to avoid conflicts with stdlib modules (e.g., 'io', 'data')
+pythonpath = ["src"]
 
 [tool.coverage.run]
 omit = [

@@ -2,7 +2,7 @@
 Minimal demo: run the RQ engine on a small in-memory dataset.
 """
 import pandas as pd
-from foodspec.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
+from foodspec.features.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
 
 
 def main():

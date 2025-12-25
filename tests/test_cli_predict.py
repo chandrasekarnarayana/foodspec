@@ -6,7 +6,7 @@ import pandas as pd
 
 from foodspec.model_lifecycle import TrainablePipeline
 from foodspec.preprocessing_pipeline import PreprocessingConfig
-from foodspec.rq import PeakDefinition, RatioDefinition
+from foodspec.features.rq import PeakDefinition, RatioDefinition
 
 
 def test_cli_predict(tmp_path: Path):

@@ -4,8 +4,8 @@ Notebook-style demo: load spectra, preprocess, extract peaks, run RQ engine.
 import pandas as pd
 
 from foodspec.spectral_io import load_any_spectra
-from foodspec.spectral_dataset import PreprocessOptions
-from foodspec.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
+from foodspec.core.spectral_dataset import PreprocessOptions
+from foodspec.features.rq import PeakDefinition, RatioDefinition, RQConfig, RatioQualityEngine
 
 
 def main():

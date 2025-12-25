@@ -84,6 +84,16 @@ from .core.run_record import RunRecord
 from .core.output_bundle import OutputBundle
 from .core.dataset import FoodSpectrumSet
 from .core.hyperspectral import HyperSpectralCube
+from .core.spectral_dataset import (
+    HyperspectralDataset,
+    PreprocessingConfig,
+    SpectralDataset,
+    harmonize_datasets,
+    baseline_rubberband,
+    baseline_als,
+    baseline_polynomial,
+    HDF5_SCHEMA_VERSION,
+)
 from .io import (
     create_library,
     detect_format,
@@ -99,7 +109,7 @@ from .metrics import (
     compute_regression_metrics,
     compute_roc_curve,
 )
-from .rq import (
+from .features.rq import (
     PeakDefinition,
     RatioDefinition,
     RatioQualityEngine,

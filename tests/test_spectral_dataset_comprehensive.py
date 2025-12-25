@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from pathlib import Path
 
-from foodspec.spectral_dataset import (
+from foodspec.core.spectral_dataset import (
     SpectralDataset,
     PreprocessingConfig,
     baseline_als,
@@ -15,7 +15,7 @@ from foodspec.spectral_dataset import (
     remove_spikes,
     HyperspectralDataset,
 )
-from foodspec.rq import PeakDefinition
+from foodspec.features.rq import PeakDefinition
 
 
 def test_spectral_dataset_copy():

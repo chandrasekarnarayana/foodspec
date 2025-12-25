@@ -18,12 +18,11 @@ from .validation import (
     cross_validate_pipeline,
     permutation_test_score_wrapper,
     compute_explained_variance,
-    compute_q2_rmsec_rmsep,
-    compute_vip_scores,
-    hotelling_t2_q_residuals,
-    permutation_pls_da,
-    make_pca_report,
-    vip_table_with_meanings,
+)
+from .vip import (
+    calculate_vip,
+    calculate_vip_da,
+    interpret_vip,
 )
 
 __all__ = [
@@ -44,10 +43,7 @@ __all__ = [
     "cross_validate_pipeline",
     "permutation_test_score_wrapper",
     "compute_explained_variance",
-    "compute_q2_rmsec_rmsep",
-    "compute_vip_scores",
-    "hotelling_t2_q_residuals",
-    "permutation_pls_da",
-    "make_pca_report",
-    "vip_table_with_meanings",
+    "calculate_vip",
+    "calculate_vip_da",
+    "interpret_vip",
 ]

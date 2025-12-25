@@ -5,7 +5,7 @@ Adds a dummy loader for *.toy files (CSV with columns: meta, int1, int2, ...).
 import pandas as pd
 import numpy as np
 
-from foodspec.spectral_dataset import SpectralDataset
+from foodspec.core.spectral_dataset import SpectralDataset
 
 
 def load_toy(path):
