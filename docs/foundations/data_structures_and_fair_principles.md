@@ -5,11 +5,11 @@ This chapter explains how FoodSpec represents spectral data and how to keep anal
 ## 1. Core data models
 - **FoodSpectrumSet:** 2D array `x` (n_samples × n_wavenumbers), shared `wavenumbers` (1D, ascending cm⁻¹), `metadata` (pandas DataFrame), `modality` tag (`"raman"`, `"ftir"`, `"nir"`).
 - **HyperSpectralCube:** 3D array `(height, width, n_wavenumbers)` with optional flattening to a FoodSpectrumSet for pixel-wise analysis.
-- **Validation:** Monotonic axes, matching shapes, metadata length equals n_samples; see [validation utilities](../03-cookbook/validation_chemometrics_oils.md) and `foodspec.validation`.
+- **Validation:** Monotonic axes, matching shapes, metadata length equals n_samples; see [validation utilities](../methods/validation/cross_validation_and_leakage.md) and `foodspec.validation`.
 
 ## 2. Storage formats
-- **HDF5 libraries:** Preferred for reproducibility; store `x`, `wavenumbers`, `metadata_json`, `modality`, provenance (software version, timestamps). See [Libraries](../04-user-guide/libraries.md).
-- **CSV (wide/long):** Common export from instruments; convert to HDF5 via [CSV → HDF5 pipeline](../04-user-guide/csv_to_library.md).
+- **HDF5 libraries:** Preferred for reproducibility; store `x`, `wavenumbers`, `metadata_json`, `modality`, provenance (software version, timestamps). See [Libraries](../user-guide/libraries.md).
+- **CSV (wide/long):** Common export from instruments; convert to HDF5 via [CSV → HDF5 pipeline](../user-guide/csv_to_library.md).
 - **Provenance:** Keep config files, run metadata, model registry entries; see [Reproducibility checklist](../protocols/reproducibility_checklist.md).
 
 ## 3. FAIR principles applied
@@ -29,7 +29,12 @@ from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.data.libraries import create_library, load_library
 
 # Build in memory
-fs = FoodSpectrumSet(x=..., wavenumbers=..., metadata=..., modality="raman")
+fs = FoodSpectrumSet(
+   x=spectra_array,           # (n_samples, n_wavenumbers)
+   wavenumbers=wavenumber_array,  # (n_wavenumbers,)
+   metadata=metadata_df,       # pandas DataFrame
+   modality="raman"
+)
 
 # Persist to HDF5
 create_library(path="libraries/oils.h5", spectra=fs.x, wavenumbers=fs.wavenumbers,
@@ -43,8 +48,8 @@ fs_loaded = load_library("libraries/oils.h5")
 - Standardize axes, metadata, and modality to stay interoperable.
 
 ## Further reading
-- [CSV → HDF5 pipeline](../04-user-guide/csv_to_library.md)
-- [Libraries & public datasets](../04-user-guide/libraries.md)
+- [CSV → HDF5 pipeline](../user-guide/csv_to_library.md)
+- [Libraries & public datasets](../user-guide/libraries.md)
 - [Reproducibility checklist](../protocols/reproducibility_checklist.md)
 - [API hub](../api/index.md)
 

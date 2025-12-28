@@ -2,7 +2,7 @@
 
 This page summarizes the statistical tools available in FoodSpec and where to use them. Use it as a quick map from common questions to recommended methods, functions, and workflows.
 
-> For notation and symbols, see the [Glossary](../09-reference/glossary.md).
+> For notation and symbols, see the [Glossary](../reference/glossary.md).
 
 ## Questions → Approaches
 | Question | Recommended approach | Functions | Example workflow |
@@ -18,7 +18,7 @@ This page summarizes the statistical tools available in FoodSpec and where to us
 
 ## How to explore
 - Theory chapters: see the stats section in the nav (hypothesis testing, ANOVA/MANOVA, correlations, design).
-- API reference: [Statistics](../08-api/stats.md).
+- API reference: [Statistics](../api/stats.md).
 - Workflows: each workflow page includes a “Statistical analysis” section with code snippets and interpretation.
 - Protocols: reproducibility checklist and benchmarking framework explain how to report and compare results.
 ---

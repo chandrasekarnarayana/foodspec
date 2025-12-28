@@ -32,7 +32,7 @@ All moats are production-ready, fully documented with assumptions, integrated in
 - Domain adaptation requires ≥2 matrix types with ≥10 samples each
 - Spectral alignment must be done separately
 
-**References:** See [MOATS overview](../07-theory-and-background/moats_overview.md) and [data governance](../04-user-guide/data_governance.md).
+**References:** See [MOATS overview](../theory/moats_overview.md) and [data governance](../user-guide/data_governance.md).
 
 **API:**
 ```python
@@ -185,7 +185,7 @@ All moat metrics automatically saved to:
 ## Documentation
 
 ### User-Facing Documentation
-- **[Moats Overview](../07-theory-and-background/moats_overview.md)**: Comprehensive guide with:
+- **[Moats Overview](../theory/moats_overview.md)**: Comprehensive guide with:
   - Feature descriptions
   - Key assumptions (⚠️ warnings)
   - Python API examples
@@ -195,7 +195,7 @@ All moat metrics automatically saved to:
   - Validation references
 
 - README: Top-level highlights (not part of docs site)
- - **[Data Governance & Quality](../04-user-guide/data_governance.md)**: Full guide to governance tools, assumptions, usage, best practices
+ - **[Data Governance & Quality](../user-guide/data_governance.md)**: Full guide to governance tools, assumptions, usage, best practices
 
 ### Code Documentation
 - **Module-level docstrings**: Full assumptions, usage examples, typical workflows
@@ -297,7 +297,7 @@ Recommended additions:
 ### Assumptions Highlighted
 - ⚠️ Module docstrings start with "Key Assumptions" section
 - ⚠️ Function docstrings include "Assumptions" parameter description
-- ⚠️ [../07-theory-and-background/moats_overview.md](../07-theory-and-background/moats_overview.md) has prominent "Key Assumptions" blocks with warning emoji
+- ⚠️ [../theory/moats_overview.md](../theory/moats_overview.md) has prominent "Key Assumptions" blocks with warning emoji
 - ⚠️ README.md quick examples note "Key assumptions documented"
 
 ### Error Messages
@@ -306,7 +306,7 @@ Recommended additions:
 
 ### Documentation Accessibility
 - Quickstart examples in README
-- Full guide in ../07-theory-and-background/moats_overview.md
+- Full guide in ../theory/moats_overview.md
 - Module docstrings accessible via `help(foodspec.preprocess.matrix_correction)` (deprecated: `foodspec.matrix_correction`)
 - Online docs deployment at chandrasekarnarayana.github.io/foodspec/
 

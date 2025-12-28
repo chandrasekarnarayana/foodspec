@@ -48,7 +48,7 @@ Container for aligned spectral data across modalities.
 
 #### **Late Fusion** (Feature-Level)
 Concatenate feature matrices before training:
-```
+```plaintext
 Raman features [n×m₁] + FTIR features [n×m₂] → Joint features [n×(m₁+m₂)]
 ```
 
@@ -62,7 +62,7 @@ Raman features [n×m₁] + FTIR features [n×m₂] → Joint features [n×(m₁+
 
 #### **Decision Fusion** (Prediction-Level)
 Train separate models, combine predictions:
-```
+```plaintext
 Raman model → predictions₁
 FTIR model  → predictions₂
 Combine via voting or weighted averaging
@@ -317,6 +317,6 @@ Multi-modal spectroscopy in FoodSpec enables:
 ✅ **Novelty detection**: Disagreement flags unexpected samples  
 
 **Next steps:**
-- See [Quickstart: Python API](../01-getting-started/quickstart_python.md) for dataset basics
-- See [Chemometrics Guide](../03-cookbook/chemometrics_guide.md) for model selection
-- See [Validation Protocols](../03-cookbook/validation_chemometrics_oils.md) for cross-validation best practices
+- See [Quickstart: Python API](../getting-started/quickstart_python.md) for dataset basics
+- See [Chemometrics Guide](../methods/chemometrics/models_and_best_practices.md) for model selection
+- See [Validation Protocols](../methods/validation/cross_validation_and_leakage.md) for cross-validation best practices

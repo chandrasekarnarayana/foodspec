@@ -1,204 +1,255 @@
-# API Reference
+# API Reference: FoodSpec Python Modules
 
-!!! info "Context Block"
-    **Purpose:** Complete API documentation for all FoodSpec modules with auto-generated function signatures, parameters, examples, and theory links.
-    
-    **Audience:** Developers, power users, contributors
-    
-    **Prerequisites:** Basic Python knowledge, understanding of spectroscopy concepts
-    
-    **Related:** [Architecture](../05-advanced-topics/architecture.md) | [Developer Guide](../06-developer-guide/contributing.md)
+Auto‑generated documentation for IO, Core, Preprocessing, Features, ML, Stats and Workflows modules.
+
+!!! info "Module Purpose"
+    Complete API documentation for all FoodSpec modules with auto-generated signatures, examples, and cross-references.
 
 ---
 
-## Overview
+## Quick Start
 
-The FoodSpec API is organized by module, mirroring the codebase structure. Each module page provides:
+**New to FoodSpec?** Start with these essential modules:
 
-- **Complete function/class signatures** with type hints
-- **Parameter descriptions** with default values and valid ranges
-- **Return value documentation** with types
-- **Working examples** demonstrating typical usage
-- **Theory links** to relevant documentation pages
-- **Metric interpretation** for functions returning performance metrics
+1. **[IO](io.md)** - Load data: `load_folder()`, `load_from_metadata_table()`
+2. **[Core](core.md)** - Understand: `FoodSpectrumSet`, `FoodSpec`
+3. **[Preprocessing](preprocessing.md)** - Clean data: `PreprocessPipeline`, `BaselineStep`
+4. **[ML](ml.md)** - Build models: `nested_cross_validate()`, `train_classifier()`
 
 ---
 
 ## Module Organization
 
-### Core Modules
+### Data Management
 
-**Registry & Provenance**
-- `FeatureModelRegistry`: Model and run tracking
-- `RegistryEntry`: Immutable provenance records
-- `_hash_dataset()`: Dataset fingerprinting for reproducibility
+| Module | Purpose | Key Classes/Functions |
+|--------|---------|----------------------|
+| [**Core**](core.md) | Data structures and workflows | `FoodSpectrumSet`, `OutputBundle` |
+| [**IO**](io.md) | Loading and saving data | `load_folder()`, `to_hdf5()` |
+| [**Datasets**](datasets.md) | Bundled example data | `load_olive_oils()` |
 
-**Output & Reporting**
-- `create_run_folder()`: Timestamped run directory creation
-- `save_tables()`, `save_figures()`, `save_metadata()`: Result persistence
-- `append_log()`: Audit trail logging
+### Data Processing
 
----
+| Module | Purpose | Key Classes/Functions |
+|--------|---------|----------------------|
+| [**Preprocessing**](preprocessing.md) | Spectral preprocessing | `PreprocessPipeline`, `BaselineStep` |
+| [**Features**](features.md) | Feature extraction | `detect_peaks()`, `RatioQualityEngine` |
 
-### Preprocessing
+### Analysis & Modeling
 
-**Baseline Correction**
-- `ALSBaseline`: Asymmetric Least Squares (Eilers 2005)
-- `RubberbandBaseline`: Convex hull method
-- `PolynomialBaseline`: Polynomial fitting
-- Theory: [Baseline Correction](../preprocessing/baseline_correction/)
+| Module | Purpose | Key Classes/Functions |
+|--------|---------|----------------------|
+| [**Chemometrics**](chemometrics.md) | PCA, PLS, MCR-ALS | `run_pca()`, `make_pls_da()` |
+| [**ML**](ml.md) | Model training & validation | `nested_cross_validate()` |
+| [**Stats**](stats.md) | Hypothesis testing | `run_ttest()`, `run_anova()` |
+| [**Metrics**](metrics.md) | Evaluation metrics | `accuracy_score()`, `r2_score()` |
 
-**Normalization & Scaling**
-- `SNVNormalization`: Standard Normal Variate
-- `MSCCorrection`: Multiplicative Scatter Correction
-- `VectorNormalization`: L1/L2 normalization
-- Theory: [Normalization & Smoothing](../preprocessing/normalization_smoothing/)
+### Applications
 
-**Derivatives & Smoothing**
-- `SavitzkyGolay`: Savitzky-Golay smoothing/derivatives
-- Derivative order selection guide
-- Theory: [Derivatives & Feature Enhancement](../preprocessing/derivatives_and_feature_enhancement/)
+| Module | Purpose | Key Workflows |
+|--------|---------|--------------|
+| [**Workflows**](workflows.md) | High-level workflows | Oil auth, heating quality, QC |
 
 ---
 
-### Feature Extraction
+## Common Workflows
 
-**RQ Engine**
-- `RatioQualityEngine`: Ratiometric feature analysis
-- `PeakDefinition`, `RatioDefinition`: Feature configuration
-- Quality metrics: stability, discrimination, heating trends
-- Theory: [RQ Engine Theory](../07-theory-and-background/rq_engine_theory.md)
-
-**Peak Detection**
-- Peak finding algorithms
-- Integration methods
-- Band assignment utilities
-
----
-
-### Machine Learning
-
-**Models**
-- PLS-DA, PLS-R: Partial Least Squares
-- Random Forest, SVM: Ensemble and kernel methods
-- Model selection criteria
-- Theory: [Chemometrics & ML Basics](../07-theory-and-background/chemometrics_and_ml_basics.md)
-
-**Evaluation Metrics**
-- Classification: AUC, F1, balanced accuracy
-- Regression: R², RMSE, Q²
-- Interpretation: [Metric Significance Tables](../09-reference/metric_significance_tables.md)
-
-**Cross-Validation**
-- Stratified K-fold
-- Nested CV for hyperparameter tuning
-- Leave-one-group-out for batch effects
-- Theory: [Model Evaluation & Validation](../ml/model_evaluation_and_validation.md)
-
----
-
-### Statistics
-
-**Hypothesis Tests**
-- t-tests: paired, independent, Welch's
-- ANOVA: one-way, two-way, MANOVA
-- Non-parametric: Mann-Whitney, Kruskal-Wallis
-- Theory: [Hypothesis Testing](../stats/hypothesis_testing_in_food_spectroscopy.md)
-
-**Effect Sizes**
-- Cohen's d: standardized mean difference
-- η² (eta-squared): ANOVA effect size
-- Interpretation: [Metric Significance Tables](../09-reference/metric_significance_tables.md)
-- Theory: [T-tests & Effect Sizes](../stats/t_tests_effect_sizes_and_power.md)
-
----
-
-### Data I/O
-
-**File Readers**
-- OPUS (Bruker FTIR), SPC (Thermo/Galactic)
-- CSV, Excel: tabular data
-- HDF5: FoodSpec native format
-
-**Export Utilities**
-- CSV export with metadata
-- JCAMP-DX format
-- Interoperability considerations
-
----
-
-## Auto-Generated Documentation
-
-This API reference is generated using [mkdocstrings](https://mkdocstrings.github.io/) which extracts docstrings directly from source code. If you find missing or outdated documentation, please:
-
-1. Check the source code for the actual function signature
-2. Open an issue on [GitHub](https://github.com/chandrasekarnarayana/foodspec/issues)
-3. Contribute improved docstrings via pull request
-
----
-
-## Example: Using the API
-
-### Basic Workflow
+### Complete Analysis Pipeline
 
 ```python
-from foodspec.preprocess.baseline import ALSBaseline
-from foodspec.features.rq import RatioQualityEngine, PeakDefinition, RatioDefinition
-from foodspec.registry import FeatureModelRegistry
-from foodspec.output_bundle import create_run_folder, save_metadata
-from pathlib import Path
-import pandas as pd
+from foodspec.io import load_folder
+from foodspec.preprocess import PreprocessPipeline, BaselineStep, NormalizationStep
+from foodspec.chemometrics import make_pls_da
+from foodspec.ml import nested_cross_validate
 
-# 1. Load data (assume df has spectral columns + metadata)
-df = pd.read_csv("data/oils.csv")
+# 1. Load data
+fs = load_folder('data/oils/')
 
-# 2. Preprocess: ALS baseline correction
-als = ALSBaseline(lambda_=1e5, p=0.001)
-X = df.filter(like="wn_").values  # Spectral columns
-X_corrected = als.fit_transform(X)
-df_corrected = df.copy()
-df_corrected[df.filter(like="wn_").columns] = X_corrected
+# 2. Preprocess
+pipeline = PreprocessPipeline(steps=[
+    BaselineStep(method='als', lam=1e4),
+    NormalizationStep(method='snv')
+])
+fs_clean = pipeline.transform(fs)
 
-# 3. Feature extraction: RQ ratios
-peaks = [
-    PeakDefinition(name="carbonyl", wavenumber=1743, tolerance=10),
-    PeakDefinition(name="cis_bend", wavenumber=1654, tolerance=10),
-]
-ratios = [
-    RatioDefinition(name="rq_1743_1654", numerator="carbonyl", denominator="cis_bend")
-]
-rq_engine = RatioQualityEngine(peaks=peaks, ratios=ratios)
-result = rq_engine.run_all(df_corrected)
+# 3. Build and validate model
+clf = make_pls_da(n_components=5)
+results = nested_cross_validate(fs_clean, clf, target_col='variety')
 
-# 4. Save results with provenance
-run_dir = create_run_folder(Path("outputs"))
-save_metadata(run_dir, {
-    "protocol": "oil_authentication",
-    "protocol_version": "2.0.0",
-    "preprocessing": {"baseline": "ALS", "lambda": 1e5, "p": 0.001},
-    "features": [r.name for r in ratios],
-})
+print(f"Accuracy: {results['test_accuracy'].mean():.3f}")
+```
 
-# 5. Register in model registry
-registry = FeatureModelRegistry(Path("registry.json"))
-registry.register_run(run_id=run_dir.name, metadata={
-    "dataset_hash": _hash_dataset(df),
-    "protocol": "oil_authentication",
-    "protocol_version": "2.0.0",
-    "preprocessing": {"baseline": "ALS"},
-    "features": [{"name": r.name, "type": "ratio"} for r in ratios],
-    "timestamp": "2025-12-25T14:30:00Z",
-})
+### Feature-Based Analysis
 
-print(f"Results saved to {run_dir}")
-print(f"Registry updated: {len(registry.entries)} total runs")
+```python
+from foodspec.features import detect_peaks, compute_ratios, RatioQualityEngine
+
+# Extract features
+peaks = detect_peaks(fs[0].intensity, fs.wavenumbers, height=0.1)
+ratios = compute_ratios(fs, peak_positions={'A': 1650, 'B': 1450})
+
+# Or use RQ engine for automated workflow
+from foodspec.features import RQConfig, PeakDefinition
+config = RQConfig(peaks=[
+    PeakDefinition(name='lipid', center=2850, window=20),
+    PeakDefinition(name='protein', center=1650, window=15)
+])
+engine = RatioQualityEngine(config)
+result = engine.analyze(fs)
+```
+
+### Regression Analysis
+
+```python
+from foodspec.chemometrics import make_pls_regression, calculate_vip
+from sklearn.metrics import r2_score, mean_squared_error
+import numpy as np
+
+# Train PLS regression
+pls = make_pls_regression(n_components=10)
+pls.fit(X_train, y_train)
+
+# Predict and evaluate
+y_pred = pls.predict(X_test)
+r2 = r2_score(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+# Feature importance
+vip = calculate_vip(pls, X_train, y_train)
+important_features = vip > 1.0
 ```
 
 ---
 
-## See Also
+## API Design Principles
 
-- **[Architecture](../05-advanced-topics/architecture.md)** — System design overview
-- **[Extending Protocols](../06-developer-guide/extending_protocols_and_steps.md)** — Adding custom preprocessing/features
-- **[Writing Plugins](../06-developer-guide/writing_plugins.md)** — Plugin system API
-- **[Metric Significance Tables](../09-reference/metric_significance_tables.md)** — Interpreting API-returned metrics
+### Consistent Interfaces
+
+All FoodSpec functions follow scikit-learn conventions:
+
+- **fit()**: Train on data
+- **transform()**: Apply transformation
+- **fit_transform()**: Train and transform
+- **predict()**: Make predictions
+- **score()**: Evaluate performance
+
+### Type Hints
+
+All public APIs have type hints for IDE support:
+
+```python
+def load_folder(
+    path: PathLike,
+    modality: str = 'auto',
+    metadata: Optional[pd.DataFrame] = None
+) -> FoodSpectrumSet:
+    ...
+```
+
+### Provenance Tracking
+
+All operations are logged for reproducibility:
+
+```python
+fs_clean = pipeline.transform(fs)
+print(fs_clean.provenance)  # Complete processing history
+```
+
+---
+
+## Module Cross-Reference Map
+
+```plaintext
+Core (FoodSpectrumSet)
+  ├─→ IO (load/save)
+  ├─→ Preprocessing (clean)
+  ├─→ Features (extract)
+  ├─→ Chemometrics (model)
+  └─→ ML (train/validate)
+
+Preprocessing
+  ├─→ BaselineStep
+  ├─→ SmoothingStep
+  └─→ NormalizationStep
+
+Features
+  ├─→ Peaks (detect_peaks)
+  ├─→ Bands (integrate_bands)
+  ├─→ Ratios (compute_ratios)
+  └─→ RQ Engine (RatioQualityEngine)
+
+Chemometrics
+  ├─→ PCA (run_pca)
+  ├─→ Classification (make_pls_da, make_simca)
+  ├─→ Regression (make_pls_regression)
+  └─→ Mixture (mcr_als)
+```
+
+---
+
+## API Conventions
+
+### Function Naming
+
+- `load_*()` - Load data from file/database
+- `save_*()` - Save data to file
+- `make_*()` - Create model/object
+- `run_*()` - Execute complete workflow
+- `compute_*()` - Calculate metrics/features
+- `detect_*()` - Find patterns/peaks
+
+### Return Types
+
+- **Single object**: Direct return
+- **Multiple outputs**: Named tuple or dict
+- **Provenance**: Automatic via `FoodSpectrumSet`
+
+---
+
+## Getting Help
+
+### In-Code Documentation
+
+```python
+# View function signature and docstring
+help(load_folder)
+
+# Or in Jupyter/IPython
+?load_folder
+??load_folder  # View source
+```
+
+### External Resources
+
+- **Tutorials**: [Getting Started Guide](../getting-started/quickstart_15min.md)
+- **Workflows**: [Workflow Documentation](../workflows/index.md)
+- **Theory**: [Background Theory](../theory/index.md)
+- **Examples**: `examples/` directory in repository
+
+---
+
+## Module Details
+
+Click a module below for detailed API documentation:
+
+- [**Core**](core.md) - Data structures (`FoodSpectrumSet`, `OutputBundle`)
+- [**IO**](io.md) - Loading and saving (`load_folder()`, `to_hdf5()`)
+- [**Preprocessing**](preprocessing.md) - Spectral preprocessing (`PreprocessPipeline`)
+- [**Features**](features.md) - Feature extraction (`detect_peaks()`, `RatioQualityEngine`)
+- [**Chemometrics**](chemometrics.md) - Chemometric models (`PCA`, `PLS-DA`, `MCR-ALS`)
+- [**ML**](ml.md) - Machine learning (`nested_cross_validate()`)
+- [**Stats**](stats.md) - Statistical analysis (`run_ttest()`, `run_anova()`)
+- [**Metrics**](metrics.md) - Evaluation metrics (`accuracy`, `R²`, `RMSE`)
+ 
+---
+
+## Keywords
+
+- IO
+- preprocessing
+- features
+- machine learning
+- statistics
+- workflows
+- [**Workflows**](workflows.md) - High-level workflows (oil auth, QC)
+- [**Datasets**](datasets.md) - Example datasets (`load_olive_oils()`)

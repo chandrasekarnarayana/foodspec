@@ -78,5 +78,5 @@ ds_old.save_hdf5("legacy_dataset_v1_1.h5")
    ```
 
 ## See Also
-- [SpectralDataset & HDF5 I/O](../04-user-guide/vendor_io.md)
+- [SpectralDataset & HDF5 I/O](../user-guide/vendor_io.md)
 - [Harmonization & Multi-Instrument Workflows](hsi_and_harmonization.md)

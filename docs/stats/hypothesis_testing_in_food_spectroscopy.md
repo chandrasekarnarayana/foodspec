@@ -127,4 +127,4 @@ except ImportError:
 - [ANOVA and MANOVA](anova_and_manova.md)
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)
 - [Correlation and mapping](correlation_and_mapping.md)
-- API: [Statistics](../08-api/stats.md)
+- API: [Statistics](../api/stats.md)

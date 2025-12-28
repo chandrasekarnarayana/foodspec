@@ -68,12 +68,14 @@ dev = [
   "mkdocs-material>=9.5.0,<10.0",
   "mkdocstrings-python>=1.10.0,<2.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
+  "mkdocs-redirects>=1.2.0,<2.0",
 ]
 docs = [
   "mkdocs>=1.6.0,<2.0",
   "mkdocs-material>=9.5.0,<10.0",
   "mkdocstrings-python>=1.10.0,<2.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
+  "mkdocs-redirects>=1.2.0,<2.0",
 ]
 viz = [
   "matplotlib>=3.8",

@@ -56,5 +56,5 @@ print(res.summary)
 
 ## Further reading
 
-- [Oil authentication workflow](../workflows/oil_authentication.md)
-- [Model evaluation](../ml/model_evaluation_and_validation.md)
+- [Oil authentication workflow](../workflows/authentication/oil_authentication.md)
+- [Model evaluation](../methods/chemometrics/model_evaluation_and_validation.md)

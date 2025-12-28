@@ -1,5 +1,33 @@
 # Standard Workflow Templates
 
+## 📋 Standard Header
+
+**Purpose:** Provide quick-reference templates for common spectroscopic analysis tasks with standardized structure.
+
+**When to Use:**
+- Starting a new analysis and need a proven structure
+- Adapting workflows to new food matrices or research questions
+- Teaching standardized approaches to new users
+- Documenting methods for publications or regulatory submissions
+- Comparing results across labs using consistent methodology
+
+**What's Included:**
+- Authentication/Classification template (SVM/RF for class ID)
+- Adulteration detection template (class imbalance strategies)
+- Calibration/Regression template (PLS for continuous targets)
+- Time-series/Degradation template (trend analysis)
+- Mixture quantification template (NNLS/MCR-ALS)
+- Hyperspectral mapping template (spatial analysis)
+- Reporting checklist (parameters, plots, metrics)
+
+**How to Use:**
+- Choose template matching your scientific question
+- Follow step-by-step structure (preprocess → features → model → metrics → report)
+- Adapt parameters to your specific matrix and instrument
+- Consult detailed workflow pages for in-depth guidance
+
+---
+
 This page lists concise templates you can adapt for common tasks. Each template references the relevant detailed workflow pages and points to troubleshooting/metrics/ML chapters.
 
 ## Authentication / Classification
@@ -11,7 +39,7 @@ This page lists concise templates you can adapt for common tasks. Each template 
   4. Model: SVM/RF (or logreg baseline).
   5. Metrics: accuracy, F1_macro, confusion matrix; PR/ROC as needed.
   6. Reports: confusion matrix + per-class metrics; export run metadata/model.
-- **See:** [Oil authentication](oil_authentication.md), [ML & metrics](../ml/models_and_best_practices.md).
+- **See:** [Oil authentication](authentication/oil_authentication.md), [ML & metrics](../methods/chemometrics/models_and_best_practices.md).
 
 ## Adulteration (rare events)
 - Same as authentication, but emphasize class imbalance:
@@ -28,12 +56,12 @@ This page lists concise templates you can adapt for common tasks. Each template 
   4. Metrics: RMSE, MAE, R², MAPE; plots: calibration + residuals.
   5. Robustness: bootstrap/permutation; check bias across range.
   6. Reports: predicted vs true, residual plots, parameter settings.
-- **See:** [Calibration example](calibration_regression_example.md), [Metrics](../../metrics/metrics_and_evaluation/).
+- **See:** [Calibration example](quantification/calibration_regression_example.md), [Metrics](../reference/metrics_reference.md).
 
 ## Time/temperature trends (heating degradation)
 - **Goal:** Track degradation markers vs time/temperature.
 - **Template:** ratios vs time → trend models (linear/ANOVA) → slopes/p-values → plots (line + CI, box/violin by stage).
-- **See:** [Heating quality monitoring](heating_quality_monitoring.md), [Stats](../stats/anova_and_manova.md).
+- **See:** [Heating quality monitoring](heating_quality_monitoring.md), [Stats](../methods/statistics/anova_and_manova.md).
 
 ## Mixtures
 - **Goal:** Estimate component fractions.
@@ -43,7 +71,7 @@ This page lists concise templates you can adapt for common tasks. Each template 
 ## Hyperspectral mapping
 - **Goal:** Spatial localization.
 - **Template:** per-pixel preprocessing → cube rebuild → ratios/PCs → clustering/classification → maps + pixel metrics.
-- **See:** [Hyperspectral mapping](hyperspectral_mapping.md).
+- **See:** [Hyperspectral mapping](spatial/hyperspectral_mapping.md).
 
 ## Reporting essentials
 - Record preprocessing parameters, model choices, metrics with uncertainty, plots, and configs; export run metadata/model artifacts.

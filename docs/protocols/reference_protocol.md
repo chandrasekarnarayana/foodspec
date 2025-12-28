@@ -28,7 +28,7 @@ Do not use as a replacement for method-specific validation (ISO/regulatory) or w
 
 ## Overview: The FoodSpec Standard Workflow
 
-```
+```plaintext
 1. Study Design & Data Planning
    ↓
 2. Sample Acquisition & Labeling
@@ -56,9 +56,9 @@ Define a clear research question:
 - **Regression:** "Can we predict the oxidation level of oil samples?"
 
 ### Sample Size Calculation
-Use power analysis (see [Study Design](../stats/study_design_and_data_requirements.md)):
+Use power analysis (see [Study Design](../methods/statistics/study_design_and_data_requirements.md)):
 
-```
+```plaintext
 Sample size per class (classification):
 n ≥ max(
   1.96² × p(1-p) / (2 × α)²,     # Precision for proportion
@@ -156,7 +156,7 @@ Acquire ≥3 replicates per sample:
 
 ### Quality Checks
 
-```
+```yaml
 For each spectrum:
   ✓ No clipping (no intensities at detector max/min)
   ✓ SNR adequate (peak heights >> noise floor)
@@ -233,7 +233,7 @@ preprocessing_config = {
 
 Use **nested CV** to avoid optimistic bias:
 
-```
+```yaml
 Outer loop (5-fold stratified CV):
   For each fold:
     Test set = 20% of data (held out)
@@ -299,7 +299,7 @@ Stop tuning if:
 
 Report and interpret:
 
-```
+```yaml
 Method 1: PLS Loadings
   — Positive/negative loadings on principal components
   — Visualize as loading plots
@@ -317,7 +317,7 @@ Method 3: SHAP Values
 
 Always report:
 
-```
+```yaml
 Point estimate ± 95% CI
 
 Example:
@@ -353,7 +353,7 @@ Compute CI via:
 
 ### Monitoring Metrics
 
-```
+```yaml
 For each new batch:
   
   1. QC spectrum predictions
@@ -399,8 +399,8 @@ For each new batch:
 
 ## See Also
 
-- [Study Design](../stats/study_design_and_data_requirements.md) — How to plan FoodSpec studies
-- [Model Evaluation](../ml/model_evaluation_and_validation.md) — Validation metrics and interpretation
+- [Study Design](../methods/statistics/study_design_and_data_requirements.md) — How to plan FoodSpec studies
+- [Model Evaluation](../methods/chemometrics/model_evaluation_and_validation.md) — Validation metrics and interpretation
 - [Workflows](../workflows/workflow_design_and_reporting.md) — Domain-specific examples
 - [Non-Goals and Limitations](../non_goals_and_limitations.md) — What FoodSpec cannot do
 

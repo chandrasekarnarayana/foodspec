@@ -41,7 +41,7 @@ This is not a substitute for formal statistical power analysis (consult a statis
 
 **Standard recommendation: 3 replicates per sample, 3 levels of variation:**
 
-```
+```yaml
 For each biological sample:
   
   Level 1: Technical replicates (same vial, immediate rescans)
@@ -64,7 +64,7 @@ For n = 100 samples: total spectra = 100 × 18 = 1800 (feasible; time-intensive)
 
 **Minimal replication (if resources constrained):**
 
-```
+```yaml
 For each sample: 3 technical replicates only
   → Captures instrument noise
   → Does NOT capture biological/mounting variability
@@ -80,7 +80,7 @@ For each sample: 3 technical replicates only
 
 If targeting a specific **sensitivity** (true positive rate) or **specificity** (true negative rate):
 
-```
+```plaintext
 n = (z_α/2 + z_β)² × p(1-p) / d²
 
 where:
@@ -99,7 +99,7 @@ Example: Achieve 90% sensitivity ± 10% with 80% power
 
 If targeting a specific **R² or correlation coefficient:**
 
-```
+```yaml
 n = (z_α/2 + z_β)² / (2 × r²)
 
 where:
@@ -142,7 +142,7 @@ Systematic variations in spectral data caused by:
 - Avoid confounding: don't put all "authentic" samples on day 1 and "adulterated" on day 2
 - Include **batch controls** (same reference material) in every batch
 
-```
+```yaml
 Example randomization:
   Batch 1 (Day 1): 5 authentic, 5 adulterated, 1 reference material
   Batch 2 (Day 2): 5 authentic, 5 adulterated, 1 reference material
@@ -169,7 +169,7 @@ for train_idx, test_idx in group_cv.split(X, y, groups=batch_ids):
 
 If batch effects unmanaged, use statistical batch correction:
 
-```
+```yaml
 ComBat or SVA (Surrogate Variable Analysis):
   1. Fit a linear model: spectrum ~ class + batch
   2. Estimate batch coefficients
@@ -189,7 +189,7 @@ Caveats:
 
 If testing **k independent hypotheses** with significance level α per test, the **family-wise error rate (FWER)** is:
 
-```
+```yaml
 FWER ≥ 1 - (1 - α)^k
 
 Example: 10 independent tests, α=0.05 per test
@@ -220,7 +220,7 @@ Example: 10 independent tests, α=0.05 per test
 
 A large sample can detect tiny differences:
 
-```
+```yaml
 Example: Comparing oil authenticity scores
 
 Method A (n=10 per group):
@@ -301,9 +301,9 @@ But the 2-point difference is tiny—does it matter?
 
 ## Recommended Reading
 
-- [Study Design and Data Requirements](../stats/study_design_and_data_requirements.md) — Deeper theory
-- [Hypothesis Testing](../stats/hypothesis_testing_in_food_spectroscopy.md) — Testing principles
-- [t-Tests, Effect Sizes, and Power](../stats/t_tests_effect_sizes_and_power.md) — Detailed formulas
+- [Study Design and Data Requirements](../methods/statistics/study_design_and_data_requirements.md) — Deeper theory
+- [Hypothesis Testing](../methods/statistics/hypothesis_testing_in_food_spectroscopy.md) — Testing principles
+- [t-Tests, Effect Sizes, and Power](../methods/statistics/t_tests_effect_sizes_and_power.md) — Detailed formulas
 - [Reference Protocol](reference_protocol.md) — Study structure
 
 ---

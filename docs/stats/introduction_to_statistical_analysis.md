@@ -97,4 +97,4 @@ flowchart LR
 - [ANOVA and MANOVA](anova_and_manova.md)
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)
 - [Study design](study_design_and_data_requirements.md)
-- API: [Statistics](../08-api/stats.md)
+- API: [Statistics](../api/stats.md)

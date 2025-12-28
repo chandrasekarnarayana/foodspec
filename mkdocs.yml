@@ -21,158 +21,236 @@ plugins:
             separate_signature: true
             docstring_style: google
             inherited_members: true
-  - git-revision-date-localized:
-      fallback_to_build_date: true
-      enable_creation_date: false
-      type: datetime
-      timezone: UTC
+  - autorefs
+  - redirects:
+      redirect_maps:
+        metrics/metrics_and_evaluation.md: reference/metrics_reference.md
+        visualization/plotting_with_foodspec.md: user-guide/visualization.md
+        07-theory-and-background/rq_engine_theory.md: theory/rq_engine_detailed.md
+        03-cookbook/cookbook_preprocessing.md: methods/preprocessing/normalization_smoothing.md
+        user_guide/instrument_file_formats.md: user-guide/vendor_formats.md
+        ml/classification_regression.md: methods/chemometrics/classification_regression.md
+        ml/model_evaluation_and_validation.md: methods/chemometrics/model_evaluation_and_validation.md
+        ml/mixture_models.md: methods/chemometrics/mixture_models.md
+        ml/models_and_best_practices.md: methods/chemometrics/models_and_best_practices.md
+        ml/pca_and_dimensionality_reduction.md: methods/chemometrics/pca_and_dimensionality_reduction.md
+        ml/model_interpretability.md: methods/chemometrics/model_interpretability.md
+        preprocessing/baseline_correction.md: methods/preprocessing/baseline_correction.md
+        preprocessing/normalization_smoothing.md: methods/preprocessing/normalization_smoothing.md
+        preprocessing/derivatives_and_feature_enhancement.md: methods/preprocessing/derivatives_and_feature_enhancement.md
+        preprocessing/scatter_correction_cosmic_ray_removal.md: methods/preprocessing/scatter_correction_cosmic_ray_removal.md
+        preprocessing/feature_extraction.md: methods/preprocessing/feature_extraction.md
+        01-getting-started/index.md: getting-started/index.md
+        01-getting-started/installation.md: getting-started/installation.md
+        01-getting-started/quickstart_15min.md: getting-started/quickstart_15min.md
+        01-getting-started/quickstart_python.md: getting-started/quickstart_python.md
+        01-getting-started/quickstart_cli.md: getting-started/quickstart_cli.md
+        01-getting-started/quickstart_protocol.md: getting-started/quickstart_protocol.md
+        01-getting-started/first-steps_cli.md: getting-started/first-steps_cli.md
+        01-getting-started/getting_started.md: getting-started/getting_started.md
+        01-getting-started/faq_basic.md: getting-started/faq_basic.md
+        04-user-guide/index.md: user-guide/index.md
+        04-user-guide/cli.md: user-guide/cli.md
+        04-user-guide/cli_help.md: user-guide/cli_help.md
+        04-user-guide/protocols_and_yaml.md: user-guide/protocols_and_yaml.md
+        04-user-guide/automation.md: user-guide/automation.md
+        04-user-guide/protocol_profiles.md: user-guide/protocol_profiles.md
+        04-user-guide/config_logging.md: user-guide/config_logging.md
+        04-user-guide/data_governance.md: user-guide/data_governance.md
+        04-user-guide/libraries.md: user-guide/libraries.md
+        04-user-guide/library_search.md: user-guide/library_search.md
+        04-user-guide/csv_to_library.md: user-guide/csv_to_library.md
+        04-user-guide/vendor_io.md: user-guide/vendor_io.md
+        04-user-guide/vendor_formats.md: user-guide/vendor_formats.md
+        04-user-guide/visualization.md: user-guide/visualization.md
+        04-user-guide/registry_and_plugins.md: user-guide/registry_and_plugins.md
+        06-developer-guide/index.md: developer-guide/index.md
+        06-developer-guide/contributing.md: developer-guide/contributing.md
+        06-developer-guide/documentation_guidelines.md: developer-guide/documentation_guidelines.md
+        06-developer-guide/documentation_style_guide.md: developer-guide/documentation_style_guide.md
+        06-developer-guide/documentation_maintainer_guide.md: developer-guide/documentation_maintainer_guide.md
+        06-developer-guide/writing_plugins.md: developer-guide/writing_plugins.md
+        06-developer-guide/extending_protocols_and_steps.md: developer-guide/extending_protocols_and_steps.md
+        06-developer-guide/testing_and_ci.md: developer-guide/testing_and_ci.md
+        06-developer-guide/testing_coverage.md: developer-guide/testing_coverage.md
+        06-developer-guide/releasing.md: developer-guide/releasing.md
+        06-developer-guide/RELEASE_CHECKLIST.md: developer-guide/RELEASE_CHECKLIST.md
+        06-tutorials/example_catalog.md: examples_gallery.md
+        07-theory-and-background/index.md: theory/index.md
+        07-theory-and-background/spectroscopy_basics.md: theory/spectroscopy_basics.md
+        07-theory-and-background/chemometrics_and_ml_basics.md: theory/chemometrics_and_ml_basics.md
+        07-theory-and-background/moats_overview.md: theory/moats_overview.md
+        07-theory-and-background/harmonization_theory.md: theory/harmonization_theory.md
+        07-theory-and-background/domains_overview.md: theory/food_spectroscopy_applications.md
+        07-theory-and-background/rq_engine_detailed.md: theory/rq_engine_detailed.md
+        07-validation/index.md: methods/validation/index.md
+        07-validation/cross_validation_and_leakage.md: methods/validation/cross_validation_and_leakage.md
+        07-validation/metrics_and_uncertainty.md: methods/validation/metrics_and_uncertainty.md
+        07-validation/reporting_standards.md: methods/validation/reporting_standards.md
+        07-validation/robustness_checks.md: methods/validation/robustness_checks.md
+        03-cookbook/index.md: workflows/index.md
+        03-cookbook/cookbook_registry_reporting.md: workflows/workflow_design_and_reporting.md
+        08-api/stats.md: api/stats.md
+        08-api/metrics.md: api/metrics.md
+        08-api/core.md: api/core.md
+        08-api/datasets.md: api/datasets.md
+        08-api/preprocessing.md: api/preprocessing.md
+        08-api/chemometrics.md: api/chemometrics.md
+        08-api/features.md: api/features.md
+        08-api/io.md: api/io.md
+        08-api/workflows.md: api/workflows.md
+        08-api/ml.md: api/ml.md
+        workflows/hyperspectral_mapping.md: workflows/spatial/hyperspectral_mapping.md
+        workflows/oil_authentication.md: workflows/authentication/oil_authentication.md
+        workflows/calibration_regression_example.md: workflows/quantification/calibration_regression_example.md
+        workflows/heating_quality_monitoring.md: workflows/quality-monitoring/heating_quality_monitoring.md
 extra_css:
   - assets/logo.css
 
 nav:
-  - Home: index.md
+    - Home: index.md
+    - Examples Gallery: examples_gallery.md
 
-  # Level 1: Quick Start (Entry Point)
-  - Start Here:
-      - 15-Minute Quickstart: 01-getting-started/quickstart_15min.md
-      - Installation: 01-getting-started/installation.md
-      - Getting Started: 01-getting-started/getting_started.md
-      - Quickstart (CLI): 01-getting-started/quickstart_cli.md
-      - Quickstart (Python): 01-getting-started/quickstart_python.md
-      - Quickstart (Protocol): 01-getting-started/quickstart_protocol.md
-      - First Steps (CLI): 01-getting-started/first-steps_cli.md
-      - FAQ (Basic): 01-getting-started/faq_basic.md
+    - Getting Started:
+      - Welcome: getting-started/index.md
+      - 15-Minute Quickstart: getting-started/quickstart_15min.md
+      - Installation: getting-started/installation.md
+      - Your First Workflow: getting-started/quickstart_python.md
+      - Understanding Results: getting-started/getting_started.md
+      - FAQ: getting-started/faq_basic.md
 
-  # Level 2: Foundations (Conceptual Basis)
-  - Foundations:
-      - Introduction: index.md
-      - Spectroscopy Fundamentals: 07-theory-and-background/spectroscopy_basics.md
-      - Food Spectroscopy Applications: 05-advanced-topics/hsi_and_harmonization.md
-      - Scope & Limitations: non_goals_and_limitations.md
-      - Domain Overview: 07-theory-and-background/domains_overview.md
-
-  # Level 3: Theory & Methods (Scientific Underpinnings)
-  - Theory & Background:
-      - Spectroscopy Theory: 07-theory-and-background/spectroscopy_basics.md
-      - Chemometrics & ML Basics: 07-theory-and-background/chemometrics_and_ml_basics.md
-      - RQ Engine Theory: 07-theory-and-background/rq_engine_detailed.md
-      - Harmonization Theory: 07-theory-and-background/harmonization_theory.md
-      - Validation Theory: 05-advanced-topics/validation_strategies.md
-      - Model Lifecycle: 05-advanced-topics/model_lifecycle.md
-      - MOATS Overview: 07-theory-and-background/moats_overview.md
-
-  # Level 4: Methods & Preprocessing (Practical Implementation)
-  - Methods & Preprocessing:
-      - Overview: 03-cookbook/cookbook_intro.md
-      - Preprocessing Recipes: 03-cookbook/preprocessing_guide.md
-      - Chemometrics Guide: 03-cookbook/chemometrics_guide.md
-      - FTIR/Raman Methods: 03-cookbook/ftir_raman_preprocessing.md
-      - RQ Features Guide: 03-cookbook/cookbook_rq_questions.md
-      - Data Formats & HDF5: 04-user-guide/data_formats_and_hdf5.md
-      - Registry & Plugins: 04-user-guide/registry_and_plugins.md
-
-  # Level 5: Modeling & Validation (ML & Statistics)
-  - Modeling & Statistics:
-      - Overview: 05-advanced-topics/architecture.md
-      - Model Architecture: 05-advanced-topics/design_overview.md
-      - Model Lifecycle & Prediction: 05-advanced-topics/model_lifecycle.md
-      - Model Registry: 05-advanced-topics/model_registry.md
-      - Validation Strategies: 05-advanced-topics/validation_strategies.md
-      - MOATS Implementation: 05-advanced-topics/MOATS_IMPLEMENTATION.md
-      - Validation Recipes: 03-cookbook/cookbook_validation.md
-      - Baseline Validation: 03-cookbook/validation_baseline.md
-      - Chemometrics (Oils): 03-cookbook/validation_chemometrics_oils.md
-      - Peak Ratios: 03-cookbook/validation_peak_ratios.md
-
-  # Level 6: Applications & Workflows (Domain Expertise)
-  - Applications:
-      - Oil Authentication: workflows/oil_authentication.md
-      - Heating Quality: workflows/heating_quality_monitoring.md
-      - Mixture Analysis: workflows/mixture_analysis.md
-      - Batch QC: workflows/batch_quality_control.md
-      - Hyperspectral Mapping: workflows/hyperspectral_mapping.md
-      - Custom Workflows: workflows/workflow_design_and_reporting.md
-      - Aging Workflows: workflows/aging_workflows.md
-      - Harmonization & Calibration: workflows/harmonization_automated_calibration.md
-      - Multimodal Workflows: 05-advanced-topics/multimodal_workflows.md
-
-  # Level 7: Tutorials & Learning (Step-by-Step)
-  - Tutorials:
+    - Tutorials:
+      - Learning Path: tutorials/index.md
       - Beginner:
-          - Oil Discrimination (Basic): 02-tutorials/oil_discrimination_basic.md
-          - Reference Analysis: 02-tutorials/reference_analysis_oil_authentication.md
-          - Raman GUI Quickstart: 02-tutorials/raman_gui_quickstart.md
+        - Load & Plot: tutorials/beginner/01-load-and-plot.md
+        - Preprocessing: tutorials/beginner/02-preprocess.md
+        - Classification: tutorials/beginner/03-classify.md
       - Intermediate:
-          - Matrix Effects: 02-tutorials/oil_vs_chips_matrix_effects.md
-          - Thermal Stability: 02-tutorials/thermal_stability_tracking.md
-          - GUI Workflow: 02-tutorials/modeling_gui_foodspec_workflow.md
+        - Oil Authentication: tutorials/intermediate/01-oil-authentication.md
+        - Matrix Effects: tutorials/intermediate/02-matrix-effects.md
+        - Stability Tracking: tutorials/intermediate/03-stability.md
       - Advanced:
-          - HSI Surface Mapping: 02-tutorials/hsi_surface_mapping.md
-          - End-to-End Notebooks: 02-tutorials/end_to_end_notebooks.md
-          - Advanced Deep Learning: 05-advanced-topics/advanced_deep_learning.md
-      - Example Catalog: 06-tutorials/example_catalog.md
+        - Reproducible Pipelines: tutorials/advanced/01-reproducible-pipelines.md
+        - Reference Workflow: tutorials/advanced/02-reference-workflow.md
+        - HSI Mapping: tutorials/advanced/03-hsi-mapping.md
+      - Notebooks: tutorials/end-to-end-notebooks.md
 
-  # Level 8: Protocols & Reproducibility (Publication Support)
-  - Protocols:
-      - Protocols Overview: protocols/protocols_overview.md
-      - Reference Protocol: protocols/reference_protocol.md
-      - Methods Text Generator: protocols/methods_text_generator.md
-      - Protocol Cookbook: 03-cookbook/protocol_cookbook.md
-      - Protocol Benchmarks: protocols/protocol_benchmarks.md
-      - Statistical Power & Design: protocols/statistical_power_and_limits.md
+    - Workflows:
+      - Overview: workflows/index.md
+      - Authentication:
+        - Oil Authentication: workflows/authentication/oil_authentication.md
+        - Domain Templates: workflows/authentication/domain_templates.md
+      - Quality Monitoring:
+        - Heating Quality: workflows/quality-monitoring/heating_quality_monitoring.md
+        - Aging Analysis: workflows/quality-monitoring/aging_workflows.md
+        - Batch QC: workflows/quality-monitoring/batch_quality_control.md
+      - Quantification:
+        - Mixture Analysis: workflows/quantification/mixture_analysis.md
+        - Calibration: workflows/quantification/calibration_regression_example.md
+      - Harmonization:
+        - Multi-Instrument: workflows/harmonization/harmonization_automated_calibration.md
+        - Calibration Transfer: workflows/harmonization/standard_templates.md
+      - Spatial Analysis:
+        - Hyperspectral Mapping: workflows/spatial/hyperspectral_mapping.md
+      - Design & Reporting: workflows/workflow_design_and_reporting.md
 
-  # Level 9: User Guide (Operations & Configuration)
-  - User Guide:
-      - CLI Guide: 04-user-guide/cli.md
-      - CLI Help Reference: 04-user-guide/cli_help.md
-      - Protocols & YAML: 04-user-guide/protocols_and_yaml.md
-      - Automated Analysis: 04-user-guide/automation.md
-      - Protocol Profiles: 04-user-guide/protocol_profiles.md
-      - Logging & Configuration: 04-user-guide/config_logging.md
-      - Data Governance: 04-user-guide/data_governance.md
-      - Library Management: 04-user-guide/libraries.md
-      - Library Search: 04-user-guide/library_search.md
-      - CSV to Library: 04-user-guide/csv_to_library.md
-      - Vendor I/O: 04-user-guide/vendor_io.md
-      - Registry & Reporting: 03-cookbook/cookbook_registry_reporting.md
-      - Troubleshooting: 03-cookbook/cookbook_troubleshooting.md
-      - Troubleshooting FAQ: troubleshooting/troubleshooting_faq.md
-      - Reporting Guidelines: troubleshooting/reporting_guidelines.md
+    - Methods:
+      - Preprocessing:
+        - Baseline Correction: methods/preprocessing/baseline_correction.md
+        - Normalization: methods/preprocessing/normalization_smoothing.md
+        - Derivatives: methods/preprocessing/derivatives_and_feature_enhancement.md
+        - Scatter Correction: methods/preprocessing/scatter_correction_cosmic_ray_removal.md
+        - Feature Extraction: methods/preprocessing/feature_extraction.md
+      - Chemometrics:
+        - Models & Best Practices: methods/chemometrics/models_and_best_practices.md
+        - Classification & Regression: methods/chemometrics/classification_regression.md
+        - PCA: methods/chemometrics/pca_and_dimensionality_reduction.md
+        - Mixture Models: methods/chemometrics/mixture_models.md
+        - Model Evaluation & Validation: methods/chemometrics/model_evaluation_and_validation.md
+        - Model Interpretability: methods/chemometrics/model_interpretability.md
+      - Validation:
+        - Cross-Validation & Leakage: methods/validation/cross_validation_and_leakage.md
+        - Metrics & Uncertainty: methods/validation/metrics_and_uncertainty.md
+        - Robustness Checks: methods/validation/robustness_checks.md
+        - Reporting Standards: methods/validation/reporting_standards.md
+      - Statistics:
+        - Overview: methods/statistics/overview.md
+        - Introduction: methods/statistics/introduction_to_statistical_analysis.md
+        - T-Tests & Power: methods/statistics/t_tests_effect_sizes_and_power.md
+        - ANOVA & MANOVA: methods/statistics/anova_and_manova.md
+        - Correlation: methods/statistics/correlation_and_mapping.md
+        - Nonparametric Methods: methods/statistics/nonparametric_methods_and_robustness.md
+        - Hypothesis Testing: methods/statistics/hypothesis_testing_in_food_spectroscopy.md
+        - Study Design: methods/statistics/study_design_and_data_requirements.md
 
-  # Level 10: API Reference (Code Documentation)
-  - API Reference:
-      - Overview: 08-api/index.md
-      - Core API: 08-api/core.md
-      - Machine Learning: 08-api/ml.md
-      - Statistics: 08-api/stats.md
+    - User Guide:
+      - CLI Guide: user-guide/cli.md
+      - CLI Help Reference: user-guide/cli_help.md
+      - Protocols & YAML: user-guide/protocols_and_yaml.md
+      - Automated Analysis: user-guide/automation.md
+      - Protocol Profiles: user-guide/protocol_profiles.md
+      - Logging & Configuration: user-guide/config_logging.md
+      - Data Governance: user-guide/data_governance.md
+      - Libraries: user-guide/libraries.md
+      - Library Search: user-guide/library_search.md
+      - CSV to Library: user-guide/csv_to_library.md
+      - Vendor I/O: user-guide/vendor_io.md
+      - Vendor Formats: user-guide/vendor_formats.md
+      - Visualization: user-guide/visualization.md
+      - Registry & Reporting: workflows/workflow_design_and_reporting.md
 
-  # Level 11: Reference Materials (Supporting Documentation)
-  - Reference:
-      - Metric Significance Tables: 09-reference/metric_significance_tables.md
-      - Glossary: 09-reference/glossary.md
-      - Keyword Index: 09-reference/keyword_index.md
-      - Method Comparison: 09-reference/method_comparison.md
-      - ML Model VIP Scores: 09-reference/ml_model_vip_scores.md
-      - Non-Goals & Limitations: non_goals_and_limitations.md
-      - Changelog: 09-reference/changelog.md
-      - Citing FoodSpec: 09-reference/citing.md
-      - Versioning: 09-reference/versioning.md
-      - Archive (Historical): archive/README.md
+    - Theory:
+      - Spectroscopy Basics: theory/spectroscopy_basics.md
+      - Food Spectroscopy Applications: theory/food_spectroscopy_applications.md
+      - Chemometrics & ML Basics: theory/chemometrics_and_ml_basics.md
+      - RQ Engine Theory: theory/rq_engine_detailed.md
+      - Harmonization Theory: theory/harmonization_theory.md
+      - MOATS Overview: theory/moats_overview.md
+      - Data Structures & FAIR: theory/data_structures_and_fair_principles.md
 
-  # Level 12: Developer Guide (Extension & Contribution)
-  - Developer Guide:
-      - Contributing: 06-developer-guide/contributing.md
-      - Testing & CI: 06-developer-guide/testing_and_ci.md
-      - Testing Coverage: 06-developer-guide/testing_coverage.md
-      - Architecture: 05-advanced-topics/architecture.md
-      - Integration Checklist: 06-developer-guide/integration_checklist.md
-      - Documentation Guidelines: 06-developer-guide/documentation_guidelines.md
-      - Extending Protocols: 06-developer-guide/extending_protocols_and_steps.md
-      - Writing Plugins: 06-developer-guide/writing_plugins.md
+    - API Reference:
+      - Overview: api/index.md
+      - Core API: api/core.md
+      - Datasets: api/datasets.md
+      - Preprocessing: api/preprocessing.md
+      - Chemometrics: api/chemometrics.md
+      - Features: api/features.md
+      - I/O & Data: api/io.md
+      - Workflows: api/workflows.md
+      - Machine Learning: api/ml.md
+      - Metrics: api/metrics.md
+      - Statistics: api/stats.md
+
+    - Developer Guide:
+      - Contributing: developer-guide/contributing.md
+      - Documentation Guidelines: developer-guide/documentation_guidelines.md
+      - Documentation Style Guide: developer-guide/documentation_style_guide.md
+      - Documentation Maintainer Guide: developer-guide/documentation_maintainer_guide.md
+      - Writing Plugins: developer-guide/writing_plugins.md
+      - Extending Protocols: developer-guide/extending_protocols_and_steps.md
+      - Testing & CI: developer-guide/testing_and_ci.md
+      - Testing Coverage: developer-guide/testing_coverage.md
+      - Releasing: developer-guide/releasing.md
       - Deployment Artifacts: 05-advanced-topics/deployment_artifact_versioning.md
       - HDF5 Schema Versioning: 05-advanced-topics/deployment_hdf5_schema_versioning.md
-      - Releasing: 06-developer-guide/releasing.md
-      - Release Checklist: 06-developer-guide/RELEASE_CHECKLIST.md
+
+    - Reference:
+      - Metric Significance Tables: reference/metric_significance_tables.md
+      - Metrics Reference: reference/metrics_reference.md
+      - Glossary: reference/glossary.md
+      - Keyword Index: reference/keyword_index.md
+      - Method Comparison: reference/method_comparison.md
+      - ML Model VIP Scores: reference/ml_model_vip_scores.md
+      - Non-Goals & Limitations: non_goals_and_limitations.md
+      - Changelog: reference/changelog.md
+      - Citing FoodSpec: reference/citing.md
+      - Versioning: reference/versioning.md
+
+    - Help & Support:
+      - Troubleshooting: help/troubleshooting.md
+      - Common Problems: troubleshooting/common_problems_and_solutions.md
+      - Reporting Guidelines: troubleshooting/reporting_guidelines.md
+      - FAQ: help/faq.md
 
 markdown_extensions:
   - admonition

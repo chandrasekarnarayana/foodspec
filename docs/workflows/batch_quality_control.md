@@ -1,12 +1,174 @@
 # Workflow: Batch Quality Control / Novelty Detection
 
-> New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).  
-> For model/evaluation choices, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
+## 📋 Standard Header
 
-QC/novelty detection answers “Does this batch look like my reference library?” It is useful for screening incoming materials, production lots, or detecting drift.
+**Purpose:** Detect off-spec batches or novelty samples by comparing new spectra to a reference library using one-class classification.
 
-Suggested visuals: score histograms, boxplots of key ratios, confusion matrix if labels exist, correlation scatter/heatmap of QC metrics vs batch attributes. See [Plots guidance](workflow_design_and_reporting.md#plots-visualizations).
-For troubleshooting (class imbalance, outliers), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
+**When to Use:**
+- Screen incoming raw material batches for authenticity
+- Monitor production lots for drift from specifications
+- Identify contaminated or adulterated samples without labeled training data
+- Flag unusual samples for further lab testing
+- Validate supplier consistency across deliveries
+
+**Inputs:**
+- Format: HDF5 spectral library (reference) + new samples (HDF5 or CSV)
+- Required metadata: `group` column ("auth_ref" vs "evaluation" OR similar)
+- Optional metadata: `batch`, `supplier`, `date`
+- Wavenumber range: Same as reference library (typically 600–1800 cm⁻¹)
+- Min samples: 50+ reference spectra (authentic), any number of evaluation samples
+
+**Outputs:**
+- qc_scores.csv — Novelty scores for each evaluation sample
+- qc_labels.csv — Predicted labels ("authentic" vs "suspect") based on threshold
+- score_distribution.png — Histogram of scores with threshold line
+- pca_scores.png — (Optional) PCA showing reference vs evaluation separation
+- report.md — Summary with specificity/sensitivity (if labels available)
+
+**Assumptions:**
+- Reference library is representative (covers expected variability)
+- Preprocessing identical for reference and evaluation samples
+- Threshold chosen based on acceptable false positive rate
+- One-class model appropriate (novelty = outlier from reference distribution)
+
+---
+
+## 🔬 Minimal Reproducible Example (MRE)
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from foodspec.apps.qc import run_qc_workflow
+from foodspec.viz.qc import plot_score_distribution
+from examples.qc_quickstart import _synthetic_qc
+
+# Generate synthetic QC dataset (reference + evaluation samples)
+fs = _synthetic_qc()
+print(f"Total samples: {fs.x.shape[0]}")
+print(f"Reference: {(fs.metadata['group'] == 'auth_ref').sum()}")
+print(f"Evaluation: {(fs.metadata['group'] == 'evaluation').sum()}")
+
+# Define train mask (reference library)
+train_mask = fs.metadata["group"] == "auth_ref"
+
+# Run QC workflow (one-class SVM)
+result = run_qc_workflow(
+    fs,
+    train_mask=train_mask,
+    model_type="oneclass_svm",  # or "isolation_forest"
+    nu=0.05  # Expected outlier fraction
+)
+
+# Display results
+print(f"\nQC Results:")
+print(f"  Threshold: {result.threshold:.3f}")
+print(f"  Predictions: {result.labels_pred.value_counts().to_dict()}")
+if 'true_label' in fs.metadata.columns:
+    from sklearn.metrics import classification_report
+    print("\nClassification Report:")
+    print(classification_report(fs.metadata['true_label'], result.labels_pred))
+
+# Plot score distribution
+fig, ax = plt.subplots(figsize=(8, 6))
+plot_score_distribution(
+    result.scores,
+    threshold=result.threshold,
+    labels=result.labels_pred,
+    ax=ax
+)
+ax.set_title("QC Score Distribution")
+plt.tight_layout()
+plt.savefig("qc_score_distribution.png", dpi=150, bbox_inches='tight')
+print("Saved: qc_score_distribution.png")
+```
+
+**Expected Output:**
+```mermaid
+Total samples: 150
+Reference: 100
+Evaluation: 50
+
+QC Results:
+  Threshold: -0.325
+  Predictions: {'authentic': 45, 'suspect': 5}
+
+Saved: qc_score_distribution.png
+```
+
+---
+
+## ✅ Validation & Sanity Checks
+
+### Success Indicators
+
+**Score Distribution:**
+- ✅ Reference samples have high scores (> threshold)
+- ✅ Clear separation between reference and known outliers
+- ✅ Evaluation samples fall into two distinct groups (authentic vs suspect)
+
+**Metrics (if labels available):**
+- ✅ Specificity > 90% (few false positives = low false alarm rate)
+- ✅ Sensitivity > 80% (catches most true outliers)
+- ✅ Balanced performance (not all predictions "authentic" or all "suspect")
+
+**PCA Visualization:**
+- ✅ Reference samples cluster tightly
+- ✅ Suspect samples fall outside reference cluster
+- ✅ No strong batch effects within reference library
+
+### Failure Indicators
+
+**⚠️ Warning Signs:**
+
+1. **All evaluation samples labeled "authentic" (no suspects detected)**
+   - Problem: Threshold too lenient; model not sensitive enough
+   - Fix: Lower threshold (increase nu parameter); check if evaluation truly contains outliers
+
+2. **All evaluation samples labeled "suspect" (no authentics)**
+   - Problem: Threshold too strict; systematic difference between reference and evaluation
+   - Fix: Raise threshold; check preprocessing consistency; verify reference library representative
+
+3. **Reference samples score below threshold (self-rejection)**
+   - Problem: Model overfitting; threshold miscalibrated
+   - Fix: Increase nu; simplify model (reduce gamma in OC-SVM); check for outliers in reference
+
+4. **Score distribution unimodal (no separation)**
+   - Problem: Model not discriminating; evaluation too similar to reference
+   - Fix: Try alternative model (IsolationForest vs OC-SVM); check if spectral differences exist
+
+### Quality Thresholds
+
+| Metric | Minimum | Good | Excellent |
+|--------|---------|------|--------|
+| Specificity (if labels) | 85% | 92% | 98% |
+| Sensitivity (if labels) | 70% | 85% | 95% |
+| Reference Self-Acceptance | 90% | 95% | 99% |
+| Score Separation (suspect-authentic) | 0.2 | 0.5 | 1.0 |
+
+---
+
+## ⚙️ Parameters You Must Justify
+
+### Critical Parameters
+
+**1. Model Type**
+- **Parameter:** `model_type` ("oneclass_svm" or "isolation_forest")
+- **Default:** "oneclass_svm"
+- **When to adjust:** Use IsolationForest if reference very large (>1000 samples) or high-dimensional
+- **Justification:** "One-class SVM (RBF kernel) was used to model the reference distribution, as it handles nonlinear boundaries and is robust to small outliers."
+
+**2. Threshold (nu parameter)**
+- **Parameter:** `nu` (expected outlier fraction in reference)
+- **Default:** 0.05 (5% outliers expected)
+- **When to adjust:** Increase (0.10) if reference noisy; decrease (0.01) if very clean
+- **Justification:** "nu=0.05 was chosen to allow 5% of reference samples as support vectors, balancing sensitivity to true outliers vs false alarms."
+
+**3. Preprocessing Consistency**
+- **Parameter:** Same baseline, normalization, cropping for reference and evaluation
+- **Critical:** Must be identical
+- **Justification:** "Reference and evaluation samples were preprocessed identically (ALS baseline, L2 normalization) to ensure scores comparable."
+
+---
 
 ```mermaid
 flowchart LR
@@ -76,7 +238,7 @@ Outputs: `qc_scores.csv` with scores and predicted labels, summary.json.
 
 ### Qualitative & quantitative interpretation
 - **Qualitative:** Score histograms show separation between reference and new batches; PCA scores (optional) can highlight outliers.  
-- **Quantitative:** If labels exist, compute specificity/sensitivity and a confusion matrix. Silhouette on PCA scores (if used) can quantify structure; tests on key ratios (t-test/ANOVA/Games–Howell) can support suspicion (link to [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md)).  
+- **Quantitative:** If labels exist, compute specificity/sensitivity and a confusion matrix. Silhouette on PCA scores (if used) can quantify structure; tests on key ratios (t-test/ANOVA/Games–Howell) can support suspicion (link to [Hypothesis testing](../methods/statistics/hypothesis_testing_in_food_spectroscopy.md)).  
 - **Reviewer phrasing:** “Most evaluation samples score above the QC threshold; suspects (n=…) are supported by lower ratio values (t-test p < …) and lower PCA silhouette.”
 
 ## Summary
@@ -149,7 +311,7 @@ print(res.summary)
    - **Fix:** Build in time for replication (≥3 repeats); require agreement before batch acceptance
 
 ## Further reading
-- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)  
-- [Classification & regression](../ml/classification_regression.md)  
-- [Model evaluation](../ml/model_evaluation_and_validation.md)  
-- [Hyperspectral mapping](hyperspectral_mapping.md)
+- [Normalization & smoothing](../methods/preprocessing/normalization_smoothing.md)  
+- [Classification & regression](../methods/chemometrics/classification_regression.md)  
+- [Model evaluation](../methods/chemometrics/model_evaluation_and_validation.md)  
+- [Hyperspectral mapping](spatial/hyperspectral_mapping.md)

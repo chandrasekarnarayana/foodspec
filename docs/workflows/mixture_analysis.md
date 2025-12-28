@@ -1,12 +1,217 @@
 # Workflow: Mixture Analysis
 
-> New to workflow design? See [Designing & reporting workflows](workflow_design_and_reporting.md).
-> For model/evaluation guidance, see [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
+## 📋 Standard Header
 
-Mixture analysis estimates component fractions (e.g., EVOO–sunflower blends) from spectra. This workflow uses NNLS when pure references exist and MCR-ALS when they do not.
+**Purpose:** Estimate component fractions in mixtures (e.g., olive oil adulterated with sunflower oil) using spectral unmixing.
 
-Suggested visuals: predicted vs true scatter, residual plots, correlation heatmaps for predicted/true fractions. See [Plots guidance](workflow_design_and_reporting.md#plots-visualizations).
-For troubleshooting (peak alignment, imbalance of mixtures), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
+**When to Use:**
+- Quantify adulteration level in food products
+- Determine blending ratios in multi-component samples
+- Monitor process streams for composition drift
+- Validate supplier blend specifications
+- Estimate impurity levels when pure references available
+
+**Inputs:**
+- Format: HDF5 or CSV with mixture spectra + (optional) pure component spectra
+- Required metadata: `mixture_id`; optional: true fractions (for validation)
+- Pure spectra: One spectrum per component (if using NNLS)
+- Wavenumber range: Must align across mixtures and pure spectra (typically 600–1800 cm⁻¹)
+- Min samples: 10+ mixtures; 1 pure spectrum per component (if using NNLS)
+
+**Outputs:**
+- fractions.csv — Estimated component fractions for each mixture
+- pred_vs_true.png — Scatter plot (if ground truth available)
+- residual_plot.png — Reconstruction error per mixture
+- spectral_reconstruction.png — Observed vs reconstructed spectra
+- report.md — RMSE, R², correlation for each component
+
+**Assumptions:**
+- Spectra are linear combinations of pure components (Beer-Lambert holds)
+- Pure spectra representative of components in mixtures (no matrix effects)
+- Wavenumbers aligned (no shifts between mixtures and pure spectra)
+- No interactions between components (no chemical reactions in mixtures)
+
+---
+
+## 🔬 Minimal Reproducible Example (MRE)
+
+### Option A: NNLS with Pure References
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from foodspec.chemometrics.mixture import run_mixture_analysis_workflow
+from foodspec.viz.mixture import plot_pred_vs_true
+from examples.mixture_analysis_quickstart import _synthetic_mixtures
+
+# Generate synthetic mixtures with known fractions
+mixtures, pure_spectra, true_coeffs = _synthetic_mixtures(n_mixtures=30)
+print(f"Mixtures: {mixtures.x.shape[0]} spectra")
+print(f"Pure components: {pure_spectra.x.shape[0]}")
+print(f"True fractions shape: {true_coeffs.shape}")
+
+# Run NNLS workflow
+result = run_mixture_analysis_workflow(
+    mixtures=mixtures.x,
+    pure_spectra=pure_spectra.x,
+    mode="nnls"  # Non-negative least squares
+)
+
+# Extract results
+pred_fractions = result["coefficients"]
+residual_norms = result["residual_norms"]
+
+# Evaluate if ground truth available
+from sklearn.metrics import r2_score, mean_squared_error
+for i, comp in enumerate(['Component A', 'Component B']):
+    r2 = r2_score(true_coeffs[:, i], pred_fractions[:, i])
+    rmse = np.sqrt(mean_squared_error(true_coeffs[:, i], pred_fractions[:, i]))
+    print(f"{comp}: R²={r2:.3f}, RMSE={rmse:.3f}")
+
+# Plot predicted vs true
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+for i, (ax, comp) in enumerate(zip(axes, ['Component A', 'Component B'])):
+    plot_pred_vs_true(
+        true_coeffs[:, i],
+        pred_fractions[:, i],
+        ax=ax
+    )
+    ax.set_title(comp)
+    ax.set_xlabel("True Fraction")
+    ax.set_ylabel("Predicted Fraction")
+plt.tight_layout()
+plt.savefig("mixture_pred_vs_true.png", dpi=150, bbox_inches='tight')
+print("Saved: mixture_pred_vs_true.png")
+```
+
+**Expected Output:**
+```yaml
+Mixtures: 30 spectra
+Pure components: 2
+True fractions shape: (30, 2)
+
+Component A: R²=0.952, RMSE=0.042
+Component B: R²=0.948, RMSE=0.045
+
+Saved: mixture_pred_vs_true.png
+```
+
+### Option B: MCR-ALS without Pure References
+
+```python
+from foodspec.chemometrics.mcr import run_mcr_als
+
+# Same mixture data, but don't use pure spectra
+mixtures, _, true_coeffs = _synthetic_mixtures(n_mixtures=30)
+
+# Run MCR-ALS (alternating least squares)
+result_mcr = run_mcr_als(
+    mixtures.x,
+    n_components=2,  # Must specify number of components
+    max_iter=100,
+    tol=1e-4
+)
+
+pred_fractions_mcr = result_mcr["coefficients"]
+recovered_spectra = result_mcr["components"]
+
+print(f"MCR-ALS converged in {result_mcr['n_iter']} iterations")
+print(f"Final residual: {result_mcr['residual']:.4f}")
+
+# Note: MCR-ALS may recover components in different order or with scaling
+# Alignment to true fractions requires post-processing
+```
+
+---
+
+## ✅ Validation & Sanity Checks
+
+### Success Indicators
+
+**Predicted vs True (if ground truth available):**
+- ✅ R² > 0.90 for each component
+- ✅ RMSE < 0.05 (5% error in fraction estimation)
+- ✅ Points cluster tightly around diagonal (y = x line)
+
+**Residual Analysis:**
+- ✅ Residual norms small and uniform across mixtures
+- ✅ No systematic patterns in residual spectra (random noise only)
+- ✅ Reconstructed spectra visually match observed spectra
+
+**Fractions Sum to 1:**
+- ✅ Sum of predicted fractions ≈ 1.0 for each mixture (within 0.05)
+- ✅ All fractions ≥ 0 (non-negativity constraint satisfied)
+- ✅ No fractions > 1.0 (physically impossible)
+
+### Failure Indicators
+
+**⚠️ Warning Signs:**
+
+1. **R² < 0.70 or RMSE > 0.15**
+   - Problem: Poor prediction; model not capturing mixture composition
+   - Fix: Check wavenumber alignment; verify pure spectra quality; increase spectral resolution
+
+2. **Predicted fractions sum >> 1.0 or << 1.0**
+   - Problem: Scaling issue; normalization mismatch; missing component
+   - Fix: Renormalize pure spectra; check if mixture contains unlabeled component
+
+3. **Negative fractions (NNLS should prevent this)**
+   - Problem: Algorithm not converging; numerical instability
+   - Fix: Increase iteration limit; check for collinear pure spectra; try regularization
+
+4. **High residuals for specific mixtures (outliers)**
+   - Problem: Mixture contains impurity; pure spectra not representative; spectral shift
+   - Fix: Remove outlier mixtures; check for temperature/pH effects; verify sample quality
+
+5. **MCR-ALS components don't match pure spectra**
+   - Problem: Component order ambiguous; scaling arbitrary; local minimum
+   - Fix: Use better initialization; increase iterations; compare spectral features manually
+
+### Quality Thresholds
+
+| Metric | Minimum | Good | Excellent |
+|--------|---------|------|--------|
+| R² (per component) | 0.80 | 0.92 | 0.98 |
+| RMSE (fraction) | < 0.10 | < 0.05 | < 0.02 |
+| Residual Norm | < 5% | < 2% | < 0.5% |
+| Fraction Sum Deviation | < 0.10 | < 0.05 | < 0.02 |
+
+---
+
+## ⚙️ Parameters You Must Justify
+
+### Critical Parameters
+
+**1. Unmixing Method**
+- **Parameter:** `mode` ("nnls" or "mcr_als")
+- **Default:** "nnls" if pure spectra available
+- **When to adjust:** Use MCR-ALS if pure spectra unknown or unavailable
+- **Justification:** "Non-negative least squares (NNLS) was used to estimate component fractions, as pure spectra were available and Beer-Lambert linearity assumed."
+
+**2. Number of Components (MCR-ALS only)**
+- **Parameter:** `n_components`
+- **No default:** Must specify
+- **When to adjust:** Based on prior knowledge or exploratory PCA (scree plot)
+- **Justification:** "Two components were specified based on known binary mixture composition (olive + sunflower oils)."
+
+**3. Spectral Alignment**
+- **Parameter:** Wavenumber range, interpolation
+- **Critical:** Must align mixtures and pure spectra
+- **Justification:** "All spectra were interpolated to a common wavenumber grid (600–1800 cm⁻¹, 1 cm⁻¹ resolution) to ensure Beer-Lambert additivity."
+
+**4. Normalization**
+- **Parameter:** Method (area, max, L2) applied to pure spectra
+- **Default:** Area normalization (unit area under curve)
+- **When to adjust:** Use L2 if intensity scaling consistent; use max if peak heights comparable
+- **Justification:** "Pure spectra were area-normalized to unit integral, ensuring fractions represent volume/mass ratios."
+
+**5. Convergence Criteria (MCR-ALS)**
+- **Parameter:** `tol` (tolerance), `max_iter`
+- **Default:** tol=1e-4, max_iter=100
+- **When to adjust:** Increase max_iter if not converging; tighten tol if precision needed
+- **Justification:** "MCR-ALS was terminated when relative change in residual < 1e-4 or 100 iterations reached."
+
+---
 
 ```mermaid
 flowchart LR
@@ -73,7 +278,7 @@ Outputs: coefficients CSV, residuals, optional reconstruction plots.
 
 ### Qualitative & quantitative interpretation
 - **Qualitative:** Overlay observed mixture vs NNLS reconstruction; residual should look like noise, not structured bands. Predicted vs true fractions plot should follow 1:1 line.
-- **Quantitative:** Report reconstruction RMSE/R²; residual norm from NNLS; optional permutation p_perm on between/within separation if visualizing embeddings of fractions/components. Link to [Metrics](../../metrics/metrics_and_evaluation/) and [Stats](../stats/overview.md) for regression diagnostics.
+- **Quantitative:** Report reconstruction RMSE/R²; residual norm from NNLS; optional permutation p_perm on between/within separation if visualizing embeddings of fractions/components. Link to [Metrics](../reference/metrics_reference.md) and [Stats](../methods/statistics/overview.md) for regression diagnostics.
 - **Reviewer phrasing:** “NNLS reconstruction overlays the observed spectrum with RMSE = …; predicted fractions track true values (R² = …); residuals show no systematic misfit.”
 
 ## Summary
@@ -147,6 +352,6 @@ print(corr)
    - **Fix:** Plot residuals vs wavenumber; inspect for systematic patterns; investigate large residuals
 
 ## Further reading
-- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)
-- [Mixture models & fingerprinting](../ml/mixture_models.md)
-- [Model evaluation](../ml/model_evaluation_and_validation.md)
+- [Normalization & smoothing](../methods/preprocessing/normalization_smoothing.md)
+- [Mixture models & fingerprinting](../methods/chemometrics/mixture_models.md)
+- [Model evaluation](../methods/chemometrics/model_evaluation_and_validation.md)

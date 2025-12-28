@@ -283,7 +283,7 @@ If classes imbalanced:
 ## See Also
 
 - [Reference Protocol](reference_protocol.md) — The underlying methodology
-- [Model Evaluation and Validation](../ml/model_evaluation_and_validation.md) — Metrics and interpretation
+- [Model Evaluation and Validation](../methods/chemometrics/model_evaluation_and_validation.md) — Metrics and interpretation
 - [Non-Goals and Limitations](../non_goals_and_limitations.md) — What FoodSpec cannot do
 - [Reporting Guidelines](../troubleshooting/reporting_guidelines.md) — Best practices for communicating results
 

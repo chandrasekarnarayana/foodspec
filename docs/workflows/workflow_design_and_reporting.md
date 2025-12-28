@@ -24,7 +24,7 @@ flowchart LR
 ```
 - It is a pipeline from question → instrument → data → preprocessing → features → analysis → interpretation → reporting.
 - It aligns scientific goals with acquisition conditions, preprocessing choices, analysis methods, and clear outputs.
-- Model and metric choices are covered in [ML & DL models](../ml/models_and_best_practices.md) and [Metrics & evaluation](../../metrics/metrics_and_evaluation/).
+- Model and metric choices are covered in [ML & DL models](../methods/chemometrics/models_and_best_practices.md) and [Metrics & evaluation](../reference/metrics_reference.md).
 - For issues at any stage (baseline, SNR, imbalance, overfitting), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
 
 ## How to design a workflow (step-by-step)
@@ -55,14 +55,14 @@ flowchart LR
 
 When assumptions are doubtful or samples are small/skewed, use nonparametric tests (`run_mannwhitney_u`, `run_kruskal_wallis`, `run_wilcoxon_signed_rank`, `run_friedman_test`) and robustness checks (`bootstrap_metric`, `permutation_test_metric`) from `foodspec.stats`.
 
-For instrument/file formats and ingestion routes, see the [Instrument & file formats guide](../user_guide/instrument_file_formats.md).
+For instrument/file formats and ingestion routes, see the [Instrument & file formats guide](../user-guide/vendor_formats.md).
 
 See also:
-- Preprocessing: [Baseline](../../preprocessing/baseline_correction/), [Normalization](../../preprocessing/normalization_smoothing/), [Feature extraction](../../preprocessing/feature_extraction/)
-- ML: [Classification & regression](../ml/classification_regression.md), [Mixture models](../ml/mixture_models.md)
-- Stats: [Hypothesis testing](../stats/hypothesis_testing_in_food_spectroscopy.md), [ANOVA/MANOVA](../stats/anova_and_manova.md)
+- Preprocessing: [Baseline](../methods/preprocessing/baseline_correction.md), [Normalization](../methods/preprocessing/normalization_smoothing.md), [Feature extraction](../methods/preprocessing/feature_extraction.md)
+- ML: [Classification & regression](../methods/chemometrics/classification_regression.md), [Mixture models](../methods/chemometrics/mixture_models.md)
+- Stats: [Hypothesis testing](../methods/statistics/hypothesis_testing_in_food_spectroscopy.md), [ANOVA/MANOVA](../methods/statistics/anova_and_manova.md)
 - Protocols: [Reproducibility checklist](../protocols/reproducibility_checklist.md)
-- API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../08-api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../api/workflows.md)
+- API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../08-api/workflows.md)
 
 ## Instrument specs, calibration, limitations → data
 - **Range & resolution:** Determines which bands are captured/resolved. Choose ranges that cover key functional groups.
@@ -171,7 +171,7 @@ Expected details: axes labels (units), legends, group labels, sample sizes, conf
    - **Fix:** Visualize outputs (spectra, residuals, predictions); validate top features chemically; involve domain experts
 
 ## See also
-- [Workflows](./oil_authentication.md)
-- [Statistics overview](../stats/overview.md)
-- [Preprocessing guides](../../preprocessing/baseline_correction/)
+- [Workflows](authentication/oil_authentication.md)
+- [Statistics overview](../methods/statistics/overview.md)
+- [Preprocessing guides](../methods/preprocessing/baseline_correction.md)
 - [Protocols & reproducibility](../protocols/reproducibility_checklist.md)

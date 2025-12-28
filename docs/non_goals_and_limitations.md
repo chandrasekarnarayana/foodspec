@@ -125,7 +125,7 @@ FoodSpec supports:
 
 **Reality:** Batch effects can be as large as or larger than biological signal.
 
-**Mitigation:** Use batch-aware CV (fold by batch). Include batch as a covariate or use batch correction (ComBat, SVA) before modeling. See [Study Design](stats/study_design_and_data_requirements.md).
+**Mitigation:** Use batch-aware CV (fold by batch). Include batch as a covariate or use batch correction (ComBat, SVA) before modeling. See [Study Design](methods/statistics/study_design_and_data_requirements.md).
 
 ---
 
@@ -134,7 +134,7 @@ FoodSpec supports:
 
 **Reality:** Feature importance reflects correlation with the target in the training set, not causation. High importance can reflect confounding or noise.
 
-**Mitigation:** Validate features on independent data. Use interpretability tools (SHAP, permutation importance). Cross-validate model structure. See [Interpretability](ml/model_interpretability.md).
+**Mitigation:** Validate features on independent data. Use interpretability tools (SHAP, permutation importance). Cross-validate model structure. See [Interpretability](methods/chemometrics/model_interpretability.md).
 
 ---
 
@@ -152,7 +152,7 @@ FoodSpec supports:
 
 **Reality:** A single spectrum is noisy; natural variability may exceed model discrimination ability.
 
-**Mitigation:** Always take ≥3 replicates. Report confidence intervals or error bounds. See [Study Design](stats/study_design_and_data_requirements.md).
+**Mitigation:** Always take ≥3 replicates. Report confidence intervals or error bounds. See [Study Design](methods/statistics/study_design_and_data_requirements.md).
 
 ---
 
@@ -191,7 +191,7 @@ Consider seeking expert review if:
 
 ## See Also
 
-- [Study Design and Data Requirements](stats/study_design_and_data_requirements.md) — How to plan robust FoodSpec studies
-- [Model Evaluation and Validation](ml/model_evaluation_and_validation.md) — How to assess and validate models
+- [Study Design and Data Requirements](methods/statistics/study_design_and_data_requirements.md) — How to plan robust FoodSpec studies
+- [Model Evaluation and Validation](methods/chemometrics/model_evaluation_and_validation.md) — How to assess and validate models
 - [Reporting Guidelines](troubleshooting/reporting_guidelines.md) — How to communicate FoodSpec results responsibly
 

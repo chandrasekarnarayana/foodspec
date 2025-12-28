@@ -35,7 +35,7 @@ flowchart LR
 - Validate models with appropriate CV and metrics; document choices.
 
 ## Further reading
-- [Baseline correction](../../preprocessing/baseline_correction/)
-- [Normalization & smoothing](../../preprocessing/normalization_smoothing/)
-- [Classification & regression](../ml/classification_regression.md)
-- [Mixture analysis workflow](../workflows/mixture_analysis.md)
+- [Baseline correction](../methods/preprocessing/baseline_correction.md)
+- [Normalization & smoothing](../methods/preprocessing/normalization_smoothing.md)
+- [Classification & regression](../methods/chemometrics/classification_regression.md)
+- [Mixture analysis workflow](../workflows/quantification/mixture_analysis.md)

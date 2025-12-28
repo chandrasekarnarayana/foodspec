@@ -1,0 +1,264 @@
+# ML & DL models and best practices in FoodSpec
+
+Questions this page answers:
+- Why do we need ML/DL for spectroscopy, and what challenges do spectra present?
+- Which model families are available in FoodSpec and when should I use each?
+- How do models connect to metrics, plots, and workflows (oil auth, heating, QC, calibration)?
+- What are the best practices for splitting data, avoiding leakage, and interpreting results?
+
+## 1. Why ML & DL matter in spectroscopy
+- Spectra are high-dimensional, highly correlated (small n / large p), and often noisy.
+- Predictive models help with authentication, adulteration detection, spoilage identification, calibration of continuous properties, and QC flagging.
+- FoodSpec provides well-scoped classical models and an optional deep model, all evaluated via `foodspec.metrics` and visualized with `foodspec.viz`.
+
+> Working with CV, p-values, or effect sizes to compare models? See Stats: [Overview](../statistics/overview.md), [Hypothesis testing](../statistics/hypothesis_testing_in_food_spectroscopy.md), [Nonparametric methods](../statistics/nonparametric_methods_and_robustness.md), [Effect sizes/power](../statistics/t_tests_effect_sizes_and_power.md), and [Study design](../statistics/study_design_and_data_requirements.md).
+
+See also:
+- Preprocessing & chemometrics: [baseline, normalization, PCA](../preprocessing/feature_extraction.md)
+- Metrics & evaluation: [metrics/metrics_and_evaluation/](../../reference/metrics_reference.md)
+- Visualization: [plotting_with_foodspec.md](../../user-guide/visualization.md)
+
+## 2. Model families and when to use them
+
+### Linear / margin-based
+- **Logistic regression** (`make_classifier("logreg")`): fast, interpretable; good baseline for well-separated classes; regularization helps small-n/large-p.
+- **Linear SVM** (`make_classifier("svm_linear")`): strong linear margin; performs well on high-dimensional spectra; tune C.
+- **PLS / PLS-DA** (`make_pls_regression`, `make_pls_da`): chemometric standard for calibration and discriminant analysis; captures latent factors; tune components.
+
+### Non-linear
+- **RBF SVM** (`make_classifier("svm_rbf")`): handles non-linear decision boundaries; requires kernel parameters (C, gamma); watch for scaling and overfitting.
+- **Random Forest** (`make_classifier("rf")`): robust to mixed signals, offers feature importances; useful when peak subsets drive class differences.
+- **Gradient Boosting** (`make_classifier("gboost")`): scikit-learn GradientBoostingClassifier; strong non-linear learner for moderate-sized tabular spectral features; can outperform RF when interactions matter.
+- **XGBoost / LightGBM** (`make_classifier("xgb")`, `make_classifier("lgbm")`): optional extras (`pip install foodspec[ml]`); fast boosted trees with handling of non-linear interactions and imbalance; tune learning_rate/estimators/depth. Prefer when you have enough samples and need strong tabular performance.
+- **k-NN** (`make_classifier("knn")`): simple, instance-based; good quick baseline; sensitive to scaling and class imbalance.
+
+### Regression / calibration
+- **PLS Regression** (`make_pls_regression`): preferred for spectral calibration (e.g., moisture, quality index).
+- **Linear/ElasticNet Regression** (via scikit-learn estimators): for simple linear relationships; add regularization for stability.
+
+### Deep learning (optional)
+- **Conv1DSpectrumClassifier** (`foodspec.chemometrics.deep`): 1D CNN for spectra; optional extra dependency; useful when non-linear, local patterns matter. Use cautiously with limited data; cross-validate carefully. Normalize inputs and consider early stopping/dropout.
+- **MLP (conceptual)**: A fully connected network can approximate non-linear calibrations; benchmark against PLS and keep architectures small for limited datasets.
+
+## Plain-language guide to common models (for food scientists)
+
+- **Logistic regression (linear model)**  
+  What it does: fits a straight decision boundary using weighted sums of features (peaks/ratios/PCs).  
+  When to use: small datasets, roughly linear separation, need interpretable coefficients.  
+  When it struggles: highly non-linear class structure, unscaled features, severe imbalance.  
+  Math intuition: estimates \(p(y=1|x)=1/(1+e^{-(w^\top x+b)})\); weights \(w\) show band importance.  
+  Code: `make_classifier("logreg", class_weight="balanced")`.
+
+- **Support Vector Machines (SVM)**  
+  What it does: finds a maximum-margin boundary; RBF kernel bends that boundary for non-linearity.  
+  When to use: high-dimensional spectra, moderate samples, need strong baselines.  
+  When it struggles: extreme imbalance (without class weights), poor scaling, many overlapping classes.  
+  Math intuition: solves a margin optimization; kernel maps features to a higher-dimensional space.  
+  Code: `make_classifier("svm_linear")` or `make_classifier("svm_rbf", C=1.0, gamma="scale")`.
+
+- **Random Forest / Gradient Boosting / XGBoost / LightGBM (tree ensembles)**  
+  What they do: build many decision trees and average/boost them to capture non-linear interactions between bands/ratios.  
+  When to use: non-linear relationships, mixed feature types, need variable importance.  
+  When they struggle: extremely small datasets (risk of overfitting), very high noise without tuning.  
+  Math intuition: recursive splits that maximize class separation or reduce variance; boosting corrects previous errors.  
+  Code: `make_classifier("rf", n_estimators=300)`, `make_classifier("gboost")`, or optional `make_classifier("xgb")` / `"lgbm"` after `pip install foodspec[ml]`.
+
+- **PLS / PLS-DA (latent-factor models)**  
+  What it does: projects spectra into latent components that maximize covariance with target (continuous or class).  
+  When to use: calibration/regression, discriminant analysis with correlated bands.  
+  When it struggles: strong non-linear effects not captured by few components.  
+  Math intuition: decomposes \(X \approx T P^\top\) with scores \(T\) that align with response; components are orthogonal and capture shared variance.  
+  Code: `make_pls_regression(n_components=8)` or `make_pls_da(n_components=5)`.
+
+- **k-NN**  
+  What it does: compares each spectrum to its nearest neighbors in feature space.  
+  When to use: quick baseline, small datasets, intuitive behavior.  
+  When it struggles: high dimensionality without PCA, different scales, class imbalance.  
+  Math intuition: majority vote (classification) or average (regression) among k closest points.  
+  Code: `make_classifier("knn", n_neighbors=5)`.
+
+- **Deep models (Conv1D/MLP)**  
+  What they do: learn non-linear transformations directly from spectra.  
+  When to use: larger datasets, local spectral patterns expected.  
+  When they struggle: small datasets (overfit), limited interpretability, heavier tuning needs.  
+  Math intuition: stacked linear filters + non-linearities approximate complex functions.  
+  Code: see DL examples below; always benchmark vs classical models and report caution.
+
+## 3. Choosing the right model
+
+### Model selection flowchart
+```mermaid
+flowchart LR
+    A[What is your task?] --> B[Classification]
+    A --> C[Regression / Calibration]
+
+    B --> B1{Dataset size?}
+    B1 -->|Small / linear-ish| B2[Logistic Regression or SVM (linear)]
+    B1 -->|Larger or non-linear| B3[RBF SVM / RF / Boosting]
+
+    C --> C1{Strong linear relation?}
+    C1 -->|Yes| C2[PLS Regression]
+    C1 -->|No / non-linear| C3[MLP or other non-linear model]
+```
+
+Task-to-model mapping:
+- Authentication / multi-class oils: linear SVM, RBF SVM, RF; start simple (logreg) as baseline.
+- Rare adulteration/spoilage (imbalance): linear/RBF SVM with class weights, RF or boosted trees; evaluate with PR curves.
+- Calibration (quality index, moisture): PLS regression; consider non-linear (MLP) if bias remains.
+- Quick baselines / interpretability: k-NN, logistic regression, RF feature importances.
+
+## 4. Best practices
+- **Splits and CV:** Use stratified splits for classification; cross-validation for small datasets. Keep preprocessing (baseline, scaling, PCA/PLS) inside pipelines to avoid leakage.
+- **Scaling:** Many models expect scaled inputs; use vector/area norm or StandardScaler where appropriate.
+- **Hyperparameters:** Start with defaults; tune key knobs (C/gamma for SVM, n_estimators/depth for RF, components for PLS/PCA).
+- **Imbalance:** Prefer F1_macro, balanced accuracy, precision–recall curves for rare adulteration/spoilage events.
+- **Overfitting checks:** Monitor train vs validation metrics; use permutation/bootstraps (`foodspec.stats.robustness`) when in doubt.
+- **Reproducibility:** Fix random seeds, record configs, and export run metadata via `foodspec.reporting.export_run_metadata`.
+
+## Classification example (PCA + SVM)
+```python
+import numpy as np
+from sklearn.pipeline import make_pipeline
+from sklearn.decomposition import PCA
+from foodspec.chemometrics.models import make_classifier
+from foodspec.metrics import compute_classification_metrics
+from foodspec.viz import plot_confusion_matrix
+
+X_train, X_test, y_train, y_test = ...  # spectra arrays
+clf = make_pipeline(PCA(n_components=10), make_classifier("svm_rbf"))
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+metrics = compute_classification_metrics(y_test, y_pred)
+plot_confusion_matrix(metrics["confusion_matrix"], class_labels=np.unique(y_test))
+```
+
+Use when: non-linear class boundaries (e.g., subtle oil-type differences). Interpret using F1_macro and confusion matrix; add ROC/PR when scores are available.
+
+### Boosted trees example (optional xgboost/lightgbm)
+```python
+# pip install foodspec[ml]  # installs xgboost + lightgbm
+from foodspec.chemometrics.models import make_classifier
+from foodspec.metrics import compute_classification_metrics
+
+clf = make_classifier("xgb", n_estimators=200, learning_rate=0.05, subsample=0.8, random_state=42)
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+metrics = compute_classification_metrics(y_test, y_pred)
+print(metrics[["accuracy", "f1_macro"]])
+```
+Use when: you need strong non-linear tabular performance and can install optional deps. Pair with PR/ROC curves and feature importances/gain plots to interpret.
+
+## Regression / calibration example (PLS)
+```python
+from foodspec.chemometrics.models import make_pls_regression
+from foodspec.metrics import compute_regression_metrics
+from foodspec.viz import plot_regression_calibration, plot_residuals
+
+pls = make_pls_regression(n_components=8)
+pls.fit(X_train, y_train)           # e.g., quality index or concentration
+y_pred = pls.predict(X_test).ravel()
+reg_metrics = compute_regression_metrics(y_test, y_pred)
+ax = plot_regression_calibration(y_test, y_pred)
+plot_residuals(y_test, y_pred)
+```
+
+Use when: calibrating continuous properties (moisture, peroxide value). Interpret RMSE/MAE and R²; inspect residual plots for bias.
+
+## Deep learning note (optional)
+```python
+# pip install foodspec[deep]
+from foodspec.chemometrics.deep import Conv1DSpectrumClassifier
+from foodspec.metrics import compute_classification_metrics
+
+model = Conv1DSpectrumClassifier(n_filters=16, n_epochs=20, batch_size=32, random_state=42)
+model.fit(X_train, y_train)
+probs = model.predict_proba(X_test)
+y_pred = model.predict(X_test)
+metrics = compute_classification_metrics(y_test, y_pred)
+print("DL accuracy:", metrics["accuracy"])
+```
+Use when you have enough data and expect local spectral patterns. Always benchmark against classical baselines and report metrics with confidence intervals.
+
+### DL regression example
+![DL MLP regression calibration](../../assets/dl_mlp_regression_calibration.png)
+*Figure: MLP regression predicted vs true on synthetic spectral features (generated via `docs/examples/dl/generate_mlp_regression_example.py`). Points near the diagonal indicate good calibration; deviations show bias/noise.*
+
+Use DL regression only when you have ample data and non-linear relationships; always compare with PLS/linear baselines and robust validation.
+
+## 5. Metrics bridge
+- **Classification:** accuracy, F1_macro, balanced accuracy; confusion matrix, ROC/PR curves.
+- **Regression:** RMSE, MAE, R², MAPE; calibration and residual plots.
+- **Workflows:** oil authentication → SVM/RF + confusion matrix; heating degradation → regression/PLS + trends; QC/novelty → one-class models + score distributions.
+
+For detailed definitions and examples of each metric, see [Metrics & Evaluation](../../reference/metrics_reference.md). Plotting utilities are in [Visualization & Diagnostic Plots](../../user-guide/visualization.md).
+For common pitfalls and fixes (imbalance, overfitting, data leakage), see [Common problems & solutions](../../troubleshooting/common_problems_and_solutions.md).
+
+## 6. Example end-to-end workflows
+- Classification (oil authentication): load spectra (CSV/JCAMP/OPUS) with `foodspec.io.read_spectra` → preprocess (baseline, normalization, PCA) → train SVM/RF → `compute_classification_metrics` → `plot_confusion_matrix`/ROC/PR → interpret misclassifications.
+- Regression (calibration): load spectra → PLS regression → `compute_regression_metrics` → calibration + residual plots → check bias and heteroscedasticity.
+
+For broader workflow context, see [oil authentication](../../workflows/authentication/oil_authentication.md) and [calibration/regression example](../../workflows/quantification/calibration_regression_example.md).
+
+---
+
+## PLS and PLS-DA
+
+Partial Least Squares (PLS) methods are core chemometric tools for spectroscopy. Use PLS Regression for continuous property calibration (e.g., moisture, quality indices) and PLS-DA for discriminant analysis when classes are correlated with latent spectral factors.
+
+- When to use: calibration/regression tasks and class discrimination with correlated bands.
+- How many components: tune via cross-validation; start with 5–10 and adjust based on validation error.
+- Implementation: `make_pls_regression(n_components=8)` or `make_pls_da(n_components=5)`.
+
+See also: [Model evaluation & validation](model_evaluation_and_validation.md) and [PCA & dimensionality reduction](pca_and_dimensionality_reduction.md).
+
+
+## When Results Cannot Be Trusted
+
+⚠️ **Red flags for model development and best practices:**
+
+1. **Model selection based on training set performance only (highest training accuracy → choose that model)**
+   - Training metrics inflate; overly complex models fit noise
+   - Test set performance is ground truth
+   - **Fix:** Use validation/test set or cross-validation; report both training and validation metrics; prefer simpler models if performance similar
+
+2. **Hyperparameter tuning with no held-out test set (tune on full data, report metrics on same data)**
+   - Optimized hyperparameters overfit; test metrics inflated
+   - Proper workflow requires train/tune/test separation
+   - **Fix:** Use nested CV (inner loop: tune; outer loop: evaluate); or hold out independent test set
+
+3. **Complex model chosen for small dataset (1000 samples, 5000 features → use deep neural network)**
+   - High model complexity risks overfitting on small data
+   - Simpler models (linear, tree) generalize better with limited samples
+   - **Fix:** Use regularization; prefer interpretable models; validate carefully; increase sample size
+
+4. **Preprocessing not included in pipeline (baseline correction outside CV loop, then train/test split)**
+   - Statistics computed on all data (leakage) inflate metrics
+   - Data leakage through preprocessing is subtle but impactful
+   - **Fix:** Use sklearn Pipeline; fit preprocessing only on training data; ensure preprocessing parameters not shared across CV folds
+
+5. **Class imbalance not addressed (95% class A, 5% class B, train without resampling/weighting)**
+   - Imbalanced data causes classifier to ignore minority class
+   - Standard metrics (accuracy) misleading; F1 or balanced accuracy better
+   - **Fix:** Stratify CV; use class weights or resampling; report per-class metrics and confusion matrix
+
+6. **Feature scaling forgotten for distance-based models (raw spectra to KNN/SVM without normalization)**
+   - Distance-based models sensitive to feature magnitude
+   - Features with larger ranges dominate distance computation
+   - **Fix:** Standardize or normalize features before KNN/SVM/clustering; include scaling in pipeline
+
+7. **No baseline comparison (reporting model accuracy 0.85 without context)**
+   - Accuracy depends on problem difficulty
+   - Simple baseline (random guess, majority class, previous model) needed for context
+   - **Fix:** Report baseline metrics alongside model metrics; compare relative improvement
+
+8. **Reproducibility not ensured (no random seed, config not documented, code not versioned)**
+   - Results can't be reproduced if random state varies
+   - Parameters documented differently by different team members
+   - **Fix:** Set random seeds; save config files; version code; report computational environment
+
+## 7. Summary and pointers
+- Choose the simplest model that answers the question; benchmark against baselines.
+- Use the right metrics for the task and class balance; see [Metrics & Evaluation](../../reference/metrics_reference.md).
+- Keep preprocessing in pipelines to avoid leakage; see [Preprocessing & chemometrics](../preprocessing/feature_extraction.md).
+- Record configs and export run metadata for reproducibility; see [Reporting guidelines](../../troubleshooting/reporting_guidelines.md).
+- For model theory and tuning, continue to [Model evaluation & validation](model_evaluation_and_validation.md).
