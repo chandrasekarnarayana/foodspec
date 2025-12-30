@@ -56,7 +56,7 @@ This folder preserves project history, audit reports, and planning documents tha
 ❌ **Do NOT use for:**
 - Current API reference → See [API Reference](../../08-api/index.md)
 - Feature information → See main public documentation
-- Development guidelines → See [Contributing Guide](../../06-developer-guide/contributing.md)
+- Development guidelines → See [Contributing Guide](../../developer-guide/contributing.md)
 - Troubleshooting → See [Troubleshooting Guide](../../10-help/troubleshooting.md)
 
 ## For Contributors

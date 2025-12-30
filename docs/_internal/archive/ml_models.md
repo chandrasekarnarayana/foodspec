@@ -8,7 +8,7 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](README_DOCS_STRUC
 
 # Machine learning models in foodspec
 
-> **Status:** Legacy/archived. This page is superseded by `../../ml/models_and_best_practices.md` and the mkdocstrings API pages. Retained here for historical reference.
+> **Status:** Legacy/archived. This page is superseded by `../../methods/chemometrics/models_and_best_practices.md` and the mkdocstrings API pages. Retained here for historical reference.
 
 Questions this page answers
 - Which models are available and when to use them?
@@ -67,11 +67,11 @@ Questions this page answers
 - Mention preprocessing and features (baseline/smoothing/normalization, peaks/ratios).
 
 See also
-- [Metrics & evaluation](../../metrics/metrics_and_evaluation.md)
-- [Oil authentication tutorial](../../workflows/oil_authentication.md)
+- [Metrics & evaluation](../../methods/chemometrics/model_evaluation_and_validation.md)
+- [Oil authentication tutorial](../../workflows/authentication/oil_authentication.md)
 
 - [API index](../../08-api/index.md)
 # ML models (legacy)
 
 > **Status: Legacy / Archived**  
-> This page has been superseded by [Models & best practices](../../ml/models_and_best_practices.md) and [Classification & regression](../../ml/classification_regression.md). It is kept for historical reference.
+> This page has been superseded by [Models & best practices](../../methods/chemometrics/models_and_best_practices.md) and [Classification & regression](../../methods/chemometrics/classification_regression.md). It is kept for historical reference.
