@@ -25,19 +25,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 def run_command(cmd, description, required=False):
     """Run a shell command and return success status."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"🔍 {description}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     try:
-        result = subprocess.run(
-            cmd,
-            shell=True,
-            check=False,
-            capture_output=True,
-            text=True,
-            cwd=PROJECT_ROOT
-        )
+        result = subprocess.run(cmd, shell=True, check=False, capture_output=True, text=True, cwd=PROJECT_ROOT)
 
         if result.stdout:
             print(result.stdout)
@@ -63,24 +56,18 @@ def run_command(cmd, description, required=False):
 def check_markdownlint():
     """Run markdownlint if available."""
     # Check if markdownlint-cli is installed
-    check_installed = subprocess.run(
-        "which markdownlint",
-        shell=True,
-        capture_output=True
-    )
+    check_installed = subprocess.run("which markdownlint", shell=True, capture_output=True)
 
     if check_installed.returncode != 0:
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("⚠️  Markdownlint not installed (optional check)")
-        print("="*70)
+        print("=" * 70)
         print("To install: npm install -g markdownlint-cli")
         print("Skipping markdown linting...")
         return True  # Not required
 
     return run_command(
-        "markdownlint docs/**/*.md --config .markdownlint.json",
-        "Markdown Linting (markdownlint)",
-        required=False
+        "markdownlint docs/**/*.md --config .markdownlint.json", "Markdown Linting (markdownlint)", required=False
     )
 
 
@@ -90,27 +77,19 @@ def check_links(full=False):
     if full:
         cmd += " --check-anchors"
 
-    return run_command(
-        cmd,
-        "Link Validation (check_docs_links.py)",
-        required=True
-    )
+    return run_command(cmd, "Link Validation (check_docs_links.py)", required=True)
 
 
 def check_mkdocs_build():
     """Run mkdocs build."""
-    return run_command(
-        "mkdocs build --strict",
-        "MkDocs Build Validation",
-        required=True
-    )
+    return run_command("mkdocs build --strict", "MkDocs Build Validation", required=True)
 
 
 def check_style_issues():
     """Check for common style issues."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("🔍 Style Validation (custom checks)")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     issues = []
 
@@ -145,9 +124,9 @@ def check_style_issues():
 
 def print_summary(results):
     """Print final summary."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📊 VALIDATION SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed = sum(1 for r in results.values() if r)
     total = len(results)
@@ -156,7 +135,7 @@ def print_summary(results):
         icon = "✅" if status else "❌"
         print(f"{icon} {check}")
 
-    print("="*70)
+    print("=" * 70)
     if passed == total:
         print(f"🎉 ALL CHECKS PASSED ({passed}/{total})")
         print("Documentation is ready for publication!")
@@ -164,30 +143,20 @@ def print_summary(results):
         failed = total - passed
         print(f"❌ SOME CHECKS FAILED ({failed} failed, {passed} passed)")
         print("Please fix the errors above before submitting.")
-    print("="*70)
+    print("=" * 70)
 
     return passed == total
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Validate FoodSpec documentation quality"
-    )
-    parser.add_argument(
-        "--full",
-        action="store_true",
-        help="Run all checks including slow ones (anchor validation)"
-    )
-    parser.add_argument(
-        "--skip-build",
-        action="store_true",
-        help="Skip mkdocs build (faster, for quick checks)"
-    )
+    parser = argparse.ArgumentParser(description="Validate FoodSpec documentation quality")
+    parser.add_argument("--full", action="store_true", help="Run all checks including slow ones (anchor validation)")
+    parser.add_argument("--skip-build", action="store_true", help="Skip mkdocs build (faster, for quick checks)")
     args = parser.parse_args()
 
-    print("="*70)
+    print("=" * 70)
     print("🚀 FoodSpec Documentation Validation Suite")
-    print("="*70)
+    print("=" * 70)
     print(f"Documentation root: {DOCS_ROOT}")
     print(f"Full validation: {args.full}")
     print()

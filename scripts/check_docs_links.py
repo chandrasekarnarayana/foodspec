@@ -93,7 +93,9 @@ def check_links(check_anchors=False):
                 if check_anchors and anchor_part:
                     # Check anchor exists in current file
                     if anchor_part not in heading_cache.get(md, []):
-                        missing_anchors.append((str(rel_md), target, f"Anchor #{anchor_part} not found in current file"))
+                        missing_anchors.append(
+                            (str(rel_md), target, f"Anchor #{anchor_part} not found in current file")
+                        )
                 continue
 
             # Resolve target path
@@ -111,7 +113,13 @@ def check_links(check_anchors=False):
             elif check_anchors and anchor_part:
                 # Check if anchor exists in target file
                 if anchor_part not in heading_cache.get(target_path, []):
-                    missing_anchors.append((str(rel_md), target, f"Anchor #{anchor_part} not found in {target_path.relative_to(DOCS_ROOT)}"))
+                    missing_anchors.append(
+                        (
+                            str(rel_md),
+                            target,
+                            f"Anchor #{anchor_part} not found in {target_path.relative_to(DOCS_ROOT)}",
+                        )
+                    )
 
         # Check images
         for match in image_pattern.finditer(text):
@@ -192,19 +200,11 @@ def print_results(missing_links, missing_images, missing_anchors, missing_alt_te
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Check FoodSpec documentation for broken links and images"
-    )
-    parser.add_argument(
-        "--check-anchors",
-        action="store_true",
-        help="Also validate anchor links (slower)"
-    )
+    parser = argparse.ArgumentParser(description="Check FoodSpec documentation for broken links and images")
+    parser.add_argument("--check-anchors", action="store_true", help="Also validate anchor links (slower)")
     args = parser.parse_args()
 
-    missing_links, missing_images, missing_anchors, missing_alt_text = check_links(
-        check_anchors=args.check_anchors
-    )
+    missing_links, missing_images, missing_anchors, missing_alt_text = check_links(check_anchors=args.check_anchors)
 
     errors = print_results(missing_links, missing_images, missing_anchors, missing_alt_text)
 

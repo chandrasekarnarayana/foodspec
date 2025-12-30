@@ -8,6 +8,7 @@ Transforms:
 
 Run this after restructuring docs to correct common depth mistakes.
 """
+
 from __future__ import annotations
 
 import re
@@ -27,17 +28,21 @@ GROUPS_UP_TWO = (
     "protocols",
 )
 
+
 def fix_text(text: str) -> str:
     # 1) Drop redundant "methods/" in links like ../methods/preprocessing/foo.md -> ../preprocessing/foo.md
     text = re.sub(r"\]\(\.\./methods/", "](../", text)
 
     # 2) Ensure top-level siblings are referenced with ../../ when coming from methods/*/*
     pattern = re.compile(r"\]\(\.\./(" + "|".join(GROUPS_UP_TWO) + ")/")
+
     def _uplvl(m: re.Match) -> str:
         return "](../../%s/" % m.group(1)
+
     text = pattern.sub(_uplvl, text)
 
     return text
+
 
 def main() -> None:
     methods_dir = DOCS / "methods"
@@ -60,6 +65,7 @@ def main() -> None:
             print(f"Fixed: {rel}")
 
     print(f"Updated {changed} files under docs/methods.")
+
 
 if __name__ == "__main__":
     main()
