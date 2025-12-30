@@ -32,7 +32,7 @@ BASH_PREFIXES = (
 
 def detect_lang(block_text: str) -> str:
     text = block_text.strip()
-    lines = [l.rstrip() for l in block_text.splitlines()]
+    lines = [line.rstrip() for line in block_text.splitlines()]
     lower_text = text.lower()
 
     # Mermaid
@@ -40,13 +40,13 @@ def detect_lang(block_text: str) -> str:
         return 'mermaid'
 
     # JSON
-    if text.startswith('{') and text.endswith('}'):  
+    if text.startswith('{') and text.endswith('}'):
         return 'json'
 
     # YAML (simple heuristic: many lines with key: value)
     yaml_like = 0
-    for l in lines:
-        ls = l.strip()
+    for line in lines:
+        ls = line.strip()
         if not ls:
             continue
         if ls.startswith('#'):
@@ -58,8 +58,8 @@ def detect_lang(block_text: str) -> str:
         return 'yaml'
 
     # TOML
-    if any(l.strip().startswith('[') and l.strip().endswith(']') for l in lines) and \
-       any('=' in l and not l.strip().startswith('#') for l in lines):
+    if any(line.strip().startswith('[') and line.strip().endswith(']') for line in lines) and \
+       any('=' in line and not line.strip().startswith('#') for line in lines):
         return 'toml'
 
     # Python
@@ -72,8 +72,8 @@ def detect_lang(block_text: str) -> str:
 
     # Bash/CLI
     bash_score = 0
-    for l in lines:
-        ls = l.strip()
+    for line in lines:
+        ls = line.strip()
         if any(ls.startswith(p) for p in BASH_PREFIXES):
             bash_score += 2
         if '&&' in ls or ls.endswith(' \\') or ls.startswith('#!/bin/bash'):
@@ -93,7 +93,6 @@ def process_file(md_path: Path) -> bool:
 
     in_fence = False
     fence_type = None  # 'backtick' or 'tilde'
-    fence_lang = None
 
     while i < len(lines):
         line = lines[i]
@@ -111,14 +110,12 @@ def process_file(md_path: Path) -> bool:
             if m_bt_labeled:
                 in_fence = True
                 fence_type = 'backtick'
-                fence_lang = m_bt_labeled.group(2)
                 out_lines.append(line)
                 i += 1
                 continue
             if m_tl_labeled:
                 in_fence = True
                 fence_type = 'tilde'
-                fence_lang = m_tl_labeled.group(2)
                 out_lines.append(line)
                 i += 1
                 continue
@@ -179,7 +176,6 @@ def process_file(md_path: Path) -> bool:
                     out_lines.append(line)
                     in_fence = False
                     fence_type = None
-                    fence_lang = None
                     i += 1
                     continue
                 # If a labeled open appears inside a fence, it's likely a mis-labeled closing from a prior pass; fix to closing
@@ -187,7 +183,6 @@ def process_file(md_path: Path) -> bool:
                     out_lines.append(m_bt_labeled.group('indent') + '```')
                     in_fence = False
                     fence_type = None
-                    fence_lang = None
                     changed = True
                     i += 1
                     continue
@@ -196,14 +191,12 @@ def process_file(md_path: Path) -> bool:
                     out_lines.append(line)
                     in_fence = False
                     fence_type = None
-                    fence_lang = None
                     i += 1
                     continue
                 if m_tl_labeled:
                     out_lines.append(m_tl_labeled.group('indent') + '~~~')
                     in_fence = False
                     fence_type = None
-                    fence_lang = None
                     changed = True
                     i += 1
                     continue

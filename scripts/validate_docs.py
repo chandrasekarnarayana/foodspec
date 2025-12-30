@@ -13,11 +13,11 @@ Usage:
     python scripts/validate_docs.py --full  # Includes slow checks (anchors, external links)
 """
 
+import argparse
+import re
 import subprocess
 import sys
-import argparse
 from pathlib import Path
-import re
 
 DOCS_ROOT = Path(__file__).resolve().parent.parent / "docs"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -28,7 +28,7 @@ def run_command(cmd, description, required=False):
     print(f"\n{'='*70}")
     print(f"🔍 {description}")
     print(f"{'='*70}")
-    
+
     try:
         result = subprocess.run(
             cmd,
@@ -38,12 +38,12 @@ def run_command(cmd, description, required=False):
             text=True,
             cwd=PROJECT_ROOT
         )
-        
+
         if result.stdout:
             print(result.stdout)
         if result.stderr:
             print(result.stderr)
-        
+
         if result.returncode == 0:
             print(f"✅ {description} - PASSED")
             return True
@@ -52,7 +52,7 @@ def run_command(cmd, description, required=False):
             if required:
                 print("   This check is required for documentation quality.")
             return False
-    
+
     except Exception as e:
         print(f"⚠️  Could not run: {e}")
         if not required:
@@ -68,7 +68,7 @@ def check_markdownlint():
         shell=True,
         capture_output=True
     )
-    
+
     if check_installed.returncode != 0:
         print("\n" + "="*70)
         print("⚠️  Markdownlint not installed (optional check)")
@@ -76,7 +76,7 @@ def check_markdownlint():
         print("To install: npm install -g markdownlint-cli")
         print("Skipping markdown linting...")
         return True  # Not required
-    
+
     return run_command(
         "markdownlint docs/**/*.md --config .markdownlint.json",
         "Markdown Linting (markdownlint)",
@@ -89,7 +89,7 @@ def check_links(full=False):
     cmd = "python scripts/check_docs_links.py"
     if full:
         cmd += " --check-anchors"
-    
+
     return run_command(
         cmd,
         "Link Validation (check_docs_links.py)",
@@ -111,25 +111,25 @@ def check_style_issues():
     print(f"\n{'='*70}")
     print("🔍 Style Validation (custom checks)")
     print(f"{'='*70}")
-    
+
     issues = []
-    
+
     # Pattern checks
     code_block_no_lang = re.compile(r"^```\s*$", re.MULTILINE)
     heading_with_period = re.compile(r"^#+\s+.+\.\s*$", re.MULTILINE)
-    
+
     for md_file in DOCS_ROOT.rglob("*.md"):
         rel_path = md_file.relative_to(DOCS_ROOT)
         content = md_file.read_text(encoding="utf-8", errors="ignore")
-        
+
         # Check for code blocks without language tags
         if code_block_no_lang.search(content):
             issues.append(f"   {rel_path}: Code block(s) without language tag")
-        
+
         # Check for headings with trailing periods
         if heading_with_period.search(content):
             issues.append(f"   {rel_path}: Heading(s) with trailing period")
-    
+
     if issues:
         print("⚠️  Style issues found:")
         for issue in issues[:20]:  # Limit to first 20
@@ -148,14 +148,14 @@ def print_summary(results):
     print("\n" + "="*70)
     print("📊 VALIDATION SUMMARY")
     print("="*70)
-    
+
     passed = sum(1 for r in results.values() if r)
     total = len(results)
-    
+
     for check, status in results.items():
         icon = "✅" if status else "❌"
         print(f"{icon} {check}")
-    
+
     print("="*70)
     if passed == total:
         print(f"🎉 ALL CHECKS PASSED ({passed}/{total})")
@@ -165,7 +165,7 @@ def print_summary(results):
         print(f"❌ SOME CHECKS FAILED ({failed} failed, {passed} passed)")
         print("Please fix the errors above before submitting.")
     print("="*70)
-    
+
     return passed == total
 
 
@@ -184,33 +184,33 @@ def main():
         help="Skip mkdocs build (faster, for quick checks)"
     )
     args = parser.parse_args()
-    
+
     print("="*70)
     print("🚀 FoodSpec Documentation Validation Suite")
     print("="*70)
     print(f"Documentation root: {DOCS_ROOT}")
     print(f"Full validation: {args.full}")
     print()
-    
+
     # Run checks
     results = {}
-    
+
     # 1. Markdown linting (optional)
     results["Markdownlint"] = check_markdownlint()
-    
+
     # 2. Link checking (required)
     results["Link Validation"] = check_links(full=args.full)
-    
+
     # 3. MkDocs build (required unless skipped)
     if not args.skip_build:
         results["MkDocs Build"] = check_mkdocs_build()
-    
+
     # 4. Style checks (warnings only)
     results["Style Checks"] = check_style_issues()
-    
+
     # Print summary
     all_passed = print_summary(results)
-    
+
     # Exit code
     sys.exit(0 if all_passed else 1)
 
