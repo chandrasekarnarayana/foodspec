@@ -9,7 +9,7 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](README_DOCS_STRUC
 # API reference: preprocessing (legacy)
 
 > **Status: Legacy / Archived**  
-> Superseded by [API index](../../08-api/index.md) and [api/preprocessing.md](../../08-api/preprocessing.md). Kept for reference only.
+> Superseded by [API index](../../api/index.md) and [api/preprocessing.md](../../api/preprocessing.md). Kept for reference only.
 
 Preprocessing modules provide sklearn-compatible transformers for baseline correction, smoothing, normalization, cropping, FTIR/Raman helpers, and derivatives. For recommended pipelines, see the Preprocessing guide and workflow tutorials.
 
@@ -32,4 +32,4 @@ Preprocessing modules provide sklearn-compatible transformers for baseline corre
 ## Derivatives
 ::: foodspec.preprocess.derivatives
 > **Status:** Archived  
-> This page has been superseded by the unified API reference. See [API index](../../08-api/index.md) for current preprocessing APIs.
+> This page has been superseded by the unified API reference. See [API index](../../api/index.md) for current preprocessing APIs.

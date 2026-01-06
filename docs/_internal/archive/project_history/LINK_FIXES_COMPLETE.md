@@ -68,7 +68,7 @@ Successfully fixed broken internal cross-reference links across the FoodSpec doc
 - ✅ `03-cookbook/cookbook_preprocessing.md` → `../../03-cookbook/cookbook_preprocessing.md`
 - ✅ `metrics/metrics_and_evaluation/` → `../../metrics/metrics_and_evaluation/`
 - ✅ `workflows/oil_authentication.md` → `../../workflows/oil_authentication.md`
-- ✅ `api/index.md` → `../../08-api/index.md`
+- ✅ `api/index.md` → `../../api/index.md`
 - ✅ `chemometrics_guide.md` → `../../03-cookbook/chemometrics_guide.md`
 - ✅ `ml/model_interpretability.md` → `../../ml/model_interpretability.md`
 - ✅ `vendor_io.md` → `../04-user-guide/vendor_io.md`
@@ -77,7 +77,7 @@ Successfully fixed broken internal cross-reference links across the FoodSpec doc
 - ✅ `../keyword_index.md` → `../../09-reference/keyword_index.md`
 - ✅ All archive files: `../README_DOCS_STRUCTURE.md` → `README_DOCS_STRUCTURE.md`
 - ✅ `../contributing.md` → `../06-developer-guide/contributing.md`
-- ✅ `api/index.md` → `../../08-api/index.md`
+- ✅ `api/index.md` → `../../api/index.md`
 
 #### Foundations
 - ✅ `../validation_chemometrics_oils.md` → `../../03-cookbook/validation_chemometrics_oils.md`
@@ -221,7 +221,7 @@ From any subdirectory to:
 - **Advanced Topics**: `../05-advanced-topics/file.md`
 - **Developer Guide**: `../06-developer-guide/file.md`
 - **Theory**: `../07-theory-and-background/file.md`
-- **API**: `../../08-api/file.md` or `../../08-api/file.md`
+- **API**: `../../api/file.md` or `../../api/file.md`
 - **Reference**: `../../09-reference/file.md`
 - **Workflows**: `../../workflows/file.md`
 - **Protocols**: `../../protocols/file.md`

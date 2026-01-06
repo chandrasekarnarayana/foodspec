@@ -68,7 +68,7 @@ See also
 - [stats_tests.md](stats_tests.md)
 - [Oil authentication tutorial](../../workflows/authentication/oil_authentication.md)
 
-- [API index](../../08-api/index.md)
+- [API index](../../api/index.md)
 # Metrics interpretation (legacy)
 
 > **Status:** Legacy/archived. Superseded by the maintained page at `../../metrics/metrics_and_evaluation/`. Kept only for historical reference; use the main metrics chapter for current guidance.

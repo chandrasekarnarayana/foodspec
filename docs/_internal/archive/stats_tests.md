@@ -177,7 +177,7 @@ See also
 - [metrics_interpretation.md](metrics_interpretation.md)
 - [Oil authentication tutorial](../../workflows/authentication/oil_authentication.md)
 
-- [API index](../../08-api/index.md)
+- [API index](../../api/index.md)
 # Statistical tests (legacy)
 
 > **Status:** Legacy/archived. See the Statistics section (`docs/stats/*`) for the current, maintained content on hypothesis testing, ANOVA, and nonparametric methods.

@@ -193,7 +193,7 @@ echo "✅ Import paths updated. Please review changes and run tests."
 
 ## Need Help?
 
-- **Documentation:** See updated API docs in [docs/api/](../../08-api/index.md)
+- **Documentation:** See updated API docs in [docs/api/](../../api/index.md)
 - **Issues:** Report migration problems on [GitHub Issues](https://github.com/chandrasekarnarayana/foodspec/issues)
 - **Discussions:** Ask questions in [GitHub Discussions](https://github.com/chandrasekarnarayana/foodspec/discussions)
 

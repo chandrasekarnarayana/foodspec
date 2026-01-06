@@ -70,7 +70,7 @@ See also
 - [Metrics & evaluation](../../methods/chemometrics/model_evaluation_and_validation.md)
 - [Oil authentication tutorial](../../workflows/authentication/oil_authentication.md)
 
-- [API index](../../08-api/index.md)
+- [API index](../../api/index.md)
 # ML models (legacy)
 
 > **Status: Legacy / Archived**  

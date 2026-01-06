@@ -9,7 +9,7 @@ For current documentation, see [docs/README_DOCS_STRUCTURE.md](README_DOCS_STRUC
 # API reference hub (legacy)
 
 > **Status: Legacy / Archived**  
-> Superseded by the mkdocstrings API hub at [api/index.md](../../08-api/index.md) and module pages. Kept for reference only. Use the keyword index for concept-based lookup and the CLI page for command usage.
+> Superseded by the mkdocstrings API hub at [api/index.md](../../api/index.md) and module pages. Kept for reference only. Use the keyword index for concept-based lookup and the CLI page for command usage.
 
 ## Core data structures
 ::: foodspec.core.dataset.FoodSpectrumSet
