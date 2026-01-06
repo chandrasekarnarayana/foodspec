@@ -76,35 +76,55 @@
 
 ### Pair 2: `/api/` ↔ `/08-api/`
 
-**Status:** IDENTIFY & PLAN (not started)  
+**Status:** ✅ COMPLETED (deleted docs/08-api/ with redirects)  
+**Completion Date:** 2026-01-06  
 **Priority:** HIGH  
-**Complexity:** MEDIUM (identical structure, but content may vary; decision: auto-gen over manual)
+**Complexity:** LOW (perfect duplicates, identical structure)
 
 | Old Path | New Path | Action | Reason | Redirect? | Status |
 |----------|----------|--------|--------|-----------|--------|
-| `docs/api/index.md` | (KEEP) | KEEP | Canonical location for auto-generated API reference | NO | PLANNED |
-| `docs/api/core.md` | — | REPLACE | Will be auto-generated from docstrings (Phase 2) | NO | PLANNED |
-| `docs/api/datasets.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/features.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/io.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/metrics.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/ml.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/preprocessing.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/stats.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/workflows.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/api/chemometrics.md` | — | REPLACE | Will be auto-generated from docstrings | NO | PLANNED |
-| `docs/08-api/` (folder) | — | DELETE | Entire folder deprecated; content moving to `/api/` (auto-gen) | YES | PLANNED |
+| `docs/08-api/index.md` | `docs/api/index.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/core.md` | `docs/api/core.md` | DELETE | Identical file exists in canonical location; api/core.md has better structure | YES | ✅ COMPLETED |
+| `docs/08-api/datasets.md` | `docs/api/datasets.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/features.md` | `docs/api/features.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/io.md` | `docs/api/io.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/metrics.md` | `docs/api/metrics.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/ml.md` | `docs/api/ml.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/preprocessing.md` | `docs/api/preprocessing.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/stats.md` | `docs/api/stats.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/workflows.md` | `docs/api/workflows.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/chemometrics.md` | `docs/api/chemometrics.md` | DELETE | Identical file exists in canonical location | YES | ✅ COMPLETED |
+| `docs/08-api/` (folder) | — | DELETE | Entire folder deprecated; canonical is `/api/` | YES | ✅ COMPLETED |
 
-**Canonical Choice:** `docs/api/` (reason: shorter path, in active nav, will contain auto-generated pages)
+**Canonical Choice:** `docs/api/` (reason: shorter path, already in active nav, matches mkdocs.yml structure)
 
-**Migration Steps:**
-1. Add redirects to mkdocs.yml: `08-api/: api/`
-2. Keep `docs/api/index.md` as landing page (update intro for auto-gen)
-3. Replace content of `docs/api/*.md` with auto-gen templates (Phase 2, after docstrings fixed)
-4. Delete `docs/08-api/` folder
-5. Run `mkdocs build --strict` to verify
+**Execution Summary:**
+1. ✅ Compared all 11 files: 10 identical, 1 differs (core.md - api/ version is better with Overview section)
+2. ✅ Decided to keep api/core.md (it has better metadata and Overview section)
+3. ✅ Added 11 redirect rules to mkdocs.yml: `08-api/*` → `api/*` (including index.md)
+4. ✅ Deleted `docs/08-api/` folder via `git rm -r`
+5. ✅ Fixed 11 broken references in active documentation:
+   - src/foodspec/preprocess/baseline.py (1 docstring link)
+   - docs/theory/data_structures_and_fair_principles.md (1 link)
+   - docs/getting-started/quickstart_python.md (2 links)
+   - docs/reference/data_format.md (2 links)
+   - docs/reference/keyword_index.md (1 link)
+   - docs/workflows/index.md (1 link)
+   - docs/workflows/workflow_design_and_reporting.md (1 link)
+   - docs/10-help/faq.md (1 link)
+   - docs/help/faq.md (1 link)
+6. ✅ Updated 11 archive files (docs/_internal/archive/*.md) to reference api/ instead of 08-api/
+7. ✅ Ran mkdocs build --strict: PASSED (only pre-existing vendor_io anchor warning unrelated to consolidation)
+8. ✅ Ran link checker: 0 broken links (216 markdown files checked)
 
-**Risk:** Medium (depends on Phase 2 docstring fixes; stage changes carefully)
+**Git Commits:**
+- Commit a6a56af: "docs: consolidate 08-api/ into api/ (canonical) with redirects" (12 files changed, 2,500 deletions)
+- Commit e92a406: "docs: fix all 08-api references to api/ in active documentation" (11 files changed, 13 edits)
+- Commit a5f9c80: "docs: update archive file references to use api/ (canonical path)" (11 files changed, 18 edits)
+
+**Result:** All users accessing old 08-api/ URLs automatically redirected to api/ via mkdocs-redirects plugin. No broken links. Single source of truth maintained.
+
+**Risk:** None (all redirects tested; links verified; build passes)
 
 ---
 
