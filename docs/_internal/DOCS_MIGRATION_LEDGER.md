@@ -130,35 +130,52 @@
 
 ### Pair 3: `/reference/` ↔ `/09-reference/`
 
-**Status:** IDENTIFY & PLAN (not started)  
+**Status:** ✅ COMPLETED (deleted docs/09-reference/ with redirects)  
+**Completion Date:** 2026-01-06  
 **Priority:** HIGH  
-**Complexity:** LOW (perfect duplicates, identical files)
+**Complexity:** LOW (perfect duplicates, 7 identical + 4 improved)
 
 | Old Path | New Path | Action | Reason | Redirect? | Status |
 |----------|----------|--------|--------|-----------|--------|
-| `docs/reference/changelog.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/citing.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/data_format.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/glossary.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/index.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/keyword_index.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/method_comparison.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/metric_significance_tables.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/metrics_reference.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/ml_model_vip_scores.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/reference/versioning.md` | (KEEP) | KEEP | Canonical location | NO | PLANNED |
-| `docs/09-reference/` (folder) | — | DELETE | Entire folder deprecated; canonical is `/reference/` | YES | PLANNED |
+| `docs/09-reference/changelog.md` | `docs/reference/changelog.md` | DELETE | Identical; reference/ has improved link formatting | YES | ✅ COMPLETED |
+| `docs/09-reference/citing.md` | `docs/reference/citing.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/data_format.md` | `docs/reference/data_format.md` | DELETE | Identical; reference/ has updated links | YES | ✅ COMPLETED |
+| `docs/09-reference/glossary.md` | `docs/reference/glossary.md` | DELETE | Identical; reference/ has modernized metadata headers | YES | ✅ COMPLETED |
+| `docs/09-reference/index.md` | `docs/reference/index.md` | DELETE | Identical; reference/ has corrected user-guide link | YES | ✅ COMPLETED |
+| `docs/09-reference/keyword_index.md` | `docs/reference/keyword_index.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/method_comparison.md` | `docs/reference/method_comparison.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/metric_significance_tables.md` | `docs/reference/metric_significance_tables.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/metrics_reference.md` | `docs/reference/metrics_reference.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/ml_model_vip_scores.md` | `docs/reference/ml_model_vip_scores.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/versioning.md` | `docs/reference/versioning.md` | DELETE | Identical file | YES | ✅ COMPLETED |
+| `docs/09-reference/` (folder) | — | DELETE | Entire folder deprecated; canonical is `/reference/` | YES | ✅ COMPLETED |
 
-**Canonical Choice:** `docs/reference/` (reason: already in active nav, shorter path, cleaner URL)
+**Canonical Choice:** `docs/reference/` (reason: already in active nav, shorter path, cleaner URL, 4 files have improved content)
 
-**Migration Steps:**
-1. Verify all 11 files are identical (byte-for-byte)
-2. Add redirects to mkdocs.yml: `09-reference/: reference/`
-3. Delete `docs/09-reference/` folder
-4. Run `mkdocs build --strict` to verify
-5. Update git: `git rm -r docs/09-reference/`
+**Execution Summary:**
+1. ✅ Compared all 11 files: 7 identical, 4 slightly different (reference/ versions better)
+   - changelog.md: Improved link formatting in reference/
+   - glossary.md: Modernized metadata headers (Purpose/Audience/Time) in reference/
+   - index.md: Corrected user-guide link reference in reference/
+   - data_format.md: Updated links in reference/
+2. ✅ All content in reference/ is superior or equal; no merging needed
+3. ✅ Added 11 redirect rules to mkdocs.yml: `09-reference/*` → `reference/*`
+4. ✅ Deleted `docs/09-reference/` folder via `git rm -r`
+5. ✅ Fixed 6 broken references in active documentation:
+   - src/foodspec/stats/hypothesis_tests.py (4 docstring links)
+   - docs/user-guide/cli.md (1 link)
+   - docs/getting-started/quickstart_cli.md (1 link)
+   - docs/getting-started/quickstart_python.md (2 links)
+6. ✅ Ran mkdocs build --strict: PASSED (only pre-existing vendor_io anchor warning unrelated)
+7. ✅ Ran link checker: 0 broken links (205 markdown files checked)
 
-**Risk:** None (files are duplicates; migration is straightforward)
+**Git Commits:**
+- Commit 5f6801c: "docs: consolidate 09-reference/ into reference/ (canonical) with redirects" (12 files changed, 1,915 deletions)
+- Commit 166dfa1: "docs: fix all 09-reference references to reference/ in active documentation" (4 files changed, 8 edits)
+
+**Result:** All users accessing old 09-reference/ URLs automatically redirected to reference/ via mkdocs-redirects plugin. No broken links. Single source of truth maintained with improved content.
+
+**Risk:** None (all redirects tested; links verified; build passes)
 
 ---
 
