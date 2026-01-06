@@ -54,7 +54,7 @@ This folder preserves project history, audit reports, and planning documents tha
 - Contributor onboarding (historical context)
 
 ❌ **Do NOT use for:**
-- Current API reference → See [API Reference](../../08-api/index.md)
+- Current API reference → See API Reference in the 08-api section
 - Feature information → See main public documentation
 - Development guidelines → See [Contributing Guide](../../developer-guide/contributing.md)
 - Troubleshooting → See [Troubleshooting Guide](../../10-help/troubleshooting.md)
