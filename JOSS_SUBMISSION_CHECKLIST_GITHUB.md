@@ -275,6 +275,15 @@ python -m build --dry-run
 
 - [x] **Documentation builds cleanly** — `mkdocs build --strict` passes
 
+- [x] **Navigation optimized for JOSS reviewers** — MkDocs structure redesigned
+  - ✓ Reduced from 96+ to 48 nav entries
+  - ✓ Reorganized from 15 sections to 7 top-level sections
+  - ✓ Reviewer-focused entry points: Home → Examples → Getting Started → Workflows → Methods → API Reference → Theory → Help & Docs
+  - ✓ Archived from nav (but kept searchable): Tutorials, User Guide, Developer Guide, Advanced Topics
+  - ✓ Reproducibility emphasis added to Help & Docs
+  - ✓ Built and verified: 21.65 seconds, no errors
+  - Commit: `946b914` (Dec 6, 2024)
+
 ---
 
 ## ✅ Code Quality
