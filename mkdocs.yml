@@ -108,149 +108,98 @@ extra_css:
   - assets/logo.css
 
 nav:
-    - Home: index.md
-    - Examples Gallery: examples_gallery.md
-
-    - Getting Started:
-      - Welcome: getting-started/index.md
-      - 15-Minute Quickstart: getting-started/quickstart_15min.md
-      - Installation: getting-started/installation.md
-      - Your First Workflow: getting-started/quickstart_python.md
-      - Understanding Results: getting-started/getting_started.md
-      - FAQ: getting-started/faq_basic.md
-
-    - Tutorials:
-      - Learning Path: tutorials/index.md
-      - Beginner:
-        - Load & Plot: tutorials/beginner/01-load-and-plot.md
-        - Preprocessing: tutorials/beginner/02-preprocess.md
-        - Classification: tutorials/beginner/03-classify.md
-      - Intermediate:
-        - Oil Authentication: tutorials/intermediate/01-oil-authentication.md
-        - Matrix Effects: tutorials/intermediate/02-matrix-effects.md
-        - Stability Tracking: tutorials/intermediate/03-stability.md
-      - Advanced:
-        - Reproducible Pipelines: tutorials/advanced/01-reproducible-pipelines.md
-        - Reference Workflow: tutorials/advanced/02-reference-workflow.md
-        - HSI Mapping: tutorials/advanced/03-hsi-mapping.md
-      - Notebooks: tutorials/end-to-end-notebooks.md
-
-    - Workflows:
-      - Overview: workflows/index.md
-      - Authentication:
-        - Oil Authentication: workflows/authentication/oil_authentication.md
-        - Domain Templates: workflows/authentication/domain_templates.md
-      - Quality Monitoring:
-        - Heating Quality: workflows/quality-monitoring/heating_quality_monitoring.md
-        - Aging Analysis: workflows/quality-monitoring/aging_workflows.md
-        - Batch QC: workflows/quality-monitoring/batch_quality_control.md
-      - Quantification:
-        - Mixture Analysis: workflows/quantification/mixture_analysis.md
-        - Calibration: workflows/quantification/calibration_regression_example.md
-      - Harmonization:
-        - Multi-Instrument: workflows/harmonization/harmonization_automated_calibration.md
-        - Calibration Transfer: workflows/harmonization/standard_templates.md
-      - Spatial Analysis:
-        - Hyperspectral Mapping: workflows/spatial/hyperspectral_mapping.md
-      - Design & Reporting: workflows/workflow_design_and_reporting.md
-
-    - Methods:
-      - Preprocessing:
-        - Baseline Correction: methods/preprocessing/baseline_correction.md
-        - Normalization: methods/preprocessing/normalization_smoothing.md
-        - Derivatives: methods/preprocessing/derivatives_and_feature_enhancement.md
-        - Scatter Correction: methods/preprocessing/scatter_correction_cosmic_ray_removal.md
-        - Feature Extraction: methods/preprocessing/feature_extraction.md
-      - Chemometrics:
-        - Models & Best Practices: methods/chemometrics/models_and_best_practices.md
-        - Classification & Regression: methods/chemometrics/classification_regression.md
-        - PCA: methods/chemometrics/pca_and_dimensionality_reduction.md
-        - Mixture Models: methods/chemometrics/mixture_models.md
-        - Model Evaluation & Validation: methods/chemometrics/model_evaluation_and_validation.md
-        - Model Interpretability: methods/chemometrics/model_interpretability.md
-      - Validation:
-        - Cross-Validation & Leakage: methods/validation/cross_validation_and_leakage.md
-        - Metrics & Uncertainty: methods/validation/metrics_and_uncertainty.md
-        - Robustness Checks: methods/validation/robustness_checks.md
-        - Reporting Standards: methods/validation/reporting_standards.md
-      - Statistics:
-        - Overview: methods/statistics/overview.md
-        - Introduction: methods/statistics/introduction_to_statistical_analysis.md
-        - T-Tests & Power: methods/statistics/t_tests_effect_sizes_and_power.md
-        - ANOVA & MANOVA: methods/statistics/anova_and_manova.md
-        - Correlation: methods/statistics/correlation_and_mapping.md
-        - Nonparametric Methods: methods/statistics/nonparametric_methods_and_robustness.md
-        - Hypothesis Testing: methods/statistics/hypothesis_testing_in_food_spectroscopy.md
-        - Study Design: methods/statistics/study_design_and_data_requirements.md
-
-    - User Guide:
-      - CLI Guide: user-guide/cli.md
-      - CLI Help Reference: user-guide/cli_help.md
-      - Protocols & YAML: user-guide/protocols_and_yaml.md
-      - Automated Analysis: user-guide/automation.md
-      - Protocol Profiles: user-guide/protocol_profiles.md
-      - Logging & Configuration: user-guide/config_logging.md
-      - Data Governance: user-guide/data_governance.md
-      - Libraries: user-guide/libraries.md
-      - Library Search: user-guide/library_search.md
-      - CSV to Library: user-guide/csv_to_library.md
-      - Vendor I/O: user-guide/vendor_io.md
-      - Vendor Formats: user-guide/vendor_formats.md
-      - Visualization: user-guide/visualization.md
-      - Registry & Reporting: workflows/workflow_design_and_reporting.md
-
-    - Theory:
-      - Spectroscopy Basics: theory/spectroscopy_basics.md
-      - Food Spectroscopy Applications: theory/food_spectroscopy_applications.md
-      - Chemometrics & ML Basics: theory/chemometrics_and_ml_basics.md
-      - RQ Engine Theory: theory/rq_engine_detailed.md
-      - Harmonization Theory: theory/harmonization_theory.md
-      - MOATS Overview: theory/moats_overview.md
-      - Data Structures & FAIR: theory/data_structures_and_fair_principles.md
-
-    - API Reference:
-      - Overview: api/index.md
-      - Core API: api/core.md
-      - Datasets: api/datasets.md
-      - Preprocessing: api/preprocessing.md
-      - Chemometrics: api/chemometrics.md
-      - Features: api/features.md
-      - I/O & Data: api/io.md
-      - Workflows: api/workflows.md
-      - Machine Learning: api/ml.md
-      - Metrics: api/metrics.md
-      - Statistics: api/stats.md
-
-    - Developer Guide:
-      - Contributing: developer-guide/contributing.md
-      - Documentation Guidelines: developer-guide/documentation_guidelines.md
-      - Documentation Style Guide: developer-guide/documentation_style_guide.md
-      - Documentation Maintainer Guide: developer-guide/documentation_maintainer_guide.md
-      - Writing Plugins: developer-guide/writing_plugins.md
-      - Extending Protocols: developer-guide/extending_protocols_and_steps.md
-      - Testing & CI: developer-guide/testing_and_ci.md
-      - Testing Coverage: developer-guide/testing_coverage.md
-      - Releasing: developer-guide/releasing.md
-      - Deployment Artifacts: 05-advanced-topics/deployment_artifact_versioning.md
-      - HDF5 Schema Versioning: 05-advanced-topics/deployment_hdf5_schema_versioning.md
-
-    - Reference:
-      - Metric Significance Tables: reference/metric_significance_tables.md
-      - Metrics Reference: reference/metrics_reference.md
-      - Glossary: reference/glossary.md
-      - Keyword Index: reference/keyword_index.md
-      - Method Comparison: reference/method_comparison.md
-      - ML Model VIP Scores: reference/ml_model_vip_scores.md
-      - Non-Goals & Limitations: non_goals_and_limitations.md
-      - Changelog: reference/changelog.md
-      - Citing FoodSpec: reference/citing.md
-      - Versioning: reference/versioning.md
-
-    - Help & Support:
-      - Troubleshooting: help/troubleshooting.md
-      - Common Problems: troubleshooting/common_problems_and_solutions.md
-      - Reporting Guidelines: troubleshooting/reporting_guidelines.md
-      - FAQ: help/faq.md
+  - Home: index.md
+  - Examples: examples_gallery.md
+  
+  - Getting Started:
+    - Overview: getting-started/index.md
+    - Installation: getting-started/installation.md
+    - 15-Minute Quickstart: getting-started/quickstart_15min.md
+    - First Steps (CLI): getting-started/first-steps_cli.md
+    - Understanding Results: getting-started/getting_started.md
+    - FAQ: getting-started/faq_basic.md
+  
+  - Workflows:
+    - Overview: workflows/index.md
+    - Oil Authentication:
+      - Complete Example: workflows/authentication/oil_authentication.md
+      - Domain Templates: workflows/authentication/domain_templates.md
+    - Quality & Monitoring:
+      - Heating Quality: workflows/quality-monitoring/heating_quality_monitoring.md
+      - Aging Analysis: workflows/quality-monitoring/aging_workflows.md
+      - Batch QC: workflows/quality-monitoring/batch_quality_control.md
+    - Quantification:
+      - Mixture Analysis: workflows/quantification/mixture_analysis.md
+      - Calibration: workflows/quantification/calibration_regression_example.md
+    - Harmonization:
+      - Multi-Instrument: workflows/harmonization/harmonization_automated_calibration.md
+      - Calibration Transfer: workflows/harmonization/standard_templates.md
+    - Spatial Analysis:
+      - Hyperspectral Mapping: workflows/spatial/hyperspectral_mapping.md
+    - End-to-End Pipeline: workflows/end_to_end_pipeline.md
+    - Design & Reporting: workflows/workflow_design_and_reporting.md
+  
+  - Methods:
+    - Preprocessing:
+      - Baseline Correction: methods/preprocessing/baseline_correction.md
+      - Normalization: methods/preprocessing/normalization_smoothing.md
+      - Derivatives: methods/preprocessing/derivatives_and_feature_enhancement.md
+      - Scatter Correction: methods/preprocessing/scatter_correction_cosmic_ray_removal.md
+      - Feature Extraction: methods/preprocessing/feature_extraction.md
+    - Chemometrics:
+      - Models & Best Practices: methods/chemometrics/models_and_best_practices.md
+      - Classification & Regression: methods/chemometrics/classification_regression.md
+      - PCA: methods/chemometrics/pca_and_dimensionality_reduction.md
+      - Mixture Models: methods/chemometrics/mixture_models.md
+      - Model Evaluation: methods/chemometrics/model_evaluation_and_validation.md
+      - Interpretability: methods/chemometrics/model_interpretability.md
+    - Validation:
+      - Cross-Validation & Leakage: methods/validation/cross_validation_and_leakage.md
+      - Metrics & Uncertainty: methods/validation/metrics_and_uncertainty.md
+      - Robustness Checks: methods/validation/robustness_checks.md
+      - Reporting Standards: methods/validation/reporting_standards.md
+    - Statistics:
+      - Introduction: methods/statistics/introduction_to_statistical_analysis.md
+      - T-Tests & Power: methods/statistics/t_tests_effect_sizes_and_power.md
+      - ANOVA & MANOVA: methods/statistics/anova_and_manova.md
+      - Correlation: methods/statistics/correlation_and_mapping.md
+      - Nonparametric: methods/statistics/nonparametric_methods_and_robustness.md
+      - Hypothesis Testing: methods/statistics/hypothesis_testing_in_food_spectroscopy.md
+      - Study Design: methods/statistics/study_design_and_data_requirements.md
+  
+  - API Reference:
+    - Overview: api/index.md
+    - Core: api/core.md
+    - Datasets: api/datasets.md
+    - Preprocessing: api/preprocessing.md
+    - Chemometrics: api/chemometrics.md
+    - Features: api/features.md
+    - I/O & Data: api/io.md
+    - Workflows: api/workflows.md
+    - Machine Learning: api/ml.md
+    - Metrics: api/metrics.md
+    - Statistics: api/stats.md
+  
+  - Theory:
+    - Spectroscopy Basics: theory/spectroscopy_basics.md
+    - Food Applications: theory/food_spectroscopy_applications.md
+    - Chemometrics & ML: theory/chemometrics_and_ml_basics.md
+    - RQ Engine: theory/rq_engine_detailed.md
+    - Harmonization: theory/harmonization_theory.md
+    - MOATS: theory/moats_overview.md
+    - Data Structures & FAIR: theory/data_structures_and_fair_principles.md
+  
+  - Help & Docs:
+    - Troubleshooting: troubleshooting/troubleshooting_faq.md
+    - Common Problems: troubleshooting/common_problems_and_solutions.md
+    - Reporting Issues: troubleshooting/reporting_guidelines.md
+    - Data Formats: reference/data_format.md
+    - Reproducibility Guide: reproducibility.md
+    - Reproducibility Checklist: protocols/reproducibility_checklist.md
+    - Glossary: reference/glossary.md
+    - Changelog: reference/changelog.md
+    - Citing: reference/citing.md
+    - Versioning: reference/versioning.md
 
 markdown_extensions:
   - admonition
