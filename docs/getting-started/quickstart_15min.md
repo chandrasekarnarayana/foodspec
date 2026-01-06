@@ -1,28 +1,36 @@
-# 15-Minute Quickstart: Your First FoodSpec Analysis
+# 15-Minute Quickstart
 
-<!-- CONTEXT BLOCK (mandatory) -->
-**Who needs this?** Absolute beginners with zero spectroscopy experience who want to run their first food authenticity test.  
-**What problem does this solve?** Getting started with FoodSpec without needing to read theory or understand chemistry.  
-**When to use this?** Your first time using FoodSpec; you have Python installed and 15 minutes.  
-**Why it matters?** This tutorial proves FoodSpec works on your system and teaches the basic workflow before diving into theory.  
-**Time to complete:** 15 minutes  
-**Prerequisites:** Python 3.10+ installed; basic terminal/command-line familiarity (can run commands); no spectroscopy knowledge required
+**Purpose:** Get FoodSpec working on your computer and run your first analysis in 15 minutes.
+
+**Audience:** Complete beginners with zero spectroscopy experience.
+
+**Time:** 15 minutes exactly.
+
+**Prerequisites:** Python 3.10+; basic terminal/command-line knowledge; no chemistry background needed.
+
+**What you'll accomplish:**
+1. Install FoodSpec
+2. Download sample oil spectroscopy data
+3. Run oil authentication analysis
+4. View results (confusion matrix, metrics)
 
 ---
 
-## What You'll Learn (In Plain English)
+## What You'll Learn
 
-By the end of this guide, you'll:
+By the end of this guide, you will:
 1. Install FoodSpec on your computer
 2. Download a sample food dataset (cooking oils)
-3. Run an automated analysis to detect fake/adulterated oils
-4. View a report showing which oils are authentic
+3. Run oil authentication analysis
+4. View results (confusion matrix, ROC curve, metrics)
 
 **No equations. No chemistry jargon. Just working code.**
 
 ---
 
-## Step 1: Install FoodSpec (2 minutes)
+## Step 1: Install FoodSpec
+
+⏱️ 2 minutes
 
 Open your terminal (Mac/Linux) or Command Prompt (Windows) and type:
 
@@ -33,18 +41,26 @@ pip install foodspec
 **What this does:** Downloads FoodSpec and all the tools it needs to analyze food samples.
 
 **Check it worked:**
+
 ```bash
-foodspec --help
+foodspec --version
 ```
 
-You should see a list of commands. If you see an error, verify Python 3.10+ is installed:
+**Expected output:**
+```
+FoodSpec version 1.0.0
+```
+
+If you see an error, verify Python 3.10+ is installed:
 ```bash
 python --version
 ```
 
 ---
 
-## Step 2: Get Sample Data (1 minute)
+## Step 2: Get Sample Data
+
+⏱️ 1 minute
 
 FoodSpec includes example data. Download the oil authentication dataset:
 
@@ -68,7 +84,9 @@ Each row is a "spectrum" (a measurement showing what molecules are in the oil). 
 
 ---
 
-## Step 3: Run Your First Analysis (3 minutes)
+## Step 3: Run Your First Analysis
+
+⏱️ 3 minutes
 
 Run the oil authentication workflow:
 

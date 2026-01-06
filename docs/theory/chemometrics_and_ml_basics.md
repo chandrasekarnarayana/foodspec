@@ -1,5 +1,12 @@
 # Theory – Chemometrics & ML Basics
 
+**Purpose:** Understand core dimensionality reduction, classification, and validation methods used in FoodSpec.  
+**Audience:** Users building ML models or interpreting multivariate analysis results.  
+**Time to read:** 12–15 minutes.  
+**Prerequisites:** Familiarity with spreadsheets and basic statistics helpful.
+
+---
+
 This page summarizes core concepts underpinning FoodSpec analyses. For worked examples, see Tutorials (02) and Cookbook (03).
 
 ## Core methods
@@ -67,3 +74,11 @@ How FoodSpec uses these:
    - PCs are mathematical combinations; may not correspond to chemistry
    - Interpretation requires independent validation
    - **Fix:** Cross-check PC loadings with chemistry; validate interpreted factors with targeted measurements
+
+---
+
+## Next Steps
+
+- [Classification & Regression](../methods/chemometrics/classification_regression.md) — Practical implementations in FoodSpec.
+- [Cross-Validation & Leakage](../methods/validation/cross_validation_and_leakage.md) — Avoid validation pitfalls.
+- [Metrics Reference](../reference/metrics_reference.md) — Interpret your model's performance.

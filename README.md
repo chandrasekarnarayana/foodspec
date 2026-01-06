@@ -16,6 +16,14 @@ Production-ready Python toolkit for Raman/FTIR/NIR spectroscopy in food science.
 
 **Version:** 1.0.0 | **Status:** Production Ready | **Tests:** 685 passing (79% coverage)
 
+## Statement of Need
+
+Food scientists and chemometricians rely on vibrational spectroscopy (Raman, FTIR, NIR) for authentication, quality control, and compositional analysis. Despite excellent domain-agnostic tools like ChemoSpec (R) and HyperSpy (Python), food research workflows remain fragmented across vendor software, ad hoc scripts, and manual preprocessing. This fragmentation creates reproducibility barriers: inconsistent data models, undocumented preprocessing chains, and difficulty sharing analyses between labs or instruments.
+
+FoodSpec addresses this gap by providing a domain-specific Python toolkit optimized for food science workflows. Unlike general-purpose spectroscopy libraries, FoodSpec integrates food-relevant preprocessing (ATR correction, oil-specific baseline methods), domain workflows (oil authentication, heating degradation), and reproducibility infrastructure (protocol execution, automated reporting, provenance tracking). The library targets researchers who need production-grade, FAIR-aligned tools without reinventing chemometrics from scratch.
+
+By combining established algorithms (PLS-DA, MCR-ALS) with food-specific workflows and reproducibility tooling, FoodSpec enables systematic, shareable analyses. This reduces the "Excel spreadsheet + manual preprocessing" pattern common in food labs, accelerating the path from raw spectra to peer-reviewed results while maintaining full methodological transparency.
+
 ## What problems does FoodSpec solve?
 
 - **Fragmented workflows:** Vendor-specific formats, ad hoc preprocessing, irreproducible scripts.
@@ -77,6 +85,20 @@ Production-ready Python toolkit for Raman/FTIR/NIR spectroscopy in food science.
 | **FTIR** | Vendor/CSV/HDF5 | Baseline, normalization, cropping | Authentication, heating, QC |
 | **NIR** | CSV/HDF5 | Smoothing, derivatives, SNV | Calibration, regression, quality |
 | **Hyperspectral** | HDF5 | Per-pixel preprocessing | Mapping, segmentation, classification |
+
+## Comparison with Existing Tools
+
+| Feature | **FoodSpec** | ChemoSpec (R) | HyperSpy (Python) | Spectral Python |
+|---------|--------------|---------------|-------------------|-----------------|
+| **Food-matrix support** | ✅ Native (oils, mixtures, heating) | ❌ Generic | ❌ Generic | ❌ Generic |
+| **End-to-end pipelines** | ✅ Full (import → report) | ⚠️ Partial | ⚠️ Partial | ⚠️ Preprocessing only |
+| **Interpretability** | ✅ Peak ratios, VIP, chemical labels | ⚠️ Basic scores | ❌ Limited | ❌ Minimal |
+| **CLI availability** | ✅ Full CLI + protocols | ❌ R scripts only | ❌ Python API only | ❌ Python API only |
+| **Reproducibility** | ✅ Protocol YAML, provenance | ⚠️ Script-based | ⚠️ Script-based | ⚠️ Script-based |
+| **Documentation quality** | ✅ 150+ pages, tutorials, API | ✅ Good vignettes | ✅ Good examples | ⚠️ Moderate |
+| **Target domain** | Food science | General chemistry | Materials/microscopy | Remote sensing |
+
+**Key differentiators:** FoodSpec uniquely combines food-specific workflows (oil authentication, heating degradation), domain-aware feature extraction (peak ratios with chemical interpretation), and reproducibility infrastructure (protocol execution, automated reporting) in a single, production-ready toolkit.
 
 ## Installation
 

@@ -1,5 +1,15 @@
 # Designing & Reporting Spectral Workflows
 
+**Purpose:** Design scientifically sound workflows and report results reproducibly.
+
+**Audience:** Spectroscopy researchers planning new analyses; data scientists building pipelines.
+
+**Time:** 20–30 minutes to design; reference while building workflows.
+
+**Prerequisites:** Understand FoodSpec data model (spectra, metadata); basic experimental design.
+
+---
+
 This chapter explains what a workflow means in FoodSpec and how to design, execute, and report it. A workflow connects the scientific question, instrument, data acquisition, preprocessing, feature extraction, statistics/ML, interpretation, and reporting.
 
 ## What is a workflow in FoodSpec?
@@ -26,6 +36,31 @@ flowchart LR
 - It aligns scientific goals with acquisition conditions, preprocessing choices, analysis methods, and clear outputs.
 - Model and metric choices are covered in [ML & DL models](../methods/chemometrics/models_and_best_practices.md) and [Metrics & evaluation](../reference/metrics_reference.md).
 - For issues at any stage (baseline, SNR, imbalance, overfitting), see [Common problems & solutions](../troubleshooting/common_problems_and_solutions.md).
+
+## Quick Example: Oil Authentication Workflow
+
+```python
+from foodspec.io import load_csv
+from foodspec.preprocess import baseline_als, normalize_snv
+from foodspec.ml import train_classifier
+
+# 1. Load data
+ds = load_csv("oils.csv", wavenumber_col="wavenumber")
+print(f"Loaded {len(ds)} spectra with {len(ds.wavenumbers)} wavenumbers")
+
+# 2. Preprocess
+ds = baseline_als(ds, lam=1e6)
+ds = normalize_snv(ds)
+
+# 3. Train classifier
+model, metrics = train_classifier(
+    ds, 
+    label_column="oil_type",
+    method="random_forest",
+    cv_strategy="stratified_kfold"
+)
+print(f"Accuracy: {metrics['accuracy']:.2%}")
+```
 
 ## How to design a workflow (step-by-step)
 1. **Clarify the question.** Examples: “Can we distinguish oil types?”, “How does heating affect quality?”, “Is this batch within spec?”
@@ -175,3 +210,10 @@ Expected details: axes labels (units), legends, group labels, sample sizes, conf
 - [Statistics overview](../methods/statistics/overview.md)
 - [Preprocessing guides](../methods/preprocessing/baseline_correction.md)
 - [Protocols & reproducibility](../protocols/reproducibility_checklist.md)
+
+## Next Steps
+
+- **Beginner:** Follow the [15-minute quickstart](../getting-started/quickstart_15min.md) with sample oil data
+- **Intermediate:** Design your own workflow using the [protocol YAML template](../user-guide/protocols_and_yaml.md)
+- **Advanced:** Learn about [preprocessing choices](../methods/preprocessing/baseline_correction.md) and [validation strategies](../methods/validation/cross_validation_and_leakage.md)
+- **Reference:** Check the [metrics guide](../reference/metrics_reference.md) for choosing appropriate performance measures

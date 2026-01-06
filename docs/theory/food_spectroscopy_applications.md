@@ -1,5 +1,12 @@
 # Foundations: Food Spectroscopy Applications
 
+**Purpose:** Learn which spectroscopy methods apply to your food matrix and research question.  
+**Audience:** Users designing experiments or choosing between application domains.  
+**Time to read:** 10–15 minutes.  
+**Prerequisites:** Basic familiarity with Raman, FTIR, or NIR spectroscopy.
+
+---
+
 This chapter surveys common applications of Raman, FTIR, and NIR spectroscopy across food matrices. It provides concrete examples that motivate later preprocessing, feature extraction, and modeling choices.
 
 ## 1. Edible oils and fats
@@ -83,3 +90,11 @@ This chapter surveys common applications of Raman, FTIR, and NIR spectroscopy ac
    - Spectroscopy is indirect; orthogonal validation essential
    - Can't confirm chemical interpretation without reference method
    - **Fix:** Validate key findings with orthogonal methods; report agreement
+
+---
+
+## Next Steps
+
+- [Oil Authentication Workflow](../workflows/authentication/oil_authentication.md) — Deep dive into oils and fats.
+- [Heating Quality Monitoring](../workflows/quality-monitoring/heating_quality_monitoring.md) — Real-world process tracking example.
+- [Spectroscopy Basics](spectroscopy_basics.md) — Raman, FTIR, NIR fundamentals reference.

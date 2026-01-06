@@ -1,8 +1,62 @@
-# User Guide – Data formats & HDF5
+# User Guide – Data Formats & HDF5
+
+**Purpose:** Understand how to format your data (CSV vs HDF5) and choose the right format for reproducibility.
+
+**Audience:** Lab managers preparing datasets; researchers building reproducible pipelines.
+
+**Time:** 15–20 minutes to choose format; 10 min per dataset to validate.
+
+**Prerequisites:** Familiarity with CSV files or HDF5 basics.
+
+---
 
 This page explains supported input formats, the HDF5 layout, and vendor IO expectations.
 
 **Why it matters:** Choosing the right format affects reproducibility (FAIR metadata), harmonization, and ease of loading via CLI.
+
+## CSV vs HDF5: Quick Comparison
+
+| Feature | CSV | HDF5 |
+|---------|-----|------|
+| Learning curve | Easy | Medium |
+| File size | Large | Compact |
+| Metadata | Limited | Full (FAIR) |
+| Speed (1000+ samples) | Slow | Fast |
+| Preprocessing history | Not stored | Stored |
+| Multi-instrument data | Awkward | Natural |
+| **Best for** | Getting started | Production pipelines |
+
+**Example: Convert CSV → HDF5**
+
+```python
+from foodspec.io import load_csv, to_hdf5
+
+# Load CSV
+ds = load_csv("oils.csv", wavenumber_col="wavenumber")
+
+# Convert to HDF5 with metadata
+to_hdf5(
+    ds,
+    "oils_processed.h5",
+    instrument_metadata={"laser": 785, "grating": "1200/mm"},
+    preprocessing_log=["baseline_als(lam=1e6)", "normalize_snv()"]
+)
+```
+
+## Choosing Your Format
+
+**Use CSV if:**
+- ✅ Dataset < 500 samples
+- ✅ Single instrument, single batch
+- ✅ Quick exploratory analysis
+- ✅ Sharing via email/GitHub
+
+**Use HDF5 if:**
+- ✅ Dataset > 500 samples
+- ✅ Multiple instruments or batches
+- ✅ Need preprocessing/protocol history
+- ✅ Publishing reproducible research
+- ✅ Integrating 3D hyperspectral cubes
 
 ## CSV vs HDF5
 - **CSV**: Wide-format with wavenumber columns and metadata columns (oil_type, matrix, heating_stage, replicate, batch, etc.). Easiest to start with.
@@ -34,5 +88,12 @@ Notes:
 1) Export data as CSV (wide) or HDF5 using FoodSpec save functions.  
 2) Load via CLI (`--input my.h5`).  
 3) Run a protocol; verify `metadata.json` reflects format, preprocessing, harmonization.
+
+## Next Steps
+
+- **Data loading:** [Loading spectra from files](../api/io.md)
+- **Preprocessing:** [Baseline correction and smoothing](../methods/preprocessing/baseline_correction.md)
+- **Vendor integration:** [Vendor I/O guide](vendor_io.md)
+- **Reference:** [Data format schema](../reference/data_format.md)
 
 See also: [cookbook_preprocessing.md](../methods/preprocessing/normalization_smoothing.md) and [registry_and_plugins.md](registry_and_plugins.md) for vendor plugins.

@@ -1,5 +1,12 @@
 # Theory – Harmonization & Calibration
 
+**Purpose:** Understand multi-instrument harmonization, calibration drift correction, and cross-batch transfer.  
+**Audience:** Users working with multiple instruments or bridging data across time/batches.  
+**Time to read:** 15–20 minutes.  
+**Prerequisites:** Familiar with preprocessing steps and baseline correction.
+
+---
+
 Why harmonization matters for multi-instrument and multi-batch spectral studies:
 - **Instrument drift**: wavenumber axes can shift over time; calibration curves correct drift and align spectra to a common grid.
 - **Intensity scaling**: laser power and detector response vary; power/area normalization reduces cross-instrument intensity bias.
@@ -53,3 +60,11 @@ For practical steps, see [hsi_and_harmonization.md](../theory/harmonization_theo
    - Example: oil-harmonization parameters applied to dairy without validation
    - Different matrices have different intensity/baseline characteristics
    - **Fix:** Retrain/validate parameters on target domain; don't assume transfer
+
+---
+
+## Next Steps
+
+- [Data Formats & HDF5](../user-guide/data_formats_and_hdf5.md) — Store harmonized data efficiently.
+- [Vendor I/O](../user-guide/vendor_io.md) — Handle multi-instrument data import.
+- [Common Problems & Solutions](../troubleshooting/common_problems_and_solutions.md) — Troubleshoot harmonization failures.

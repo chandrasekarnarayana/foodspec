@@ -1,12 +1,12 @@
 # Glossary
 
-<!-- CONTEXT BLOCK (mandatory) -->
-**Who needs this?** Anyone encountering unfamiliar terms in FoodSpec documentation—from absolute beginners to domain experts.  
-**What problem does this solve?** Provides definitions at multiple levels (plain English → technical → mathematical).  
-**When to use this?** Reference this page when you see unfamiliar terms, acronyms, or notation.  
-**Why it matters?** Understanding terminology accelerates learning and prevents misinterpretation of results.  
-**Time to complete:** 2-5 minutes per term lookup  
-**Prerequisites:** None (designed for all audiences)
+**Purpose:** Define key terminology for FoodSpec documentation at multiple levels (plain English, technical, mathematical).
+
+**Audience:** Anyone encountering unfamiliar terms—from absolute beginners to domain experts.
+
+**Time:** 2–5 minutes per term lookup.
+
+**Prerequisites:** None (designed for all audiences).
 
 ---
 

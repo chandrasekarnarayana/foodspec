@@ -1,7 +1,24 @@
 # Core API Reference
 
-!!! info "Module Purpose"
-    Core data structures and high-level workflows for spectral analysis. This is the foundation of all FoodSpec operations.
+**Purpose:** API documentation for core data structures and high-level workflows in FoodSpec.
+
+**Audience:** Python developers building custom pipelines; researchers integrating FoodSpec into scripts.
+
+**Time:** Reference document; look up classes and methods as needed.
+
+**Prerequisites:** Python familiarity; understanding of FoodSpec data model (spectra, datasets, metadata).
+
+---
+
+## Overview
+
+The `foodspec.core` module provides:
+
+- **SpectralDataset:** Primary container for 1D spectra with metadata
+- **HyperSpectralCube:** 3D spatial-spectral (hyperspectral imaging) data
+- **MultiModalDataset:** Multi-modality fusion (Raman + FTIR, etc.)
+- **OutputBundle:** Structured output with figures, tables, metadata
+- **RunRecord:** Provenance logging for reproducibility
 
 ---
 
@@ -9,12 +26,11 @@
 
 | Component | Purpose | Common Use |
 |-----------|---------|------------|
-| [`FoodSpectrumSet`](#foodspectrumset) | Primary data container | Load, store, manipulate spectra |
-| [`FoodSpec`](#foodspec-high-level-api) | High-level workflow API | Quick preprocessing and analysis |
-| [`HyperSpectralCube`](#hyperspectralcube) | HSI data structure | Spatial spectral mapping |
-| [`MultiModalDataset`](#multimodaldataset) | Multi-modality fusion | Raman + FTIR combinations |
-| [`OutputBundle`](#outputbundle) | Result packaging | Save plots, tables, metadata |
-| [`RunRecord`](#runrecord) | Provenance tracking | Reproducibility and audit trails |
+| `SpectralDataset` | Primary 1D spectra container | Load, store, preprocess spectra |
+| `HyperSpectralCube` | 3D spatial-spectral data | Hyperspectral imaging analysis |
+| `MultiModalDataset` | Multi-modality fusion | Combine Raman + FTIR data |
+| `OutputBundle` | Result packaging | Save plots, tables, metadata |
+| `RunRecord` | Provenance tracking | Audit trail and reproducibility |
 
 ---
 

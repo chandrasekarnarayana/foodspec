@@ -1,13 +1,18 @@
-# Cross-Validation & Data Leakage
+# Cross-Validation and Data Leakage
 
-!!! danger "The #1 Cause of Overoptimistic Results"
-    **Data leakage** occurs when information from the test set inadvertently influences model training. In spectroscopy studies, leakage most commonly arises from:
-    
-    1. **Replicate leakage:** Technical replicates of the same sample split across train/test
-    2. **Preprocessing leakage:** Fitting normalization/baseline on all data before splitting
-    3. **Temporal leakage:** Training on future samples to predict past samples
-    
-    Studies with leakage often report accuracies >95% that collapse to <70% under rigorous validation.
+**Purpose:** Understand leakage mechanisms and implement best-practice validation workflows to obtain honest performance estimates.
+
+**Audience:** Researchers, data scientists, QA engineers validating models for deployment.
+
+**Time:** 30–40 minutes to read; reference during analysis.
+
+**Prerequisites:** Familiarity with train/test splits, cross-validation, Python/scikit-learn.
+
+---
+
+## Statement of Need
+
+Many food spectroscopy studies report >95% accuracy but fail on new data. The root cause is silent **data leakage**: information from test samples influencing model training. This page shows how to detect and prevent it.
 
 ---
 

@@ -1,20 +1,22 @@
-# Tutorial: Baseline Correction & Smoothing (Level 1)
+# Tutorial: Baseline Correction & Smoothing (Beginner)
 
-**Goal:** Remove spectral artifacts (background, noise) to reveal true signal. This is essential preprocessing.
+**Purpose:** Learn to remove baseline drift and noise from raw spectra.
 
-**Time:** 10–15 minutes
+**Audience:** Researchers new to preprocessing; beginner Python knowledge required.
 
-**Prerequisites:** Complete [Load Spectra & Plot](01-load-and-plot.md) or equivalent knowledge
+**Time:** 15–20 minutes.
 
-**What You'll Learn:**
-- Why preprocessing matters (SNR improvement, noise reduction)
-- Baseline correction (ALS algorithm)
-- Smoothing (Savitzky-Golay filter)
-- When to apply each step
+**Prerequisites:** Complete [Load Spectra & Plot](01-load-and-plot.md) or equivalent; basic NumPy/Matplotlib knowledge.
+
+**What you'll learn:**
+- Why preprocessing improves signal-to-noise ratio (SNR)
+- Baseline correction using ALS algorithm
+- Smoothing using Savitzky-Golay filter
+- When to apply each step and in what order
 
 ---
 
-## 🎯 The Problem
+## The Problem
 
 Raw spectra often contain:
 - **Baseline drift** — Slow curvature from instrument/sample geometry
@@ -25,7 +27,7 @@ These artifacts obscure the true chemical signal and degrade classification. Let
 
 ---
 
-## 📊 Why Preprocessing?
+## Why Preprocessing Matters
 
 | Without Preprocessing | With Preprocessing |
 |---|---|
@@ -35,21 +37,21 @@ These artifacts obscure the true chemical signal and degrade classification. Let
 
 ---
 
-## 🔨 Steps
+## Workflow Steps
 
-1. Generate spectra with realistic noise and baseline drift
+1. Generate synthetic spectra with baseline drift and noise
 2. Apply baseline correction (ALS)
 3. Apply smoothing (Savitzky-Golay)
-4. Compare results visually
+4. Visualize results
 5. Check SNR improvement
 
 ---
 
-## 💻 Code Example
+## Code Example
 
-### Step 1: Generate Noisy Spectra with Baseline Drift
+### Step 1: Generate Synthetic Noisy Spectra
 
-```python
+⏱️ ~2 min
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

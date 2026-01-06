@@ -1,11 +1,44 @@
 # Troubleshooting: Common Problems & Solutions
 
+**Purpose:** Systematically diagnose and fix issues across all FoodSpec workflow stages.  
+**Audience:** Users troubleshooting preprocessing, ML, stats, or reporting steps.  
+**Time to read:** 20–30 minutes (reference guide; read sections as needed).  
+**Prerequisites:** Basic knowledge of your FoodSpec workflow stage.
+
+---
+
 Questions this page answers:
 - What can go wrong in spectroscopy workflows and how do I detect it?
 - How do I diagnose issues with FoodSpec tools (plots, metrics, utilities)?
 - How do I fix or mitigate problems, and when should I re-acquire data?
 
 This chapter groups common problems by stage: instrument/acquisition → dataset/metadata → preprocessing/chemometrics → ML/DL → statistics → visualization → reporting → workflow design → operational errors.
+
+## Problem Index
+
+| Stage | Problem | Symptoms | Quick Fix |
+|-------|---------|----------|-----------|
+| **Acquisition** | Baseline drift | Sloping/curved baseline | ALS baseline correction with lambda ~1e5 |
+| **Acquisition** | Saturation | Flat-topped peaks | Lower laser power; re-acquire |
+| **Acquisition** | Wavenumber drift | Peak shifts vs reference | Recalibrate instrument; check `validate_spectrum_set` |
+| **Acquisition** | Low SNR | Noisy spectra | Longer integration; better optics; smoothing |
+| **Metadata** | Missing labels | Unknown class IDs | Use `check_missing_metadata`; repair metadata |
+| **Metadata** | Class imbalance | Poor minority recall | Use F1/PR metrics; resample or weight classes |
+| **Metadata** | Mislabeled samples | Outlier confusions | Audit via PCA; verify and relabel |
+| **Preprocessing** | Over-smoothing | Peak loss | Reduce Savitzky–Golay window/order |
+| **Preprocessing** | Poor baseline removal | Residual slope | Tune ALS lambda; try rubberband baseline |
+| **Preprocessing** | Scatter not removed | Intensity drift persists | Apply SNV or MSC normalization |
+| **ML** | Overfitting | High train, low test accuracy | Regularize; simplify; use stratified CV |
+| **ML** | Data leakage | Unrealistic CV scores | Ensure preprocessing inside Pipeline |
+| **ML** | Imbalanced predictions | Minority class ignored | Use class_weight or SMOTE; report F1_macro |
+| **DL** | Diverging loss | NaNs during training | Lower learning rate; add normalization |
+| **Stats** | Non-normal residuals | Failed assumptions | Use nonparametric tests (Kruskal–Wallis) |
+| **Stats** | Multiple comparisons | Many marginal p-values | Apply FDR/Tukey correction |
+| **Visualization** | Unlabeled axes | Ambiguous plots | Label wavenumber (cm⁻¹), intensity (a.u.) |
+| **Reporting** | Missing configs | Cannot reproduce | Export run_metadata.json; save configs |
+| **Workflow** | Wrong task→metrics | Irrelevant metrics | Consult workflow design guide; clarify goal |
+
+---
 
 ## A. Instrument & Acquisition Problems
 **Baseline drift / fluorescence**
@@ -167,3 +200,11 @@ This chapter groups common problems by stage: instrument/acquisition → dataset
 - Wavenumber calibration drift not correctable in software.
 - Extremely low SNR that preprocessing cannot salvage.
 - Persistent metadata mislabeling that cannot be resolved.
+
+---
+
+## Next Steps
+
+- [Troubleshooting & FAQs](troubleshooting_faq.md) — Quick answers to common questions.
+- [Reporting Guidelines](reporting_guidelines.md) — Document your fixes and validation clearly.
+- [CSV to Library](../user-guide/csv_to_library.md) — Prevent data issues before analysis.

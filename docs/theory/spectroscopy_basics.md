@@ -1,6 +1,18 @@
-# Foundations: Spectroscopy Basics
+# Vibrational Spectroscopy Fundamentals
 
-This chapter introduces vibrational spectroscopy for food science: what spectra are, how wavenumbers are used, and how Raman, FTIR, and NIR differ. It anchors the physics so later preprocessing and ML chapters have a common starting point.
+**Purpose:** Understand the physics of Raman, FTIR, and NIR spectroscopy for food science applications.
+
+**Audience:** Researchers, students; foundational knowledge for preprocessing and feature extraction chapters.
+
+**Time:** 20–30 minutes to read; reference as needed.
+
+**Prerequisites:** Basic chemistry (molecular structure, vibrational modes); familiarity with spectral plots.
+
+---
+
+## Overview
+
+This page introduces vibrational spectroscopy concepts: what spectra are, how to interpret peaks, why baselines drift, and how modalities differ. It anchors the physics for later preprocessing and chemometrics chapters.
 
 ## 1. What is a spectrum?
 - A spectrum plots **intensity** vs **wavenumber** (cm⁻¹). Wavenumber \( \tilde{\nu} = 1/\lambda \) is preferred because it scales linearly with energy.
@@ -36,7 +48,7 @@ This chapter introduces vibrational spectroscopy for food science: what spectra 
 - Resolution: finer spacing yields more data points but may increase noise.
 - Export formats: vendor-specific to TXT/CSV. FoodSpec standardizes via CSV → HDF5; see [CSV → HDF5 pipeline](../user-guide/csv_to_library.md).
 
-## 5. Choosing a modality for food tasks
+## 5. Choosing Spectroscopy Modality for Food Applications
 - **Authentication/adulteration:** Raman/FTIR fingerprint region for oils, spices; NIR for rapid screening.
 - **Heating/oxidation studies:** Track unsaturation bands (1650–1750 cm⁻¹) and CH stretches.
 - **Protein-rich samples (dairy/meat):** Amide bands (FTIR/Raman); CH stretches.

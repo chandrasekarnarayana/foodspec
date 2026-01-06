@@ -1,5 +1,12 @@
 # Protocols: Reproducibility Checklist
 
+**Purpose:** Ensure FoodSpec analyses are transparent, documented, and repeatable.  
+**Audience:** Researchers publishing results or conducting audits.  
+**Time to read:** 10–15 minutes to fill in.  
+**Prerequisites:** Completed a FoodSpec analysis or QC run; have outputs saved.
+
+---
+
 Use this checklist to ensure FoodSpec analyses are transparent and repeatable. Include it in methods/protocol papers and QC documentation.
 
 ## Checklist (record/attach)
@@ -55,7 +62,9 @@ Use this checklist to ensure FoodSpec analyses are transparent and repeatable. I
 - Store checklists with run artifacts for audits.
 - Prefer configs/YAML to capture parameters; avoid manual re-entry.
 
-## Further reading
+## Next Steps
 
-- [Benchmarking framework](benchmarking_framework.md)
+- [Benchmarking Framework](benchmarking_framework.md) — Compare model performance across runs.
+- [Reporting Guidelines](../troubleshooting/reporting_guidelines.md) — Write up your methods and results.
+- [Study Design & Data Requirements](../stats/study_design_and_data_requirements.md) — Plan experiments for reproducibility.
 - [Reporting guidelines](../troubleshooting/reporting_guidelines.md)

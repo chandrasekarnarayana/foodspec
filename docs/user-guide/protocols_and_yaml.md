@@ -1,20 +1,42 @@
-# User Guide – Protocols & YAML
+# Protocols & YAML Configuration
 
-Protocols are the heart of FoodSpec: YAML/JSON recipes that make analyses reproducible and auditable. This page defines the schema, shows examples, and explains how protocols are discovered by the CLI.
+**Purpose:** Define reproducible analysis workflows as code; enable CLI automation and version control.
 
-**Why it matters:** A clear protocol removes guesswork, enforces validation, and makes runs repeatable via the CLI. Versioning (`version`, `min_foodspec_version`) prevents incompatibilities.
+**Audience:** Researchers building custom pipelines; QA engineers automating batch processing.
 
-## Protocol structure
-Top-level keys:
-- `name`: human-readable protocol name.
-- `version`: protocol version string.
-- `min_foodspec_version`: (optional) minimum FoodSpec library version required.
-- `description`: short text describing the use case.
-- `expected_columns`: required columns in the input data.
-- `steps`: ordered list of step objects.
+**Time:** 15–20 minutes to read; reference as needed.
 
-## Step types
-Built-in step types include:
+**Prerequisites:** Familiarity with YAML syntax; understanding of preprocessing/validation steps.
+
+---
+
+## Overview
+
+Protocols are YAML/JSON recipes that specify:
+- Data source and expected columns
+- Preprocessing method and parameters
+- Validation strategy and metrics
+- Output artifacts (figures, tables, methods text)
+
+Protocols are **version-controlled** and can be re-run identically via CLI or Python API.
+
+---
+
+## Protocol Structure
+### Top-Level Fields
+
+| Field | Type | Required? | Description |
+|-------|------|-----------|-------------|
+| `name` | string | Yes | Protocol name (e.g., `oil_authentication_v1`) |
+| `version` | string | Yes | Protocol version (e.g., `1.0.0`) |
+| `min_foodspec_version` | string | No | Minimum FoodSpec version required (e.g., `1.0.0`) |
+| `description` | string | Yes | Short description of use case (1–2 sentences) |
+| `expected_columns` | list | No | Required columns in input data (e.g., `[oil_type, batch]`) |
+| `steps` | list | Yes | Ordered list of step objects (see step types below) |
+
+## Step Types
+
+Each step defines a processing stage. Common types:
 - `preprocess`: baseline/smoothing/normalization/peak extraction.
 - `harmonize`: align wavenumbers, power normalization, instrument calibration.
 - `qc_checks`: basic dataset QC (class counts, constants, NaNs).
@@ -25,7 +47,7 @@ Built-in step types include:
 
 Each step has `type:` plus parameters relevant to that step (see examples below).
 
-## Example 1 – Oil discrimination (basic)
+## Example 1: Oil Discrimination (Basic)
 Inline comments show why certain params matter.
 ```yaml
 name: oil_basic
@@ -49,7 +71,7 @@ steps:
   - type: output
 ```
 
-## Example 2 – Oil vs chips matrix comparison
+## Example 2: Oil vs. Chips Matrix Comparison
 ```yaml
 name: oil_vs_chips
 version: 1.0
@@ -69,7 +91,7 @@ steps:
   - type: output
 ```
 
-## Example 3 – HSI segment → ROI → RQ
+## Example 3: HSI Segmentation → ROI Extraction
 ```yaml
 name: hsi_segment_roi
 version: 1.0

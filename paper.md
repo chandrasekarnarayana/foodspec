@@ -35,29 +35,19 @@ bibliography: paper.bib
 
 ## Summary
 
-FoodSpec is an open-source Python toolkit for vibrational spectroscopy analysis in food science. It addresses reproducibility and standardization gaps by providing unified data structures, validated preprocessing methods, and production-ready machine learning pipelines for Raman, FTIR, NIR, and hyperspectral imaging data. The software integrates 30+ preprocessing methods, 10+ machine learning algorithms, automated data governance checks, and domain workflows for oil authentication, thermal degradation, and mixture analysis. FoodSpec is built on modern Python packaging with 79% test coverage across 689 tests, ensuring reliability for research and industrial applications.
+FoodSpec is a Python toolkit I built to stop juggling vendor software, ad hoc scripts, and half-documented notebooks for Raman, FTIR, and NIR data in food science. It keeps import, preprocessing, feature extraction, model validation, and reporting in one place, with provenance logged by default. The library includes validated preprocessing (baseline, normalization, smoothing), leakage-aware validation, and domain workflows for oil authentication, heating degradation, mixture analysis, and hyperspectral use cases. Modern packaging, type hints, and 689 tests (79% coverage) back the code so it can be reused in labs and QC settings without guesswork.
 
 ## Statement of Need
 
-Vibrational spectroscopy (Raman, FTIR, NIR) enables rapid, non-destructive assessment of food composition, authenticity, and quality. However, spectroscopic workflows face critical barriers to reproducibility and standardization.
+In my lab work on food spectroscopy, three recurring problems slowed every project: fragmented toolchains, quiet reproducibility failures, and missing domain defaults.
 
-### Fragmentation and Vendor Lock-in
+**1. Fragmented toolchains.** Raman and FTIR instruments write OPUS/SPC/binary files. Baseline correction happened in one vendor app, normalization in another script, modeling in a notebook, and figures somewhere else. Sharing or rerunning the same analysis was painful because steps lived in different places. Existing open-source tools cover pieces (ChemoSpec for multivariate analysis, HyperSpy for hyperspectral preprocessing) but do not offer an end-to-end, food-focused path.
 
-Commercial instruments (Bruker, Thermo Fisher, Perkin Elmer) generate data in proprietary formats (OPUS, SPC, binary files), requiring manual conversion and vendor-specific software [@larkin2011]. This prevents data sharing between laboratories and limits method transferability. Existing open-source tools address narrow aspects: ChemoSpec [@chemospec] provides multivariate analysis (PCA, PLS) in R but lacks machine learning and hyperspectral support; HyperSpy [@hyperspy] excels at HSI preprocessing but lacks chemometric workflows; commercial alternatives (ProspectuR, ENVI) remain closed-source and expensive.
+**2. Reproducibility and leakage.** Many published studies preprocess before splitting, split replicates across folds, or report single-split accuracy without uncertainty [@leite2013; @varoquaux2017]. I saw models that claimed >95% accuracy on olive oil but failed on external data [@danezis2016]. We needed guardrails that make the right thing the default: preprocessing inside CV folds, batch-aware splits, and clear artifacts and logs.
 
-### Reproducibility Crisis in Chemometrics
+**3. Domain-aware workflows.** Food matrices need specific choices: oil authentication relies on band ratios around 1650/1440 cm⁻¹ [@cepeda2019]; heating degradation needs trajectories over time [@galtier2007]; hyperspectral cubes need per-pixel pipelines [@gowen2007]. Generic toolkits do not ship these patterns, so every lab rebuilds them.
 
-Published food spectroscopy studies exhibit methodological issues compromising reproducibility. Common errors include preprocessing before train-test splitting (data leakage), splitting replicates across training and validation sets (inflating accuracy), and lack of standardized validation [@leite2013; @varoquaux2017]. Classification models reporting >95% accuracy on olive oil authentication often fail to generalize to external datasets or different instruments [@danezis2016]. No tools automatically detect and prevent such errors.
-
-### The Need for Integrated, Domain-Aware Tooling
-
-Food science requires domain-specific workflows encoding expert knowledge. Authenticating extra virgin olive oil requires specific Raman band ratios (1440/1660 cm⁻¹, 1655/1440 cm⁻¹) [@cepeda2019], thermal degradation needs trajectory analysis over heating time [@galtier2007], and hyperspectral imaging demands per-pixel classification with spatial context [@gowen2007]. Existing tools do not provide these application-ready workflows.
-
-### FoodSpec's Solution
-
-FoodSpec provides the first comprehensive, open-source toolkit combining vendor-agnostic import, validated preprocessing, production machine learning, and domain workflows. It implements six baseline correction methods (ALS, rubberband, polynomial, airPLS, modified polynomial, rolling ball) [@eilers2005], four normalization approaches (vector, SNV, MSC, area), and automated data governance detecting preprocessing-before-split leakage, replicate contamination, and batch effects. Machine learning includes nested cross-validation, calibration diagnostics (Brier score, reliability diagrams), and hyperparameter optimization for 10+ algorithms. Domain workflows for oil authentication, heating degradation, and mixture analysis encapsulate peer-reviewed protocols.
-
-FoodSpec prioritizes reproducibility: protocol-driven execution via YAML ensures all parameters are version-controlled; automated artifact versioning tracks transformations, models, and figures; narrative report generation produces publication-ready markdown. The software is validated through 689 tests covering preprocessing correctness, statistical accuracy, and end-to-end workflows, with continuous integration on Python 3.10–3.12.
+**FoodSpec is the response.** It keeps import → preprocessing → features → modeling → validation → reporting in one toolkit, with defaults tuned for food science. Baseline methods (ALS, rubberband, polynomial, airPLS, rolling ball) [@eilers2005], normalization (vector, SNV, MSC, area), leakage detection, nested CV, and domain workflows (oil authentication, heating degradation, mixture analysis) are packaged with provenance logging. YAML protocols, run artifacts, and methods text make reruns and review straightforward.
 
 ## Key Features and Implementation
 

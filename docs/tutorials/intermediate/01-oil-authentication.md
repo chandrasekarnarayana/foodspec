@@ -1,15 +1,27 @@
-# Tutorial: Oil Discrimination (Basic)
+# Tutorial: Oil Authentication
 
-- Data: `examples/data/oil_synthetic.csv`
-- Notebook: `examples/notebooks/01_oil_discrimination_basic.ipynb`
-- Protocol: `examples/protocols/EdibleOil_Classification_v1.yml`
-- Steps: Load → Run protocol → View report/tables → Publish with `foodspec-publish`.
-# Tutorial – Oil discrimination (basic)
+**Purpose:** Authenticate edible oils (Raman/FTIR) using ratiometric features and validation.
 
-### What this tutorial covers
-- **Problem:** Authenticate edible oils (e.g., VO/PO/OO/CO) using Raman ratios; see why discrimination matters in QA.  
-- **Dataset:** `examples/data/oils.csv` (or HDF5), with oil_type, heating_stage (optional), replicate/batch.  
-- **Protocol:** `examples/protocols/oil_basic.yaml` (ratiometric features, validation, minimal panel).
+**Audience:** Food scientists, QA engineers, chemometricians.
+
+**Time:** 30–45 minutes.
+
+**Prerequisites:** FoodSpec installed, CSV or HDF5 data with oil types and spectra.
+
+---
+
+## Overview
+
+This tutorial demonstrates how to authenticate edible oils using vibrational spectroscopy. You will:
+
+- Load spectral data (CSV or HDF5) with oil labels
+- Apply preprocessing (baseline correction, normalization)
+- Extract ratiometric features (e.g., C=O/C=C band ratios)
+- Train and validate a classifier with nested cross-validation
+- Generate publication-ready figures and metrics
+
+**Example data:** `examples/data/oils.csv` (Raman spectra, oil types, batch info)  
+**Protocol:** `examples/protocols/oil_basic.yaml` (baseline ALS, SNV normalization, Random Forest)
 
 ## Why it matters (theory)
 Authenticating oils protects against adulteration and ensures quality. Discriminative ratios (e.g., carbonyl/unsaturation bands) separate oil types. Validation (batch-aware CV) checks generalization; see [rq_engine_theory.md](../../theory/rq_engine_detailed.md) and [chemometrics_and_ml_basics.md](../../theory/chemometrics_and_ml_basics.md).

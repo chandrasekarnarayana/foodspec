@@ -1,8 +1,30 @@
-# ML & Chemometrics: Classification and Regression
+# Classification and Regression
 
-Supervised learning connects spectral features to labels (oil_type, species) or continuous targets (mixture fraction, heating proxies). This page follows the WHAT/WHY/WHEN/WHERE template for clarity.
+**Purpose:** Train supervised models (classifiers, regressors) on spectral features for authentication, QC, and calibration tasks.
+
+**Audience:** Chemometricians, data scientists, researchers building food spectroscopy models.
+
+**Time:** 20–30 minutes to read; reference during model selection.
+
+**Prerequisites:** Familiarity with scikit-learn; understanding of cross-validation, metrics, and overfitting.
+
+---
+
+## When to Use Each Model Type
 
 > For notation see the [Glossary](../../reference/glossary.md). For bands/ratios, see [Feature extraction](../preprocessing/feature_extraction.md). Metrics: [Metrics & Evaluation](../../reference/metrics_reference.md).
+
+## Decision Tree: Which Model to Use?
+
+| Your goal | Use this model | Why |
+|-----------|---|---|
+| Authenticate oils (binary: real vs. fake) | SVM (RBF) or Random Forest | Handles nonlinear boundaries; robust to noise |
+| Classify multiple oil types (multiclass) | Random Forest or PLS-DA | RF scalable; PLS-DA interpretable |
+| Predict mixture composition (continuous) | PLS regression or SVR | Designed for correlated features |
+| Quick baseline (simple data) | Logistic regression or kNN | Fast, interpretable |
+| Imbalanced data (rare adulteration) | XGBoost + class weights | Handles imbalance automatically |
+
+---
 
 ## What?
 Defines model families for classification (LogReg, SVM, RF, kNN, PLS-DA) and regression/calibration (PLS, SVR), with inputs (preprocessed features/ratios/PCs) and outputs (predictions, probabilities/scores, calibration curves, metrics).

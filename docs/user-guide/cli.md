@@ -1,39 +1,64 @@
-<!-- CONTEXT BLOCK (mandatory) -->
-**Who needs this?** Users running FoodSpec from command line; QC engineers automating workflows; researchers needing reproducible CLI-based analysis.  
-**What problem does this solve?** Complete reference for all FoodSpec command-line commands and their arguments.  
-**When to use this?** When you need to run analyses via terminal/scripts; checking command syntax and options.  
-**Why it matters?** CLI workflows are reproducible, scriptable, and ideal for batch processing and automation.  
-**Time to complete:** 5-10 minutes to find your command; reference document (not a tutorial).  
-**Prerequisites:** FoodSpec installed; basic terminal/command-line knowledge
+# CLI Reference
 
-!!! info "For Tutorials"
-    This is a reference page. For step-by-step guides, see [quickstart_cli.md](../getting-started/quickstart_cli.md).
+**Purpose:** Complete reference for FoodSpec command-line commands and options.
+
+**Audience:** Users running analyses from terminal; QC engineers automating workflows; researchers needing scriptable, reproducible pipelines.
+
+**Time:** Reference document (5–10 minutes to find your command).
+
+**Prerequisites:** FoodSpec installed; basic terminal/command-line knowledge.
 
 ---
 
-!!! warning "Not Canonical — Redirect"
-  This page is not the canonical source. Please use [cli_guide.md](cli.md).
+## Overview
 
-# CLI reference
+FoodSpec provides command-line tools for batch processing, data conversion, and reproducible analysis workflows. For step-by-step tutorials, see [CLI Quickstart](../getting-started/quickstart_cli.md).
 
-Questions this page answers
-- What commands does foodspec provide?
-- What arguments/options do they take?
-- What outputs should I expect?
-- How do I troubleshoot common CLI issues?
+---
 
-## about
-- Synopsis: `foodspec about`
-- Purpose: print foodspec/Python versions, optional extras status.
+## Commands
+
+### about
+
+Print FoodSpec version, Python version, and optional extras status.
+
+```bash
+foodspec about
+```
+
+**Expected output:**
+```
+FoodSpec version: 1.0.0
+Python version: 3.10.x
+Optional extras: ML (XGBoost, LightGBM), deep learning
+```
 
 ## preprocess
-- Synopsis: `foodspec preprocess INPUT_FOLDER OUTPUT_HDF5 [--metadata-csv PATH] [--modality MOD] [--min-wn VAL --max-wn VAL]`
-- Required: `INPUT_FOLDER`, `OUTPUT_HDF5`
-- Common options: modality (`raman`/`ftir`), wavenumber crop, metadata CSV.
-- Example:
-  ```bash
-  foodspec preprocess data/raw_txt libraries/preproc.h5 --metadata-csv data/meta.csv --modality raman --min-wn 600 --max-wn 1800
-  ```
+
+Convert raw spectral files (OPUS, SPA, DPT, TXT) to HDF5 library with optional metadata.
+
+```bash
+foodspec preprocess INPUT_FOLDER OUTPUT_HDF5 [OPTIONS]
+```
+
+**Required arguments:**
+- `INPUT_FOLDER`: Directory containing raw spectral files
+- `OUTPUT_HDF5`: Output HDF5 library path
+
+**Common options:**
+- `--modality`: Spectroscopy type (`raman` or `ftir`)
+- `--metadata-csv`: Path to metadata CSV (sample info, batch, labels)
+- `--min-wn`, `--max-wn`: Wavenumber range (cm⁻¹) to keep
+
+**Example:**
+```bash
+foodspec preprocess data/raw_txt libraries/preproc.h5 \
+  --metadata-csv data/meta.csv \
+  --modality raman \
+  --min-wn 600 --max-wn 1800
+```
+
+**Expected output:** HDF5 library at `libraries/preproc.h5` with normalized spectra and metadata.
 
 ## protocol-runner
 - Synopsis: `foodspec-run-protocol --input PATH --protocol PATH|NAME --output-dir DIR [--seed N] [--cv-folds N] [--normalization-mode MODE] [--baseline-method METHOD] [--spike-removal|--no-spike-removal]`

@@ -1,39 +1,59 @@
-# Preprocessing: Baseline Correction
+# Baseline Correction
 
-Baselines drift because of fluorescence, scattering, ATR contact, and instrument response. Poor baselines distort peak heights/areas and ratios. This chapter explains when and how to correct baselines in Raman/FTIR/NIR spectra.
+**Purpose:** Remove slowly varying background trends that bias peak-based features and ratios.
+
+**When to use:** Baseline drift from fluorescence (Raman), ATR contact (FTIR), scattering, or instrument response.
+
+**Outcome:** Clean spectra with peaks above zero baseline, suitable for feature extraction and modeling.
+
+---
+
+## Why Baseline Drift Occurs
+
+Baselines drift because of:
+
+- **Fluorescence (Raman):** Broad background from sample excitation that can dwarf weak Raman peaks
+- **Scattering/contact (FTIR ATR):** Sloping backgrounds from poor crystal contact or refractive-index mismatches
+- **Instrument response:** Slowly varying offsets from detector aging or optical path changes
+- **Sample matrix:** Particulates, emulsions, or path-length variations introduce curvature
 
 > For notation and symbols used below, see the [Glossary](../../reference/glossary.md).
 
-## 1. Why baselines drift
-- **Fluorescence (Raman):** Broad background that can dwarf weak peaks.
-- **Scattering/contact (FTIR ATR):** Sloping backgrounds from poor contact or refractive-index mismatches.
-- **Instrument response:** Slowly varying offsets/gains.
-- **Sample matrix:** Particulates, emulsions, and path-length changes introduce curvature.
-
-## 2. When (not) to correct
+## When (Not) to Correct
 - **Correct if:** Baseline dominates dynamic range; ratios/areas are biased; spectra share similar baseline shape.
 - **Caution if:** Peaks are broad and might be mistaken for baseline; very low SNR; automated correction can remove real signal.
 - **Visual check:** Always inspect before/after; consider preserving a copy of raw data.
 
-## 3. Methods in FoodSpec
-### 3.1 Asymmetric Least Squares (ALS)
-> **Math box (ALS objective)**  
-> Minimize \( \sum_i w_i (y_i - b_i)^2 + \lambda \sum_i (\Delta^2 b_i)^2 \)  
-> with asymmetric weights \( w_i \) that down-weight peaks (controlled by \( p \)).
-- **Concept:** Fit a smooth baseline \( b \) minimizing the above objective with asymmetric weights to downweight peaks.
-- **Parameters:** `lambda_` (smoothness), `p` (asymmetry), `max_iter`.
-- **When to use:** Moderate to strong curvature; mixed peaks/baseline; widely used default.
-- **Pitfalls:** Over-smoothing if `lambda_` too large; peak clipping if `p` too small.
+## Methods in FoodSpec
 
-### 3.2 Rubberband (Convex Hull)
-- **Concept:** Compute lower convex hull of the spectrum and interpolate baseline.
-- **When to use:** Spectra with clear gaps between peaks and background; quick and parameter-light.
-- **Pitfalls:** Can fail if peaks are dense or baseline is above hull; sensitive to noise spikes.
+### Asymmetric Least Squares (ALS)
 
-### 3.3 Polynomial baseline
-- **Concept:** Fit low-degree polynomial to spectrum (or selected background regions).
-- **When to use:** Mild curvature, simple backgrounds.
-- **Pitfalls:** Overfitting high-degree polynomials; unsuitable for complex fluorescence.
+**Concept:** Fit a smooth baseline minimizing weighted residuals with asymmetric weights that downweight peaks.
+
+**Parameters:**
+- `lambda_`: Smoothness (higher = smoother baseline; typical: 1e4–1e6)
+- `p`: Asymmetry (0.001–0.1; lower = more aggressive peak suppression)
+- `max_iter`: Iterations (10–100)
+
+**When to use:** Moderate to strong baseline curvature; mixed peaks/baseline; most common choice.
+
+**Pitfalls:** Over-smoothing if `lambda_` too large; peak clipping if `p` too small.
+
+### Rubberband (Convex Hull)
+
+**Concept:** Compute lower convex hull of the spectrum and interpolate baseline.
+
+**When to use:** Spectra with clear gaps between peaks and background; quick, parameter-free.
+
+**Pitfalls:** Fails if peaks are dense or baseline above hull; sensitive to noise spikes.
+
+### Polynomial Baseline
+
+**Concept:** Fit low-degree polynomial (1–4) to spectrum or background-only regions.
+
+**When to use:** Mild curvature; simple backgrounds; fast computation.
+
+**Pitfalls:** Overfitting with high polynomial orders; unsuitable for complex fluorescence.
 
 ## 4. Practical guidance
 - **Order in pipeline:** Baseline → smoothing/normalization → features. Avoid applying after aggressive normalization.

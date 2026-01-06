@@ -1,34 +1,39 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using the information below."
+message: "If you use this software, please cite it as below."
 type: software
 title: "foodspec: A Python toolkit for Raman and FTIR spectroscopy in food science"
 version: "1.0.0"
-
-# v1.0.0 release date
 date-released: "2024-12-25"
 
 authors:
-  - family-names: "Subramani Narayan"
+  - family-names: "Subramani Narayana"
     given-names: "Chandrasekar"
     affiliation: "Aix-Marseille Université, France"
     email: "chandrasekarnarayana@gmail.com"
     orcid: "https://orcid.org/0000-0002-8894-1627"
 
-# TODO: add additional authors/collaborators here as the package and paper evolve.
-#  - family-names: "Surname"
-#    given-names: "Firstname"
-#    affiliation: "Institute"
-#    orcid: "https://orcid.org/..."
-
 identifiers:
-  # TODO: replace these placeholders with real URLs once everything is finalized.
   - type: url
     value: "https://github.com/chandrasekarnarayana/foodspec"
+    description: "Source code repository"
   - type: url
     value: "https://pypi.org/project/foodspec/"
+    description: "Python Package Index"
+  - type: url
+    value: "https://chandrasekarnarayana.github.io/foodspec/"
+    description: "Documentation"
 
 repository-code: "https://github.com/chandrasekarnarayana/foodspec"
+url: "https://chandrasekarnarayana.github.io/foodspec/"
 license: "MIT"
+keywords:
+  - spectroscopy
+  - Raman
+  - FTIR
+  - food science
+  - chemometrics
+  - reproducibility
+  - FAIR
 
 abstract: >
   foodspec is a headless, research-grade Python toolkit for Raman and
@@ -43,21 +48,15 @@ abstract: >
   analysis.
 
 preferred-citation:
-  # This is intentionally a placeholder for the future MethodsX article.
-  # Update when the paper is accepted.
-  type: article
-  title: "FAIR-Compliant Computational Protocol for Raman and FTIR Spectroscopy in Food Science (working title)"
+  type: software
+  title: "foodspec: A Python toolkit for Raman and FTIR spectroscopy in food science"
   authors:
-    - family-names: "Subramani Narayan"
+    - family-names: "Subramani Narayana"
       given-names: "Chandrasekar"
       affiliation: "Aix-Marseille Université, France"
       orcid: "https://orcid.org/0000-0002-8894-1627"
-  journal: "MethodsX"
-  year: 202X
-  # TODO: update these when you have them
-  # volume: ""
-  # issue: ""
-  # start: ""
-  # end: ""
-  # doi: "10.xxxx/xxxxx"
-  # url: "https://doi.org/10.xxxx/xxxxx"
+  version: "1.0.0"
+  date-released: "2024-12-25"
+  repository-code: "https://github.com/chandrasekarnarayana/foodspec"
+  url: "https://chandrasekarnarayana.github.io/foodspec/"
+  license: "MIT"
