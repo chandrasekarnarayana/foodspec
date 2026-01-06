@@ -81,8 +81,51 @@ def check_links(full=False):
 
 
 def check_mkdocs_build():
-    """Run mkdocs build."""
-    return run_command("mkdocs build --strict", "MkDocs Build Validation", required=True)
+    """Run mkdocs build and fail on warnings."""
+    print(f"\n{'=' * 70}")
+    print("🔍 MkDocs Build Validation")
+    print(f"{'=' * 70}")
+    
+    try:
+        result = subprocess.run(
+            "mkdocs build --strict",
+            shell=True,
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT
+        )
+        
+        output = result.stdout + result.stderr
+        if result.stdout:
+            print(result.stdout)
+        if result.stderr:
+            print(result.stderr)
+        
+        # Check for common warning patterns that should be errors
+        warning_patterns = [
+            r"INFO: The following pages exist in docs directory but are not included in nav",
+            r"doc file.*contains a link.*but the doc.*does not contain an anchor",
+            r"WARNING",
+            r"ERROR",
+        ]
+        
+        has_warnings = any(re.search(pattern, output, re.IGNORECASE) for pattern in warning_patterns)
+        
+        if result.returncode == 0 and not has_warnings:
+            print("✅ MkDocs Build Validation - PASSED")
+            return True
+        else:
+            if has_warnings:
+                print("❌ MkDocs Build Validation - FAILED (warnings found)")
+            else:
+                print("❌ MkDocs Build Validation - FAILED (build error)")
+            print("   This check is required for documentation quality.")
+            return False
+    
+    except Exception as e:
+        print(f"❌ Could not run mkdocs build: {e}")
+        return False
 
 
 def check_style_issues():
