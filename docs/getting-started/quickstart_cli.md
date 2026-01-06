@@ -40,7 +40,7 @@ foodspec --version
 ## Dataset Format
 
 !!! tip "Data Format Reference"
-    See [Data Format Reference](../09-reference/data_format.md) for complete schema specifications, unit conventions, and validation checklist. Key terms defined in [Glossary](../reference/glossary.md).
+    See [Data Format Reference](../reference/data_format.md) for complete schema specifications, unit conventions, and validation checklist. Key terms defined in [Glossary](../reference/glossary.md).
 
 ### CSV Requirements
 Your input CSV must have:

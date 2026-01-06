@@ -53,7 +53,7 @@ class TestResult:
         term (str, optional): MANOVA term name (e.g., "group", "time")
 
     See Also:
-        - [Metric Significance Tables](../09-reference/metric_significance_tables.md)
+        - [Metric Significance Tables](../reference/metric_significance_tables.md)
     """
 
     statistic: float
@@ -87,7 +87,7 @@ def run_ttest(
 
     **Assumptions:** Normality (robust if n > 30), independence, random sampling
 
-    **Significance:** See [Metric Significance Tables](../09-reference/metric_significance_tables.md)
+    **Significance:** See [Metric Significance Tables](../reference/metric_significance_tables.md)
 
     Parameters:
         sample1 (array-like): First sample
@@ -163,7 +163,7 @@ def run_anova(data, groups) -> TestResult:
         ...                    ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C'])\n        >>> assert result.pvalue < 0.05  # Groups differ\n
     See Also:
         - [ANOVA & MANOVA](../methods/statistics/anova_and_manova.md)
-        - [Metric Significance Tables](../09-reference/metric_significance_tables.md) — Effect size (η²)
+        - [Metric Significance Tables](../reference/metric_significance_tables.md) — Effect size (η²)
         - run_kruskal_wallis(): Non-parametric alternative
     """
     df = pd.DataFrame({"data": np.asarray(data), "group": np.asarray(groups)})
@@ -253,7 +253,7 @@ def benjamini_hochberg(pvalues: Iterable[float], alpha: float = 0.05) -> pd.Data
         rate: a practical and powerful approach to multiple testing.
 
     See Also:
-        - [Metric Significance Tables](../09-reference/metric_significance_tables.md) — Multiple testing
+        - [Metric Significance Tables](../reference/metric_significance_tables.md) — Multiple testing
     """
     pvals = np.asarray(list(pvalues), dtype=float)
     reject, p_adj, _, _ = multipletests(pvals, alpha=alpha, method="fdr_bh")

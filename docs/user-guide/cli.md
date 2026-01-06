@@ -129,5 +129,5 @@ foodspec preprocess data/raw_txt libraries/preproc.h5 \
 See also
 - [csv_to_library.md](csv_to_library.md)
 - [../workflows/oil_authentication.md](../workflows/authentication/oil_authentication.md)
-- [../09-reference/keyword_index.md](../09-reference/keyword_index.md)
+- [../reference/keyword_index.md](../reference/keyword_index.md)
 - [../03-cookbook/ftir_raman_preprocessing.md](../methods/preprocessing/baseline_correction.md)

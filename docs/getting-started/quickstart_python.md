@@ -33,7 +33,7 @@ print(f"FoodSpec {foodspec.__version__}")
 ## Dataset Format
 
 !!! tip "Data Format Reference"
-    See [Data Format Reference](../09-reference/data_format.md) for complete schema specifications, validation checklists, and best practices. Key terms defined in [Glossary](../reference/glossary.md).
+    See [Data Format Reference](../reference/data_format.md) for complete schema specifications, validation checklists, and best practices. Key terms defined in [Glossary](../reference/glossary.md).
 
 ### CSV Requirements
 ```csv
@@ -327,7 +327,7 @@ weighted avg       0.95      0.98      0.97        45
 
 ## Additional Resources
 
-- **[Data Format Reference](../09-reference/data_format.md)** - Schema formats, unit conventions, validation checklist
+- **[Data Format Reference](../reference/data_format.md)** - Schema formats, unit conventions, validation checklist
 - **[Glossary](../reference/glossary.md)** - Definitions of wavenumber, baseline, normalization, CV strategy, etc.
 - **[API Reference](../api/index.md)** - Complete API documentation
 - **[Preprocessing Guide](../methods/preprocessing/normalization_smoothing.md)** - Detailed preprocessing recipes
