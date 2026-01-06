@@ -111,6 +111,18 @@ plugins:
         08-api/io.md: api/io.md
         08-api/workflows.md: api/workflows.md
         08-api/ml.md: api/ml.md
+        # Consolidate 09-reference/ into reference/ (canonical)
+        09-reference/index.md: reference/index.md
+        09-reference/changelog.md: reference/changelog.md
+        09-reference/citing.md: reference/citing.md
+        09-reference/data_format.md: reference/data_format.md
+        09-reference/glossary.md: reference/glossary.md
+        09-reference/keyword_index.md: reference/keyword_index.md
+        09-reference/method_comparison.md: reference/method_comparison.md
+        09-reference/metric_significance_tables.md: reference/metric_significance_tables.md
+        09-reference/metrics_reference.md: reference/metrics_reference.md
+        09-reference/ml_model_vip_scores.md: reference/ml_model_vip_scores.md
+        09-reference/versioning.md: reference/versioning.md
         workflows/hyperspectral_mapping.md: workflows/spatial/hyperspectral_mapping.md
         workflows/oil_authentication.md: workflows/authentication/oil_authentication.md
         workflows/calibration_regression_example.md: workflows/quantification/calibration_regression_example.md
