@@ -99,6 +99,8 @@ plugins:
         07-validation/robustness_checks.md: methods/validation/robustness_checks.md
         03-cookbook/index.md: workflows/index.md
         03-cookbook/cookbook_registry_reporting.md: workflows/workflow_design_and_reporting.md
+        # Consolidate 08-api/ into api/ (canonical)
+        08-api/index.md: api/index.md
         08-api/stats.md: api/stats.md
         08-api/metrics.md: api/metrics.md
         08-api/core.md: api/core.md
