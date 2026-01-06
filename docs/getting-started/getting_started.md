@@ -1,23 +1,187 @@
-# Getting started
+# Getting Started
 
 <!-- CONTEXT BLOCK (mandatory) -->
-**Who needs this?** Food scientists, analytical chemists, QC engineers, and data scientists new to FoodSpec.  
-**What problem does this solve?** Understanding the FoodSpec workflow from raw spectra to validated results.  
-**When to use this?** After installation, when you need an overview before diving into specific workflows.  
-**Why it matters?** Understanding data formats and the typical pipeline prevents common mistakes and saves time.  
-**Time to complete:** 15-20 minutes  
-**Prerequisites:** FoodSpec installed; basic understanding of spectroscopy concepts; familiarity with Python or CLI
+**Purpose:** Understand FoodSpec's workflow and choose your path (Python vs. CLI).  
+**Audience:** Complete beginners; no spectroscopy background required.  
+**Time:** 5-10 minutes.  
+**Prerequisites:** FoodSpec installed; basic Python or terminal knowledge.
 
 ---
 
-Questions this page answers
-- Who is foodspec for?
-- How do I install it (core vs deep extra)?
-- What data formats and metadata does it expect?
-- What is the typical pipeline and why?
-- Where do I go for full Python/CLI quickstarts?
+## The 30-Second Version
+
+```python
+# The absolute minimal example
+from foodspec import __version__
+print(f"FoodSpec {__version__} is ready!")
+
+# Load some oil data
+from foodspec.io import load_csv_spectra
+spectra = load_csv_spectra("examples/data/oils.csv")
+print(f"Loaded {len(spectra)} spectra")
+```
+
+**Expected output:**
+```
+FoodSpec 1.0.0 is ready!
+Loaded 96 spectra
+```
+
+---
+
+## Choose Your Path
+
+### Path 1: Python API (Interactive, Customizable)
+
+Best for: Learning, experimentation, custom analysis
+
+**Quickstart:**
+1. [15-Minute Quickstart](quickstart_15min.md) — Get working code now
+2. [Oil Authentication](../workflows/authentication/oil_authentication.md) — Real example
+3. [Full End-to-End](../workflows/end_to_end_pipeline.md) — Every step explained
+
+**Key modules:**
+```python
+from foodspec.datasets import load_oil_example_data
+from foodspec.preprocess import baseline_als, normalize_snv
+from foodspec.ml import ClassifierFactory
+from foodspec.validation import run_stratified_cv
+```
+
+---
+
+### Path 2: CLI (Reproducible, Automatable)
+
+Best for: Reproducibility, batch processing, production use
+
+**Quickstart:**
+1. [First Steps (CLI)](first-steps_cli.md) — Run your first command
+2. [Protocol Design](../workflows/domain_templates.md) — Create YAML configs
+3. [Reproducibility](../reproducibility.md) — Best practices
+
+**Key commands:**
+```bash
+foodspec --version                    # Verify installation
+foodspec-run-protocol \               # Run analysis
+  --protocol myprotocol.yaml \
+  --input data.csv \
+  --output-dir results
+```
+
+---
 
 ## Who is it for?
+
+Food scientists, analytical chemists, QA engineers, and data scientists working with Raman/FTIR spectra who need reproducible preprocessing, chemometrics, and reporting.
+
+---
+
+## What Does FoodSpec Do?
+
+**In:** Spectral data (CSV or HDF5) + metadata (labels, batch info)  
+**Out:** Validated model + metrics + figures + reproducibility report
+
+**Typical workflow:**
+
+```
+Raw spectra (instrument file)
+        ↓
+  CSV → HDF5 (standardized format)
+        ↓
+   Preprocess (baseline, smooth, normalize)
+        ↓
+   Extract features (peaks, ratios, PCA)
+        ↓
+   Train & validate (cross-validation)
+        ↓
+   Results (metrics, figures, JSON report)
+```
+
+---
+
+## Installation Options
+
+**Core (always install first):**
+```bash
+pip install foodspec
+```
+
+**Deep learning (optional, for 1D CNN):**
+```bash
+pip install "foodspec[deep]"
+```
+
+**Verify installation:**
+```bash
+foodspec --version  # Should print version
+foodspec about      # Detailed info
+```
+
+---
+
+## Data Format Quick Check
+
+FoodSpec expects data in one of these formats:
+
+### CSV (Simplest)
+
+```csv
+sample_id,wavenumber,intensity,label
+OO_001,4000.0,0.234,Olive
+OO_001,3998.0,0.235,Olive
+OO_002,4000.0,0.241,Olive
+```
+
+**Load with:**
+```python
+from foodspec.io import load_csv_spectra
+spectra = load_csv_spectra("oils.csv", label_column="label")
+```
+
+### HDF5 (Efficient for large datasets)
+
+```python
+from foodspec.io import load_hdf5_library
+spectra = load_hdf5_library("oils_library.h5")
+```
+
+See [Data Format Reference](../reference/data_format.md) for full details.
+
+---
+
+## Next Steps
+
+**Never used FoodSpec before?**
+→ Start with [15-Minute Quickstart](quickstart_15min.md)
+
+**Prefer command-line?**
+→ Go to [First Steps (CLI)](first-steps_cli.md)
+
+**Want to understand reproducibility?**
+→ Read [Reproducibility Guide](../reproducibility.md)
+
+**Ready for real examples?**
+→ [Oil Authentication](../workflows/authentication/oil_authentication.md)
+
+---
+
+## FAQ (Quick Answers)
+
+**Q: Can I use my own data?**  
+A: Yes! See [Data Format Reference](../reference/data_format.md) for import instructions.
+
+**Q: Do I need to know Python?**  
+A: No! Use CLI with YAML configs. Or yes, use Python API for flexibility.
+
+**Q: How long does an analysis take?**  
+A: Usually < 1 minute for 100 samples. Depends on data size and model.
+
+**Q: Can I reproduce old analyses?**  
+A: Yes! Save protocols and metadata with each run. See [Reproducibility](../reproducibility.md).
+
+---
+
+## Questions this page answers
 Food scientists, analytical chemists, QC engineers, and data scientists working with Raman/FTIR spectra who need reproducible preprocessing, chemometrics, and reporting.
 
 ## Installation

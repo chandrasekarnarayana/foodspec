@@ -34,6 +34,109 @@ This guide shows how to use FoodSpec's protocol system, provenance logging, and 
 
 ---
 
+## Common Pitfalls: Data Leakage Examples
+
+**Data leakage** happens when information from outside the training set influences the model, producing inflated performance estimates. Here's how to recognize and avoid it:
+
+### ❌ Leakage: Preprocessing Before Split
+
+```python
+# BAD: Preprocessing on full dataset before train/test split
+spectra_normalized = normalize_snv(all_spectra)  # Fits on ALL data
+train_spectra = spectra_normalized[train_idx]
+test_spectra = spectra_normalized[test_idx]  # Test data influenced by full dataset
+
+# This makes test performance look ~10% better than it will in reality!
+```
+
+### ✅ Fix: Preprocess Inside Validation
+
+```python
+# GOOD: Preprocessing fit only on training fold
+from sklearn.model_selection import StratifiedKFold
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scores = []
+
+for train_idx, test_idx in cv.split(spectra, labels):
+    # Fit preprocessor on train fold only
+    normalizer = Normalizer(method='snv')
+    spectra_train_norm = normalizer.fit_transform(spectra[train_idx])
+    spectra_test_norm = normalizer.transform(spectra[test_idx])  # Use fitted normalizer
+    
+    # Train and evaluate on properly split data
+    model.fit(spectra_train_norm, labels[train_idx])
+    score = model.score(spectra_test_norm, labels[test_idx])
+    scores.append(score)
+
+print(f"Realistic CV score: {np.mean(scores):.3f} ± {np.std(scores):.3f}")
+```
+
+### ❌ Leakage: Ignoring Batch Effects
+
+```python
+# BAD: Batch 1 (all training) vs. Batch 2 (all testing)
+# Model learns batch differences, not real distinctions
+train_idx = (metadata['batch'] == 'Batch_1')
+test_idx = (metadata['batch'] == 'Batch_2')
+
+# This will overestimate performance when applied to new batches!
+```
+
+### ✅ Fix: Stratified on Label + Batch
+
+```python
+# GOOD: Mix batches across train/test, stratified on both
+from sklearn.model_selection import StratifiedKFold
+
+labels = metadata['label'].values
+batches = metadata['batch'].values
+
+# Create a combined stratification key
+strat_key = np.array([f"{l}_{b}" for l, b in zip(labels, batches)])
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+for train_idx, test_idx in cv.split(spectra, strat_key):
+    # Each fold has mixed batches; tests generalization to new batches
+    pass
+```
+
+### ❌ Leakage: Feature Selection on Full Dataset
+
+```python
+# BAD: Select features using full dataset, then cross-validate
+from sklearn.feature_selection import SelectKBest
+
+selector = SelectKBest(k=50)
+X_selected = selector.fit_transform(all_spectra, all_labels)  # Fit on ALL
+
+# Now cross-validate
+cv_score = cross_val_score(model, X_selected, all_labels)  # Test data influenced by selection!
+```
+
+### ✅ Fix: Feature Selection Inside CV
+
+```python
+# GOOD: Feature selection fit on each training fold
+from sklearn.pipeline import Pipeline
+from sklearn.feature_selection import SelectKBest
+
+pipeline = Pipeline([
+    ('selector', SelectKBest(k=50)),
+    ('model', RandomForestClassifier(random_state=42))
+])
+
+cv_scores = cross_val_score(
+    pipeline, 
+    all_spectra, 
+    all_labels, 
+    cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+)
+# Selection happens independently on each fold's training data
+```
+
+---
+
 ## Minimum Metadata to Capture
 
 Keep these four blocks with every run (JSON/YAML is fine):
@@ -160,9 +263,65 @@ You do not need lengthy FAIR essays—focus on the practical pieces above.
 
 ---
 
-## Pitfalls and How to Avoid Them
+## Leakage Detection and Prevention
 
-| Pitfall | Why it hurts | Fix |
+Data leakage is when information from the test set "leaks" into training, causing inflated performance estimates. This is silent and easy to miss.
+
+### How Leakage Happens
+
+```python
+# ❌ BAD: Preprocessing before split (LEAKAGE!)
+from foodspec.preprocess import baseline_als, normalize_snv
+spectra = load_spectra("data.csv")
+spectra_preprocessed = baseline_als(spectra)  # ← Fit on ALL data
+spectra_normalized = normalize_snv(spectra_preprocessed)  # ← Fit on ALL data
+
+# Now split
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(spectra_normalized.data, spectra_normalized.labels)
+
+# Model sees test set info in the baseline and normalization!
+model.fit(X_train, y_train)
+score = model.score(X_test, y_test)  # ← INFLATED! (looks like 95%, really ~85%)
+```
+
+### The Right Way: Preprocess Inside Validation
+
+```python
+# ✅ GOOD: Preprocessing inside CV (NO LEAKAGE)
+from foodspec.validation import run_stratified_cv
+from foodspec.ml import ClassifierFactory
+from foodspec.preprocess import Pipeline, baseline_als, normalize_snv
+
+# Define preprocessing that will be applied inside each fold
+preproc = Pipeline([
+    ('baseline', baseline_als),
+    ('normalize', normalize_snv)
+])
+
+# Run cross-validation: preprocessing is fit on train fold, applied to test fold
+model = ClassifierFactory.create("random_forest", n_estimators=100)
+metrics = run_stratified_cv(
+    model,
+    spectra.data, 
+    spectra.labels,
+    preprocess_inside_cv=True,  # ← Critical!
+    preprocessing_pipeline=preproc
+)
+
+print(f"Honest score: {metrics['accuracy']:.1%}")  # ← Real performance
+```
+
+### Leakage Audit Checklist
+
+- [ ] Baseline correction fit on **train fold only**, not full dataset
+- [ ] Normalization fit on **train fold only**
+- [ ] Feature extraction (PCA, feature selection) done **inside CV folds**
+- [ ] Hyperparameter tuning uses **nested CV** (inner loop for tuning, outer for evaluation)
+- [ ] Replicates and batches **kept together** (not split across train/test)
+- [ ] Time series data: test fold is **always later** than train fold (no information leakage from future)
+
+---
 |---------|-------------|-----|
 | Preprocessing before split | Leakage → inflated metrics | Fit preprocessing inside CV folds/train split only |
 | Replicates split across folds | Over-optimistic scores | Group by replicate/batch; stratify on label+batch |

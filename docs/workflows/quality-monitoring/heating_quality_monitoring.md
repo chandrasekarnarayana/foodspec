@@ -38,15 +38,17 @@
 ### Option A: Bundled Synthetic Data
 
 ```python
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from foodspec.apps.heating import run_heating_quality_workflow
+from foodspec.demo import synthetic_heating_dataset
 from foodspec.viz.heating import plot_ratio_vs_time
-from examples.heating_quality_quickstart import _synthetic_heating_dataset
 
 # Generate synthetic heating data (0-8 hours, oxidation trend)
-fs = _synthetic_heating_dataset()
+fs = synthetic_heating_dataset()
 print(f"Loaded: {fs.x.shape[0]} spectra across {fs.metadata['heating_time'].nunique()} time points")
 print(f"Time range: {fs.metadata['heating_time'].min()}-{fs.metadata['heating_time'].max()} hours")
 
@@ -73,8 +75,10 @@ ax.set_xlabel("Heating Time (hours)")
 ax.set_ylabel(f"{ratio_name} Ratio")
 ax.grid(alpha=0.3)
 plt.tight_layout()
-plt.savefig("heating_ratio_vs_time.png", dpi=150, bbox_inches='tight')
-print("Saved: heating_ratio_vs_time.png")
+out_dir = Path("outputs")
+out_dir.mkdir(exist_ok=True)
+plt.savefig(out_dir / "heating_ratio_vs_time.png", dpi=150, bbox_inches="tight")
+print("Saved: outputs/heating_ratio_vs_time.png")
 
 # If groups present (e.g., multiple oil types), run ANOVA
 if 'oil_type' in fs.metadata.columns:
@@ -86,7 +90,7 @@ if 'oil_type' in fs.metadata.columns:
     print(f"\nANOVA (ratio ~ oil_type): F={anova_res.f_stat:.2f}, p={anova_res.p_value:.1e}")
 ```
 
-**Expected Output:**
+![Heating ratio over time](../../assets/workflows/heating_quality_monitoring/heating_ratio_vs_time.png)
 ```yaml
 Loaded: 24 spectra across 8 time points
 Time range: 0-8 hours

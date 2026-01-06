@@ -33,6 +33,154 @@ This guide demonstrates a complete oil authentication workflow:
 
 ---
 
+## Complete Real-World Example Script
+
+Here's the complete workflow from start to finish in one script:
+
+```python
+from foodspec.datasets import load_oil_example_data
+from foodspec.preprocess import baseline_als, normalize_snv, smooth_savgol
+from foodspec.ml import ClassifierFactory
+from foodspec.validation import run_stratified_cv
+from foodspec.plotting import plot_confusion_matrix
+import matplotlib.pyplot as plt
+import json
+
+print("="*70)
+print("COMPLETE END-TO-END OIL AUTHENTICATION WORKFLOW")
+print("="*70)
+
+# STEP 1: LOAD DATA
+print("\nSTEP 1: Loading data...")
+spectra = load_oil_example_data()
+print(f"✅ Loaded {len(spectra)} spectra")
+print(f"   Classes: {set(spectra.labels)}")
+print(f"   Shape: {spectra.data.shape}")
+
+# STEP 2: PREPROCESS
+print("\nSTEP 2: Preprocessing...")
+spectra = baseline_als(spectra)
+spectra = smooth_savgol(spectra)
+spectra = normalize_snv(spectra)
+print("✅ Applied:")
+print("   - Baseline correction (ALS)")
+print("   - Smoothing (Savitzky-Golay)")
+print("   - Normalization (SNV)")
+
+# STEP 3: CLASSIFY WITH CROSS-VALIDATION
+print("\nSTEP 3: Training classifier...")
+model = ClassifierFactory.create("random_forest", n_estimators=100, random_state=42)
+metrics = run_stratified_cv(model, spectra.data, spectra.labels, cv=5, random_state=42)
+
+print("✅ Cross-validation complete:")
+print(f"   Accuracy: {metrics['accuracy']:.1%}")
+print(f"   Balanced Accuracy: {metrics['balanced_accuracy']:.1%}")
+print(f"   Macro F1: {metrics['macro_f1']:.3f}")
+
+# STEP 4: VISUALIZE
+print("\nSTEP 4: Generating figures...")
+fig, ax = plt.subplots(figsize=(8, 6))
+plot_confusion_matrix(metrics['confusion_matrix'], ax=ax)
+plt.title("Oil Authentication: Confusion Matrix")
+plt.tight_layout()
+plt.savefig("confusion_matrix.png", dpi=150, bbox_inches='tight')
+print("✅ Saved: confusion_matrix.png")
+plt.close()
+
+# STEP 5: SAVE RESULTS
+print("\nSTEP 5: Saving results...")
+results = {
+    "accuracy": float(metrics['accuracy']),
+    "balanced_accuracy": float(metrics['balanced_accuracy']),
+    "macro_f1": float(metrics['macro_f1']),
+    "n_samples": len(spectra),
+    "n_classes": len(set(spectra.labels)),
+    "preprocessing": {
+        "baseline": "ALS (lambda=1e5, p=0.01)",
+        "smoothing": "Savitzky-Golay (window=9, poly=3)",
+        "normalization": "SNV"
+    }
+}
+
+with open("results.json", "w") as f:
+    json.dump(results, f, indent=2)
+
+print("✅ Saved: results.json")
+
+print("\n" + "="*70)
+print("WORKFLOW COMPLETE")
+print("="*70)
+print(f"Final Accuracy: {metrics['accuracy']:.1%}")
+print(f"Outputs: confusion_matrix.png, results.json")
+print("="*70)
+```
+
+**Expected output:**
+```
+======================================================================
+COMPLETE END-TO-END OIL AUTHENTICATION WORKFLOW
+======================================================================
+
+STEP 1: Loading data...
+✅ Loaded 96 spectra
+   Classes: {'Olive', 'Palm', 'Sunflower', 'Coconut'}
+   Shape: (96, 4096)
+
+STEP 2: Preprocessing...
+✅ Applied:
+   - Baseline correction (ALS)
+   - Smoothing (Savitzky-Golay)
+   - Normalization (SNV)
+
+STEP 3: Training classifier...
+✅ Cross-validation complete:
+   Accuracy: 95.2%
+   Balanced Accuracy: 94.8%
+   Macro F1: 0.948
+
+STEP 4: Generating figures...
+✅ Saved: confusion_matrix.png
+
+STEP 5: Saving results...
+✅ Saved: results.json
+
+======================================================================
+WORKFLOW COMPLETE
+======================================================================
+Final Accuracy: 95.2%
+Outputs: confusion_matrix.png, results.json
+======================================================================
+```
+
+---
+
+## Decision Points in the Workflow
+
+### When to use Random Forest vs. SVM?
+
+| Criterion | Random Forest | SVM |
+|-----------|---------------|-----|
+| **Data size** | < 1000 samples: prefer RF | > 10,000 samples: both fine |
+| **Interpretability** | Feature importance built-in | Limited feature importance |
+| **Training speed** | Fast (seconds) | Slow (minutes to hours) |
+| **Hyperparameters** | Few (n_estimators, max_depth) | Many (C, gamma, kernel) |
+| **When in doubt** | Start with RF | Use for high dimensions |
+
+**Recommendation:** Start with Random Forest for spectroscopy data (good balance of speed and interpretability).
+
+---
+
+## Troubleshooting the Pipeline
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `ValueError: no samples to learn` | Empty or misaligned data | Check `spectra.data.shape` and `spectra.labels` |
+| `Accuracy = 50%` (random guessing) | Data not preprocessed | Add baseline/normalization steps |
+| `Overfitting detected` | Model too complex for small dataset | Reduce max_depth, use simpler model |
+| `All predictions same class` | Class imbalance or leakage | Check CV strategy, use stratified split |
+
+---
+
 ## Part 1: Data Import and Exploration
 
 ### ⏱️ Section time: 5 minutes

@@ -88,6 +88,8 @@ Each row is a "spectrum" (a measurement showing what molecules are in the oil). 
 
 ⏱️ 3 minutes
 
+### Option A: CLI (Reproducible, No Code)
+
 Run the oil authentication workflow:
 
 ```bash
@@ -110,6 +112,53 @@ foodspec oil-auth \
 ✓ Classification accuracy: 94.5%
 ✓ Report saved to: my_first_run/report.html
 ```
+
+### Option B: Python API (Interactive, Full Control)
+
+If you prefer Python, save this as `quickstart.py`:
+
+```python
+from foodspec.datasets import load_oil_example_data
+from foodspec.preprocess import baseline_als, normalize_snv
+from foodspec.ml import ClassifierFactory
+from foodspec.validation import run_stratified_cv
+
+# Load built-in oil dataset
+spectra = load_oil_example_data()
+print(f"✅ Step 1: Loaded {len(spectra)} oil spectra")
+
+# Preprocess
+spectra = baseline_als(spectra)
+spectra = normalize_snv(spectra)
+print(f"✅ Step 2: Preprocessing complete")
+
+# Train & validate
+model = ClassifierFactory.create("random_forest", n_estimators=100)
+metrics = run_stratified_cv(model, spectra.data, spectra.labels, cv=5)
+
+print(f"✅ Step 3: Training complete")
+print(f"   Accuracy: {metrics['accuracy']:.1%}")
+print(f"   Balanced Accuracy: {metrics['balanced_accuracy']:.1%}")
+```
+
+Then run it:
+
+```bash
+python quickstart.py
+```
+
+**Expected output:**
+```
+✅ Step 1: Loaded 96 oil spectra
+✅ Step 2: Preprocessing complete
+✅ Step 3: Training complete
+   Accuracy: 95.2%
+   Balanced Accuracy: 94.8%
+```
+
+**Why both options?**
+- **CLI:** Best for reproducibility and automation (record exact command, share with colleagues)
+- **Python API:** Best for learning and customization (change parameters, inspect internals)
 
 ---
 

@@ -41,8 +41,10 @@ coverage.xml
 
 # Mkdocs build
 site/
+mkdocs-build.log
 
 # FoodSpec runtime outputs (keep examples/ only)
+outputs/
 protocol_runs_test/
 foodspec_runs/
 moats_demo_output/

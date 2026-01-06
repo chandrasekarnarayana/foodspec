@@ -1,7 +1,84 @@
 # Data Format Reference
 
-!!! info "Module Purpose"
-    Comprehensive guide to FoodSpec data structures, format conventions, unit standards, and validation checklists.
+**Purpose:** Understand all FoodSpec data formats, how to prepare your data, and validation checklist.
+
+**Audience:** Data scientists, lab technicians, anyone importing spectral data into FoodSpec.
+
+**Time:** 20-30 minutes to read; 5 minutes to prepare your data.
+
+**Prerequisites:** CSV/HDF5 files with spectra; basic spreadsheet knowledge.
+
+---
+
+## Quick Start: CSV Format
+
+### Minimal CSV Specification
+
+**What FoodSpec expects:**
+
+```csv
+sample_id,wavenumber,intensity,label
+OO_001,4000.0,0.234,Olive
+OO_001,3998.0,0.235,Olive
+OO_001,3996.0,0.236,Olive
+OO_002,4000.0,0.241,Olive
+OO_002,3998.0,0.242,Olive
+OO_002,3996.0,0.243,Olive
+```
+
+**Columns required:**
+- `sample_id`: Unique identifier (e.g., "OO_001", "batch_A_rep1")
+- `wavenumber`: Numeric wavenumber in cm⁻¹ (e.g., 4000, 650)
+- `intensity`: Numeric spectrum value (reflectance, transmittance, counts)
+- `label`: Class label (e.g., "Olive", "Palm", "Sunflower")
+
+**Columns optional but recommended:**
+- `batch`: Batch identifier (for reproducibility checks)
+- `replicate`: Replicate number (to keep replicates together in cross-validation)
+- `instrument`: Which instrument measured it (Raman, FTIR, etc.)
+
+### Load CSV into FoodSpec
+
+```python
+from foodspec.io import load_csv_spectra
+
+# Load CSV with metadata
+spectra = load_csv_spectra(
+    "my_oils.csv",
+    id_column="sample_id",
+    wavenumber_column="wavenumber",
+    label_column="label",
+    batch_column="batch",
+    replicate_column="replicate"
+)
+
+print(f"Loaded {len(spectra)} spectra")
+print(f"Labels: {set(spectra.labels)}")
+print(f"Shape: {spectra.data.shape}")  # (n_samples, n_wavenumbers)
+```
+
+**Expected output:**
+```
+Loaded 96 spectra
+Labels: {'Olive', 'Palm', 'Sunflower', 'Coconut'}
+Shape: (96, 4096)
+```
+
+### Vendor Format Conversion
+
+**OPUS (Bruker):**
+```python
+from foodspec.io import load_opus_file
+spectra = load_opus_file("mydata.0")
+```
+
+**SPC (Thermo):**
+```python
+from foodspec.io import load_spc_file
+spectra = load_spc_file("mydata.spc")
+```
+
+See the [I/O API documentation](../08-api/io.md) for complete loader reference.
 
 ---
 
