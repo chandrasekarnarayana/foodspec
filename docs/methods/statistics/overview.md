@@ -1,5 +1,12 @@
 # Statistics & Data Analysis Overview
 
+**Purpose:** Map your research question to the right statistical test and FoodSpec function.  
+**Audience:** Users planning analyses; researchers choosing between tests.  
+**Time to read:** 5–10 minutes.  
+**Prerequisites:** Basic familiarity with statistical concepts (p-values, confidence intervals).
+
+---
+
 This page summarizes the statistical tools available in FoodSpec and where to use them. Use it as a quick map from common questions to recommended methods, functions, and workflows.
 
 > For notation and symbols, see the [Glossary](../../reference/glossary.md).
@@ -68,6 +75,15 @@ This page summarizes the statistical tools available in FoodSpec and where to us
    - **Fix:** Randomize sample order; use batch-aware analysis (include batch in model or GroupKFold CV)
 
 ---
+
+## Next Steps
+
+- [Study Design & Data Requirements](study_design_and_data_requirements.md) — Plan your experiment for statistical power.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.
+- [Reproducibility Checklist](../../protocols/reproducibility_checklist.md) — Document your analysis methods.
+
+---
+
 ## Notes
 - Ensure preprocessing and wavenumber alignment are consistent before running tests.
 - Check assumptions (normality, variance, independence) and consider nonparametric options when violated.

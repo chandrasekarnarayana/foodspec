@@ -1,5 +1,12 @@
 # Study Design and Data Requirements
 
+**Purpose:** Design statistically robust spectroscopy studies with sufficient replication and randomization.  
+**Audience:** Researchers planning new experiments or validating existing data.  
+**Time to read:** 10–15 minutes.  
+**Prerequisites:** Basic understanding of hypothesis testing and ANOVA.
+
+---
+
 Good statistical practice starts with good design. This chapter summarizes replication, balance, randomization, and instrument considerations for food spectroscopy, and how these affect power and assumptions.
 
 ## Replication and sample size

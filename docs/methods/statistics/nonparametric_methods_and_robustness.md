@@ -135,3 +135,11 @@ Use cases:
 - [Study design](study_design_and_data_requirements.md)
 - [Metrics & evaluation](../../reference/metrics_reference.md)
 - [Stats API](../../api/stats.md)
+
+---
+
+## Next Steps
+
+- [ANOVA and MANOVA](anova_and_manova.md) — Parametric alternatives (when assumptions hold).
+- [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md) — Statistical foundations.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.

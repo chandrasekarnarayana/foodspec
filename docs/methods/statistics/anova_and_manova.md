@@ -182,6 +182,14 @@ flowchart LR
    - Real food data rarely separates perfectly across many features
    - **Fix:** Visualize data; check for errors; validate on independent test set
 
+## Next Steps
+
+- [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md) — Foundation for inference tests.
+- [Study design](study_design_and_data_requirements.md) — Design experiments for statistical power.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.
+
+---
+
 ## Further reading
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)

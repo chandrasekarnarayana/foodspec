@@ -128,3 +128,11 @@ except ImportError:
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)
 - [Correlation and mapping](correlation_and_mapping.md)
 - API: [Statistics](../../api/stats.md)
+
+---
+
+## Next Steps
+
+- [t-tests & effect sizes](t_tests_effect_sizes_and_power.md) — Detailed inference for comparing groups.
+- [ANOVA and MANOVA](anova_and_manova.md) — Multiple-group comparisons.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.

@@ -98,3 +98,11 @@ flowchart LR
 - [t-tests, effect sizes, power](t_tests_effect_sizes_and_power.md)
 - [Study design](study_design_and_data_requirements.md)
 - API: [Statistics](../../api/stats.md)
+
+---
+
+## Next Steps
+
+- [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md) — Statistical significance framework.
+- [Study design](study_design_and_data_requirements.md) — Plan robust experiments.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.

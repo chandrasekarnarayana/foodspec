@@ -24,6 +24,15 @@ plugins:
   - autorefs
   - redirects:
       redirect_maps:
+        # Consolidate stats/ into methods/statistics/ (canonical)
+        stats/overview.md: methods/statistics/overview.md
+        stats/anova_and_manova.md: methods/statistics/anova_and_manova.md
+        stats/correlation_and_mapping.md: methods/statistics/correlation_and_mapping.md
+        stats/hypothesis_testing_in_food_spectroscopy.md: methods/statistics/hypothesis_testing_in_food_spectroscopy.md
+        stats/introduction_to_statistical_analysis.md: methods/statistics/introduction_to_statistical_analysis.md
+        stats/nonparametric_methods_and_robustness.md: methods/statistics/nonparametric_methods_and_robustness.md
+        stats/study_design_and_data_requirements.md: methods/statistics/study_design_and_data_requirements.md
+        stats/t_tests_effect_sizes_and_power.md: methods/statistics/t_tests_effect_sizes_and_power.md
         metrics/metrics_and_evaluation.md: reference/metrics_reference.md
         visualization/plotting_with_foodspec.md: user-guide/visualization.md
         07-theory-and-background/rq_engine_theory.md: theory/rq_engine_detailed.md

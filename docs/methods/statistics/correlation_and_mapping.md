@@ -120,3 +120,11 @@ flowchart LR
 - [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md)
 - [Study design](study_design_and_data_requirements.md)
 - API: [Statistics](../../api/stats.md)
+
+---
+
+## Next Steps
+
+- [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md) — Significance testing framework.
+- [Study design](study_design_and_data_requirements.md) — Plan experiments to detect correlations.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.

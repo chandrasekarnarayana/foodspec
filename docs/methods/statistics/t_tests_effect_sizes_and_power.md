@@ -89,3 +89,11 @@ print("Cohen's d:", compute_cohens_d(g1, g2))
 - [ANOVA and MANOVA](anova_and_manova.md)
 - [Study design](study_design_and_data_requirements.md)
 - API: [Statistics](../../api/stats.md)
+
+---
+
+## Next Steps
+
+- [Hypothesis testing](hypothesis_testing_in_food_spectroscopy.md) — Statistical foundations.
+- [Study design](study_design_and_data_requirements.md) — Plan experiments for statistical power.
+- [API: Statistics](../../api/stats.md) — Full reference for all statistical functions.
