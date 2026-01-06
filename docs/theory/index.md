@@ -41,7 +41,7 @@ Core concepts, data structures, and fundamentals that underpin FoodSpec, includi
 ## Analysis Methods
 
 - **[Chemometrics & ML Basics](chemometrics_and_ml_basics.md)** — PCA, classification, cross-validation fundamentals
-- **[Statistics for Spectroscopy](../stats/overview.md)** — Design, hypothesis testing, interpretation
+- **[Statistics for Spectroscopy](../methods/statistics/overview.md)** — Design, hypothesis testing, interpretation
 
 ## Related Sections
 

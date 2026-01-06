@@ -230,5 +230,5 @@ foodspec-run-protocol \
 
 - [Benchmarking Framework](benchmarking_framework.md) — Compare model performance across runs.
 - [Reporting Guidelines](../troubleshooting/reporting_guidelines.md) — Write up your methods and results.
-- [Study Design & Data Requirements](../stats/study_design_and_data_requirements.md) — Plan experiments for reproducibility.
+- [Study Design & Data Requirements](../methods/statistics/study_design_and_data_requirements.md) — Plan experiments for reproducibility.
 - [Reporting guidelines](../troubleshooting/reporting_guidelines.md)

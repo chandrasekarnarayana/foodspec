@@ -103,7 +103,7 @@ def run_ttest(
         >>> from foodspec.stats import run_ttest
         >>> result = run_ttest([1, 2, 3], [4, 5, 6])\n        >>> print(f"p = {result.pvalue:.3f}")\n
     See Also:
-        - [T-tests & Effect Sizes](../stats/t_tests_effect_sizes_and_power.md)
+        - [T-tests & Effect Sizes](../methods/statistics/t_tests_effect_sizes_and_power.md)
         - run_mannwhitney_u(): Non-parametric alternative
     """
     s1 = _to_series(sample1)
@@ -162,7 +162,7 @@ def run_anova(data, groups) -> TestResult:
         >>> result = run_anova([1, 2, 1, 5, 6, 5, 9, 10, 9],
         ...                    ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C'])\n        >>> assert result.pvalue < 0.05  # Groups differ\n
     See Also:
-        - [ANOVA & MANOVA](../stats/anova_and_manova.md)
+        - [ANOVA & MANOVA](../methods/statistics/anova_and_manova.md)
         - [Metric Significance Tables](../09-reference/metric_significance_tables.md) — Effect size (η²)
         - run_kruskal_wallis(): Non-parametric alternative
     """
@@ -206,7 +206,7 @@ def run_shapiro(values) -> TestResult:
         >>> from foodspec.stats import run_shapiro
         >>> import numpy as np\n        >>> normal = np.random.normal(100, 10, 30)\n        >>> result = run_shapiro(normal)\n        >>> assert result.pvalue > 0.05  # Normally distributed\n
     See Also:
-        - [Non-parametric Methods](../stats/nonparametric_methods_and_robustness.md)
+        - [Non-parametric Methods](../methods/statistics/nonparametric_methods_and_robustness.md)
     """
     vals = np.asarray(values)
     stat, p = stats.shapiro(vals)

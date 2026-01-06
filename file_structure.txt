@@ -1,0 +1,1635 @@
+.
+├── benchmarks
+│   ├── benchmark_heating_quality.py
+│   └── benchmark_oil_authentication.py
+├── CHANGELOG.md
+├── CITATION.cff
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── docs
+│   ├── 05-advanced-topics
+│   │   ├── advanced_deep_learning.md
+│   │   ├── architecture.md
+│   │   ├── deployment_artifact_versioning.md
+│   │   ├── deployment_hdf5_schema_versioning.md
+│   │   ├── design_overview.md
+│   │   ├── hsi_and_harmonization.md
+│   │   ├── index.md
+│   │   ├── MOATS_IMPLEMENTATION.md
+│   │   ├── model_lifecycle.md
+│   │   ├── model_registry.md
+│   │   ├── multimodal_workflows.md
+│   │   └── validation_strategies.md
+│   ├── 08-api
+│   │   ├── chemometrics.md
+│   │   ├── core.md
+│   │   ├── datasets.md
+│   │   ├── features.md
+│   │   ├── index.md
+│   │   ├── io.md
+│   │   ├── metrics.md
+│   │   ├── ml.md
+│   │   ├── preprocessing.md
+│   │   ├── stats.md
+│   │   └── workflows.md
+│   ├── 09-reference
+│   │   ├── changelog.md
+│   │   ├── citing.md
+│   │   ├── data_format.md
+│   │   ├── glossary.md
+│   │   ├── index.md
+│   │   ├── keyword_index.md
+│   │   ├── method_comparison.md
+│   │   ├── metric_significance_tables.md
+│   │   ├── metrics_reference.md
+│   │   ├── ml_model_vip_scores.md
+│   │   └── versioning.md
+│   ├── 10-help
+│   │   ├── faq.md
+│   │   ├── index.md
+│   │   └── troubleshooting.md
+│   ├── api
+│   │   ├── chemometrics.md
+│   │   ├── core.md
+│   │   ├── datasets.md
+│   │   ├── features.md
+│   │   ├── index.md
+│   │   ├── io.md
+│   │   ├── metrics.md
+│   │   ├── ml.md
+│   │   ├── preprocessing.md
+│   │   ├── stats.md
+│   │   └── workflows.md
+│   ├── assets
+│   │   ├── baseline_before_after.png
+│   │   ├── boxplot_anova.png
+│   │   ├── confusion_matrix_example.png
+│   │   ├── corr_heatmap.png
+│   │   ├── corr_scatter.png
+│   │   ├── dl_mlp_regression_calibration.png
+│   │   ├── figures
+│   │   │   ├── architecture_flow.png
+│   │   │   ├── cv_boxplot.png
+│   │   │   ├── heating_trend.png
+│   │   │   ├── hsi_label_map.png
+│   │   │   ├── oil_confusion.png
+│   │   │   ├── oil_discriminative.png
+│   │   │   ├── oil_minimal_panel.png
+│   │   │   ├── oil_stability.png
+│   │   │   ├── oil_vs_chips_divergence.png
+│   │   │   └── roi_spectra.png
+│   │   ├── foodspec_logo.png
+│   │   ├── logo.css
+│   │   ├── pca_loadings.png
+│   │   ├── pca_scores.png
+│   │   ├── peak_band_annotation.png
+│   │   ├── pls_loadings.png
+│   │   ├── regression_calibration.png
+│   │   ├── rf_feature_importance.png
+│   │   ├── spectra_artifacts.png
+│   │   ├── tsne_scores.png
+│   │   ├── vendor_overlay.png
+│   │   └── workflows
+│   │       └── heating_quality_monitoring
+│   │           └── heating_ratio_vs_time.png
+│   ├── concepts
+│   │   └── why_foodspec.md
+│   ├── datasets
+│   │   └── dataset_design.md
+│   ├── design
+│   │   └── 01_overview.md
+│   ├── developer-guide
+│   │   ├── contributing.md
+│   │   ├── documentation_guidelines.md
+│   │   ├── documentation_maintainer_guide.md
+│   │   ├── documentation_style_guide.md
+│   │   ├── extending_protocols_and_steps.md
+│   │   ├── index.md
+│   │   ├── RELEASE_CHECKLIST.md
+│   │   ├── releasing.md
+│   │   ├── testing_and_ci.md
+│   │   ├── testing_coverage.md
+│   │   └── writing_plugins.md
+│   ├── examples
+│   │   ├── configs
+│   │   │   └── oil_auth_public.yml
+│   │   ├── dl
+│   │   │   └── generate_mlp_regression_example.py
+│   │   ├── interpretability
+│   │   │   ├── generate_pls_loadings_figure.py
+│   │   │   └── generate_rf_importance_figure.py
+│   │   ├── io
+│   │   │   └── generate_vendor_overlay.py
+│   │   ├── metrics
+│   │   │   └── generate_confusion_matrix_example.py
+│   │   ├── ml
+│   │   │   └── generate_regression_calibration_figure.py
+│   │   ├── stats
+│   │   │   ├── generate_spectral_artifacts_figures.py
+│   │   │   └── generate_stats_figures.py
+│   │   └── visualization
+│   │       ├── generate_baseline_before_after.py
+│   │       ├── generate_dataset_flow_diagram.py
+│   │       ├── generate_embedding_figures.py
+│   │       ├── generate_mixture_nnls_figures.py
+│   │       └── generate_peak_band_figure.py
+│   ├── examples_gallery.md
+│   ├── foundations
+│   │   ├── data_structures_and_fair_principles.md
+│   │   ├── food_spectroscopy_applications.md
+│   │   ├── index.md
+│   │   └── spectroscopy_basics.md
+│   ├── getting-started
+│   │   ├── faq_basic.md
+│   │   ├── first-steps_cli.md
+│   │   ├── getting_started.md
+│   │   ├── index.md
+│   │   ├── installation.md
+│   │   ├── quickstart_15min.md
+│   │   ├── quickstart_cli.md
+│   │   ├── quickstart_protocol.md
+│   │   └── quickstart_python.md
+│   ├── help
+│   │   ├── faq.md
+│   │   ├── how_to_cite.md
+│   │   ├── index.md
+│   │   └── troubleshooting.md
+│   ├── index.md
+│   ├── _internal
+│   │   ├── archive
+│   │   │   ├── api_cli_apps.md
+│   │   │   ├── api_core.md
+│   │   │   ├── api_features_chemometrics.md
+│   │   │   ├── api_io_data.md
+│   │   │   ├── api_preprocess.md
+│   │   │   ├── api_reference.md
+│   │   │   ├── AUDIT_DOCUMENTATION_INDEX.md
+│   │   │   ├── CLI_REFACTORING_COMPLETE.md
+│   │   │   ├── CODEBASE_STATUS_SUMMARY.md
+│   │   │   ├── DOCS_AUDIT_REPORT.md
+│   │   │   ├── FEATURE_AUDIT.md
+│   │   │   ├── IMPLEMENTATION_AUDIT.md
+│   │   │   ├── metrics_interpretation.md
+│   │   │   ├── MIGRATION_GUIDE.md
+│   │   │   ├── ml_models.md
+│   │   │   ├── PHASE0_DISCOVERY_REPORT.md
+│   │   │   ├── project_history
+│   │   │   │   ├── DOCS_COMPLIANCE_UPDATE.md
+│   │   │   │   ├── DOCS_REORGANIZATION_COMPLETE.md
+│   │   │   │   ├── IMPORT_AUDIT_SUMMARY.md
+│   │   │   │   ├── IMPORT_FIXES.md
+│   │   │   │   ├── LINK_FIXES_COMPLETE.md
+│   │   │   │   ├── PACKAGE_CLEANUP_COMPLETE.md
+│   │   │   │   └── PRODUCTION_READINESS_REPORT.md
+│   │   │   ├── PROJECT_STRUCTURE_AUDIT.md
+│   │   │   ├── README_DOCS_STRUCTURE.md
+│   │   │   ├── README.md
+│   │   │   ├── REORGANIZATION_SUMMARY.md
+│   │   │   ├── SMOKE_TEST.md
+│   │   │   ├── smoke_test_results_2025-12-25.md
+│   │   │   ├── spectral_basics.md
+│   │   │   └── stats_tests.md
+│   │   ├── dev
+│   │   │   ├── design_stats_and_analysis.md
+│   │   │   ├── developer_notes.md
+│   │   │   └── smoke_test_results_2025-12-25.md
+│   │   └── developer-guide
+│   │       ├── ci_troubleshooting.md
+│   │       ├── design_stats_and_analysis.md
+│   │       ├── developer_notes.md
+│   │       ├── FEATURE_INVENTORY.md
+│   │       ├── GAPS_AND_FUTURE_WORK.md
+│   │       └── integration_checklist.md
+│   ├── methods
+│   │   ├── chemometrics
+│   │   │   ├── classification_regression.md
+│   │   │   ├── mixture_models.md
+│   │   │   ├── model_evaluation_and_validation.md
+│   │   │   ├── model_interpretability.md
+│   │   │   ├── models_and_best_practices.md
+│   │   │   └── pca_and_dimensionality_reduction.md
+│   │   ├── index.md
+│   │   ├── preprocessing
+│   │   │   ├── baseline_correction.md
+│   │   │   ├── derivatives_and_feature_enhancement.md
+│   │   │   ├── feature_extraction.md
+│   │   │   ├── normalization_smoothing.md
+│   │   │   └── scatter_correction_cosmic_ray_removal.md
+│   │   ├── statistics
+│   │   │   ├── anova_and_manova.md
+│   │   │   ├── correlation_and_mapping.md
+│   │   │   ├── hypothesis_testing_in_food_spectroscopy.md
+│   │   │   ├── introduction_to_statistical_analysis.md
+│   │   │   ├── nonparametric_methods_and_robustness.md
+│   │   │   ├── overview.md
+│   │   │   ├── study_design_and_data_requirements.md
+│   │   │   └── t_tests_effect_sizes_and_power.md
+│   │   └── validation
+│   │       ├── cross_validation_and_leakage.md
+│   │       ├── index.md
+│   │       ├── metrics_and_uncertainty.md
+│   │       ├── reporting_standards.md
+│   │       └── robustness_checks.md
+│   ├── metrics
+│   ├── non_goals_and_limitations.md
+│   ├── protocols
+│   │   ├── benchmarking_framework.md
+│   │   ├── decision_trees.md
+│   │   ├── methods_text_generator.md
+│   │   ├── protocol_benchmarks.md
+│   │   ├── protocols_overview.md
+│   │   ├── reference_protocol.md
+│   │   ├── reproducibility_checklist.md
+│   │   └── statistical_power_and_limits.md
+│   ├── reference
+│   │   ├── changelog.md
+│   │   ├── citing.md
+│   │   ├── data_format.md
+│   │   ├── glossary.md
+│   │   ├── index.md
+│   │   ├── keyword_index.md
+│   │   ├── method_comparison.md
+│   │   ├── metric_significance_tables.md
+│   │   ├── metrics_reference.md
+│   │   ├── ml_model_vip_scores.md
+│   │   └── versioning.md
+│   ├── reproducibility.md
+│   ├── stats
+│   │   ├── anova_and_manova.md
+│   │   ├── correlation_and_mapping.md
+│   │   ├── hypothesis_testing_in_food_spectroscopy.md
+│   │   ├── introduction_to_statistical_analysis.md
+│   │   ├── nonparametric_methods_and_robustness.md
+│   │   ├── overview.md
+│   │   ├── study_design_and_data_requirements.md
+│   │   └── t_tests_effect_sizes_and_power.md
+│   ├── theory
+│   │   ├── chemometrics_and_ml_basics.md
+│   │   ├── data_structures_and_fair_principles.md
+│   │   ├── food_spectroscopy_applications.md
+│   │   ├── harmonization_theory.md
+│   │   ├── index.md
+│   │   ├── moats_overview.md
+│   │   ├── rq_engine_detailed.md
+│   │   └── spectroscopy_basics.md
+│   ├── troubleshooting
+│   │   ├── common_problems_and_solutions.md
+│   │   ├── reporting_guidelines.md
+│   │   └── troubleshooting_faq.md
+│   ├── tutorials
+│   │   ├── advanced
+│   │   │   ├── 01-reproducible-pipelines.md
+│   │   │   ├── 02-reference-workflow.md
+│   │   │   └── 03-hsi-mapping.md
+│   │   ├── beginner
+│   │   │   ├── 01-load-and-plot.md
+│   │   │   ├── 02-preprocess.md
+│   │   │   └── 03-classify.md
+│   │   ├── end-to-end-notebooks.md
+│   │   ├── index.md
+│   │   └── intermediate
+│   │       ├── 01-oil-authentication.md
+│   │       ├── 02-matrix-effects.md
+│   │       └── 03-stability.md
+│   ├── user-guide
+│   │   ├── automation.md
+│   │   ├── cli_help.md
+│   │   ├── cli.md
+│   │   ├── config_logging.md
+│   │   ├── csv_to_library.md
+│   │   ├── data_formats_and_hdf5.md
+│   │   ├── data_governance.md
+│   │   ├── index.md
+│   │   ├── libraries.md
+│   │   ├── library_search.md
+│   │   ├── protocol_profiles.md
+│   │   ├── protocols_and_yaml.md
+│   │   ├── registry_and_plugins.md
+│   │   ├── vendor_formats.md
+│   │   ├── vendor_io.md
+│   │   └── visualization.md
+│   ├── visualization
+│   └── workflows
+│       ├── aging_workflows.md
+│       ├── authentication
+│       │   ├── domain_templates.md
+│       │   └── oil_authentication.md
+│       ├── batch_quality_control.md
+│       ├── domain_templates.md
+│       ├── end_to_end_pipeline.md
+│       ├── harmonization
+│       │   ├── harmonization_automated_calibration.md
+│       │   └── standard_templates.md
+│       ├── harmonization_automated_calibration.md
+│       ├── heating_quality_monitoring.md
+│       ├── index.md
+│       ├── mixture_analysis.md
+│       ├── quality-monitoring
+│       │   ├── aging_workflows.md
+│       │   ├── batch_quality_control.md
+│       │   └── heating_quality_monitoring.md
+│       ├── quantification
+│       │   ├── calibration_regression_example.md
+│       │   └── mixture_analysis.md
+│       ├── spatial
+│       │   └── hyperspectral_mapping.md
+│       ├── standard_templates.md
+│       └── workflow_design_and_reporting.md
+├── examples
+│   ├── configs
+│   │   ├── heating_quality_quickstart.yml
+│   │   ├── mixture_quickstart.yml
+│   │   ├── oil_auth_public.yml
+│   │   ├── oil_auth_quickstart.yml
+│   │   └── qc_quickstart.yml
+│   ├── data
+│   │   ├── chips_synthetic.csv
+│   │   ├── hsi_synthetic.npz
+│   │   ├── oil_synthetic.csv
+│   │   └── README.md
+│   ├── foodspec_auto_analysis_script.py
+│   ├── foodspec_rq_demo.py
+│   ├── governance_demo.py
+│   ├── heating_quality_quickstart.py
+│   ├── hyperspectral_demo.py
+│   ├── mixture_analysis_quickstart.py
+│   ├── moats_demo.py
+│   ├── multimodal_fusion_demo.py
+│   ├── notebooks
+│   │   ├── 01_oil_discrimination_basic.ipynb
+│   │   ├── 02_oil_vs_chips_matrix_effects.ipynb
+│   │   └── 03_hsi_surface_mapping.ipynb
+│   ├── oil_authentication_quickstart.py
+│   ├── phase1_quickstart.py
+│   ├── plugins
+│   │   ├── plugin_example_indices
+│   │   │   ├── plugin_example_indices
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__
+│   │   │   │       └── __init__.cpython-312.pyc
+│   │   │   └── pyproject.toml
+│   │   ├── plugin_example_protocol
+│   │   │   ├── plugin_example_protocol
+│   │   │   │   └── __init__.py
+│   │   │   ├── pyproject.toml
+│   │   │   └── README.md
+│   │   ├── plugin_example_vendor
+│   │   │   ├── plugin_example_vendor
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__
+│   │   │   │       └── __init__.cpython-312.pyc
+│   │   │   ├── pyproject.toml
+│   │   │   └── README.md
+│   │   └── plugin_example_workflow
+│   │       ├── plugin_example_workflow
+│   │       │   ├── __init__.py
+│   │       │   └── __pycache__
+│   │       │       └── __init__.cpython-312.pyc
+│   │       └── pyproject.toml
+│   ├── protocols
+│   │   ├── Chips_vs_Oil_MatrixEffects_v1.yaml
+│   │   ├── EdibleOil_Classification_v1.yaml
+│   │   ├── EdibleOil_Heating_Stability_v1.yaml
+│   │   ├── EdibleOil_Raman_Classification_v1.json
+│   │   └── MinimalMarkerPanel_Screening_v1.yaml
+│   ├── qc_quickstart.py
+│   ├── sample_runs
+│   │   ├── 20251212_042014_run
+│   │   │   ├── figures
+│   │   │   │   └── hsi
+│   │   │   ├── hsi
+│   │   │   ├── index.json
+│   │   │   ├── metadata.json
+│   │   │   ├── report.html
+│   │   │   ├── report.txt
+│   │   │   ├── run.log
+│   │   │   └── tables
+│   │   │       ├── discriminative_summary.csv
+│   │   │       ├── feature_importance.csv
+│   │   │       ├── heating_trend_summary.csv
+│   │   │       ├── minimal_panel.csv
+│   │   │       ├── normalization_comparison.csv
+│   │   │       ├── oil_vs_chips_summary.csv
+│   │   │       └── stability_summary.csv
+│   │   ├── 20251212_042234_run
+│   │   │   ├── figures
+│   │   │   │   └── hsi
+│   │   │   ├── hsi
+│   │   │   ├── index.json
+│   │   │   ├── metadata.json
+│   │   │   ├── report.html
+│   │   │   ├── report.txt
+│   │   │   ├── run.log
+│   │   │   └── tables
+│   │   │       ├── discriminative_summary.csv
+│   │   │       ├── feature_importance.csv
+│   │   │       ├── heating_trend_summary.csv
+│   │   │       ├── minimal_panel.csv
+│   │   │       ├── normalization_comparison.csv
+│   │   │       ├── oil_vs_chips_summary.csv
+│   │   │       └── stability_summary.csv
+│   │   └── 20251212_042427_run
+│   │       ├── figures
+│   │       │   └── hsi
+│   │       ├── hsi
+│   │       ├── index.json
+│   │       ├── metadata.json
+│   │       ├── report.html
+│   │       ├── report.txt
+│   │       ├── run.log
+│   │       └── tables
+│   │           ├── discriminative_summary.csv
+│   │           ├── feature_importance.csv
+│   │           ├── heating_trend_summary.csv
+│   │           ├── minimal_panel.csv
+│   │           ├── normalization_comparison.csv
+│   │           ├── oil_vs_chips_summary.csv
+│   │           └── stability_summary.csv
+│   ├── spectral_dataset_demo.py
+│   ├── validation_chemometrics_oils.py
+│   ├── validation_peak_ratios.py
+│   ├── validation_preprocessing_baseline.py
+│   └── vip_demo.py
+├── filte_structure.txt
+├── foodspec_runs
+├── _internal
+│   └── joss-prep
+│       ├── ACTION_CHECKLIST.md
+│       ├── COMPREHENSIVE_PACKAGE_REVIEW.md
+│       ├── DELIVERABLES_SUMMARY.txt
+│       ├── IMPLEMENTATION_COMPLETE.md
+│       ├── JOSS_DOCUMENTATION_UPGRADE_PLAN.md
+│       ├── JOSS_QUICK_REFERENCE.md
+│       ├── JOSS_SUBMISSION_CHECKLIST_GITHUB.md
+│       ├── JOSS_SUBMISSION_INDEX.md
+│       ├── MASTER_INDEX_MKDOCS.md
+│       ├── MKDOCS_IMPLEMENTATION_GUIDE.md
+│       ├── MKDOCS_NAVIGATION_PROPOSAL.md
+│       ├── MKDOCS_NAV_PASTE_THIS.md
+│       ├── MKDOCS_QUICKREF.md
+│       ├── MKDOCS_SUMMARY.md
+│       ├── MKDOCS_YAML_TO_PASTE.md
+│       ├── README_MKDOCS_REDESIGN.md
+│       └── rollback_mkdocs_nav.sh
+├── LICENSE
+├── mkdocs-build.log
+├── mkdocs.yml
+├── outputs
+│   └── heating_ratio_vs_time.png
+├── paper.bib
+├── paper.md
+├── protocol_runs_test
+│   ├── 20260106_133209_run
+│   │   ├── figures
+│   │   │   └── hsi
+│   │   ├── hsi
+│   │   ├── index.json
+│   │   ├── metadata.json
+│   │   ├── report.html
+│   │   ├── report.txt
+│   │   ├── run.log
+│   │   └── tables
+│   │       ├── discriminative_summary.csv
+│   │       ├── feature_importance.csv
+│   │       ├── heating_trend_summary.csv
+│   │       ├── minimal_panel.csv
+│   │       ├── normalization_comparison.csv
+│   │       ├── oil_vs_chips_summary.csv
+│   │       └── stability_summary.csv
+│   ├── 20260106_133408_run
+│   │   ├── figures
+│   │   │   └── hsi
+│   │   ├── hsi
+│   │   ├── index.json
+│   │   ├── metadata.json
+│   │   ├── report.html
+│   │   ├── report.txt
+│   │   ├── run.log
+│   │   └── tables
+│   │       ├── discriminative_summary.csv
+│   │       ├── feature_importance.csv
+│   │       ├── heating_trend_summary.csv
+│   │       ├── minimal_panel.csv
+│   │       ├── normalization_comparison.csv
+│   │       ├── oil_vs_chips_summary.csv
+│   │       └── stability_summary.csv
+│   ├── 20260106_134039_run
+│   │   ├── figures
+│   │   │   └── hsi
+│   │   ├── hsi
+│   │   ├── index.json
+│   │   ├── metadata.json
+│   │   ├── report.html
+│   │   ├── report.txt
+│   │   ├── run.log
+│   │   └── tables
+│   │       ├── discriminative_summary.csv
+│   │       ├── feature_importance.csv
+│   │       ├── heating_trend_summary.csv
+│   │       ├── minimal_panel.csv
+│   │       ├── normalization_comparison.csv
+│   │       ├── oil_vs_chips_summary.csv
+│   │       └── stability_summary.csv
+│   └── 20260106_134450_run
+│       ├── figures
+│       │   └── hsi
+│       ├── hsi
+│       ├── index.json
+│       ├── metadata.json
+│       ├── report.html
+│       ├── report.txt
+│       ├── run.log
+│       └── tables
+│           ├── discriminative_summary.csv
+│           ├── feature_importance.csv
+│           ├── heating_trend_summary.csv
+│           ├── minimal_panel.csv
+│           ├── normalization_comparison.csv
+│           ├── oil_vs_chips_summary.csv
+│           └── stability_summary.csv
+├── pyproject.toml
+├── README.md
+├── RELEASE_NOTES_v1.0.0.md
+├── scripts
+│   ├── audit_imports.py
+│   ├── bulk_update_links.py
+│   ├── check_docs_links.py
+│   ├── fix_codeblock_languages.py
+│   ├── fix_methods_depth.py
+│   ├── fix_tutorials_depth.py
+│   ├── fix_workflows_depth.py
+│   ├── generate_docs_figures.py
+│   ├── joss_reviewer_check.sh
+│   ├── raman_workflow_foodspec.py
+│   ├── README_DOCS_VALIDATION.md
+│   ├── test_examples_imports.py
+│   └── validate_docs.py
+├── site
+├── src
+│   └── foodspec
+│       ├── apps
+│       │   ├── dairy.py
+│       │   ├── heating.py
+│       │   ├── __init__.py
+│       │   ├── meat.py
+│       │   ├── microbial.py
+│       │   ├── oils.py
+│       │   ├── protocol_validation.py
+│       │   ├── __pycache__
+│       │   │   ├── dairy.cpython-312.pyc
+│       │   │   ├── heating.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── meat.cpython-312.pyc
+│       │   │   ├── microbial.cpython-312.pyc
+│       │   │   ├── oils.cpython-312.pyc
+│       │   │   ├── protocol_validation.cpython-312.pyc
+│       │   │   └── qc.cpython-312.pyc
+│       │   └── qc.py
+│       ├── artifact.py
+│       ├── calibration_transfer_dashboard.py
+│       ├── calibration_transfer.py
+│       ├── check_env.py
+│       ├── chemometrics
+│       │   ├── deep.py
+│       │   ├── __init__.py
+│       │   ├── mixture_nnls.py
+│       │   ├── mixture.py
+│       │   ├── models.py
+│       │   ├── pca.py
+│       │   ├── __pycache__
+│       │   │   ├── deep.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── mixture.cpython-312.pyc
+│       │   │   ├── mixture_nnls.cpython-312.pyc
+│       │   │   ├── models.cpython-312.pyc
+│       │   │   ├── pca.cpython-312.pyc
+│       │   │   ├── validation.cpython-312.pyc
+│       │   │   └── vip.cpython-312.pyc
+│       │   ├── validation.py
+│       │   └── vip.py
+│       ├── cli
+│       │   ├── commands
+│       │   │   ├── analysis.py
+│       │   │   ├── data.py
+│       │   │   ├── __init__.py
+│       │   │   ├── modeling.py
+│       │   │   ├── preprocess.py
+│       │   │   ├── __pycache__
+│       │   │   │   ├── analysis.cpython-312.pyc
+│       │   │   │   ├── data.cpython-312.pyc
+│       │   │   │   ├── __init__.cpython-312.pyc
+│       │   │   │   ├── modeling.cpython-312.pyc
+│       │   │   │   ├── preprocess.cpython-312.pyc
+│       │   │   │   ├── utils.cpython-312.pyc
+│       │   │   │   └── workflow.cpython-312.pyc
+│       │   │   ├── utils.py
+│       │   │   └── workflow.py
+│       │   ├── __init__.py
+│       │   ├── library_search.py
+│       │   ├── __main__.py
+│       │   ├── main.py
+│       │   ├── plugin.py
+│       │   ├── predict.py
+│       │   ├── protocol.py
+│       │   ├── publish.py
+│       │   ├── __pycache__
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── __main__.cpython-312.pyc
+│       │   │   ├── main.cpython-312.pyc
+│       │   │   ├── plugin.cpython-312.pyc
+│       │   │   ├── predict.cpython-312.pyc
+│       │   │   ├── protocol.cpython-312.pyc
+│       │   │   └── registry.cpython-312.pyc
+│       │   └── registry.py
+│       ├── cli_plugin.py
+│       ├── cli_predict.py
+│       ├── cli_protocol.py
+│       ├── cli.py
+│       ├── cli_registry.py
+│       ├── config.py
+│       ├── core
+│       │   ├── api_diagnostics.py
+│       │   ├── api_io.py
+│       │   ├── api_modeling.py
+│       │   ├── api_preprocess.py
+│       │   ├── api.py
+│       │   ├── api_workflows.py
+│       │   ├── dataset.py
+│       │   ├── hyperspectral.py
+│       │   ├── __init__.py
+│       │   ├── multimodal.py
+│       │   ├── output_bundle.py
+│       │   ├── __pycache__
+│       │   │   ├── api.cpython-312.pyc
+│       │   │   ├── api_diagnostics.cpython-312.pyc
+│       │   │   ├── api_io.cpython-312.pyc
+│       │   │   ├── api_modeling.cpython-312.pyc
+│       │   │   ├── api_preprocess.cpython-312.pyc
+│       │   │   ├── api_workflows.cpython-312.pyc
+│       │   │   ├── dataset.cpython-312.pyc
+│       │   │   ├── hyperspectral.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── multimodal.cpython-312.pyc
+│       │   │   ├── output_bundle.cpython-312.pyc
+│       │   │   ├── run_record.cpython-312.pyc
+│       │   │   ├── spectral_dataset.cpython-312.pyc
+│       │   │   ├── spectrum.cpython-312.pyc
+│       │   │   ├── summary.cpython-312.pyc
+│       │   │   └── time.cpython-312.pyc
+│       │   ├── run_record.py
+│       │   ├── spectral_dataset.py
+│       │   ├── spectrum.py
+│       │   ├── summary.py
+│       │   └── time.py
+│       ├── data
+│       │   ├── __init__.py
+│       │   ├── libraries.py
+│       │   ├── loader.py
+│       │   ├── public.py
+│       │   └── __pycache__
+│       │       ├── __init__.cpython-312.pyc
+│       │       ├── libraries.cpython-312.pyc
+│       │       ├── loader.cpython-312.pyc
+│       │       └── public.cpython-312.pyc
+│       ├── demo
+│       │   ├── heating.py
+│       │   ├── __init__.py
+│       │   └── __pycache__
+│       │       ├── heating.cpython-312.pyc
+│       │       └── __init__.cpython-312.pyc
+│       ├── deploy
+│       │   ├── artifact.py
+│       │   ├── __init__.py
+│       │   ├── predict.py
+│       │   ├── __pycache__
+│       │   │   ├── artifact.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   └── version_check.cpython-312.pyc
+│       │   └── version_check.py
+│       ├── exp
+│       │   └── runner.py
+│       ├── features
+│       │   ├── bands.py
+│       │   ├── confidence.py
+│       │   ├── features
+│       │   │   ├── __init__.py
+│       │   │   ├── __pycache__
+│       │   │   │   ├── __init__.cpython-312.pyc
+│       │   │   │   └── rq.cpython-312.pyc
+│       │   │   └── rq.py
+│       │   ├── fingerprint.py
+│       │   ├── __init__.py
+│       │   ├── interpretation.py
+│       │   ├── library.py
+│       │   ├── metrics.py
+│       │   ├── peaks.py
+│       │   ├── peak_stats.py
+│       │   ├── __pycache__
+│       │   │   ├── bands.cpython-312.pyc
+│       │   │   ├── confidence.cpython-312.pyc
+│       │   │   ├── fingerprint.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── interpretation.cpython-312.pyc
+│       │   │   ├── library.cpython-312.pyc
+│       │   │   ├── metrics.cpython-312.pyc
+│       │   │   ├── peaks.cpython-312.pyc
+│       │   │   ├── peak_stats.cpython-312.pyc
+│       │   │   ├── ratios.cpython-312.pyc
+│       │   │   └── specs.cpython-312.pyc
+│       │   ├── ratios.py
+│       │   ├── rq
+│       │   │   ├── engine.py
+│       │   │   ├── __init__.py
+│       │   │   ├── matrix.py
+│       │   │   ├── __pycache__
+│       │   │   │   ├── engine.cpython-312.pyc
+│       │   │   │   ├── __init__.cpython-312.pyc
+│       │   │   │   ├── matrix.cpython-312.pyc
+│       │   │   │   ├── report.cpython-312.pyc
+│       │   │   │   ├── types.cpython-312.pyc
+│       │   │   │   └── utils.cpython-312.pyc
+│       │   │   ├── report.py
+│       │   │   ├── types.py
+│       │   │   └── utils.py
+│       │   └── specs.py
+│       ├── gui
+│       ├── harmonization.py
+│       ├── hdf5_schema.yaml
+│       ├── heating_trajectory.py
+│       ├── hyperspectral
+│       │   ├── memory_management.py
+│       │   └── __pycache__
+│       │       └── memory_management.cpython-312.pyc
+│       ├── __init__.py
+│       ├── io
+│       │   ├── base.py
+│       │   ├── core.py
+│       │   ├── csv_import.py
+│       │   ├── exporters.py
+│       │   ├── hdf5_schema_versioning.py
+│       │   ├── ingest.py
+│       │   ├── __init__.py
+│       │   ├── loaders.py
+│       │   ├── __pycache__
+│       │   │   ├── base.cpython-312.pyc
+│       │   │   ├── core.cpython-312.pyc
+│       │   │   ├── csv_import.cpython-312.pyc
+│       │   │   ├── exporters.cpython-312.pyc
+│       │   │   ├── hdf5_schema_versioning.cpython-312.pyc
+│       │   │   ├── ingest.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── loaders.cpython-312.pyc
+│       │   │   ├── text_formats.cpython-312.pyc
+│       │   │   ├── vendor_formats.cpython-312.pyc
+│       │   │   └── vendor_format_support.cpython-312.pyc
+│       │   ├── text_formats.py
+│       │   ├── vendor_formats.py
+│       │   └── vendor_format_support.py
+│       ├── library_search.py
+│       ├── logging_utils.py
+│       ├── logo.py
+│       ├── matrix_correction.py
+│       ├── metrics.py
+│       ├── ml
+│       │   ├── calibration.py
+│       │   ├── fusion.py
+│       │   ├── hyperparameter_tuning.py
+│       │   ├── __init__.py
+│       │   ├── lifecycle.py
+│       │   ├── nested_cv.py
+│       │   └── __pycache__
+│       │       ├── calibration.cpython-312.pyc
+│       │       ├── fusion.cpython-312.pyc
+│       │       ├── hyperparameter_tuning.cpython-312.pyc
+│       │       ├── __init__.cpython-312.pyc
+│       │       ├── lifecycle.cpython-312.pyc
+│       │       └── nested_cv.cpython-312.pyc
+│       ├── model_lifecycle.py
+│       ├── model_registry.py
+│       ├── narrative.py
+│       ├── output_bundle.py
+│       ├── plugin.py
+│       ├── plugins
+│       │   ├── indices
+│       │   │   ├── __init__.py
+│       │   │   └── __pycache__
+│       │   │       └── __init__.cpython-312.pyc
+│       │   ├── __init__.py
+│       │   ├── loaders
+│       │   │   ├── __init__.py
+│       │   │   └── __pycache__
+│       │   │       └── __init__.cpython-312.pyc
+│       │   ├── __pycache__
+│       │   │   └── __init__.cpython-312.pyc
+│       │   └── workflows
+│       │       ├── __init__.py
+│       │       └── __pycache__
+│       │           └── __init__.cpython-312.pyc
+│       ├── predict
+│       │   ├── guards.py
+│       │   ├── __init__.py
+│       │   └── __pycache__
+│       │       ├── guards.cpython-312.pyc
+│       │       └── __init__.cpython-312.pyc
+│       ├── preprocess
+│       │   ├── baseline.py
+│       │   ├── base.py
+│       │   ├── calibration_transfer.py
+│       │   ├── cropping.py
+│       │   ├── derivatives.py
+│       │   ├── engine.py
+│       │   ├── ftir.py
+│       │   ├── __init__.py
+│       │   ├── matrix_correction.py
+│       │   ├── normalization.py
+│       │   ├── __pycache__
+│       │   │   ├── base.cpython-312.pyc
+│       │   │   ├── baseline.cpython-312.pyc
+│       │   │   ├── calibration_transfer.cpython-312.pyc
+│       │   │   ├── cropping.cpython-312.pyc
+│       │   │   ├── derivatives.cpython-312.pyc
+│       │   │   ├── engine.cpython-312.pyc
+│       │   │   ├── ftir.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── matrix_correction.cpython-312.pyc
+│       │   │   ├── normalization.cpython-312.pyc
+│       │   │   ├── raman.cpython-312.pyc
+│       │   │   ├── smoothing.cpython-312.pyc
+│       │   │   └── spikes.cpython-312.pyc
+│       │   ├── raman.py
+│       │   ├── smoothing.py
+│       │   └── spikes.py
+│       ├── preprocessing_pipeline.py
+│       ├── protocol
+│       │   ├── config.py
+│       │   ├── __init__.py
+│       │   ├── __pycache__
+│       │   │   ├── config.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── runner.cpython-312.pyc
+│       │   │   └── utils.cpython-312.pyc
+│       │   ├── runner.py
+│       │   ├── steps
+│       │   │   ├── base.py
+│       │   │   ├── harmonize.py
+│       │   │   ├── hsi_roi.py
+│       │   │   ├── hsi_segment.py
+│       │   │   ├── __init__.py
+│       │   │   ├── output.py
+│       │   │   ├── preprocess.py
+│       │   │   ├── __pycache__
+│       │   │   │   ├── base.cpython-312.pyc
+│       │   │   │   ├── harmonize.cpython-312.pyc
+│       │   │   │   ├── hsi_roi.cpython-312.pyc
+│       │   │   │   ├── hsi_segment.cpython-312.pyc
+│       │   │   │   ├── __init__.cpython-312.pyc
+│       │   │   │   ├── output.cpython-312.pyc
+│       │   │   │   ├── preprocess.cpython-312.pyc
+│       │   │   │   ├── qc.cpython-312.pyc
+│       │   │   │   └── rq_analysis.cpython-312.pyc
+│       │   │   ├── qc.py
+│       │   │   └── rq_analysis.py
+│       │   └── utils.py
+│       ├── protocol_engine.py
+│       ├── __pycache__
+│       │   ├── artifact.cpython-312.pyc
+│       │   ├── calibration_transfer.cpython-312.pyc
+│       │   ├── calibration_transfer_dashboard.cpython-312.pyc
+│       │   ├── cli_plugin.cpython-312.pyc
+│       │   ├── cli_predict.cpython-312.pyc
+│       │   ├── cli_protocol.cpython-312.pyc
+│       │   ├── cli_registry.cpython-312.pyc
+│       │   ├── config.cpython-312.pyc
+│       │   ├── harmonization.cpython-312.pyc
+│       │   ├── heating_trajectory.cpython-312.pyc
+│       │   ├── __init__.cpython-312.pyc
+│       │   ├── library_search.cpython-312.pyc
+│       │   ├── logging_utils.cpython-312.pyc
+│       │   ├── logo.cpython-312.pyc
+│       │   ├── matrix_correction.cpython-312.pyc
+│       │   ├── metrics.cpython-312.pyc
+│       │   ├── model_lifecycle.cpython-312.pyc
+│       │   ├── model_registry.cpython-312.pyc
+│       │   ├── narrative.cpython-312.pyc
+│       │   ├── output_bundle.cpython-312.pyc
+│       │   ├── plugin.cpython-312.pyc
+│       │   ├── preprocessing_pipeline.cpython-312.pyc
+│       │   ├── protocol_engine.cpython-312.pyc
+│       │   ├── registry.cpython-312.pyc
+│       │   ├── reporting.cpython-312.pyc
+│       │   ├── rq.cpython-312.pyc
+│       │   ├── spectral_dataset.cpython-312.pyc
+│       │   ├── spectral_io.cpython-312.pyc
+│       │   └── validation.cpython-312.pyc
+│       ├── qc
+│       │   ├── dataset_qc.py
+│       │   ├── drift.py
+│       │   ├── engine.py
+│       │   ├── health.py
+│       │   ├── __init__.py
+│       │   ├── leakage.py
+│       │   ├── novelty.py
+│       │   ├── prediction_qc.py
+│       │   ├── __pycache__
+│       │   │   ├── dataset_qc.cpython-312.pyc
+│       │   │   ├── drift.cpython-312.pyc
+│       │   │   ├── engine.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── leakage.cpython-312.pyc
+│       │   │   ├── novelty.cpython-312.pyc
+│       │   │   ├── prediction_qc.cpython-312.pyc
+│       │   │   ├── readiness.cpython-312.pyc
+│       │   │   ├── replicates.cpython-312.pyc
+│       │   │   └── threshold_optimization.cpython-312.pyc
+│       │   ├── readiness.py
+│       │   ├── replicates.py
+│       │   └── threshold_optimization.py
+│       ├── registry.py
+│       ├── report
+│       │   ├── captions.py
+│       │   ├── checklist.py
+│       │   ├── __init__.py
+│       │   ├── journals
+│       │   │   ├── __init__.py
+│       │   │   └── __pycache__
+│       │   │       └── __init__.cpython-312.pyc
+│       │   ├── methods.py
+│       │   ├── __pycache__
+│       │   │   ├── captions.cpython-312.pyc
+│       │   │   ├── checklist.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── methods.cpython-312.pyc
+│       │   │   └── stats_notes.cpython-312.pyc
+│       │   └── stats_notes.py
+│       ├── reporting.py
+│       ├── repro
+│       │   ├── diff.py
+│       │   ├── experiment.py
+│       │   ├── __init__.py
+│       │   └── __pycache__
+│       │       ├── diff.cpython-312.pyc
+│       │       ├── experiment.cpython-312.pyc
+│       │       └── __init__.cpython-312.pyc
+│       ├── rq.py
+│       ├── spectral_dataset.py
+│       ├── spectral_io.py
+│       ├── stats
+│       │   ├── correlations.py
+│       │   ├── design.py
+│       │   ├── distances.py
+│       │   ├── effects.py
+│       │   ├── embedding.py
+│       │   ├── fusion_metrics.py
+│       │   ├── hypothesis_tests.py
+│       │   ├── __init__.py
+│       │   ├── method_comparison.py
+│       │   ├── __pycache__
+│       │   │   ├── correlations.cpython-312.pyc
+│       │   │   ├── design.cpython-312.pyc
+│       │   │   ├── distances.cpython-312.pyc
+│       │   │   ├── effects.cpython-312.pyc
+│       │   │   ├── embedding.cpython-312.pyc
+│       │   │   ├── fusion_metrics.cpython-312.pyc
+│       │   │   ├── hypothesis_tests.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── method_comparison.cpython-312.pyc
+│       │   │   ├── reporting.cpython-312.pyc
+│       │   │   ├── robustness.cpython-312.pyc
+│       │   │   └── time_metrics.cpython-312.pyc
+│       │   ├── reporting.py
+│       │   ├── robustness.py
+│       │   └── time_metrics.py
+│       ├── synthetic
+│       │   ├── __init__.py
+│       │   ├── __pycache__
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   └── spectra.cpython-312.pyc
+│       │   └── spectra.py
+│       ├── utils
+│       │   ├── errors.py
+│       │   ├── hints.py
+│       │   ├── __init__.py
+│       │   ├── __pycache__
+│       │   │   ├── errors.cpython-312.pyc
+│       │   │   ├── hints.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   └── troubleshooting.cpython-312.pyc
+│       │   └── troubleshooting.py
+│       ├── validation.py
+│       ├── viz
+│       │   ├── classification.py
+│       │   ├── heating.py
+│       │   ├── hyperspectral.py
+│       │   ├── __init__.py
+│       │   ├── pca.py
+│       │   ├── plots.py
+│       │   ├── __pycache__
+│       │   │   ├── classification.cpython-312.pyc
+│       │   │   ├── heating.cpython-312.pyc
+│       │   │   ├── hyperspectral.cpython-312.pyc
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── pca.cpython-312.pyc
+│       │   │   ├── plots.cpython-312.pyc
+│       │   │   ├── ratios.cpython-312.pyc
+│       │   │   ├── report.cpython-312.pyc
+│       │   │   └── spectra.cpython-312.pyc
+│       │   ├── ratios.py
+│       │   ├── report.py
+│       │   └── spectra.py
+│       └── workflows
+│           ├── aging.py
+│           ├── heating_trajectory.py
+│           ├── __init__.py
+│           ├── library_search.py
+│           ├── __pycache__
+│           │   ├── aging.cpython-312.pyc
+│           │   ├── heating_trajectory.cpython-312.pyc
+│           │   ├── __init__.cpython-312.pyc
+│           │   ├── library_search.cpython-312.pyc
+│           │   └── shelf_life.cpython-312.pyc
+│           └── shelf_life.py
+├── tests
+│   ├── apps
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_apps_heating.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_apps_heating.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_apps_oils.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_apps_oils.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_apps_qc.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_apps_qc.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_apps_workflows_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_apps_workflows_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_domain_apps.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_domain_apps.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_oil_vs_chips_divergence.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_oil_vs_chips_divergence.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_apps_heating.py
+│   │   ├── test_apps_oils.py
+│   │   ├── test_apps_qc.py
+│   │   ├── test_apps_workflows_extra.py
+│   │   ├── test_domain_apps.py
+│   │   └── test_oil_vs_chips_divergence.py
+│   ├── chemometrics
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_chemometric_metrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometric_metrics.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_chemometrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometrics.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_chemometrics_models.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometrics_models.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_chemometrics_models_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometrics_models_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_chemometrics_models_validation.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometrics_models_validation.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_chemometrics_simca.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometrics_simca.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_chemometrics_validation.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_chemometrics_validation.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_deep_optional.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_deep_optional.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_mixture.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_mixture.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_mixture_nnls.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_mixture_nnls.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_validation_strategies.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_validation_strategies.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_vip.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_vip.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_chemometric_metrics.py
+│   │   ├── test_chemometrics_models_extra.py
+│   │   ├── test_chemometrics_models.py
+│   │   ├── test_chemometrics_models_validation.py
+│   │   ├── test_chemometrics.py
+│   │   ├── test_chemometrics_simca.py
+│   │   ├── test_chemometrics_validation.py
+│   │   ├── test_deep_optional.py
+│   │   ├── test_mixture_nnls.py
+│   │   ├── test_mixture.py
+│   │   ├── test_validation_strategies.py
+│   │   └── test_vip.py
+│   ├── cli
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_cli_batch_outputs.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_batch_outputs.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_csv_to_library.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_csv_to_library.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_end_to_end.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_end_to_end.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_mixture_hyperspectral.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_mixture_hyperspectral.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_model_registry.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_model_registry.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_new_commands.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_new_commands.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_plugin.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_plugin.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_predict.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_predict.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_protocol_batch.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_protocol_batch.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_protocol.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_protocol.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_protocol_spike_flags.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_protocol_spike_flags.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_registry.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_registry.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_run_exp.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_run_exp.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_unified.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_cli_unified.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_cli_workflows.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_cli_workflows.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_cli_batch_outputs.py
+│   │   ├── test_cli_csv_to_library.py
+│   │   ├── test_cli_end_to_end.py
+│   │   ├── test_cli_mixture_hyperspectral.py
+│   │   ├── test_cli_model_registry.py
+│   │   ├── test_cli_new_commands.py
+│   │   ├── test_cli_plugin.py
+│   │   ├── test_cli_predict.py
+│   │   ├── test_cli_protocol_batch.py
+│   │   ├── test_cli_protocol.py
+│   │   ├── test_cli_protocol_spike_flags.py
+│   │   ├── test_cli_registry.py
+│   │   ├── test_cli_run_exp.py
+│   │   ├── test_cli_unified.py
+│   │   └── test_cli_workflows.py
+│   ├── conftest.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_config.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_config.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_core_extras.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_core_extras.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_dataset.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_dataset.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_dataset_enhanced.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_dataset_enhanced.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_dataset_errors.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_dataset_errors.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_dataset_interop.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_dataset_interop.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_dataset_methods.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_dataset_methods.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_high_value_coverage.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_high_value_coverage.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_import.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_import.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_multimodal.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_multimodal.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_phase1_core.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_phase1_core.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_spectral_dataset_comprehensive.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_spectral_dataset_comprehensive.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_spectral_dataset_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_spectral_dataset_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_validation.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_validation.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_validation_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_validation_extra.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_config.py
+│   │   ├── test_core_extras.py
+│   │   ├── test_dataset_enhanced.py
+│   │   ├── test_dataset_errors.py
+│   │   ├── test_dataset_interop.py
+│   │   ├── test_dataset_methods.py
+│   │   ├── test_dataset.py
+│   │   ├── test_high_value_coverage.py
+│   │   ├── test_import.py
+│   │   ├── test_multimodal.py
+│   │   ├── test_phase1_core.py
+│   │   ├── test_spectral_dataset_comprehensive.py
+│   │   ├── test_spectral_dataset_extra.py
+│   │   ├── test_validation_extra.py
+│   │   └── test_validation.py
+│   ├── data
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_data.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_data.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_public_datasets.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_public_datasets.cpython-312-pytest-9.0.2.pyc
+│   │   ├── sample_jcamp.jdx
+│   │   ├── sample_wide.csv
+│   │   ├── test_data.py
+│   │   ├── test_public_datasets.py
+│   │   └── vendor
+│   │       ├── mock.dat
+│   │       ├── mock.hdr
+│   │       ├── mock.opus
+│   │       └── mock.wire.txt
+│   ├── deploy
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_artifact.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_artifact.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_registry.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_registry.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_version_check.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_version_check.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_artifact.py
+│   │   ├── test_registry.py
+│   │   └── test_version_check.py
+│   ├── exp
+│   │   └── __init__.py
+│   ├── features
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_bands.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_bands.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_feature_algorithms.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_feature_algorithms.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_feature_interpretation.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_feature_interpretation.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_features_bands.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_features_bands.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_features.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_features.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_features_edges.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_features_edges.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_feature_specs.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_feature_specs.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_interpretation.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_interpretation.cpython-312-pytest-9.0.2.pyc
+│   │   │   └── test_rq_engine.cpython-312-pytest-9.0.1.pyc
+│   │   ├── test_bands.py
+│   │   ├── test_feature_algorithms.py
+│   │   ├── test_feature_interpretation.py
+│   │   ├── test_features_bands.py
+│   │   ├── test_features_edges.py
+│   │   ├── test_feature_specs.py
+│   │   ├── test_features.py
+│   │   └── test_interpretation.py
+│   ├── gui
+│   │   └── __init__.py
+│   ├── hyperspectral
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_hyperspectral_extras.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_hyperspectral_extras.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_hyperspectral_projection_errors.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_hyperspectral_projection_errors.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_hyperspectral_segmentation_roi.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_hyperspectral_segmentation_roi.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_hyperspectral_extras.py
+│   │   ├── test_hyperspectral_projection_errors.py
+│   │   └── test_hyperspectral_segmentation_roi.py
+│   ├── __init__.py
+│   ├── io
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_csv_import.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_csv_import.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_gaps_6_7.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_gaps_6_7.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_harmonization.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_harmonization.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_harmonization_multinstrument.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_harmonization_multinstrument.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_hdf5_schema_roundtrip.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_hdf5_schema_roundtrip.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_ingest_phase2.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_ingest_phase2.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_base_core_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_base_core_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_formats.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_formats.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_text_formats_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_text_formats_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_text_formats_long.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_text_formats_long.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_validation_coverage.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_validation_coverage.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_vendor.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_vendor.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_vendor_import_errors.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_vendor_import_errors.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_io_vendor_stubs.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_io_vendor_stubs.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_spectral_dataset_legacy_io.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_spectral_dataset_legacy_io.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_vendor_io_detection.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_vendor_io_detection.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_csv_import.py
+│   │   ├── test_gaps_6_7.py
+│   │   ├── test_harmonization_multinstrument.py
+│   │   ├── test_harmonization.py
+│   │   ├── test_hdf5_schema_roundtrip.py
+│   │   ├── test_ingest_phase2.py
+│   │   ├── test_io_base_core_extra.py
+│   │   ├── test_io_formats.py
+│   │   ├── test_io.py
+│   │   ├── test_io_text_formats_extra.py
+│   │   ├── test_io_text_formats_long.py
+│   │   ├── test_io_validation_coverage.py
+│   │   ├── test_io_vendor_import_errors.py
+│   │   ├── test_io_vendor.py
+│   │   ├── test_io_vendor_stubs.py
+│   │   ├── test_spectral_dataset_legacy_io.py
+│   │   └── test_vendor_io_detection.py
+│   ├── ml
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_calibration.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_calibration.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_calibration_success_metrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_calibration_success_metrics.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_calibration_transfer.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_calibration_transfer.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_calibration_transfer_edges.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_calibration_transfer_edges.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_champion_challenger.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_champion_challenger.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_fusion.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_fusion.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_fusion_metrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_fusion_metrics.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_gaps_5_8_9_10.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_gaps_5_8_9_10.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_lifecycle.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_lifecycle.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_ml_model_suite.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_ml_model_suite.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_model_lifecycle.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_model_lifecycle.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_calibration.py
+│   │   ├── test_calibration_success_metrics.py
+│   │   ├── test_calibration_transfer_edges.py
+│   │   ├── test_calibration_transfer.py
+│   │   ├── test_champion_challenger.py
+│   │   ├── test_fusion_metrics.py
+│   │   ├── test_fusion.py
+│   │   ├── test_gaps_5_8_9_10.py
+│   │   ├── test_lifecycle.py
+│   │   ├── test_ml_model_suite.py
+│   │   └── test_model_lifecycle.py
+│   ├── plugins
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_plugins_discovery.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_plugins_discovery.cpython-312-pytest-9.0.2.pyc
+│   │   └── test_plugins_discovery.py
+│   ├── predict
+│   │   └── __init__.py
+│   ├── preprocess
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_matrix_correction.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_matrix_correction.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_normalization_scatter.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_normalization_scatter.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_baseline.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_baseline.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_baseline_edges.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_baseline_edges.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_derivatives.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_derivatives.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_edges.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_edges.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_engine.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_engine.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_ftir.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_ftir.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_ftir_pipeline.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_ftir_pipeline.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocessing_comprehensive.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocessing_comprehensive.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocessing_coverage.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocessing_coverage.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocessing_pipeline_comprehensive.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocessing_pipeline_comprehensive.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocessing_pipeline.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocessing_pipeline.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocessing_spike_toggle.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocessing_spike_toggle.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_normalization_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_normalization_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_raman.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_raman.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_preprocess_smoothing.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_preprocess_smoothing.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_spikes_step.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_spikes_step.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_matrix_correction.py
+│   │   ├── test_normalization_scatter.py
+│   │   ├── test_preprocess_baseline_edges.py
+│   │   ├── test_preprocess_baseline.py
+│   │   ├── test_preprocess_derivatives.py
+│   │   ├── test_preprocess_edges.py
+│   │   ├── test_preprocess_engine.py
+│   │   ├── test_preprocess_ftir_pipeline.py
+│   │   ├── test_preprocess_ftir.py
+│   │   ├── test_preprocessing_comprehensive.py
+│   │   ├── test_preprocessing_coverage.py
+│   │   ├── test_preprocessing_pipeline_comprehensive.py
+│   │   ├── test_preprocessing_pipeline.py
+│   │   ├── test_preprocessing_spike_toggle.py
+│   │   ├── test_preprocess_normalization_extra.py
+│   │   ├── test_preprocess.py
+│   │   ├── test_preprocess_raman.py
+│   │   ├── test_preprocess_smoothing.py
+│   │   └── test_spikes_step.py
+│   ├── protocol
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── __init__.cpython-312.pyc
+│   │       └── test_protocol_runner.cpython-312-pytest-9.0.1.pyc
+│   ├── __pycache__
+│   │   ├── conftest.cpython-312-pytest-9.0.1.pyc
+│   │   ├── conftest.cpython-312-pytest-9.0.2.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── test_error_handling.cpython-312-pytest-9.0.1.pyc
+│   │   ├── test_error_handling.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_integration.cpython-312-pytest-9.0.1.pyc
+│   │   └── test_integration.cpython-312-pytest-9.0.2.pyc
+│   ├── qc
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_data_governance.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_data_governance.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_drift.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_drift.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_prediction_qc.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_prediction_qc.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_qc_engine.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_qc_engine.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_data_governance.py
+│   │   ├── test_drift.py
+│   │   ├── test_prediction_qc.py
+│   │   └── test_qc_engine.py
+│   ├── report
+│   │   └── __init__.py
+│   ├── repro
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_narrative_publish.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_narrative_publish.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_output_bundle.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_output_bundle.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_report_helpers.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_report_helpers.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_reporting_helpers.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_reporting_helpers.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_repro_system.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_repro_system.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_narrative_publish.py
+│   │   ├── test_output_bundle.py
+│   │   ├── test_report_helpers.py
+│   │   ├── test_reporting_helpers.py
+│   │   └── test_repro_system.py
+│   ├── stats
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_bland_altman.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_bland_altman.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_embedding_metrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_embedding_metrics.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_manova_tukey.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_manova_tukey.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_metrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_metrics.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_metrics_uncertainty_explain.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_metrics_uncertainty_explain.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_peak_stats.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_peak_stats.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_stats.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_stats.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_stats_effects.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_stats_effects.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_stats_hypothesis_tests.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_stats_hypothesis_tests.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_stats_posthoc_manova.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_stats_posthoc_manova.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_stats_reports.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_stats_reports.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_time_metrics.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_time_metrics.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_bland_altman.py
+│   │   ├── test_embedding_metrics.py
+│   │   ├── test_manova_tukey.py
+│   │   ├── test_metrics.py
+│   │   ├── test_metrics_uncertainty_explain.py
+│   │   ├── test_peak_stats.py
+│   │   ├── test_stats_effects.py
+│   │   ├── test_stats_hypothesis_tests.py
+│   │   ├── test_stats_posthoc_manova.py
+│   │   ├── test_stats.py
+│   │   ├── test_stats_reports.py
+│   │   └── test_time_metrics.py
+│   ├── synthetic
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_synthetic.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_synthetic.cpython-312-pytest-9.0.2.pyc
+│   │   └── test_synthetic.py
+│   ├── test_error_handling.py
+│   ├── test_integration.py
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_logo.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_logo.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_troubleshooting_utils.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_troubleshooting_utils.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_logo.py
+│   │   └── test_troubleshooting_utils.py
+│   ├── viz
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── test_viz_basic.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_viz_basic.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_viz.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_viz.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_viz_extra.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_viz_extra.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_viz_heating.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_viz_heating.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_viz_helpers.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_viz_helpers.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_viz_ratios_branches.cpython-312-pytest-9.0.1.pyc
+│   │   │   ├── test_viz_ratios_branches.cpython-312-pytest-9.0.2.pyc
+│   │   │   ├── test_viz_ratios.cpython-312-pytest-9.0.1.pyc
+│   │   │   └── test_viz_ratios.cpython-312-pytest-9.0.2.pyc
+│   │   ├── test_viz_basic.py
+│   │   ├── test_viz_extra.py
+│   │   ├── test_viz_heating.py
+│   │   ├── test_viz_helpers.py
+│   │   ├── test_viz.py
+│   │   ├── test_viz_ratios_branches.py
+│   │   └── test_viz_ratios.py
+│   └── workflows
+│       ├── __init__.py
+│       ├── __pycache__
+│       │   ├── __init__.cpython-312.pyc
+│       │   ├── test_heating_trajectory.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_heating_trajectory.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_hsi_rq_integration.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_hsi_rq_integration.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_library_search.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_library_search.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_library_search_workflow.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_library_search_workflow.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_protocol_engine_end_to_end.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_protocol_engine_end_to_end.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_protocol_hsi_steps.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_protocol_hsi_steps.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_protocol_validation.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_protocol_validation.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_protocol_validation_real.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_protocol_validation_real.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_protocol_validation_schema.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_protocol_validation_schema.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_rq_engine.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_rq_engine.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_rq_guardrails.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_rq_guardrails.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_rq_report.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_rq_report.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_shelf_life_comprehensive.cpython-312-pytest-9.0.1.pyc
+│       │   ├── test_shelf_life_comprehensive.cpython-312-pytest-9.0.2.pyc
+│       │   ├── test_shelf_life.cpython-312-pytest-9.0.1.pyc
+│       │   └── test_shelf_life.cpython-312-pytest-9.0.2.pyc
+│       ├── test_heating_trajectory.py
+│       ├── test_hsi_rq_integration.py
+│       ├── test_library_search.py
+│       ├── test_library_search_workflow.py
+│       ├── test_protocol_engine_end_to_end.py
+│       ├── test_protocol_hsi_steps.py
+│       ├── test_protocol_validation.py
+│       ├── test_protocol_validation_real.py
+│       ├── test_protocol_validation_schema.py
+│       ├── test_rq_engine.py
+│       ├── test_rq_guardrails.py
+│       ├── test_rq_report.py
+│       ├── test_shelf_life_comprehensive.py
+│       └── test_shelf_life.py
+└── tools
+    └── check_linecount.py
+
+230 directories, 1402 files

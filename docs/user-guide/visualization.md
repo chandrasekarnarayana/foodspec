@@ -96,5 +96,5 @@ Good fit hugs the 1:1 line; CI bands convey uncertainty; Bland–Altman bias nea
 ## See also
 - [Workflow design](../workflows/workflow_design_and_reporting.md#plots-visualizations)  
 - [Calibration/regression workflow](../workflows/quantification/calibration_regression_example.md)  
-- [Stats: correlation & mapping](../stats/correlation_and_mapping.md)  
+- [Stats: correlation & mapping](../methods/statistics/correlation_and_mapping.md)  
 - [Metrics & evaluation](../reference/metrics_reference.md)
