@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-Generate example figures for FoodSpec docs using bundled example data and protocols.
-Outputs saved under docs/assets/figures/.
+Generate deterministic documentation figures for FoodSpec.
 
-Run:
+Run from repo root:
     python scripts/generate_docs_figures.py
 
-This script is non-destructive: it reads existing example data/protocols and
-writes figures for documentation illustration. Adapt paths/logic as needed
-if your bundle structure differs.
+Outputs:
+- docs/assets/figures/*.png
+- docs/assets/workflows/heating_quality_monitoring/heating_ratio_vs_time.png
+
+All figures are generated from synthetic, deterministic data (seeded RNG) so
+CI and local runs produce identical outputs.
 """
 
 from __future__ import annotations
@@ -16,77 +18,34 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
-
-try:
-    from foodspec.protocol import ProtocolConfig, ProtocolRunner
-except Exception as exc:  # pragma: no cover
-    raise SystemExit(f"Cannot import FoodSpec protocol engine: {exc}")
+from sklearn.datasets import make_classification
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import cross_val_predict
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "examples" / "data"
-PROT = ROOT / "examples" / "protocols"
-OUT = ROOT / "docs" / "assets" / "figures"
-OUT.mkdir(parents=True, exist_ok=True)
+FIG_OUT = ROOT / "docs" / "assets" / "figures"
+FIG_OUT.mkdir(parents=True, exist_ok=True)
+WF_OUT = ROOT / "docs" / "assets" / "workflows" / "heating_quality_monitoring"
+WF_OUT.mkdir(parents=True, exist_ok=True)
+
+RNG = np.random.default_rng(42)
+sns.set_theme(style="whitegrid")
 
 
-def run_protocol(input_paths, protocol_path, out_dir):
-    cfg = ProtocolConfig.from_file(protocol_path)
-    runner = ProtocolRunner(cfg)
-    ctx = runner.run(input_datasets=input_paths, output_dir=out_dir)
-    return ctx
-
-
-def copy_existing_fig(bundle_dir: Path, pattern: str, target_name: str):
-    figs = bundle_dir / "figures"
-    for f in figs.glob(pattern):
-        (OUT / target_name).write_bytes(f.read_bytes())
-        return True
-    return False
-
-
-def plot_bar_from_csv(csv_path: Path, value_col: str, label_col: str, out_name: str, title: str, ascending=False, n=10):
-    df = pd.read_csv(csv_path)
-    df = df.sort_values(value_col, ascending=ascending).head(n)
-    plt.figure(figsize=(6, 4))
-    sns.barplot(data=df, x=value_col, y=label_col, orient="h")
-    plt.title(title)
+def savefig(path: Path, dpi: int = 300):
+    path.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
-    plt.savefig(OUT / out_name, dpi=300)
+    plt.savefig(path, dpi=dpi, bbox_inches="tight")
     plt.close()
 
 
-def plot_minimal_panel(csv_path: Path, out_name: str):
-    df = pd.read_csv(csv_path)
-    if "k" not in df.columns or "mean_acc" not in df.columns:
-        return
-    plt.figure(figsize=(5, 4))
-    sns.lineplot(data=df, x="k", y="mean_acc")
-    if "std_acc" in df.columns:
-        plt.fill_between(df["k"], df["mean_acc"] - df["std_acc"], df["mean_acc"] + df["std_acc"], alpha=0.2)
-    plt.xlabel("Number of features")
-    plt.ylabel("Accuracy")
-    plt.title("Minimal panel accuracy")
-    plt.tight_layout()
-    plt.savefig(OUT / out_name, dpi=300)
-    plt.close()
-
-
-def plot_cv_box(csv_path: Path, metric_col: str, out_name: str):
-    df = pd.read_csv(csv_path)
-    if metric_col not in df.columns:
-        return
-    plt.figure(figsize=(4, 4))
-    sns.boxplot(y=df[metric_col])
-    plt.title(f"Cross-validation {metric_col}")
-    plt.tight_layout()
-    plt.savefig(OUT / out_name, dpi=300)
-    plt.close()
-
-
-def simple_architecture(out_name: str):
+def fig_architecture():
     plt.figure(figsize=(6, 4))
     plt.axis("off")
     y = 0.9
@@ -103,65 +62,146 @@ def simple_architecture(out_name: str):
     for lbl in labels:
         plt.text(0.5, y, lbl, ha="center", va="center")
         y -= step
-    plt.savefig(OUT / out_name, dpi=300, bbox_inches="tight")
-    plt.close()
+    savefig(FIG_OUT / "architecture_flow.png")
+
+
+def fig_confusion_and_pca():
+    X, y = make_classification(
+        n_samples=120,
+        n_features=20,
+        n_informative=6,
+        n_redundant=2,
+        n_classes=4,
+        n_clusters_per_class=1,
+        weights=[0.25, 0.25, 0.25, 0.25],
+        class_sep=2.0,
+        random_state=42,
+    )
+    clf = RandomForestClassifier(n_estimators=80, random_state=42)
+    y_pred = cross_val_predict(clf, X, y, cv=5)
+    classes = np.unique(y)
+    cm = confusion_matrix(y, y_pred, labels=classes)
+
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.title("Oil authentication confusion matrix (synthetic)")
+    savefig(FIG_OUT / "oil_confusion.png")
+
+    pca = PCA(n_components=2, random_state=42)
+    X2 = pca.fit_transform(X)
+    plt.figure(figsize=(5, 4))
+    sns.scatterplot(x=X2[:, 0], y=X2[:, 1], hue=y, palette="tab10", s=40, edgecolor="none")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("PCA projection (synthetic oils)")
+    savefig(FIG_OUT / "oil_discriminative.png")
+
+
+def fig_feature_panels():
+    feats = [f"ratio_{i}" for i in range(1, 11)]
+    rf_imp = np.linspace(0.25, 0.02, num=10) + RNG.normal(0, 0.01, 10)
+    stability = np.linspace(0.5, 0.9, num=10) + RNG.normal(0, 0.01, 10)
+    minimal_k = np.arange(2, 12)
+    minimal_acc = 0.82 + 0.03 * np.exp(-0.3 * (minimal_k - 2)) + RNG.normal(0, 0.002, len(minimal_k))
+
+    df_imp = pd.DataFrame({"feature": feats, "rf_importance": rf_imp})
+    plt.figure(figsize=(6, 4))
+    sns.barplot(data=df_imp, x="rf_importance", y="feature", orient="h")
+    plt.title("Top discriminative ratios")
+    savefig(FIG_OUT / "oil_discriminative.png")
+
+    df_stab = pd.DataFrame({"feature": feats, "cv": stability})
+    plt.figure(figsize=(6, 4))
+    sns.barplot(data=df_stab, x="cv", y="feature", orient="h")
+    plt.title("Top stable ratios")
+    savefig(FIG_OUT / "oil_stability.png")
+
+    plt.figure(figsize=(5, 4))
+    plt.plot(minimal_k, minimal_acc, marker="o")
+    plt.fill_between(minimal_k, minimal_acc - 0.01, minimal_acc + 0.01, alpha=0.2)
+    plt.xlabel("Number of features")
+    plt.ylabel("Accuracy")
+    plt.title("Minimal panel accuracy")
+    savefig(FIG_OUT / "oil_minimal_panel.png")
+
+
+def fig_oil_vs_chips():
+    feats = [f"band_{i}" for i in range(1, 11)]
+    effect = np.linspace(1.2, 0.3, num=10) + RNG.normal(0, 0.02, 10)
+    df = pd.DataFrame({"feature": feats, "effect_size": effect})
+    plt.figure(figsize=(6, 4))
+    sns.barplot(data=df, x="effect_size", y="feature", orient="h")
+    plt.title("Top matrix divergences")
+    savefig(FIG_OUT / "oil_vs_chips_divergence.png")
+
+
+def fig_cv_boxplot():
+    scores = RNG.normal(loc=0.92, scale=0.02, size=30)
+    plt.figure(figsize=(4, 4))
+    sns.boxplot(y=scores)
+    plt.ylabel("Balanced accuracy")
+    plt.title("Cross-validation performance")
+    savefig(FIG_OUT / "cv_boxplot.png")
+
+
+def fig_heating_trend_and_workflow():
+    time_h = np.arange(0, 20, 2)
+    ratio = 0.05 * time_h + RNG.normal(0, 0.02, len(time_h))
+    trend = np.poly1d(np.polyfit(time_h, ratio, 1))(time_h)
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(time_h, ratio, "o", label="observed", color="#d62728")
+    plt.plot(time_h, trend, "--", label="trend", color="#1f77b4")
+    plt.xlabel("Time (hours)")
+    plt.ylabel("Ratio (oxidation/preservation)")
+    plt.title("Heating degradation trend")
+    plt.legend()
+    savefig(FIG_OUT / "heating_trend.png")
+
+    # Workflow asset copy
+    savefig(WF_OUT / "heating_ratio_vs_time.png")
+
+
+def fig_hsi_and_roi():
+    H, W, L = 40, 40, 400
+    w = np.linspace(800, 3000, L)
+    base = np.exp(-((w - 1600) / 220) ** 2)
+    cube = np.tile(base, (H, W, 1)) + RNG.normal(0, 0.01, (H, W, L))
+    cube[15:28, 10:24, :] *= 0.6
+
+    mean_img = cube.mean(axis=2)
+    thresh = np.median(mean_img)
+    labels = (mean_img < thresh).astype(int)
+
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(labels, cmap="RdYlGn_r", cbar=False)
+    plt.title("HSI label map (synthetic)")
+    plt.xlabel("X (px)")
+    plt.ylabel("Y (px)")
+    savefig(FIG_OUT / "hsi_label_map.png")
+
+    healthy = cube[labels == 0].mean(axis=0)
+    bruised = cube[labels == 1].mean(axis=0)
+    plt.figure(figsize=(6, 4))
+    plt.plot(w, healthy, label="Healthy", color="green")
+    plt.plot(w, bruised, label="Bruised", color="red")
+    plt.xlabel("Wavenumber (cm⁻¹)")
+    plt.ylabel("Intensity (a.u.)")
+    plt.title("ROI spectra")
+    plt.legend()
+    savefig(FIG_OUT / "roi_spectra.png")
 
 
 def main():
-    # Oil discrimination
-    oil_run = ROOT / "runs" / "doc_oil_basic"
-    run_protocol([DATA / "oils.csv"], PROT / "oil_basic.yaml", oil_run)
-    copy_existing_fig(oil_run, "*confusion*.png", "oil_confusion.png")
-    if (oil_run / "tables" / "discriminative_summary.csv").exists():
-        plot_bar_from_csv(
-            oil_run / "tables" / "discriminative_summary.csv",
-            "rf_importance",
-            "feature",
-            "oil_discriminative.png",
-            "Top discriminative ratios",
-            ascending=False,
-        )
-    if (oil_run / "tables" / "stability_summary.csv").exists():
-        plot_bar_from_csv(
-            oil_run / "tables" / "stability_summary.csv",
-            "cv",
-            "feature",
-            "oil_stability.png",
-            "Top stable ratios",
-            ascending=True,
-        )
-    if (oil_run / "tables" / "minimal_panel.csv").exists():
-        plot_minimal_panel(oil_run / "tables" / "minimal_panel.csv", "oil_minimal_panel.png")
-
-    # Heating trends
-    heat_run = ROOT / "runs" / "doc_oil_heating"
-    run_protocol([DATA / "oils.csv"], PROT / "oil_heating.yaml", heat_run)
-    copy_existing_fig(heat_run, "trend*.png", "heating_trend.png")
-
-    # Oil vs chips
-    ovsc_run = ROOT / "runs" / "doc_oil_vs_chips"
-    run_protocol([DATA / "oils.csv", DATA / "chips.csv"], PROT / "oil_vs_chips.yaml", ovsc_run)
-    if (ovsc_run / "tables" / "oil_vs_chips_summary.csv").exists():
-        plot_bar_from_csv(
-            ovsc_run / "tables" / "oil_vs_chips_summary.csv",
-            "effect_size",
-            "feature",
-            "oil_vs_chips_divergence.png",
-            "Top matrix divergences",
-            ascending=False,
-        )
-
-    # HSI
-    hsi_run = ROOT / "runs" / "doc_hsi"
-    run_protocol([DATA / "hsi_cube.h5"], PROT / "hsi_segment_roi.yaml", hsi_run)
-    copy_existing_fig(hsi_run, "hsi_label_map*.png", "hsi_label_map.png")
-    copy_existing_fig(hsi_run, "roi_spectra*.png", "roi_spectra.png")
-
-    # Validation example (if available)
-    # plot_cv_box(Path("path/to/cv_metrics.csv"), "balanced_accuracy", "cv_boxplot.png")
-
-    # Architecture schematic
-    simple_architecture("architecture_flow.png")
+    fig_architecture()
+    fig_confusion_and_pca()
+    fig_feature_panels()
+    fig_oil_vs_chips()
+    fig_cv_boxplot()
+    fig_heating_trend_and_workflow()
+    fig_hsi_and_roi()
 
 
 if __name__ == "__main__":  # pragma: no cover

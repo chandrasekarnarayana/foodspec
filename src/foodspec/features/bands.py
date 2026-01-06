@@ -16,7 +16,21 @@ def compute_band_features(
     bands: Sequence[Tuple[str, float, float]],
     metrics: Iterable[str] = ("integral",),
 ) -> pd.DataFrame:
-    """Compute band-level features (integral/mean/max/slope)."""
+    """Compute band-level features (integral/mean/max/slope).
+
+    Args:
+        X: 2D array of spectra (samples × wavenumbers).
+        wavenumbers: 1D array of wavenumber values matching X columns.
+        bands: Sequence of (label, min_wn, max_wn) tuples defining bands.
+        metrics: Feature types to compute per band ("integral", "mean", "max", "slope").
+
+    Returns:
+        DataFrame with one row per sample and columns for each band × metric.
+
+    Raises:
+        ValueError: If X is not 2D or wavenumbers shape mismatches X columns.
+        ValueError: If any band has invalid range (min_wn >= max_wn).
+    """
 
     X = np.asarray(X, dtype=float)
     wavenumbers = np.asarray(wavenumbers, dtype=float)
@@ -57,6 +71,15 @@ def integrate_bands(
     wavenumbers: np.ndarray,
     bands: Sequence[Tuple[str, float, float]],
 ) -> pd.DataFrame:
-    """Backwards-compatible wrapper: band integrals only."""
+    """Backwards-compatible wrapper: band integrals only.
+
+    Args:
+        X: 2D array of spectra (samples × wavenumbers).
+        wavenumbers: 1D array of wavenumber values matching X columns.
+        bands: Sequence of (label, min_wn, max_wn) tuples defining bands.
+
+    Returns:
+        DataFrame with one row per sample and one column per band (integral only).
+    """
 
     return compute_band_features(X, wavenumbers, bands, metrics=("integral",))

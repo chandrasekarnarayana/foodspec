@@ -66,13 +66,39 @@ class FoodSpectrumSet:
         self.validate()
 
     def __len__(self) -> int:
-        """Number of spectra in the set."""
+        """Number of spectra in the set.
+
+        Returns:
+            int: Number of samples (axis 0 of ``x``).
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(
+            ...     x=np.ones((3, 5)),
+            ...     wavenumbers=np.arange(5),
+            ...     metadata=pd.DataFrame({"label": [0, 1, 0]}),
+            ... )
+            >>> len(ds)
+            3
+        """
 
         return self.x.shape[0]
 
     @property
     def labels(self) -> Optional[pd.Series]:
-        """Return label column if configured."""
+        """Return label column if configured.
+
+        Returns:
+            pandas.Series | None: Label values aligned to samples, or None if
+            ``label_col`` is not set or missing.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> meta = pd.DataFrame({"label": ["A", "B"]})
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 3)), wavenumbers=np.arange(3), metadata=meta)
+            >>> ds.labels.tolist()
+            ['A', 'B']
+        """
 
         if self.label_col and self.label_col in self.metadata.columns:
             return self.metadata[self.label_col]
@@ -80,7 +106,12 @@ class FoodSpectrumSet:
 
     @property
     def groups(self) -> Optional[pd.Series]:
-        """Return grouping column if configured."""
+        """Return grouping column if configured.
+
+        Returns:
+            pandas.Series | None: Group identifiers (e.g., folds) or None if
+            ``group_col`` is not set or missing.
+        """
 
         if self.group_col and self.group_col in self.metadata.columns:
             return self.metadata[self.group_col]
@@ -88,7 +119,12 @@ class FoodSpectrumSet:
 
     @property
     def batch_ids(self) -> Optional[pd.Series]:
-        """Return batch identifier column if configured."""
+        """Return batch identifier column if configured.
+
+        Returns:
+            pandas.Series | None: Batch/run identifiers or None if
+            ``batch_col`` is not set or missing.
+        """
 
         if self.batch_col and self.batch_col in self.metadata.columns:
             return self.metadata[self.batch_col]
@@ -112,7 +148,26 @@ class FoodSpectrumSet:
         )
 
     def __getitem__(self, index: IndexType) -> "FoodSpectrumSet":
-        """Return a subset by position index or slice."""
+        """Return a subset by integer position.
+
+        Args:
+            index (int | slice): Zero-based row index or slice over samples.
+
+        Returns:
+            FoodSpectrumSet: New dataset containing ``x``/``metadata`` rows
+            selected by ``index``; wavenumbers are copied.
+
+        Raises:
+            IndexError: If an integer index is out of range.
+            TypeError: If ``index`` is not an int or slice.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.arange(6).reshape(3, 2), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> ds_sub = ds[1:]
+            >>> ds_sub.x.shape
+            (2, 2)
+        """
 
         indices = self._normalize_index(index)
         return self._copy_with(
@@ -126,21 +181,31 @@ class FoodSpectrumSet:
         by: Optional[Dict[str, Any]] = None,
         indices: Optional[Sequence[int]] = None,
     ) -> "FoodSpectrumSet":
-        """Subset the dataset by metadata filters and/or explicit indices.
+        """Subset by metadata filters and/or explicit indices.
 
-        Parameters
-        ----------
-        by :
-            Mapping of metadata column names to desired values. For sequence-like
-            values, membership (``isin``) is applied; otherwise equality is used.
-        indices :
-            Explicit indices to retain. If provided together with ``by``, the
-            intersection is taken in the order of ``indices``.
+        Args:
+            by (dict[str, Any] | None): Column → value filters applied to
+                ``metadata``. If a value is sequence-like, membership (``isin``)
+                is used; otherwise equality is used.
+            indices (Sequence[int] | None): Explicit zero-based indices to
+                retain. If both ``by`` and ``indices`` are provided, their
+                intersection (order of ``indices``) is returned.
 
-        Returns
-        -------
-        FoodSpectrumSet
-            A new dataset containing the selected spectra.
+        Returns:
+            FoodSpectrumSet: New dataset with selected rows; wavenumbers are
+            preserved and metadata reindexed.
+
+        Raises:
+            ValueError: If requested metadata columns are missing, indices are
+                out of range, or indices are not 1D.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> meta = pd.DataFrame({"label": [0, 1, 0], "split": ["train", "test", "train"]})
+            >>> ds = FoodSpectrumSet(x=np.ones((3, 4)), wavenumbers=np.arange(4), metadata=meta)
+            >>> ds_train = ds.subset(by={"split": "train"})
+            >>> len(ds_train)
+            2
         """
 
         if by is None and indices is None:
@@ -178,15 +243,19 @@ class FoodSpectrumSet:
     def copy(self, deep: bool = True) -> "FoodSpectrumSet":
         """Return a copy of the dataset.
 
-        Parameters
-        ----------
-        deep :
-            If True, copy underlying arrays and metadata; otherwise reuse references.
+        Args:
+            deep (bool): If True, copy arrays/metadata; if False, reuse
+                references (changes mutate the original data).
 
-        Returns
-        -------
-        FoodSpectrumSet
-            Copied dataset.
+        Returns:
+            FoodSpectrumSet: Copy with identical content.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 3)), wavenumbers=np.arange(3), metadata=pd.DataFrame())
+            >>> shallow = ds.copy(deep=False)
+            >>> shallow.x is ds.x
+            True
         """
 
         if deep:
@@ -209,13 +278,19 @@ class FoodSpectrumSet:
         )
 
     def to_wide_dataframe(self) -> pd.DataFrame:
-        """Convert the dataset to a wide DataFrame.
+        """Convert to a wide DataFrame.
 
-        Returns
-        -------
-        pandas.DataFrame
-            Metadata columns followed by one column per wavenumber named
-            ``int_<wavenumber>``.
+        Returns:
+            pandas.DataFrame: Metadata columns followed by intensity columns
+            named ``int_<wavenumber>`` (floats preserved). Shape:
+            (n_samples, n_metadata + n_wavenumbers).
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 3)), wavenumbers=np.array([1000., 1001., 1002.]), metadata=pd.DataFrame({"label": [0,1]}))
+            >>> df = ds.to_wide_dataframe()
+            >>> list(df.columns)[:2]
+            ['label', 'int_1000.0']
         """
 
         intensity_columns = [f"int_{float(wn)}" for wn in self.wavenumbers]
@@ -223,7 +298,18 @@ class FoodSpectrumSet:
         return pd.concat([self.metadata.reset_index(drop=True).copy(), spectra_df], axis=1)
 
     def validate(self) -> None:
-        """Validate array shapes, metadata length, and modality."""
+        """Validate array shapes, wavenumber axis, metadata length, and modality.
+
+        Raises:
+            ValueError: If shapes mismatch, wavenumbers are non-monotonic, too
+                few points (<3), metadata length mismatches samples, modality is
+                invalid, or configured annotation columns are missing.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 3)), wavenumbers=np.array([1., 2., 3.]), metadata=pd.DataFrame())
+            >>> ds.validate()  # does not raise
+        """
 
         if self.x.ndim != 2:
             raise ValueError("x must be a 2D array of shape (n_samples, n_wavenumbers).")
@@ -261,14 +347,55 @@ class FoodSpectrumSet:
         raise TypeError("Index must be an integer or slice.")
 
     def to_X_y(self, target_col: str) -> tuple[np.ndarray, np.ndarray]:
-        """Return (X, y) for a target column in metadata."""
+        """Return (X, y) for a target column in metadata.
+
+        Args:
+            target_col (str): Metadata column name to use as labels.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: ``X`` shape (n_samples, n_wavenumbers),
+            ``y`` shape (n_samples,).
+
+        Raises:
+            ValueError: If ``target_col`` is missing from metadata.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> meta = pd.DataFrame({"label": [0, 1]})
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 4)), wavenumbers=np.arange(4), metadata=meta)
+            >>> X, y = ds.to_X_y("label")
+            >>> X.shape, y.tolist()
+            ((2, 4), [0, 1])
+        """
 
         if target_col not in self.metadata.columns:
             raise ValueError(f"Target column '{target_col}' not found in metadata.")
         return self.x, self.metadata[target_col].to_numpy()
 
     def apply(self, func: Callable[[np.ndarray], np.ndarray], *, inplace: bool = False) -> "FoodSpectrumSet":
-        """Apply a vectorized operation to all spectra."""
+        """Apply a vectorized operation to all spectra.
+
+        Args:
+            func (Callable[[np.ndarray], np.ndarray]): Function that accepts
+                ``x`` (shape (n_samples, n_wavenumbers)) and returns an array of
+                the same shape.
+            inplace (bool): If True, modify ``x`` in place and return self; if
+                False, return a new dataset copy.
+
+        Returns:
+            FoodSpectrumSet: Self (if ``inplace=True``) or a new dataset with
+            transformed spectra.
+
+        Raises:
+            ValueError: If the returned array shape differs from ``x``.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 3)), wavenumbers=np.arange(3), metadata=pd.DataFrame())
+            >>> ds2 = ds.apply(lambda arr: arr * 2)
+            >>> float(ds2.x.mean())
+            2.0
+        """
 
         result = np.asarray(func(self.x))
         if result.shape != self.x.shape:
@@ -279,17 +406,69 @@ class FoodSpectrumSet:
         return self._copy_with(x=result)
 
     def scale(self, factor: float, *, inplace: bool = False) -> "FoodSpectrumSet":
-        """Scale spectral intensities by a factor."""
+        """Scale spectral intensities by a factor.
+
+        Args:
+            factor (float): Multiplicative scalar applied to all intensities.
+            inplace (bool): If True, mutate ``x`` and return self; otherwise
+                return a new dataset.
+
+        Returns:
+            FoodSpectrumSet: Scaled dataset (self if ``inplace=True``).
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> ds.scale(10).x.mean()
+            10.0
+        """
 
         return self.apply(lambda arr: arr * factor, inplace=inplace)
 
     def offset(self, value: float, *, inplace: bool = False) -> "FoodSpectrumSet":
-        """Add a constant offset to spectral intensities."""
+        """Add a constant offset to spectral intensities.
+
+        Args:
+            value (float): Constant added to every element of ``x``.
+            inplace (bool): If True, mutate ``x`` and return self; otherwise
+                return a new dataset.
+
+        Returns:
+            FoodSpectrumSet: Offset dataset (self if ``inplace=True``).
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.zeros((1, 3)), wavenumbers=np.arange(3), metadata=pd.DataFrame())
+            >>> ds.offset(5).x.tolist()
+            [[5.0, 5.0, 5.0]]
+        """
 
         return self.apply(lambda arr: arr + value, inplace=inplace)
 
     def add_metadata_column(self, name: str, values: Sequence[Any], *, overwrite: bool = False) -> "FoodSpectrumSet":
-        """Attach a metadata column aligned with spectra."""
+        """Attach a metadata column aligned with spectra.
+
+        Args:
+            name (str): Column name to add to ``metadata``.
+            values (Sequence[Any]): Iterable of length ``n_samples`` containing
+                values aligned to rows.
+            overwrite (bool): If True, replace an existing column of the same
+                name; otherwise raise.
+
+        Returns:
+            FoodSpectrumSet: New dataset with the added/overwritten column.
+
+        Raises:
+            ValueError: If lengths mismatch or column exists and
+                ``overwrite`` is False.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> ds2 = ds.add_metadata_column("batch", [1, 2])
+            >>> ds2.metadata["batch"].tolist()
+            [1, 2]
+        """
 
         if name in self.metadata.columns and not overwrite:
             raise ValueError(f"metadata column '{name}' already exists; set overwrite=True to replace.")
@@ -300,7 +479,27 @@ class FoodSpectrumSet:
         return self._copy_with(metadata=meta)
 
     def select_wavenumber_range(self, min_wn: float, max_wn: float) -> "FoodSpectrumSet":
-        """Return spectra restricted to a wavenumber window."""
+        """Return spectra restricted to a wavenumber window.
+
+        Args:
+            min_wn (float): Inclusive lower bound of wavenumber window.
+            max_wn (float): Inclusive upper bound of wavenumber window.
+
+        Returns:
+            FoodSpectrumSet: Dataset containing columns where
+            ``min_wn <= wavenumbers <= max_wn``; metadata unchanged.
+
+        Raises:
+            ValueError: If bounds are inverted or no wavenumbers fall inside
+                the interval.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 4)), wavenumbers=np.array([500., 750., 1000., 1250.]), metadata=pd.DataFrame())
+            >>> ds_win = ds.select_wavenumber_range(700, 1100)
+            >>> ds_win.wavenumbers.tolist()
+            [750.0, 1000.0]
+        """
 
         if min_wn > max_wn:
             raise ValueError("min_wn must be <= max_wn.")
@@ -316,7 +515,25 @@ class FoodSpectrumSet:
         group_col: Optional[str] = None,
         batch_col: Optional[str] = None,
     ) -> "FoodSpectrumSet":
-        """Return a copy with updated label/group/batch annotations."""
+        """Return a copy with updated label/group/batch annotations.
+
+        Args:
+            label_col (str | None): Name of label column in ``metadata``.
+            group_col (str | None): Name of grouping column (e.g., folds).
+            batch_col (str | None): Name of batch identifier column.
+
+        Returns:
+            FoodSpectrumSet: Copy sharing data/wavenumbers but with annotation
+            column names updated (metadata deep-copied).
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> meta = pd.DataFrame({"y": [0, 1]})
+            >>> ds = FoodSpectrumSet(x=np.ones((2, 2)), wavenumbers=np.arange(2), metadata=meta)
+            >>> ds2 = ds.with_annotations(label_col="y")
+            >>> ds2.label_col
+            'y'
+        """
 
         return FoodSpectrumSet(
             x=self.x,
@@ -330,7 +547,28 @@ class FoodSpectrumSet:
 
     @classmethod
     def concat(cls, datasets: Sequence["FoodSpectrumSet"]) -> "FoodSpectrumSet":
-        """Concatenate multiple datasets with shared wavenumber grids."""
+        """Concatenate multiple datasets with shared wavenumber grids.
+
+        Args:
+            datasets (Sequence[FoodSpectrumSet]): Non-empty iterable of
+                datasets with identical ``wavenumbers``.
+
+        Returns:
+            FoodSpectrumSet: Combined dataset with stacked ``x`` rows and
+            concatenated ``metadata``; annotation column names copied from the
+            first dataset.
+
+        Raises:
+            ValueError: If ``datasets`` is empty or wavenumber grids differ.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds1 = FoodSpectrumSet(x=np.ones((1, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame({"label": [0]}))
+            >>> ds2 = FoodSpectrumSet(x=np.ones((2, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame({"label": [1, 1]}))
+            >>> merged = FoodSpectrumSet.concat([ds1, ds2])
+            >>> merged.x.shape
+            (3, 2)
+        """
 
         if not datasets:
             raise ValueError("datasets must be non-empty.")
@@ -357,7 +595,30 @@ class FoodSpectrumSet:
         stratify: bool = True,
         random_state: Optional[int] = None,
     ) -> tuple["FoodSpectrumSet", "FoodSpectrumSet"]:
-        """Split into train/test FoodSpectrumSets."""
+        """Split into train/test FoodSpectrumSets.
+
+        Args:
+            target_col (str): Column in ``metadata`` used as labels for
+                stratification and copied into splits.
+            test_size (float): Proportion of samples in the test split.
+            stratify (bool): If True, stratify by ``target_col``.
+            random_state (int | None): Seed for reproducibility.
+
+        Returns:
+            tuple[FoodSpectrumSet, FoodSpectrumSet]: ``(train_ds, test_ds)``
+            sharing the original wavenumber grid; metadata is reindexed.
+
+        Raises:
+            ValueError: If ``target_col`` does not exist in metadata.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> meta = pd.DataFrame({"label": [0, 1, 0, 1]})
+            >>> ds = FoodSpectrumSet(x=np.ones((4, 3)), wavenumbers=np.arange(3), metadata=meta)
+            >>> train, test = ds.train_test_split("label", test_size=0.5, random_state=0)
+            >>> len(train), len(test)
+            (2, 2)
+        """
 
         X, y = self.to_X_y(target_col)
         stratify_arg = y if stratify else None
@@ -387,7 +648,25 @@ class FoodSpectrumSet:
         return train_ds, test_ds
 
     def to_hdf5(self, path: Union[str, Path], key: str = "foodspec", mode: str = "w", complevel: int = 4) -> Path:
-        """Persist dataset to HDF5 (lazy-friendly storage)."""
+        """Persist dataset to HDF5 (lazy-friendly storage).
+
+        Args:
+            path (str | Path): Destination file path. Parent directories must
+                exist.
+            key (str): Prefix for the HDF5 groups created (``<key>_x``,
+                ``<key>_wn``, ``<key>_meta``, ``<key>_info``).
+            mode (str): HDF5 store mode, e.g., ``"w"`` or ``"a"``.
+            complevel (int): Compression level for zlib (0-9).
+
+        Returns:
+            Path: Path to the written HDF5 file.
+
+        Examples:
+            >>> import numpy as np, pandas as pd, tempfile
+            >>> tmp = tempfile.NamedTemporaryFile(suffix=".h5", delete=False)
+            >>> ds = FoodSpectrumSet(x=np.ones((1, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> _ = ds.to_hdf5(tmp.name)
+        """
 
         path = Path(path)
         df_x = pd.DataFrame(self.x)
@@ -412,7 +691,26 @@ class FoodSpectrumSet:
 
     @classmethod
     def from_hdf5(cls, path: Union[str, Path], key: str = "foodspec") -> "FoodSpectrumSet":
-        """Load dataset from HDF5 created by ``to_hdf5``."""
+        """Load dataset from HDF5 created by ``to_hdf5``.
+
+        Args:
+            path (str | Path): HDF5 file path produced by ``to_hdf5``.
+            key (str): Prefix used when saving (default "foodspec").
+
+        Returns:
+            FoodSpectrumSet: Dataset reconstructed from stored arrays and
+            metadata.
+
+        Raises:
+            FileNotFoundError: If ``path`` does not exist.
+
+        Examples:
+            >>> import numpy as np, pandas as pd, tempfile
+            >>> tmp = tempfile.NamedTemporaryFile(suffix=".h5", delete=False)
+            >>> ds = FoodSpectrumSet(x=np.ones((1, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> _ = ds.to_hdf5(tmp.name)
+            >>> _ = FoodSpectrumSet.from_hdf5(tmp.name)
+        """
 
         path = Path(path)
         with pd.HDFStore(path, mode="r") as store:
@@ -436,7 +734,20 @@ class FoodSpectrumSet:
         )
 
     def to_parquet(self, path: Union[str, Path]) -> Path:
-        """Persist dataset to Parquet using wide layout."""
+        """Persist dataset to Parquet using wide layout.
+
+        Args:
+            path (str | Path): Destination parquet path.
+
+        Returns:
+            Path: Path to the written parquet file.
+
+        Examples:
+            >>> import numpy as np, pandas as pd, tempfile
+            >>> tmp = tempfile.NamedTemporaryFile(suffix=".parquet", delete=False)
+            >>> ds = FoodSpectrumSet(x=np.ones((1, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> _ = ds.to_parquet(tmp.name)
+        """
 
         path = Path(path)
         wide = self.to_wide_dataframe().copy()
@@ -449,7 +760,24 @@ class FoodSpectrumSet:
 
     @classmethod
     def from_parquet(cls, path: Union[str, Path]) -> "FoodSpectrumSet":
-        """Load dataset from Parquet created by ``to_parquet``."""
+        """Load dataset from Parquet created by ``to_parquet``.
+
+        Args:
+            path (str | Path): Parquet file written by ``to_parquet``.
+
+        Returns:
+            FoodSpectrumSet: Dataset reconstructed from wide format.
+
+        Raises:
+            FileNotFoundError: If ``path`` does not exist.
+
+        Examples:
+            >>> import numpy as np, pandas as pd, tempfile
+            >>> tmp = tempfile.NamedTemporaryFile(suffix=".parquet", delete=False)
+            >>> ds = FoodSpectrumSet(x=np.ones((1, 2)), wavenumbers=np.arange(2), metadata=pd.DataFrame())
+            >>> _ = ds.to_parquet(tmp.name)
+            >>> _ = FoodSpectrumSet.from_parquet(tmp.name)
+        """
 
         path = Path(path)
         df = pd.read_parquet(path)
@@ -488,6 +816,14 @@ def to_sklearn(
     -------
     (X, y)
         X shape (n_samples, n_features). y is None if label column not found.
+
+    Examples
+    --------
+    >>> import numpy as np, pandas as pd
+    >>> ds = FoodSpectrumSet(x=np.ones((2, 3)), wavenumbers=np.arange(3), metadata=pd.DataFrame({"label": [0, 1]}))
+    >>> X, y = to_sklearn(ds)
+    >>> X.shape, y.tolist()
+    ((2, 3), [0, 1])
     """
 
     X = np.asarray(ds.x, dtype=float)
@@ -519,6 +855,18 @@ def from_sklearn(
         Modality tag (e.g., 'raman').
     labels_name : str
         Name of the label column in metadata if y is provided.
+
+    Returns
+    -------
+    FoodSpectrumSet
+        Dataset constructed from the matrix and optional labels.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> ds = from_sklearn(np.ones((2, 4)), y=[0, 1], wavenumbers=[1.0, 2.0, 3.0, 4.0])
+    >>> ds.wavenumbers.tolist()
+    [1.0, 2.0, 3.0, 4.0]
     """
 
     X = np.asarray(X, dtype=float)

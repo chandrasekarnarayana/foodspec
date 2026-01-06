@@ -14,15 +14,14 @@ def modality_agreement_kappa(
 ) -> pd.DataFrame:
     """Compute Cohen's kappa between all pairs of modality predictions.
 
-    Parameters
-    ----------
-    predictions : Dict[str, np.ndarray]
-        Mapping from modality name to 1D array of class predictions.
+    Args:
+        predictions: Mapping from modality name to 1D array of class predictions.
 
-    Returns
-    -------
-    pd.DataFrame
-        Pairwise kappa matrix (symmetric).
+    Returns:
+        Pairwise kappa matrix (symmetric DataFrame).
+
+    Raises:
+        ValueError: If fewer than two modalities are provided.
     """
     if len(predictions) < 2:
         raise ValueError("Need at least two modalities for agreement.")
@@ -45,15 +44,14 @@ def modality_consistency_rate(
 ) -> float:
     """Fraction of samples where all modalities agree.
 
-    Parameters
-    ----------
-    predictions : Dict[str, np.ndarray]
-        Mapping from modality name to 1D array of class predictions.
+    Args:
+        predictions: Mapping from modality name to 1D array of class predictions.
 
-    Returns
-    -------
-    float
-        Proportion of samples with unanimous predictions across modalities.
+    Returns:
+        Proportion of samples with unanimous predictions across modalities (0.0 to 1.0).
+
+    Raises:
+        ValueError: If fewer than two modalities are provided.
     """
     if len(predictions) < 2:
         raise ValueError("Need at least two modalities for consistency.")

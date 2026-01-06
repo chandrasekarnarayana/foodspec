@@ -18,6 +18,28 @@ class BlandAltmanResult:
 
 
 def bland_altman(a: np.ndarray, b: np.ndarray, alpha: float = 0.05) -> BlandAltmanResult:
+    """Perform Bland–Altman method comparison analysis.
+
+    Computes mean difference and limits of agreement (LoA) between two
+    measurement methods.
+
+    Args:
+        a: Measurements from method A.
+        b: Measurements from method B.
+        alpha: Significance level (currently unused, reserved for CI).
+
+    Returns:
+        A `BlandAltmanResult` containing mean difference, lower LoA, and upper LoA.
+
+    Examples:
+        >>> from foodspec.stats.method_comparison import bland_altman
+        >>> import numpy as np
+        >>> a = np.array([1.0, 2.0, 3.0, 4.0])
+        >>> b = np.array([1.1, 1.9, 3.1, 4.2])
+        >>> result = bland_altman(a, b)
+        >>> abs(result.mean_diff) < 0.5
+        True
+    """
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     diff = a - b
@@ -29,6 +51,25 @@ def bland_altman(a: np.ndarray, b: np.ndarray, alpha: float = 0.05) -> BlandAltm
 
 
 def bland_altman_plot(a: np.ndarray, b: np.ndarray, title: str = "Bland–Altman"):
+    """Generate a Bland–Altman plot for method comparison.
+
+    Args:
+        a: Measurements from method A.
+        b: Measurements from method B.
+        title: Plot title.
+
+    Returns:
+        A matplotlib Figure object.
+
+    Examples:
+        >>> from foodspec.stats.method_comparison import bland_altman_plot
+        >>> import numpy as np
+        >>> a = np.array([1.0, 2.0, 3.0])
+        >>> b = np.array([1.1, 1.9, 3.1])
+        >>> fig = bland_altman_plot(a, b)
+        >>> fig is not None
+        True
+    """
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     avg = 0.5 * (a + b)

@@ -22,28 +22,24 @@ def load_folder(
     wavenumber_column: int = 0,
     intensity_columns: Optional[Sequence[int]] = None,
 ) -> FoodSpectrumSet:
-    """Load spectra from a folder of text files into a ``FoodSpectrumSet``.
+    """Load spectra from a folder of text files.
 
-    Parameters
-    ----------
-    folder :
-        Directory containing spectra files.
-    pattern :
-        Glob pattern for spectra files.
-    modality :
-        Spectroscopy modality string.
-    metadata_csv :
-        Optional CSV with a ``sample_id`` column used to merge metadata by file basename.
-    wavenumber_column :
-        Column index for wavenumbers in the spectra files.
-    intensity_columns :
-        Optional indices for intensity columns. If multiple are provided, their mean
-        is taken. When omitted, all columns except ``wavenumber_column`` are used.
+    Args:
+        folder: Directory containing spectra files.
+        pattern: Glob pattern for spectra files.
+        modality: Spectroscopy modality label.
+        metadata_csv: Optional CSV with a `sample_id` column used to merge
+            metadata by file basename.
+        wavenumber_column: Column index for wavenumbers in the spectra files.
+        intensity_columns: Optional indices for intensity columns. If multiple
+            are provided, their mean is taken. When omitted, all columns except
+            `wavenumber_column` are used.
 
-    Returns
-    -------
-    FoodSpectrumSet
-        Loaded dataset with a common wavenumber axis.
+    Returns:
+        A `FoodSpectrumSet` with a common wavenumber axis.
+
+    Raises:
+        ValueError: If no files match the pattern or files are malformed.
     """
 
     folder_path = Path(folder)
@@ -89,22 +85,19 @@ def load_from_metadata_table(
 ) -> FoodSpectrumSet:
     """Load spectra listed in a metadata table.
 
-    Parameters
-    ----------
-    metadata_csv :
-        CSV file with a ``file_path`` column and optional metadata columns.
-    modality :
-        Spectroscopy modality string.
-    wavenumber_column :
-        Column index for wavenumbers in the spectra files.
-    intensity_columns :
-        Optional indices for intensity columns. If multiple are provided, their mean
-        is taken.
+    Args:
+        metadata_csv: CSV file with a `file_path` column and optional metadata
+            columns.
+        modality: Spectroscopy modality label.
+        wavenumber_column: Column index for wavenumbers in the spectra files.
+        intensity_columns: Optional indices for intensity columns. If multiple
+            are provided, their mean is taken.
 
-    Returns
-    -------
-    FoodSpectrumSet
-        Loaded dataset with a common wavenumber axis.
+    Returns:
+        A `FoodSpectrumSet` with a common wavenumber axis.
+
+    Raises:
+        ValueError: If the table lacks `file_path` or files are malformed.
     """
 
     table_path = Path(metadata_csv)
@@ -151,7 +144,20 @@ def _read_spectrum(
     wavenumber_column: int,
     intensity_columns: Optional[Sequence[int]],
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Read a single spectrum file."""
+    """Read a single spectrum file.
+
+    Args:
+        file_path: Path to a text file containing wavenumbers and intensities.
+        wavenumber_column: Column index for wavenumbers.
+        intensity_columns: Optional indices for intensity columns; if multiple,
+            their mean is used.
+
+    Returns:
+        A tuple `(wavenumbers, intensities)` as NumPy arrays.
+
+    Raises:
+        ValueError: If the file has fewer than two columns or no intensity columns.
+    """
 
     data = np.loadtxt(file_path, ndmin=2)
     if data.ndim != 2 or data.shape[1] < 2:
@@ -179,7 +185,16 @@ def _read_spectrum(
 def _stack_spectra_on_common_axis(
     w_axes: Sequence[np.ndarray], spectra: Sequence[np.ndarray]
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Build common axis; interpolate spectra if needed."""
+    """Build a common axis and stack spectra, interpolating if needed.
+
+    Args:
+        w_axes: List of wavenumber axes to align.
+        spectra: Corresponding list of spectra arrays.
+
+    Returns:
+        A tuple `(common_axis, stacked_spectra)` where `stacked_spectra` has
+        shape `(n_samples, n_wavenumbers)`.
+    """
 
     reference = w_axes[0]
     identical = all(wav.shape == reference.shape and np.allclose(wav, reference) for wav in w_axes[1:])

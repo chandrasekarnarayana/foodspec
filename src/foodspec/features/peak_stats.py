@@ -4,22 +4,19 @@ import pandas as pd
 
 
 def compute_peak_stats(peaks: pd.DataFrame, metadata: pd.DataFrame | None = None, group_keys=None) -> pd.DataFrame:
-    """
-    Compute mean/std of peak positions and intensities, optionally grouped.
+    """Compute mean/std of peak positions and intensities, optionally grouped.
 
-    Parameters
-    ----------
-    peaks : pd.DataFrame
-        Long-format table with columns: spectrum_id, peak_id (or band_label), position, intensity.
-    metadata : pd.DataFrame, optional
-        Metadata indexed by spectrum_id (or containing a spectrum_id column) with categorical variables.
-    group_keys : list/tuple of str, optional
-        Categorical columns in metadata to group by (e.g., ["oil_type"] or ["oil_type", "batch"]).
+    Args:
+        peaks: Long-format table with columns: spectrum_id, peak_id (or band_label),
+            position, intensity.
+        metadata: Metadata indexed by spectrum_id (or containing a spectrum_id column)
+            with categorical variables.
+        group_keys: Categorical columns in metadata to group by
+            (e.g., ["oil_type"] or ["oil_type", "batch"]).
 
-    Returns
-    -------
-    pd.DataFrame
-        Tidy summary with group columns (if any), peak_id, n_samples, mean/std of position and intensity.
+    Returns:
+        Tidy summary with group columns (if any), peak_id, n_samples,
+        mean/std of position and intensity.
     """
 
     df = peaks.copy()
@@ -43,22 +40,16 @@ def compute_peak_stats(peaks: pd.DataFrame, metadata: pd.DataFrame | None = None
 
 
 def compute_ratio_table(ratios: pd.DataFrame, metadata: pd.DataFrame | None = None, group_keys=None) -> pd.DataFrame:
-    """
-    Summarize ratios by group with mean/std and counts.
+    """Summarize ratios by group with mean/std and counts.
 
-    Parameters
-    ----------
-    ratios : pd.DataFrame
-        Long or wide table of ratios. Expected columns: spectrum_id, ratio_name,
-        value (long) OR wide with ratio columns.
-    metadata : pd.DataFrame, optional
-        Metadata indexed by spectrum_id (or with spectrum_id column) for grouping.
-    group_keys : list/tuple of str, optional
-        Categorical columns in metadata to group by.
+    Args:
+        ratios: Long or wide table of ratios. Expected columns: spectrum_id,
+            ratio_name, value (long) OR wide with ratio columns.
+        metadata: Metadata indexed by spectrum_id (or with spectrum_id column)
+            for grouping.
+        group_keys: Categorical columns in metadata to group by.
 
-    Returns
-    -------
-    pd.DataFrame
+    Returns:
         Tidy table with group columns (if any), ratio_name, n, mean, std.
     """
 

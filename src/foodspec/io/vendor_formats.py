@@ -1,5 +1,7 @@
-"""
-Vendor format readers (SPC, OPUS). Optional dependencies are required.
+"""Vendor format readers (SPC, OPUS).
+
+These readers rely on optional third-party packages. Informative `ImportError`
+messages are raised when dependencies are missing.
 """
 
 from __future__ import annotations
@@ -24,11 +26,20 @@ def _require(pkg_names: list[str], extra: str):
 
 
 def read_spc(path: str | Path, modality: str = "raman") -> FoodSpectrumSet:
-    """
-    Read an SPC file into FoodSpectrumSet (optional dependency).
+    """Read an SPC file into `FoodSpectrumSet`.
 
-    Tries to import known SPC readers (e.g., `spc` or `spc_io`). Raises an informative
-    ImportError if dependencies are missing.
+    Attempts to import known SPC readers (e.g., "spc" or "spc_io"). If none
+    are available, an informative `ImportError` is raised.
+
+    Args:
+        path: Path to the SPC file.
+        modality: Spectroscopy modality label.
+
+    Returns:
+        A `FoodSpectrumSet` constructed from the SPC data.
+
+    Raises:
+        ImportError: If an SPC reader dependency is not installed.
     """
 
     spc_mod = _require(["spc", "spc_io"], "spc")
@@ -47,10 +58,20 @@ def read_spc(path: str | Path, modality: str = "raman") -> FoodSpectrumSet:
 
 
 def read_opus(path: str | Path, modality: str = "ftir") -> FoodSpectrumSet:
-    """
-    Read a Bruker OPUS file into FoodSpectrumSet (optional dependency).
+    """Read a Bruker OPUS file into `FoodSpectrumSet`.
 
-    Uses `brukeropusreader` if available; raises informative ImportError otherwise.
+    Uses the optional `brukeropusreader` package when available; raises an
+    informative `ImportError` otherwise.
+
+    Args:
+        path: Path to the OPUS file.
+        modality: Spectroscopy modality label.
+
+    Returns:
+        A `FoodSpectrumSet` parsed from the OPUS data.
+
+    Raises:
+        ImportError: If `brukeropusreader` is not installed.
     """
 
     opus_mod = _require(["brukeropusreader"], "opus")

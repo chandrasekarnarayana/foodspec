@@ -11,38 +11,43 @@ import pandas as pd
 
 
 def summarize_group_sizes(groups) -> pd.Series:
-    """
-    Summarize counts per group.
+    """Summarize counts per group.
 
-    Parameters
-    ----------
-    groups : array-like or pd.Series
-        Group labels.
+    Args:
+        groups: Array-like or Series of group labels.
 
-    Returns
-    -------
-    pd.Series
-        Counts per group.
+    Returns:
+        A Series with counts per group.
+
+    Examples:
+        >>> from foodspec.stats.design import summarize_group_sizes
+        >>> import numpy as np
+        >>> groups = np.array(['A', 'A', 'B', 'B', 'B'])
+        >>> counts = summarize_group_sizes(groups)
+        >>> counts['B']
+        3
     """
 
     return pd.Series(groups).value_counts()
 
 
 def check_minimum_samples(groups, min_per_group: int = 2) -> pd.DataFrame:
-    """
-    Check whether each group meets a minimum sample count.
+    """Check whether each group meets a minimum sample count.
 
-    Parameters
-    ----------
-    groups : array-like or pd.Series
-        Group labels.
-    min_per_group : int, optional
-        Minimum acceptable samples per group, by default 2.
+    Args:
+        groups: Array-like or Series of group labels.
+        min_per_group: Minimum acceptable samples per group (default 2).
 
-    Returns
-    -------
-    pd.DataFrame
-        Columns: group, count, ok (bool).
+    Returns:
+        A DataFrame with columns: 'group', 'count', 'ok' (bool).
+
+    Examples:
+        >>> from foodspec.stats.design import check_minimum_samples
+        >>> import numpy as np
+        >>> groups = np.array(['A', 'A', 'B'])
+        >>> result = check_minimum_samples(groups, min_per_group=2)
+        >>> result.loc[result['group'] == 'A', 'ok'].iloc[0]
+        True
     """
 
     counts = summarize_group_sizes(groups)

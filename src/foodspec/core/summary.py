@@ -36,31 +36,29 @@ def compute_samples_per_class(
     metadata: pd.DataFrame,
     label_column: str,
 ) -> Dict[str, Any]:
-    """
-    Compute sample count and distribution per class.
+    """Compute sample count and distribution per class.
 
-    **Assumptions:**
-    - label_column exists in metadata
+    Assumptions:
+    - ``label_column`` exists in metadata
     - Labels are categorical or discrete
-    - All labels are valid (no null/missing)
+    - Labels may include missing values (reported)
 
-    Parameters
-    ----------
-    metadata : pd.DataFrame
-        Dataset metadata.
-    label_column : str
-        Column name with class labels.
+    Args:
+        metadata (pd.DataFrame): Dataset metadata.
+        label_column (str): Column name with class labels.
 
-    Returns
-    -------
-    metrics : dict
-        - 'samples_per_class': dict mapping class -> count
-        - 'total_samples': total count
-        - 'n_classes': number of unique classes
-        - 'min_class_size': smallest class size
-        - 'max_class_size': largest class size
-        - 'imbalance_ratio': max/min class size
-        - 'missing_labels': count of missing labels
+    Returns:
+        dict: Metrics including:
+        - ``samples_per_class``: mapping class → count
+        - ``total_samples``: total count
+        - ``n_classes``: number of unique classes
+        - ``min_class_size``: smallest class size
+        - ``max_class_size``: largest class size
+        - ``imbalance_ratio``: max/min class size
+        - ``missing_labels``: count of missing labels
+
+    Raises:
+        ValueError: If ``label_column`` is missing from metadata.
     """
     if label_column not in metadata.columns:
         raise ValueError(f"label_column '{label_column}' not found in metadata.")
@@ -108,33 +106,21 @@ def compute_spectral_quality_metrics(
     wavenumbers: np.ndarray,
     modality: str = "raman",
 ) -> Dict[str, Any]:
-    """
-    Compute spectral data quality indicators.
+    """Compute spectral data quality indicators.
 
-    **Assumptions:**
+    Assumptions:
     - Spectra are baseline-corrected or raw (not derivatives)
     - Wavenumbers are in cm⁻¹
-    - No NaN/inf values in spectra
+    - NaN/inf values are handled and reported
 
-    Parameters
-    ----------
-    spectra : np.ndarray, shape (n_samples, n_wavenumbers)
-        Spectral intensities.
-    wavenumbers : np.ndarray, shape (n_wavenumbers,)
-        Wavenumber axis.
-    modality : str, default='raman'
-        Spectroscopy modality.
+    Args:
+        spectra (np.ndarray): Shape (n_samples, n_wavenumbers) intensities.
+        wavenumbers (np.ndarray): Shape (n_wavenumbers,) axis values.
+        modality (str): Spectroscopy modality label.
 
-    Returns
-    -------
-    metrics : dict
-        - 'mean_snr': mean signal-to-noise ratio estimate
-        - 'spectral_range': (min, max) wavenumber coverage
-        - 'n_wavenumbers': number of spectral features
-        - 'nan_count': number of NaN values
-        - 'inf_count': number of inf values
-        - 'negative_intensity_rate': fraction of negative values
-        - 'intensity_range': (min, max, mean, std) intensity stats
+    Returns:
+        dict: Metrics including SNR estimate, spectral range, NaN/inf counts,
+        negative rate, and intensity stats.
     """
     # Check for invalid values
     nan_count = np.isnan(spectra).sum()
@@ -186,28 +172,19 @@ def compute_metadata_completeness(
     metadata: pd.DataFrame,
     required_columns: Optional[list] = None,
 ) -> Dict[str, Any]:
-    """
-    Assess metadata completeness.
+    """Assess metadata completeness.
 
-    **Assumptions:**
+    Assumptions:
     - Metadata is a DataFrame
-    - required_columns, if provided, are essential for analysis
+    - ``required_columns`` (if provided) are essential for analysis
 
-    Parameters
-    ----------
-    metadata : pd.DataFrame
-        Dataset metadata.
-    required_columns : list of str, optional
-        Columns that must be present and non-null.
+    Args:
+        metadata (pd.DataFrame): Dataset metadata.
+        required_columns (list[str] | None): Columns that must be present and non-null.
 
-    Returns
-    -------
-    metrics : dict
-        - 'total_columns': number of metadata columns
-        - 'columns_with_missing': list of columns with any missing values
-        - 'missing_rate_per_column': dict mapping column -> fraction missing
-        - 'required_columns_present': bool, True if all required columns exist and complete
-        - 'overall_completeness': fraction of non-null cells
+    Returns:
+        dict: Metrics including total columns, columns with missing, missing rate per column,
+        required columns present, and overall completeness.
     """
     required_columns = required_columns or []
 
@@ -246,35 +223,26 @@ def summarize_dataset(
     label_column: Optional[str] = None,
     required_metadata_columns: Optional[list] = None,
 ) -> Dict[str, Any]:
-    """
-    Comprehensive dataset summary for at-a-glance quality assessment.
+    """Comprehensive dataset summary for at-a-glance quality assessment.
 
-    **Workflow:**
+    Workflow:
     1. Samples per class distribution
     2. Spectral quality metrics (SNR, range, NaN/inf)
     3. Metadata completeness
 
-    **Assumptions:**
+    Assumptions:
     - Dataset is a valid FoodSpectrumSet
-    - label_column (if provided) is categorical
+    - ``label_column`` (if provided) is categorical
     - Spectral data is in standard format (no major preprocessing artifacts)
 
-    Parameters
-    ----------
-    dataset : FoodSpectrumSet
-        Input dataset.
-    label_column : str, optional
-        Column with class labels for balance analysis.
-    required_metadata_columns : list of str, optional
-        Columns that must be present for downstream workflows.
+    Args:
+        dataset (FoodSpectrumSet): Input dataset.
+        label_column (str | None): Column with class labels for balance analysis.
+        required_metadata_columns (list[str] | None): Columns required for workflows.
 
-    Returns
-    -------
-    summary : dict
-        - 'class_distribution' (if label_column provided): samples per class metrics
-        - 'spectral_quality': SNR, range, NaN/inf counts
-        - 'metadata_completeness': missing data assessment
-        - 'dataset_info': basic dataset shape/modality
+    Returns:
+        dict: Summary sections including class distribution, spectral quality,
+        metadata completeness, and dataset info.
     """
     summary = {}
 

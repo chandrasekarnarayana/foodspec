@@ -10,7 +10,27 @@ __all__ = ["SavitzkyGolaySmoother", "MovingAverageSmoother"]
 
 
 class SavitzkyGolaySmoother(BaseEstimator, TransformerMixin):
-    """Savitzky-Golay smoothing."""
+    """Savitzky-Golay smoothing filter for spectra.
+
+    Fits local polynomial models to smooth spectra while preserving peak shapes.
+
+    Args:
+        window_length: Window size (must be odd and positive).
+        polyorder: Polynomial order (must be less than `window_length`).
+
+    Raises:
+        ValueError: If `window_length` is even, non-positive, or less than or
+            equal to `polyorder`, or exceeds the number of points.
+
+    Examples:
+        >>> from foodspec.preprocess import SavitzkyGolaySmoother
+        >>> import numpy as np
+        >>> X = np.random.randn(10, 100)
+        >>> smoother = SavitzkyGolaySmoother(window_length=7, polyorder=3)
+        >>> X_smooth = smoother.fit_transform(X)
+        >>> X_smooth.shape == X.shape
+        True
+    """
 
     def __init__(self, window_length: int = 7, polyorder: int = 3):
         self.window_length = window_length
@@ -35,7 +55,24 @@ class SavitzkyGolaySmoother(BaseEstimator, TransformerMixin):
 
 
 class MovingAverageSmoother(BaseEstimator, TransformerMixin):
-    """Simple moving average smoother."""
+    """Simple moving average smoothing filter.
+
+    Args:
+        window_size: Number of adjacent points to average.
+
+    Raises:
+        ValueError: If `window_size` is non-positive or exceeds the spectrum
+            length.
+
+    Examples:
+        >>> from foodspec.preprocess import MovingAverageSmoother
+        >>> import numpy as np
+        >>> X = np.random.randn(5, 50)
+        >>> smoother = MovingAverageSmoother(window_size=5)
+        >>> X_smooth = smoother.fit_transform(X)
+        >>> X_smooth.shape == X.shape
+        True
+    """
 
     def __init__(self, window_size: int = 5):
         self.window_size = window_size

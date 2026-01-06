@@ -17,28 +17,19 @@ def bootstrap_metric(
     ci: tuple[float, float] = (2.5, 97.5),
     random_state: Optional[int] = None,
 ) -> dict:
-    """
-    Estimate robustness of a metric via bootstrap resampling.
+    """Estimate robustness of a metric via bootstrap resampling.
 
-    Parameters
-    ----------
-    metric_func : callable
-        Function taking (y_true, y_pred) and returning a scalar metric.
-    y_true : array-like
-        True targets.
-    y_pred : array-like
-        Predicted targets.
-    n_bootstrap : int, optional
-        Number of bootstrap samples, by default 1000.
-    ci : tuple, optional
-        Confidence interval percentiles, by default (2.5, 97.5).
-    random_state : int, optional
-        Seed for reproducibility.
+    Args:
+        metric_func: Function taking (y_true, y_pred) and returning a scalar metric.
+        y_true: True targets (array-like).
+        y_pred: Predicted targets (array-like).
+        n_bootstrap: Number of bootstrap samples, by default 1000.
+        ci: Confidence interval percentiles (lower, upper), by default (2.5, 97.5).
+        random_state: Seed for reproducibility.
 
-    Returns
-    -------
-    dict
-        Contains observed metric, bootstrap samples, and CI bounds.
+    Returns:
+        Dictionary with keys: 'observed' (original metric), 'bootstrap_samples'
+        (array of bootstrap metrics), and 'ci' (tuple of CI bounds).
     """
 
     rng = np.random.default_rng(random_state)

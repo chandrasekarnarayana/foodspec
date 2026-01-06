@@ -54,4 +54,4 @@ predictor = load_artifact("old_model.foodspec", allow_incompatible=True)
    ```
 
 ## See Also
-- [Model Registry](model_registry.md)
+- [Model Registry](../../../user-guide/model_registry.md) (moved from advanced topics)

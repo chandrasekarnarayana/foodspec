@@ -427,3 +427,134 @@ Before committing each batch:
 **Next Review:** After Batch 1 execution  
 **Owner:** Docs Maintainer  
 
+---
+
+## Phase 3: Navigation Integration
+
+**Status:** ✅ COMPLETED  
+**Completion Date:** January 6, 2026  
+**Objective:** Reorganize mkdocs.yml navigation following scikit-learn style structure, eliminate duplicate folders, ensure all high-value pages are in nav, and achieve 0 warnings in mkdocs build --strict
+
+### Navigation Restructuring Summary
+
+**Target Structure (scikit-learn style):**
+```
+Home → Getting Started → Examples (with Tutorials) → User Guide → Methods → Theory → 
+API Reference → Reference → Help & Support → Developer Guide
+```
+
+**Actions Completed:**
+
+1. ✅ **Reorganized mkdocs.yml nav sections** (Lines 155-339)
+   - Reordered sections to match scikit-learn pattern
+   - Added proper section groupings with comments
+   - All 90+ pages organized hierarchically
+
+2. ✅ **Consolidated orphaned content into canonical locations:**
+   - Added all 9 tutorials from `tutorials/` directory (previously orphaned) under Examples → Tutorials with 3-level hierarchy (Overview, Beginner/Intermediate/Advanced, individual notebooks)
+   - Added missing User Guide pages: `model_registry.md`, `model_lifecycle.md`
+   - Moved reference content to dedicated Reference section (was scattered in Help & Support)
+   - Properly organized `protocols/reproducibility_checklist.md` under Help & Support
+
+3. ✅ **Eliminated navigation duplicates:**
+   - Removed duplicate workflow file references (kept canonical subdirectory versions)
+   - No root-level workflow files in nav (e.g., removed `workflows/heating_quality_monitoring.md` in favor of `workflows/quality-monitoring/heating_quality_monitoring.md`)
+
+4. ✅ **Excluded archive from docs:**
+   - Added `exclude_docs: |` with `_internal/archive` pattern to mkdocs.yml (line 6)
+   - Removed redirects pointing to archived files (4 advanced-topics archive redirects)
+   - Fixed `docs/design/01_overview.md` to remove broken archive link
+
+5. ✅ **Verified zero warnings in build:**
+   - Ran `mkdocs build --strict`
+   - Result: "Documentation built in 13.93 seconds" with 0 WARNING messages
+   - All 90+ pages correctly referenced and no orphaned high-value content remains
+   - Only information message shown: "The following pages exist in the docs directory, but are not included in the nav configuration" (these are legacy files with redirects, index files, or internal dev docs - intentionally excluded)
+
+**Files Modified:**
+- `mkdocs.yml` (lines 1-339): Added exclude_docs, rewrote nav section with 90+ pages including tutorials
+- `docs/design/01_overview.md`: Removed broken archive reference
+- `docs/_internal/DOCS_MIGRATION_LEDGER.md`: Documented Phase 3 completion
+
+**Navigation Contents (Final):**
+- **Getting Started:** 6 pages (installation, quickstarts, FAQ, understanding results)
+- **Examples:** Gallery + 9 Tutorials in 4 subsections (Overview, Beginner/Intermediate/Advanced)
+- **User Guide:** 15 pages organized in 4 subsections (Data Management, Workflows & Protocols, I/O & Integration, Advanced Features)
+- **Methods:** 23 pages in 4 subsections (Preprocessing, Chemometrics, Validation & QC, Statistics)
+- **Workflows:** 12+ pages in 6 subsections (Oil Authentication, Quality & Monitoring, Quantification, Harmonization, Spatial Analysis, + Multi-Modal, End-to-End, Design & Reporting)
+- **Theory:** 9 pages (Spectroscopy, Food Applications, Chemometrics, Harmonization, MOATS, RQ Engine, Data Structures)
+- **API Reference:** 11 pages (Core, Datasets, Preprocessing, Chemometrics, Features, I/O, Workflows, ML, Metrics, Statistics)
+- **Reference:** 9 pages (Data Format, Metrics, Method Comparison, Glossary, Keyword Index, VIP Scores, Changelog, Versioning)
+- **Help & Support:** 7 pages (Help Center, FAQ, Troubleshooting, Common Problems, Reporting, How to Cite, Reproducibility Checklist)
+- **Developer Guide:** 10 pages (Contributing, Writing Plugins, Documentation, Testing, Releasing)
+
+**Verification:**
+- ✅ mkdocs build --strict: PASSED (0 WARNING messages, 13.93 seconds)
+- ✅ All 9 tutorials included in Examples section
+- ✅ All high-value pages referenced (90+ pages total)
+- ✅ No duplicate files in navigation
+- ✅ Archive content excluded from build and nav
+- ✅ Navigation follows industry-standard scikit-learn structure
+- ✅ All users can discover content through logical, hierarchical navigation
+
+**Result:** Documentation structure now follows professional standard (scikit-learn pattern) with complete, hierarchical, and clean navigation. All users can discover content through logical structure. Zero warnings in strict mode. Build time: ~14 seconds.
+
+**Risk:** None (build verified, no broken links, redirect architecture maintains backward compatibility)
+
+---
+
+## Phase 4: Internal Documentation Cleanup
+
+**Status:** ✅ COMPLETED  
+**Completion Date:** 2026-01-06  
+**Priority:** MEDIUM  
+**Objective:** Audit and clean up `docs/_internal/` directory to ensure only necessary maintainer documentation remains.
+
+### Actions Taken
+
+1. **Deleted Duplicate Folders:**
+   - ❌ Removed `docs/_internal/dev/` (complete duplicate of `docs/_internal/developer-guide/`)
+     - `design_stats_and_analysis.md` (duplicate)
+     - `developer_notes.md` (duplicate)
+     - `smoke_test_results_2025-12-25.md` (duplicate in archive)
+
+2. **Updated mkdocs Exclusions:**
+   - Changed `exclude_docs` from `_internal/archive` to `_internal/`
+   - Ensures entire `_internal` directory excluded from build and navigation
+   - Prevents internal/maintainer docs from appearing in user-facing site
+
+3. **Fixed Broken Links:**
+   - Updated `docs/developer-guide/contributing.md` to remove link to `../_internal/developer-guide/developer_notes.md`
+   - Replaced with generic reference to Developer Guide sections
+
+### Final _internal Directory Structure
+
+**KEPT (Maintainer Documentation):**
+- ✅ `DOCS_MIGRATION_LEDGER.md` - This file; tracks all documentation migrations
+- ✅ `ORPHAN_PAGES.md` - Orphan page tracking and analysis
+- ✅ `developer-guide/` - Consolidated developer resources (6 files):
+  - `ci_troubleshooting.md` - CI/CD debugging guide
+  - `design_stats_and_analysis.md` - Statistical design decisions
+  - `developer_notes.md` - Coding standards and principles
+  - `FEATURE_INVENTORY.md` - Feature completeness audit
+  - `GAPS_AND_FUTURE_WORK.md` - Future development roadmap
+  - `integration_checklist.md` - Integration testing checklist
+- ✅ `archive/` - Historical documentation (38+ files retained for reference)
+
+**DELETED:**
+- ❌ `dev/` folder (complete duplicate of `developer-guide/`)
+
+### Verification
+
+- ✅ mkdocs.yml excludes entire `_internal/` directory
+- ✅ No user-facing links point to `_internal/` content
+- ✅ All maintainer documentation consolidated in logical structure
+- ✅ Archive preserved for historical reference
+
+### Outcome
+
+Clean separation between user-facing documentation and maintainer/internal documentation. All internal files excluded from build and navigation, preventing confusion and reducing build artifacts.
+
+---
+
+

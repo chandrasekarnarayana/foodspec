@@ -13,11 +13,31 @@ __all__ = ["AtmosphericCorrector", "SimpleATRCorrector"]
 
 
 class AtmosphericCorrector(WavenumberAwareMixin, BaseEstimator, TransformerMixin):
-    """Atmospheric correction using synthetic or user-provided water/CO2 bases.
+    """Atmospheric correction for FTIR spectra.
 
-    This is a simplified approach (not vendor-grade). You may supply explicit
-    water/co2 basis arrays (shape n_points x n_bases); otherwise, broad Gaussian
-    bases are generated at typical water/CO2 positions.
+    Uses synthetic or user-provided water/CO₂ basis functions to remove
+    atmospheric absorption features. This is a simplified approach; for
+    production, consider vendor-provided atmospheric references.
+
+    Args:
+        alpha_water: Scaling factor for water basis (default 1.0).
+        alpha_co2: Scaling factor for CO₂ basis (default 1.0).
+        water_center: Center wavenumber for water absorption (default 1900 cm⁻¹).
+        co2_center: Center wavenumber for CO₂ absorption (default 2350 cm⁻¹).
+        width: Width of Gaussian basis functions (default 30 cm⁻¹).
+        water_basis: Optional explicit water basis array.
+        co2_basis: Optional explicit CO₂ basis array.
+        normalize_bases: Whether to normalize bases to unit norm (default True).
+
+    Examples:
+        >>> from foodspec.preprocess.ftir import AtmosphericCorrector
+        >>> import numpy as np
+        >>> X = np.random.randn(5, 100)
+        >>> wn = np.linspace(1000, 3000, 100)
+        >>> corrector = AtmosphericCorrector()
+        >>> X_corr = corrector.fit_transform(X, wavenumbers=wn)
+        >>> X_corr.shape == X.shape
+        True
     """
 
     def __init__(
@@ -79,7 +99,28 @@ class AtmosphericCorrector(WavenumberAwareMixin, BaseEstimator, TransformerMixin
 
 
 class SimpleATRCorrector(WavenumberAwareMixin, BaseEstimator, TransformerMixin):
-    """Approximate ATR correction using heuristic scaling."""
+    """Approximate ATR (Attenuated Total Reflectance) correction.
+
+    Applies a heuristic scaling based on refractive indices and angle of
+    incidence to compensate for wavelength-dependent penetration depth in
+    ATR-FTIR.
+
+    Args:
+        refractive_index_sample: Sample refractive index (default 1.5).
+        refractive_index_crystal: Crystal refractive index (default 2.4).
+        angle_of_incidence: Angle of incidence in degrees (default 45.0).
+        wavenumber_scale: Scaling model (default "linear").
+
+    Examples:
+        >>> from foodspec.preprocess.ftir import SimpleATRCorrector
+        >>> import numpy as np
+        >>> X = np.random.randn(3, 80)
+        >>> wn = np.linspace(600, 4000, 80)
+        >>> corrector = SimpleATRCorrector()
+        >>> X_corr = corrector.fit_transform(X, wavenumbers=wn)
+        >>> X_corr.shape == X.shape
+        True
+    """
 
     def __init__(
         self,

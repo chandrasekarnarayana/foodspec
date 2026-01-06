@@ -64,22 +64,16 @@ def get_compatibility_level(
 ) -> CompatibilityLevel:
     """Check compatibility between file and code schema versions.
 
-    Parameters
-    ----------
-    file_schema_version : str
-        Schema version in HDF5 file.
-    code_schema_version : str, default=CURRENT_SCHEMA_VERSION
-        Current code schema version.
+    Args:
+        file_schema_version: Schema version embedded in the HDF5 file.
+        code_schema_version: Current code schema version (defaults to
+            `CURRENT_SCHEMA_VERSION`).
 
-    Returns
-    -------
-    CompatibilityLevel
-        Compatibility status.
+    Returns:
+        A `CompatibilityLevel` indicating compatibility status.
 
-    Raises
-    ------
-    ValueError
-        If versions are unknown.
+    Raises:
+        ValueError: If either version is unknown.
     """
     key = (file_schema_version, code_schema_version)
 
@@ -94,26 +88,19 @@ def check_schema_compatibility(
     code_schema_version: str = CURRENT_SCHEMA_VERSION,
     allow_incompatible: bool = False,
 ) -> bool:
-    """Check if file schema is compatible with code.
+    """Check whether a file's schema is compatible with the code.
 
-    Parameters
-    ----------
-    file_schema_version : str
-        Schema version from file.
-    code_schema_version : str, default=CURRENT_SCHEMA_VERSION
-        Code schema version.
-    allow_incompatible : bool, default=False
-        If True, allow loading incompatible versions (risky).
+    Args:
+        file_schema_version: Schema version stored in the file.
+        code_schema_version: Target code schema version.
+        allow_incompatible: If True, allow loading even when versions are
+            incompatible (unsafe).
 
-    Returns
-    -------
-    bool
-        True if compatible or allow_incompatible=True.
+    Returns:
+        True if compatible or if `allow_incompatible` permits loading.
 
-    Raises
-    ------
-    RuntimeError
-        If incompatible and allow_incompatible=False.
+    Raises:
+        RuntimeError: If incompatible and `allow_incompatible=False`.
     """
     compatibility = get_compatibility_level(file_schema_version, code_schema_version)
 
@@ -173,12 +160,12 @@ def check_schema_compatibility(
 
 
 def migrate_schema_v1_0_to_v1_1(group) -> None:
-    """Migrate HDF5 group from schema v1.0 to v1.1 (add preprocessing history).
+    """Migrate an HDF5 group from schema v1.0 to v1.1.
 
-    Parameters
-    ----------
-    group : h5py.Group
-        HDF5 group to migrate (in-place modification).
+    Adds an empty `preprocessing_history` group.
+
+    Args:
+        group: HDF5 group to migrate (modified in place).
     """
     if "preprocessing_history" not in group:
         # Add empty preprocessing history group
@@ -188,12 +175,12 @@ def migrate_schema_v1_0_to_v1_1(group) -> None:
 
 
 def migrate_schema_v1_1_to_v1_2(group) -> None:
-    """Migrate HDF5 group from schema v1.1 to v1.2 (add artifact versioning).
+    """Migrate an HDF5 group from schema v1.1 to v1.2.
 
-    Parameters
-    ----------
-    group : h5py.Group
-        HDF5 group to migrate.
+    Adds `artifact_version` and `foodspec_version` attributes if missing.
+
+    Args:
+        group: HDF5 group to migrate.
     """
     # Add artifact versioning metadata if not present
     if "artifact_version" not in group.attrs:
@@ -204,16 +191,15 @@ def migrate_schema_v1_1_to_v1_2(group) -> None:
 
 
 def migrate_schema_v1_2_to_v2_0(group) -> None:
-    """Migrate HDF5 group from schema v1.2 to v2.0 (add streaming support).
+    """Migrate an HDF5 group from schema v1.2 to v2.0.
 
-    Parameters
-    ----------
-    group : h5py.Group
-        HDF5 group to migrate.
+    Adds streaming metadata and chunk information for hyperspectral data.
 
-    Note
-    ----
-    This is a major version change. Should backup original file first.
+    Note:
+        This is a major version change. Back up the original file first.
+
+    Args:
+        group: HDF5 group to migrate.
     """
     # Add streaming metadata
     if "streaming_capable" not in group.attrs:
@@ -233,21 +219,15 @@ def migrate_schema(
     from_version: str,
     to_version: str = CURRENT_SCHEMA_VERSION,
 ) -> None:
-    """Migrate HDF5 group schema from one version to another.
+    """Migrate an HDF5 group's schema from one version to another.
 
-    Parameters
-    ----------
-    group : h5py.Group
-        HDF5 group to migrate.
-    from_version : str
-        Starting schema version.
-    to_version : str, default=CURRENT_SCHEMA_VERSION
-        Target schema version.
+    Args:
+        group: HDF5 group to migrate.
+        from_version: Starting schema version.
+        to_version: Target schema version (defaults to `CURRENT_SCHEMA_VERSION`).
 
-    Raises
-    ------
-    ValueError
-        If migration path not supported.
+    Raises:
+        ValueError: If the migration path is unsupported or reversed.
     """
     migration_path = _get_migration_path(from_version, to_version)
 
@@ -266,19 +246,17 @@ def migrate_schema(
 
 
 def _get_migration_path(from_version: str, to_version: str) -> list:
-    """Get sequence of migration steps.
+    """Get an ordered sequence of migration steps.
 
-    Parameters
-    ----------
-    from_version : str
-        Starting version.
-    to_version : str
-        Target version.
+    Args:
+        from_version: Starting version.
+        to_version: Target version.
 
-    Returns
-    -------
-    list of tuples
-        Migration steps [(from, to), ...].
+    Returns:
+        A list of `(from, to)` tuples representing each migration step.
+
+    Raises:
+        ValueError: If versions are unknown or if migrating backwards.
     """
     versions = ["1.0", "1.1", "1.2", "2.0"]
 

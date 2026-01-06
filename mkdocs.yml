@@ -1,6 +1,9 @@
 site_name: "foodspec"
 site_url: "https://chandrasekarnarayana.github.io/foodspec"
 repo_url: "https://github.com/chandrasekarnarayana/foodspec"
+docs_dir: docs
+exclude_docs: |
+  _internal/
 
 theme:
   name: material
@@ -8,6 +11,8 @@ theme:
   favicon: assets/foodspec_logo.png
   features:
     - content.footer
+    - content.code.annotate
+  custom_dir: overrides
 
 plugins:
   - search
@@ -24,6 +29,23 @@ plugins:
   - autorefs
   - redirects:
       redirect_maps:
+        # Advanced topics consolidation (05-advanced-topics → canonical locations)
+        05-advanced-topics/model_registry.md: user-guide/model_registry.md
+        05-advanced-topics/model_lifecycle.md: user-guide/model_lifecycle.md
+        05-advanced-topics/multimodal_workflows.md: workflows/multimodal_workflows.md
+        05-advanced-topics/advanced_deep_learning.md: methods/chemometrics/advanced_deep_learning.md
+        05-advanced-topics/MOATS_IMPLEMENTATION.md: theory/moats_implementation.md
+        05-advanced-topics/validation_strategies.md: methods/validation/advanced_validation_strategies.md
+        05-advanced-topics/hsi_and_harmonization.md: theory/harmonization_theory.md
+        05-advanced-topics/index.md: theory/index.md
+        # Help consolidation: route all help pages to help/ directory
+        troubleshooting/troubleshooting_faq.md: help/faq.md
+        troubleshooting/common_problems_and_solutions.md: help/common_problems.md
+        troubleshooting/reporting_guidelines.md: help/reporting_and_reproducibility.md
+        troubleshooting/index.md: help/index.md
+        10-help/index.md: help/index.md
+        10-help/faq.md: help/faq.md
+        10-help/troubleshooting.md: help/troubleshooting.md
         # Consolidate stats/ into methods/statistics/ (canonical)
         stats/overview.md: methods/statistics/overview.md
         stats/anova_and_manova.md: methods/statistics/anova_and_manova.md
@@ -131,9 +153,8 @@ extra_css:
   - assets/logo.css
 
 nav:
+  # === GETTING STARTED ===
   - Home: index.md
-  - Examples: examples_gallery.md
-  
   - Getting Started:
     - Overview: getting-started/index.md
     - Installation: getting-started/installation.md
@@ -141,7 +162,90 @@ nav:
     - First Steps (CLI): getting-started/first-steps_cli.md
     - Understanding Results: getting-started/getting_started.md
     - FAQ: getting-started/faq_basic.md
-  
+
+  # === EXAMPLES & GALLERY ===
+  - Examples:
+    - Landing: examples/index.md
+    - Beginner:
+      - Oil Authentication: examples/01_oil_authentication.md
+      - Heating Quality Monitoring: examples/02_heating_quality_monitoring.md
+    - Intermediate:
+      - Mixture Analysis: examples/03_mixture_analysis.md
+      - Hyperspectral Mapping: examples/04_hyperspectral_mapping.md
+    - Capstone:
+      - End-to-End Protocol Run: examples/05_end_to_end_protocol_run.md
+    - Teaching Walkthroughs:
+      - Oil Authentication (Teaching): examples/teaching/01_oil_authentication_teaching.md
+      - Heating Stability (Teaching): examples/teaching/02_heating_stability_teaching.md
+      - Mixture Analysis (Teaching): examples/teaching/03_mixture_analysis_teaching.md
+      - Hyperspectral Mapping (Teaching): examples/teaching/04_hyperspectral_mapping_teaching.md
+      - Protocol (Teaching): examples/teaching/05_protocol_unified_api_teaching.md
+    - Jupyter Notebooks (download/run):
+      - Oil Authentication Notebook: https://github.com/chandrasekarnarayana/foodspec/blob/main/examples/tutorials/01_oil_authentication_teaching.ipynb
+      - Heating Stability Notebook: https://github.com/chandrasekarnarayana/foodspec/blob/main/examples/tutorials/02_heating_stability_teaching.ipynb
+      - Mixture Analysis Notebook: https://github.com/chandrasekarnarayana/foodspec/blob/main/examples/tutorials/03_mixture_analysis_teaching.ipynb
+      - Hyperspectral Mapping Notebook: https://github.com/chandrasekarnarayana/foodspec/blob/main/examples/tutorials/04_hyperspectral_mapping_teaching.ipynb
+      - Protocol Notebook: https://github.com/chandrasekarnarayana/foodspec/blob/main/examples/tutorials/05_protocol_unified_api_teaching.ipynb
+
+  # === USER GUIDE ===
+  - User Guide:
+    - Overview: user-guide/index.md
+    - 🧭 Decision Guide: user-guide/decision_guide.md
+    - Data Management:
+      - CSV to Library: user-guide/csv_to_library.md
+      - Data Formats & HDF5: user-guide/data_formats_and_hdf5.md
+      - Libraries: user-guide/libraries.md
+      - Library Search: user-guide/library_search.md
+    - Workflows & Protocols:
+      - Protocols & YAML: user-guide/protocols_and_yaml.md
+      - Protocol Profiles: user-guide/protocol_profiles.md
+      - CLI Reference: user-guide/cli.md
+      - CLI Help: user-guide/cli_help.md
+      - Automation: user-guide/automation.md
+    - I/O & Integration:
+      - Vendor I/O: user-guide/vendor_io.md
+      - Vendor Formats: user-guide/vendor_formats.md
+      - Visualization: user-guide/visualization.md
+    - Advanced Features:
+      - Registry & Plugins: user-guide/registry_and_plugins.md
+      - Model Registry: user-guide/model_registry.md
+      - Model Lifecycle: user-guide/model_lifecycle.md
+      - Data Governance: user-guide/data_governance.md
+      - Config & Logging: user-guide/config_logging.md
+
+  # === METHODS & TECHNIQUES ===
+  - Methods:
+    - Overview: methods/index.md
+    - Preprocessing:
+      - Baseline Correction: methods/preprocessing/baseline_correction.md
+      - Normalization: methods/preprocessing/normalization_smoothing.md
+      - Derivatives: methods/preprocessing/derivatives_and_feature_enhancement.md
+      - Scatter Correction: methods/preprocessing/scatter_correction_cosmic_ray_removal.md
+      - Feature Extraction: methods/preprocessing/feature_extraction.md
+    - Chemometrics:
+      - Models & Best Practices: methods/chemometrics/models_and_best_practices.md
+      - Classification & Regression: methods/chemometrics/classification_regression.md
+      - PCA & Dimensionality: methods/chemometrics/pca_and_dimensionality_reduction.md
+      - Mixture Models: methods/chemometrics/mixture_models.md
+      - Model Evaluation: methods/chemometrics/model_evaluation_and_validation.md
+      - Interpretability: methods/chemometrics/model_interpretability.md
+      - Advanced Deep Learning: methods/chemometrics/advanced_deep_learning.md
+    - Validation & QC:
+      - Cross-Validation & Leakage: methods/validation/cross_validation_and_leakage.md
+      - Metrics & Uncertainty: methods/validation/metrics_and_uncertainty.md
+      - Robustness Checks: methods/validation/robustness_checks.md
+      - Advanced Validation Strategies: methods/validation/advanced_validation_strategies.md
+      - Reporting Standards: methods/validation/reporting_standards.md
+    - Statistics:
+      - Introduction: methods/statistics/introduction_to_statistical_analysis.md
+      - Study Design: methods/statistics/study_design_and_data_requirements.md
+      - T-Tests & Power: methods/statistics/t_tests_effect_sizes_and_power.md
+      - ANOVA & MANOVA: methods/statistics/anova_and_manova.md
+      - Correlation: methods/statistics/correlation_and_mapping.md
+      - Nonparametric Methods: methods/statistics/nonparametric_methods_and_robustness.md
+      - Hypothesis Testing: methods/statistics/hypothesis_testing_in_food_spectroscopy.md
+
+  # === WORKFLOWS & APPLICATIONS ===
   - Workflows:
     - Overview: workflows/index.md
     - Oil Authentication:
@@ -159,37 +263,23 @@ nav:
       - Calibration Transfer: workflows/harmonization/standard_templates.md
     - Spatial Analysis:
       - Hyperspectral Mapping: workflows/spatial/hyperspectral_mapping.md
+    - Multi-Modal Analysis: workflows/multimodal_workflows.md
     - End-to-End Pipeline: workflows/end_to_end_pipeline.md
     - Design & Reporting: workflows/workflow_design_and_reporting.md
-  
-  - Methods:
-    - Preprocessing:
-      - Baseline Correction: methods/preprocessing/baseline_correction.md
-      - Normalization: methods/preprocessing/normalization_smoothing.md
-      - Derivatives: methods/preprocessing/derivatives_and_feature_enhancement.md
-      - Scatter Correction: methods/preprocessing/scatter_correction_cosmic_ray_removal.md
-      - Feature Extraction: methods/preprocessing/feature_extraction.md
-    - Chemometrics:
-      - Models & Best Practices: methods/chemometrics/models_and_best_practices.md
-      - Classification & Regression: methods/chemometrics/classification_regression.md
-      - PCA: methods/chemometrics/pca_and_dimensionality_reduction.md
-      - Mixture Models: methods/chemometrics/mixture_models.md
-      - Model Evaluation: methods/chemometrics/model_evaluation_and_validation.md
-      - Interpretability: methods/chemometrics/model_interpretability.md
-    - Validation:
-      - Cross-Validation & Leakage: methods/validation/cross_validation_and_leakage.md
-      - Metrics & Uncertainty: methods/validation/metrics_and_uncertainty.md
-      - Robustness Checks: methods/validation/robustness_checks.md
-      - Reporting Standards: methods/validation/reporting_standards.md
-    - Statistics:
-      - Introduction: methods/statistics/introduction_to_statistical_analysis.md
-      - T-Tests & Power: methods/statistics/t_tests_effect_sizes_and_power.md
-      - ANOVA & MANOVA: methods/statistics/anova_and_manova.md
-      - Correlation: methods/statistics/correlation_and_mapping.md
-      - Nonparametric: methods/statistics/nonparametric_methods_and_robustness.md
-      - Hypothesis Testing: methods/statistics/hypothesis_testing_in_food_spectroscopy.md
-      - Study Design: methods/statistics/study_design_and_data_requirements.md
-  
+
+  # === THEORY & FOUNDATIONS ===
+  - Theory:
+    - Overview: theory/index.md
+    - Spectroscopy Basics: theory/spectroscopy_basics.md
+    - Food Applications: theory/food_spectroscopy_applications.md
+    - Chemometrics & ML Basics: theory/chemometrics_and_ml_basics.md
+    - Harmonization Theory: theory/harmonization_theory.md
+    - MOATS Overview: theory/moats_overview.md
+    - MOATS Implementation: theory/moats_implementation.md
+    - RQ Engine: theory/rq_engine_detailed.md
+    - Data Structures & FAIR: theory/data_structures_and_fair_principles.md
+
+  # === API REFERENCE ===
   - API Reference:
     - Overview: api/index.md
     - Core: api/core.md
@@ -202,27 +292,42 @@ nav:
     - Machine Learning: api/ml.md
     - Metrics: api/metrics.md
     - Statistics: api/stats.md
-  
-  - Theory:
-    - Spectroscopy Basics: theory/spectroscopy_basics.md
-    - Food Applications: theory/food_spectroscopy_applications.md
-    - Chemometrics & ML: theory/chemometrics_and_ml_basics.md
-    - RQ Engine: theory/rq_engine_detailed.md
-    - Harmonization: theory/harmonization_theory.md
-    - MOATS: theory/moats_overview.md
-    - Data Structures & FAIR: theory/data_structures_and_fair_principles.md
-  
-  - Help & Docs:
-    - Troubleshooting: troubleshooting/troubleshooting_faq.md
-    - Common Problems: troubleshooting/common_problems_and_solutions.md
-    - Reporting Issues: troubleshooting/reporting_guidelines.md
-    - Data Formats: reference/data_format.md
-    - Reproducibility Guide: reproducibility.md
-    - Reproducibility Checklist: protocols/reproducibility_checklist.md
+
+  # === REFERENCE ===
+  - Reference:
+    - Data Format: reference/data_format.md
+    - Metrics Reference: reference/metrics_reference.md
+    - Method Comparison: reference/method_comparison.md
     - Glossary: reference/glossary.md
+    - Keyword Index: reference/keyword_index.md
+    - Metric Significance Tables: reference/metric_significance_tables.md
+    - ML Model VIP Scores: reference/ml_model_vip_scores.md
     - Changelog: reference/changelog.md
-    - Citing: reference/citing.md
     - Versioning: reference/versioning.md
+
+  # === HELP & SUPPORT ===
+  - Help & Support:
+    - Help Center: help/index.md
+    - FAQ: help/faq.md
+    - Troubleshooting Guide: help/troubleshooting.md
+    - Common Problems & Solutions: help/common_problems.md
+    - Reporting & Reproducibility: help/reporting_and_reproducibility.md
+    - How to Cite: help/how_to_cite.md
+    - Reproducibility Checklist: protocols/reproducibility_checklist.md
+
+  # === DEVELOPER GUIDE ===
+  - Developer Guide:
+    - Overview: developer-guide/index.md
+    - Contributing: developer-guide/contributing.md
+    - Writing Plugins: developer-guide/writing_plugins.md
+    - Extending Protocols: developer-guide/extending_protocols_and_steps.md
+    - Documentation: developer-guide/documentation_guidelines.md
+    - Documentation Style: developer-guide/documentation_style_guide.md
+    - Maintainer Guide: developer-guide/documentation_maintainer_guide.md
+    - Testing & CI: developer-guide/testing_and_ci.md
+    - Test Coverage: developer-guide/testing_coverage.md
+    - Releasing: developer-guide/releasing.md
+    - Release Checklist: developer-guide/RELEASE_CHECKLIST.md
 
 markdown_extensions:
   - admonition
@@ -230,6 +335,11 @@ markdown_extensions:
   - codehilite
   - footnotes
   - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - toc:
       permalink: true
 

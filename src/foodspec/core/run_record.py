@@ -20,45 +20,28 @@ import pandas as pd
 class RunRecord:
     """Immutable record of a workflow execution with full provenance.
 
-    Tracks:
-    - Configuration parameters and their hash
-    - Input dataset hash
-    - Step-wise transformations (hash each step)
-    - Environment (Python, package versions)
-    - Timing and user info
+    Tracks configuration, dataset hash, step history, environment, timing, and user info.
 
-    Parameters
-    ----------
-    workflow_name : str
-        Name of the workflow (e.g., "oil_authentication").
-    config : dict
-        Configuration parameters.
-    dataset_hash : str
-        SHA256 hash of input dataset.
-    environment : dict, optional
-        Environment info (Python version, package versions, etc.).
-    step_records : list of dict, optional
-        List of step records: {'name', 'hash', 'timestamp', 'error'}.
-    user : str, optional
-        User who ran the workflow.
-    notes : str, optional
-        Freeform notes.
+    Args:
+        workflow_name (str): Name of the workflow (e.g., "oil_authentication").
+        config (dict): Configuration parameters.
+        dataset_hash (str): SHA256 hash of input dataset.
+        environment (dict | None): Environment info (Python version, package versions, etc.).
+        step_records (list[dict] | None): Step records: {"name","hash","timestamp","error"}.
+        user (str | None): User who ran the workflow.
+        notes (str | None): Freeform notes.
 
-    Attributes
-    ----------
-    workflow_name : str
-    config : dict
-    config_hash : str
-        SHA256 hash of config.
-    dataset_hash : str
-    environment : dict
-    step_records : list of dict
-    user : str
-    notes : str
-    timestamp : str
-        ISO 8601 timestamp (UTC).
-    run_id : str
-        Unique run identifier (8-char hash).
+    Attributes:
+        workflow_name: Name of the workflow.
+        config: Configuration parameters.
+        config_hash: SHA256 hash of config.
+        dataset_hash: SHA256 hash of input dataset.
+        environment: Environment info (Python version, packages, etc.).
+        step_records: Step records with name, hash, timestamp, error.
+        user: User who ran the workflow.
+        notes: Freeform notes.
+        timestamp: ISO 8601 timestamp (UTC).
+        run_id: Unique run identifier.
     """
 
     workflow_name: str
@@ -83,19 +66,31 @@ class RunRecord:
 
     @property
     def config_hash(self) -> str:
-        """Hash of configuration."""
+        """Hash of configuration.
+
+        Returns:
+            str: First 8 hex chars of SHA256 over config JSON.
+        """
         config_str = json.dumps(self.config, sort_keys=True, default=str)
         return hashlib.sha256(config_str.encode()).hexdigest()[:8]
 
     @property
     def run_id(self) -> str:
-        """Unique run identifier combining workflow name and timestamp."""
+        """Unique run identifier combining workflow name and timestamp.
+
+        Returns:
+            str: Deterministic identifier for the run.
+        """
         ts = self.timestamp.replace(":", "").replace("-", "").replace(".", "")[:12]
         return f"{self.workflow_name}_{ts}"
 
     @property
     def combined_hash(self) -> str:
-        """Combined hash of config + dataset + all steps."""
+        """Combined hash of config + dataset + all steps.
+
+        Returns:
+            str: First 8 hex chars of combined SHA256.
+        """
         combined_str = f"{self.config_hash}_{self.dataset_hash}_{'_'.join(s['hash'] for s in self.step_records)}"
         return hashlib.sha256(combined_str.encode()).hexdigest()[:8]
 
@@ -108,16 +103,11 @@ class RunRecord:
     ) -> None:
         """Record a workflow step.
 
-        Parameters
-        ----------
-        name : str
-            Step name (e.g., "baseline_correction").
-        step_hash : str
-            Hash of step output or configuration.
-        error : str, optional
-            Error message if step failed.
-        metadata : dict, optional
-            Additional metadata for this step.
+        Args:
+            name (str): Step name (e.g., "baseline_correction").
+            step_hash (str): Hash of step output or configuration.
+            error (str | None): Error message if step failed.
+            metadata (dict | None): Additional metadata for this step.
         """
         record = {
             "name": name,
@@ -129,7 +119,11 @@ class RunRecord:
         self.step_records.append(record)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize to dictionary."""
+        """Serialize to dictionary.
+
+        Returns:
+            dict: JSON-serializable representation of the run record.
+        """
         return {
             "workflow_name": self.workflow_name,
             "run_id": self.run_id,
@@ -149,15 +143,11 @@ class RunRecord:
     def to_json(self, path: Path | str) -> Path:
         """Write to JSON file.
 
-        Parameters
-        ----------
-        path : Path or str
-            Output file path.
+        Args:
+            path (Path | str): Output file path.
 
-        Returns
-        -------
-        Path
-            Path to written file.
+        Returns:
+            Path: Path to written file.
         """
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -168,14 +158,11 @@ class RunRecord:
     def from_json(cls, path: Path | str) -> RunRecord:
         """Load from JSON file.
 
-        Parameters
-        ----------
-        path : Path or str
-            Input file path.
+        Args:
+            path (Path | str): Input file path.
 
-        Returns
-        -------
-        RunRecord
+        Returns:
+            RunRecord: Deserialized record.
         """
         path = Path(path)
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -193,7 +180,11 @@ class RunRecord:
         )
 
     def add_output_path(self, path: str | Path) -> None:
-        """Record an output path for the run (e.g., exported bundle location)."""
+        """Record an output path for the run (e.g., exported bundle location).
+
+        Args:
+            path (str | Path): Output directory/file path.
+        """
 
         self.output_paths.append(str(Path(path)))
 
@@ -206,12 +197,10 @@ class RunRecord:
 
 
 def _capture_environment() -> Dict[str, Any]:
-    """Capture environment info: Python version, installed packages, etc.
+    """Capture environment info: Python version, platform, package versions.
 
-    Returns
-    -------
-    dict
-        Environment information.
+    Returns:
+        dict: Environment information.
     """
     import sys
 
@@ -240,7 +229,11 @@ def _capture_environment() -> Dict[str, Any]:
 
 
 def _capture_seeds() -> Dict[str, Any]:
-    """Capture random seeds across common libraries for reproducibility."""
+    """Capture random seeds across common libraries for reproducibility.
+
+    Returns:
+        dict: Seeds for Python random, NumPy, optional Torch, and hash seed.
+    """
 
     seeds: Dict[str, Any] = {}
     try:
@@ -268,7 +261,17 @@ def _capture_seeds() -> Dict[str, Any]:
 
 
 def _hash_path(path: Path | str) -> str:
-    """Compute a stable hash for a file or directory path."""
+    """Compute a stable hash for a file or directory path.
+
+    Args:
+        path (Path | str): File or directory to hash.
+
+    Returns:
+        str: First 8 hex chars of SHA256 over file contents or directory tree.
+
+    Raises:
+        FileNotFoundError: If the path does not exist.
+    """
 
     p = Path(path)
     if p.is_file():
@@ -284,7 +287,15 @@ def _hash_path(path: Path | str) -> str:
 
 
 def _hash_file_digest(path: Path, chunk_size: int = 8192) -> hashlib._Hash:
-    """Compute SHA256 digest object for a file (streamed)."""
+    """Compute SHA256 digest object for a file (streamed).
+
+    Args:
+        path (Path): File path.
+        chunk_size (int): Chunk size for streaming.
+
+    Returns:
+        hashlib._Hash: Digest object.
+    """
 
     digest = hashlib.sha256()
     with Path(path).open("rb") as f:
@@ -294,7 +305,14 @@ def _hash_file_digest(path: Path, chunk_size: int = 8192) -> hashlib._Hash:
 
 
 def _hash_file(path: Path | str) -> str:
-    """Hash a single file and return first 8 characters of SHA256."""
+    """Hash a single file and return first 8 characters of SHA256.
+
+    Args:
+        path (Path | str): File path.
+
+    Returns:
+        str: First 8 hex chars of the file hash.
+    """
 
     return _hash_file_digest(Path(path)).hexdigest()[:8]
 
@@ -302,15 +320,11 @@ def _hash_file(path: Path | str) -> str:
 def _hash_data(data: np.ndarray | pd.DataFrame) -> str:
     """Compute hash of data array or DataFrame.
 
-    Parameters
-    ----------
-    data : np.ndarray or pd.DataFrame
-        Input data to hash.
+    Args:
+        data (np.ndarray | pd.DataFrame): Input data to hash.
 
-    Returns
-    -------
-    str
-        SHA256 hash (first 8 characters).
+    Returns:
+        str: SHA256 hash (first 8 characters).
     """
     if isinstance(data, pd.DataFrame):
         data_bytes = pd.util.hash_pandas_object(data, index=True).values.tobytes()

@@ -36,6 +36,15 @@ HDF5_SCHEMA_VERSION = "1.1"
 
 
 def _parse_semver(version_str: Optional[str]) -> Tuple[int, int, int]:
+    """Parse a semantic version string into integers.
+
+    Args:
+        version_str (str | None): Version like "1.2.3"; missing parts default
+            to 0.
+
+    Returns:
+        tuple[int, int, int]: ``(major, minor, patch)``
+    """
     if not version_str:
         return (0, 0, 0)
     try:
@@ -48,6 +57,16 @@ def _parse_semver(version_str: Optional[str]) -> Tuple[int, int, int]:
 
 
 def _validate_hdf5_version(saved: Optional[str], *, allow_future: bool) -> None:
+    """Validate saved HDF5 schema version compatibility.
+
+    Args:
+        saved (str | None): Version string stored in file attributes.
+        allow_future (bool): If True, skip minor version checks.
+
+    Raises:
+        ValueError: If major versions differ or saved minor is newer and
+            ``allow_future`` is False.
+    """
     if saved is None or allow_future:
         return
     s_major, s_minor, _ = _parse_semver(saved)
@@ -66,6 +85,24 @@ def _validate_hdf5_version(saved: Optional[str], *, allow_future: bool) -> None:
 
 # -------------------- Baselines --------------------
 def baseline_als(y: np.ndarray, lam: float = 1e5, p: float = 0.01, niter: int = 10) -> np.ndarray:
+    """Asymmetric least squares (ALS) baseline estimation.
+
+    Args:
+        y (np.ndarray): 1D signal.
+        lam (float): Smoothness penalty lambda.
+        p (float): Asymmetry parameter (0-1).
+        niter (int): Iterations.
+
+    Returns:
+        np.ndarray: Estimated baseline, same shape as ``y``.
+
+    Examples:
+        >>> import numpy as np
+        >>> y = np.sin(np.linspace(0, 1, 10)) + 0.5
+        >>> base = baseline_als(y)
+        >>> base.shape
+        (10,)
+    """
     L = len(y)
     D = sparse.csc_matrix(np.diff(np.eye(L), 2))
     w = np.ones(L)
@@ -78,6 +115,15 @@ def baseline_als(y: np.ndarray, lam: float = 1e5, p: float = 0.01, niter: int = 
 
 
 def baseline_rubberband(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Rubberband baseline via convex hull interpolation.
+
+    Args:
+        x (np.ndarray): Wavenumber axis (1D, increasing).
+        y (np.ndarray): Signal values.
+
+    Returns:
+        np.ndarray: Baseline values along ``x``.
+    """
     # Simple convex hull rubberband
     v = np.array([x, y]).T
     hull = [0]
@@ -97,12 +143,33 @@ def baseline_rubberband(x: np.ndarray, y: np.ndarray) -> np.ndarray:
 
 
 def baseline_polynomial(x: np.ndarray, y: np.ndarray, order: int = 3) -> np.ndarray:
+    """Polynomial baseline fit.
+
+    Args:
+        x (np.ndarray): Wavenumbers.
+        y (np.ndarray): Signal.
+        order (int): Polynomial order.
+
+    Returns:
+        np.ndarray: Baseline values.
+    """
     coeffs = np.polyfit(x, y, order)
     return np.polyval(coeffs, x)
 
 
 # -------------------- Smoothing --------------------
 def smooth_signal(y: np.ndarray, method: str = "savgol", window: int = 7, polyorder: int = 3) -> np.ndarray:
+    """Smooth a 1D signal using Savitzky–Golay or moving average.
+
+    Args:
+        y (np.ndarray): 1D signal.
+        method (str): "savgol" | "moving_average" | "none".
+        window (int): Window length; odd for Savitzky–Golay.
+        polyorder (int): Polynomial order for Savitzky–Golay.
+
+    Returns:
+        np.ndarray: Smoothed signal.
+    """
     if method == "savgol":
         window = max(3, window if window % 2 == 1 else window + 1)
         return savgol_filter(y, window_length=window, polyorder=polyorder, mode="interp")
@@ -117,6 +184,17 @@ def smooth_signal(y: np.ndarray, method: str = "savgol", window: int = 7, polyor
 
 # -------------------- Normalization --------------------
 def normalize_matrix(X: np.ndarray, mode: str, wn: np.ndarray, ref_wn: float) -> np.ndarray:
+    """Normalize spectra matrix row-wise by various strategies.
+
+    Args:
+        X (np.ndarray): Matrix shape (n_samples, n_points).
+        mode (str): "none", "reference", "vector", "area", or "max".
+        wn (np.ndarray): Wavenumber axis.
+        ref_wn (float): Reference wavenumber for "reference" mode.
+
+    Returns:
+        np.ndarray: Normalized matrix of same shape as ``X``.
+    """
     if mode == "none":
         return X
     if mode == "reference":
@@ -137,6 +215,15 @@ def normalize_matrix(X: np.ndarray, mode: str, wn: np.ndarray, ref_wn: float) ->
 
 # -------------------- Spike / cosmic-ray removal --------------------
 def remove_spikes(y: np.ndarray, zscore_thresh: float = 8.0) -> np.ndarray:
+    """Remove cosmic-ray spikes using a rolling median and MAD threshold.
+
+    Args:
+        y (np.ndarray): 1D signal.
+        zscore_thresh (float): Threshold on |diff|/MAD to identify spikes.
+
+    Returns:
+        np.ndarray: Cleaned signal with spikes replaced by local median.
+    """
     diff = y - pd.Series(y).rolling(5, center=True, min_periods=1).median().to_numpy()
     mad = np.median(np.abs(diff)) + 1e-12
     z = np.abs(diff) / mad
@@ -151,8 +238,10 @@ def remove_spikes(y: np.ndarray, zscore_thresh: float = 8.0) -> np.ndarray:
 
 @dataclass
 class PreprocessingConfig:
-    """
-    Declarative preprocessing configuration.
+    """Declarative preprocessing configuration for `SpectralDataset`.
+
+    Fields mirror preprocessing steps: baseline removal, smoothing,
+    normalization, spike removal, peak extraction and grid alignment.
     """
 
     baseline_method: str = "als"  # als | rubberband | polynomial | none
@@ -177,6 +266,16 @@ class PreprocessingConfig:
 
 @dataclass
 class SpectralDataset:
+    """Matrix-form spectra with aligned metadata and instrument info.
+
+    Attributes:
+        wavenumbers (np.ndarray): Axis values (cm^-1).
+        spectra (np.ndarray): Shape (n_samples, n_points) intensities.
+        metadata (pd.DataFrame): Sample annotations.
+        instrument_meta (dict): Instrument/protocol metadata.
+        logs (list[str]): Operation logs.
+        history (list[dict]): Preprocessing steps applied.
+    """
     wavenumbers: np.ndarray
     spectra: np.ndarray  # shape (n_samples, n_points)
     metadata: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
@@ -185,6 +284,11 @@ class SpectralDataset:
     history: List[Dict[str, Any]] = field(default_factory=list)
 
     def copy(self) -> "SpectralDataset":
+        """Deep copy of dataset arrays, metadata, and meta fields.
+
+        Returns:
+            SpectralDataset: Independent copy.
+        """
         return SpectralDataset(
             wavenumbers=self.wavenumbers.copy(),
             spectra=self.spectra.copy(),
@@ -195,6 +299,22 @@ class SpectralDataset:
         )
 
     def preprocess(self, options: PreprocessingConfig) -> "SpectralDataset":
+        """Apply configured preprocessing to spectra.
+
+        Args:
+            options (PreprocessingConfig): Pipeline options.
+
+        Returns:
+            SpectralDataset: New dataset with processed spectra.
+
+        Examples:
+            >>> import numpy as np, pandas as pd
+            >>> ds = SpectralDataset(np.arange(3.), np.ones((2,3)), pd.DataFrame())
+            >>> cfg = PreprocessingConfig(baseline_method="none", smoothing_method="none", normalization="none", spike_removal=False)
+            >>> ds2 = ds.preprocess(cfg)
+            >>> ds2.spectra.shape
+            (2, 3)
+        """
         ds = self.copy()
         wn = ds.wavenumbers
         X = ds.spectra.copy()
@@ -226,6 +346,15 @@ class SpectralDataset:
         return ds
 
     def to_peaks(self, peaks: Iterable[PeakDefinition]) -> pd.DataFrame:
+        """Extract peak features into a wide DataFrame.
+
+        Args:
+            peaks (Iterable[PeakDefinition]): Peak definitions with names,
+                windows, and modes.
+
+        Returns:
+            pandas.DataFrame: `metadata` columns plus one column per peak.
+        """
         peak_defs = list(peaks)
         out = self.metadata.copy()
         wn = self.wavenumbers
@@ -248,6 +377,14 @@ class SpectralDataset:
         return out
 
     def save_hdf5(self, path: Union[str, Path]):
+        """Save dataset to HDF5 with schema versioning and legacy keys.
+
+        Args:
+            path (str | Path): Destination file path.
+
+        Raises:
+            ImportError: If `h5py` is not installed.
+        """
         if h5py is None:
             raise ImportError("h5py not installed.")
         path = Path(path)
@@ -290,6 +427,19 @@ class SpectralDataset:
 
     @staticmethod
     def from_hdf5(path: Union[str, Path], *, allow_future: bool = False) -> "SpectralDataset":
+        """Load dataset from HDF5, supporting legacy layout.
+
+        Args:
+            path (str | Path): HDF5 file path.
+            allow_future (bool): If True, tolerate newer minor schema.
+
+        Returns:
+            SpectralDataset: Reconstructed dataset.
+
+        Raises:
+            ImportError: If `h5py` is not installed.
+            ValueError: If schema version incompatible.
+        """
         if h5py is None:
             raise ImportError("h5py not installed.")
         with h5py.File(path, "r") as f:
@@ -323,9 +473,15 @@ def harmonize_datasets(
     datasets: List[SpectralDataset],
     target_wavenumbers: Optional[np.ndarray] = None,
 ) -> List[SpectralDataset]:
-    """
-    Simple harmonization: interpolate all spectra to a common wavenumber grid.
-    If target_wavenumbers is None, use the median grid of the inputs.
+    """Interpolate all spectra to a common wavenumber grid.
+
+    Args:
+        datasets (list[SpectralDataset]): Input datasets.
+        target_wavenumbers (np.ndarray | None): Target axis; if None, uses the
+            longest grid among inputs.
+
+    Returns:
+        list[SpectralDataset]: Harmonized datasets with shared grid.
     """
     if target_wavenumbers is None:
         # choose grid from longest spectrum
@@ -345,9 +501,10 @@ def harmonize_datasets(
 
 @dataclass
 class HyperspectralDataset(SpectralDataset):
-    """
-    Hyperspectral cube: shape (y, x, wn). Stored as spectra flattened to (n_pixels, wn)
-    with spatial shape tracked separately.
+    """Hyperspectral cube flattened to spectra with spatial tracking.
+
+    The cube has shape (y, x, wn) but is stored as spectra with shape
+    (n_pixels, wn); spatial dimensions are given by `shape_xy`.
     """
 
     shape_xy: Tuple[int, int] = field(default_factory=lambda: (0, 0))
@@ -361,6 +518,17 @@ class HyperspectralDataset(SpectralDataset):
         metadata: pd.DataFrame,
         instrument_meta: Dict[str, Any] = None,
     ) -> "HyperspectralDataset":
+        """Construct flattened dataset from a hyperspectral cube.
+
+        Args:
+            cube (np.ndarray): Array shape (y, x, wn).
+            wavenumbers (np.ndarray): Axis values.
+            metadata (pd.DataFrame): Sample/site metadata.
+            instrument_meta (dict | None): Instrument details.
+
+        Returns:
+            HyperspectralDataset: Flattened dataset with `shape_xy` set.
+        """
         y, x, wn_len = cube.shape
         spectra = cube.reshape((-1, wn_len))
         return HyperspectralDataset(
@@ -372,10 +540,27 @@ class HyperspectralDataset(SpectralDataset):
         )
 
     def to_cube(self) -> np.ndarray:
+        """Reshape spectra back to (y, x, wn) cube using `shape_xy`.
+
+        Returns:
+            np.ndarray: Hyperspectral cube.
+        """
         y, x = self.shape_xy
         return self.spectra.reshape((y, x, -1))
 
     def segment(self, method: str = "kmeans", n_clusters: int = 3) -> np.ndarray:
+        """Segment pixels into clusters using kmeans, hierarchical, or NMF.
+
+        Args:
+            method (str): "kmeans" | "hierarchical" | "nmf".
+            n_clusters (int): Number of clusters/components.
+
+        Returns:
+            np.ndarray: Label map shape `shape_xy`.
+
+        Raises:
+            ValueError: If method unknown.
+        """
         X = self.spectra
         if method == "kmeans":
             labels = KMeans(n_clusters=n_clusters, random_state=0, n_init=10).fit_predict(X)
@@ -391,6 +576,17 @@ class HyperspectralDataset(SpectralDataset):
         return labels.reshape(self.shape_xy)
 
     def roi_spectrum(self, mask: np.ndarray) -> SpectralDataset:
+        """Average spectrum from a binary ROI mask.
+
+        Args:
+            mask (np.ndarray): Boolean/int array of shape `shape_xy`.
+
+        Returns:
+            SpectralDataset: Single-row dataset with the average ROI spectrum.
+
+        Raises:
+            ValueError: If `mask` shape mismatches `shape_xy`.
+        """
         cube = self.to_cube()
         if mask.shape != self.shape_xy:
             raise ValueError("Mask shape does not match cube")
@@ -401,6 +597,14 @@ class HyperspectralDataset(SpectralDataset):
         return SpectralDataset(self.wavenumbers.copy(), avg, meta, self.instrument_meta.copy(), list(self.logs))
 
     def save_hdf5(self, path: Union[str, Path]):
+        """Save hyperspectral cube to HDF5, including ROI artifacts if present.
+
+        Args:
+            path (str | Path): Destination file path.
+
+        Raises:
+            ImportError: If `h5py` is not installed.
+        """
         if h5py is None:
             raise ImportError("h5py not installed.")
         path = Path(path)
@@ -450,6 +654,20 @@ class HyperspectralDataset(SpectralDataset):
 
     @staticmethod
     def from_hdf5(path: Union[str, Path], *, allow_future: bool = False) -> "HyperspectralDataset":
+        """Load hyperspectral dataset from HDF5, supporting legacy layout.
+
+        Args:
+            path (str | Path): HDF5 path.
+            allow_future (bool): If True, tolerate newer minor schema.
+
+        Returns:
+            HyperspectralDataset: Reconstructed dataset with `shape_xy` and
+            optional ROI assets.
+
+        Raises:
+            ImportError: If `h5py` is not installed.
+            ValueError: If schema version incompatible.
+        """
         if h5py is None:
             raise ImportError("h5py not installed.")
         with h5py.File(path, "r") as f:

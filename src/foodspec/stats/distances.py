@@ -27,6 +27,15 @@ def _ensure_1d(x: np.ndarray) -> np.ndarray:
 
 
 def euclidean_distance(a: np.ndarray, b: np.ndarray) -> float:
+    """Compute Euclidean distance between two spectra.
+
+    Args:
+        a: First spectrum (1D or flattened array).
+        b: Second spectrum (1D or flattened array).
+
+    Returns:
+        Euclidean distance (L2 norm of difference).
+    """
     a = _ensure_1d(a)
     b = _ensure_1d(b)
     diff = a - b
@@ -34,6 +43,15 @@ def euclidean_distance(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def cosine_distance(a: np.ndarray, b: np.ndarray) -> float:
+    """Compute cosine distance (1 - cosine similarity) between two spectra.
+
+    Args:
+        a: First spectrum (1D or flattened array).
+        b: Second spectrum (1D or flattened array).
+
+    Returns:
+        Cosine distance (1 - cosine similarity).
+    """
     a = _ensure_1d(a)
     b = _ensure_1d(b)
     denom = (np.linalg.norm(a) * np.linalg.norm(b)) + 1e-12
@@ -42,6 +60,18 @@ def cosine_distance(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def pearson_distance(a: np.ndarray, b: np.ndarray) -> float:
+    """Compute Pearson distance (1 - Pearson correlation) between two spectra.
+
+    Args:
+        a: First spectrum (1D or flattened array).
+        b: Second spectrum (1D or flattened array).
+
+    Returns:
+        Pearson distance (1 - Pearson correlation coefficient).
+
+    Raises:
+        ValueError: If vectors have different lengths.
+    """
     a = _ensure_1d(a)
     b = _ensure_1d(b)
     if a.size != b.size:
@@ -59,6 +89,13 @@ def sid_distance(a: np.ndarray, b: np.ndarray) -> float:
 
     Treats spectra as probability distributions (non-negative, sum to 1).
     Applies a small offset and normalization for stability.
+
+    Args:
+        a: First spectrum (1D or flattened array).
+        b: Second spectrum (1D or flattened array).
+
+    Returns:
+        Spectral information divergence (symmetric KL divergence).
     """
     a = _ensure_1d(a)
     b = _ensure_1d(b)
@@ -76,6 +113,14 @@ def sam_angle(a: np.ndarray, b: np.ndarray, degrees: bool = False) -> float:
     """Spectral angle mapper: angle between vectors.
 
     Returns radians by default; set degrees=True to convert.
+
+    Args:
+        a: First spectrum (1D or flattened array).
+        b: Second spectrum (1D or flattened array).
+        degrees: If True, return angle in degrees; otherwise radians.
+
+    Returns:
+        Angle between spectra (radians or degrees).
     """
     a = _ensure_1d(a)
     b = _ensure_1d(b)

@@ -197,9 +197,9 @@ python examples/phase1_quickstart.py
 
 All tests passing ✅ | Coverage: 79% ✅ | Documentation builds ✅
 - **Advanced Topics**
-  - [Model Registry](https://chandrasekarnarayana.github.io/foodspec/05-advanced-topics/model_registry/)
-  - [HSI & Harmonization](https://chandrasekarnarayana.github.io/foodspec/05-advanced-topics/hsi_and_harmonization/)
-  - [MOATS Implementation](https://chandrasekarnarayana.github.io/foodspec/05-advanced-topics/MOATS_IMPLEMENTATION/)
+  - [Model Registry](https://chandrasekarnarayana.github.io/foodspec/user-guide/model_registry/)
+  - [Harmonization & Calibration Transfer](https://chandrasekarnarayana.github.io/foodspec/workflows/harmonization/harmonization_automated_calibration/)
+  - [MOATS Implementation](https://chandrasekarnarayana.github.io/foodspec/theory/moats_implementation/)
 
 - **Developer Resources**
   - [Contributing](https://chandrasekarnarayana.github.io/foodspec/06-developer-guide/contributing/)
@@ -214,10 +214,10 @@ For more examples and tutorials, see the [documentation](https://chandrasekarnar
 - **Quickstart guides:** [Python](https://chandrasekarnarayana.github.io/foodspec/quickstart_python/) • [CLI](https://chandrasekarnarayana.github.io/foodspec/quickstart_cli/) • [Protocols](https://chandrasekarnarayana.github.io/foodspec/quickstart_protocol/)
 - **Data & IO:** [CSV import](https://chandrasekarnarayana.github.io/foodspec/csv_to_library/) • [Vendor formats](https://chandrasekarnarayana.github.io/foodspec/vendor_io/) • [Libraries](https://chandrasekarnarayana.github.io/foodspec/libraries/)
 - **Preprocessing:** [Complete guide](https://chandrasekarnarayana.github.io/foodspec/preprocessing_guide/)
-- **Features & Analysis:** [Feature extraction](https://chandrasekarnarayana.github.io/foodspec/ml_model_vip_scores/) • [Interpretation](https://chandrasekarnarayana.github.io/foodspec/advanced_deep_learning/)
-- **Workflows:** [Oil authentication](https://chandrasekarnarayana.github.io/foodspec/protocols_overview/) • [Heating analysis](https://chandrasekarnarayana.github.io/foodspec/aging_workflows/) • [Mixtures](https://chandrasekarnarayana.github.io/foodspec/multimodal_workflows/) • [Calibration](https://chandrasekarnarayana.github.io/foodspec/workflows_harmonization_automated_calibration/)
-- **ML & Statistics:** [Methods](https://chandrasekarnarayana.github.io/foodspec/method_comparison/) • [Metrics](https://chandrasekarnarayana.github.io/foodspec/validation_baseline/)
-- **Advanced:** [Protocols & automation](https://chandrasekarnarayana.github.io/foodspec/protocols_overview/) • [Registry & plugins](https://chandrasekarnarayana.github.io/foodspec/registry_and_plugins/) • [Deployment](https://chandrasekarnarayana.github.io/foodspec/deployment_artifact_versioning/)
+- **Features & Analysis:** [Feature extraction](https://chandrasekarnarayana.github.io/foodspec/reference/ml_model_vip_scores/) • [Interpretation](https://chandrasekarnarayana.github.io/foodspec/methods/chemometrics/advanced_deep_learning/)
+- **Workflows:** [Oil authentication](https://chandrasekarnarayana.github.io/foodspec/workflows/authentication/oil_authentication/) • [Heating analysis](https://chandrasekarnarayana.github.io/foodspec/workflows/quality-monitoring/heating_quality_monitoring/) • [Mixtures](https://chandrasekarnarayana.github.io/foodspec/workflows/multimodal_workflows/) • [Calibration](https://chandrasekarnarayana.github.io/foodspec/workflows/harmonization/harmonization_automated_calibration/)
+- **ML & Statistics:** [Methods](https://chandrasekarnarayana.github.io/foodspec/reference/method_comparison/) • [Metrics](https://chandrasekarnarayana.github.io/foodspec/reference/metrics_reference/)
+- **Advanced:** [Protocols & automation](https://chandrasekarnarayana.github.io/foodspec/user-guide/protocols_and_yaml/) • [Registry & plugins](https://chandrasekarnarayana.github.io/foodspec/user-guide/registry_and_plugins/) • [Model lifecycle](https://chandrasekarnarayana.github.io/foodspec/user-guide/model_lifecycle/)
 - **Reference:** [Glossary](https://chandrasekarnarayana.github.io/foodspec/glossary/) • [API](https://chandrasekarnarayana.github.io/foodspec/api/) • [Troubleshooting](https://chandrasekarnarayana.github.io/foodspec/troubleshooting_faq/)
 
 ## Testing

@@ -9,10 +9,25 @@ __all__ = ["CosmicRayRemover"]
 
 
 class CosmicRayRemover(BaseEstimator, TransformerMixin):
-    """Basic cosmic ray spike removal via thresholding.
+    """Basic cosmic ray spike removal for Raman spectra.
 
-    Detects spikes as points exceeding local median by `sigma_thresh` times
-    the local MAD and replaces them by linear interpolation of neighbors.
+    Detects spikes as points exceeding the local median by `sigma_thresh` times
+    the local MAD (median absolute deviation) and replaces them by linear
+    interpolation of neighboring points.
+
+    Args:
+        window: Window size for local statistics (default 5).
+        sigma_thresh: Z-score threshold for spike detection (default 8.0).
+
+    Examples:
+        >>> from foodspec.preprocess.raman import CosmicRayRemover
+        >>> import numpy as np
+        >>> X = np.ones((3, 50))
+        >>> X[0, 25] = 100  # spike
+        >>> remover = CosmicRayRemover(window=5, sigma_thresh=5.0)
+        >>> X_clean = remover.fit_transform(X)
+        >>> X_clean[0, 25] < 10
+        True
     """
 
     def __init__(self, window: int = 5, sigma_thresh: float = 8.0):

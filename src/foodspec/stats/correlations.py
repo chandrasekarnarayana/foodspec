@@ -15,23 +15,20 @@ import pandas as pd
 from scipy import signal, stats
 
 
-def compute_correlations(data: pd.DataFrame, cols, method: str = "pearson") -> pd.Series:
-    """
-    Compute correlation between columns in a DataFrame.
+def compute_correlations(data: pd.DataFrame, cols: tuple | list, method: str = "pearson") -> pd.Series:
+    """Compute correlation between columns in a DataFrame.
 
-    Parameters
-    ----------
-    data : pd.DataFrame
-        Data containing the columns of interest (e.g., ratios vs quality metric).
-    cols : tuple or list
-        Two column names to correlate.
-    method : str, optional
-        'pearson' or 'spearman', by default 'pearson'.
+    Args:
+        data: DataFrame containing the columns of interest (e.g., ratios vs quality metric).
+        cols: Two column names to correlate (tuple or list).
+        method: 'pearson' or 'spearman', by default 'pearson'.
 
-    Returns
-    -------
-    pd.Series
-        index: ['r', 'pvalue']; values are correlation coefficient and p-value.
+    Returns:
+        Series with index ['r', 'pvalue']; values are correlation coefficient and p-value.
+
+    Raises:
+        ValueError: If cols does not contain exactly two column names.
+        ValueError: If method is not 'pearson' or 'spearman'.
     """
 
     if len(cols) != 2:
@@ -48,22 +45,18 @@ def compute_correlations(data: pd.DataFrame, cols, method: str = "pearson") -> p
 
 
 def compute_correlation_matrix(data: pd.DataFrame, cols, method: str = "pearson") -> pd.DataFrame:
-    """
-    Compute a correlation matrix for selected columns.
+    """Compute a correlation matrix for selected columns.
 
-    Parameters
-    ----------
-    data : pd.DataFrame
-        Data containing columns of interest.
-    cols : list
-        Column names to include.
-    method : str, optional
-        'pearson' or 'spearman', by default 'pearson'.
+    Args:
+        data: DataFrame containing columns of interest.
+        cols: List of column names to include.
+        method: 'pearson' or 'spearman', by default 'pearson'.
 
-    Returns
-    -------
-    pd.DataFrame
-        Correlation matrix.
+    Returns:
+        Correlation matrix (DataFrame).
+
+    Raises:
+        ValueError: If method is not 'pearson' or 'spearman'.
     """
 
     subset = data[cols]
@@ -75,20 +68,18 @@ def compute_correlation_matrix(data: pd.DataFrame, cols, method: str = "pearson"
 
 
 def compute_cross_correlation(seq1, seq2, max_lag: int = 10) -> pd.DataFrame:
-    """
-    Compute cross-correlation between two sequences (e.g., time series of ratios).
+    """Compute cross-correlation between two sequences (e.g., time series of ratios).
 
-    Parameters
-    ----------
-    seq1, seq2 : array-like
-        Input sequences of equal length.
-    max_lag : int, optional
-        Maximum lag (both positive and negative) to compute, by default 10.
+    Args:
+        seq1: First input sequence (array-like).
+        seq2: Second input sequence (array-like).
+        max_lag: Maximum lag (both positive and negative) to compute, by default 10.
 
-    Returns
-    -------
-    pd.DataFrame
-        Columns: lag, correlation.
+    Returns:
+        DataFrame with columns: lag, correlation.
+
+    Raises:
+        ValueError: If seq1 and seq2 do not have the same length.
     """
 
     x = np.asarray(seq1)

@@ -14,14 +14,15 @@ authors:
   - name: Chandrasekar Subramani Narayana
     orcid: 0000-0002-8894-1627
     affiliation: 1
+  - name: Deepak L. N. Kallepalli
+    affiliation: 3
   - name: Jhinuk Gupta
     affiliation: 2
   - name: Sai Muthukumar V
     affiliation: 2
   - name: Amrita Shaw
     affiliation: 2
-  - name: Deepak L. N. Kallepalli
-    affiliation: 3
+  
 affiliations:
   - name: Aix-Marseille Université, Marseille, France
     index: 1
@@ -112,6 +113,6 @@ FoodSpec differs from existing tools in scope and integration. ChemoSpec [@chemo
 
 ## Acknowledgments
 
-The authors thank Dr. Jhinuk Gupta, Dr. Sai Muthukumar V, Ms. Amrita Shaw (Department of Food and Nutritional Sciences and Department of Physics, Sri Sathya Sai Institute of Higher Learning, India), and Deepak L. N. Kallepalli (Cognievolve AI Inc., Canada) for scientific guidance, laboratory support, and collaborative development. This work benefited from infrastructure support at Aix-Marseille Université. We acknowledge the open-source Python scientific computing community, particularly the scikit-learn, NumPy, SciPy, XGBoost, and LightGBM development teams, whose libraries form the foundation of FoodSpec's implementation.
+The authors thank Dr. Jhinuk Gupta, Dr. Sai Muthukumar V, Ms. Amrita Shaw (Department of Food and Nutritional Sciences and Department of Physics, Sri Sathya Sai Institute of Higher Learning, India), and Deepak L. N. Kallepalli (Cognievolve AI Inc., Canada) for scientific guidance, laboratory support, and collaborative development. We acknowledge the open-source Python scientific computing community, particularly the scikit-learn, NumPy, SciPy, XGBoost, and LightGBM development teams, whose libraries form the foundation of FoodSpec's implementation.
 
 ## References

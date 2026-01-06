@@ -106,6 +106,98 @@ X_ra = cr.transform(X_ra)
    - Overcorrection or undercorrection undetected
    - **Fix:** Test scatter correction on reference materials; compare corrected/uncorrected downstream metrics
 
+## When to Use
+
+Use scatter correction when:
+
+- **Variable ATR contact**: FTIR-ATR spectra show baseline slopes varying between samples
+- **Particle size effects**: Raman spectra from powdered samples with different scattering intensities
+- **Instrument variations**: Comparing spectra from different instruments or measurement conditions
+- **Path length differences**: Transmission FTIR with inconsistent sample thickness
+- **Atmospheric interference**: FTIR spectra contaminated by water vapor or CO₂ absorption bands
+
+Use cosmic ray removal when:
+
+- **Raman spectroscopy**: CCD detectors susceptible to cosmic ray strikes during acquisition
+- **Isolated spikes visible**: Sharp, narrow intensity spikes not present in replicate measurements
+- **Long integration times**: Extended exposures increase cosmic ray probability
+- **Single-acquisition spectra**: No averaging to suppress random spikes
+
+## When NOT to Use (Common Failure Modes)
+
+Avoid scatter correction when:
+
+- **Absolute intensities critical**: Quantitative analysis requiring intensity calibration
+- **Non-linear scatter effects**: Complex matrices where linear MSC assumptions fail
+- **Homogeneous samples**: Well-controlled measurements with minimal scatter variation
+- **After concentration normalization**: Internal standard correction already accounts for path length
+- **Very different sample types**: MSC reference spectrum not representative of test samples
+
+Avoid cosmic ray removal when:
+
+- **True narrow peaks present**: Sharp Raman bands (e.g., 520 cm⁻¹ Si) could be mistaken for spikes
+- **Already averaged spectra**: Multiple acquisitions averaged already suppress cosmic rays
+- **Low threshold risk**: Aggressive spike detection might remove real spectral features
+- **FTIR spectroscopy**: Cosmic rays not relevant; different artifacts require different methods
+
+## Recommended Defaults
+
+**For MSC (multiplicative scatter correction):**
+```python
+from foodspec.preprocessing import MSCNormalizer
+msc = MSCNormalizer()
+msc.fit(X_train)  # Compute reference from training data
+X_corrected = msc.transform(X_test)
+```
+- Computes mean reference spectrum from training set
+- Corrects linear scatter and offset effects
+
+**For atmospheric correction (FTIR):**
+```python
+from foodspec.preprocessing.ftir import AtmosphericCorrector
+atm = AtmosphericCorrector()
+X_corrected = atm.transform(X_ftir)
+```
+- Removes water vapor and CO₂ absorption bands
+- Use when spectra show characteristic atmospheric peaks
+
+**For cosmic ray removal (Raman):**
+```python
+from foodspec.preprocessing.raman import CosmicRayRemover
+cr = CosmicRayRemover(threshold=5.0, window=5)
+X_cleaned = cr.transform(X_raman)
+```
+- `threshold=5.0`: Detect spikes >5 SD above local median (conservative)
+- `window=5`: Local window for spike detection (preserves narrow peaks)
+
+**For simple ATR correction:**
+```python
+from foodspec.preprocessing.ftir import SimpleATRCorrector
+atr = SimpleATRCorrector(angle=45)
+X_corrected = atr.transform(X_ftir, wavenumbers=wn)
+```
+- `angle=45`: Standard ATR crystal angle
+- Applies wavelength-dependent correction
+
+## See Also
+
+**API Reference:**
+
+- [MSCNormalizer](../../api/preprocessing.md) - Multiplicative scatter correction
+- [AtmosphericCorrector](../../api/preprocessing.md) - Water/CO₂ removal
+- [CosmicRayRemover](../../api/preprocessing.md) - Spike removal for Raman
+
+**Related Methods:**
+
+- [Normalization & Smoothing](normalization_smoothing.md) - SNV/MSC theory and comparison
+- [Baseline Correction](baseline_correction.md) - Complementary baseline handling
+- [Feature Extraction](feature_extraction.md) - Use corrected spectra for peak detection
+
+**Examples:**
+
+- [Raman Preprocessing](../../examples_gallery.md) - Cosmic ray removal workflow
+- [FTIR Pipeline](../../examples_gallery.md) - Atmospheric and ATR correction
+
 ## Further reading
 - [Baseline correction](baseline_correction.md)
 - [Normalization & smoothing](normalization_smoothing.md)

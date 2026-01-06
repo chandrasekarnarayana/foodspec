@@ -498,7 +498,22 @@ chmod +x scripts/validate_docs.py
 
 ---
 
-## 9. Contact & Escalation
+## 9. Figure provenance and regeneration
+
+- All docs figures live in `docs/assets/figures` and `docs/assets/workflows`.
+- Regenerate deterministically from synthetic data (seeded RNG):
+   ```bash
+   python scripts/generate_docs_figures.py
+   ```
+- Outputs include:
+   - docs/assets/figures/architecture_flow.png
+   - docs/assets/figures/oil_confusion.png, oil_discriminative.png, oil_stability.png, oil_minimal_panel.png, oil_vs_chips_divergence.png, cv_boxplot.png, heating_trend.png, hsi_label_map.png, roi_spectra.png
+   - docs/assets/workflows/heating_quality_monitoring/heating_ratio_vs_time.png
+- After regenerating, run `mkdocs build --strict` to confirm zero warnings, then commit updated PNGs.
+
+---
+
+## 10. Contact & Escalation
 
 **For urgent documentation issues:**
 - **Primary maintainer:** @chandrasekarnarayana (GitHub)
@@ -512,7 +527,7 @@ chmod +x scripts/validate_docs.py
 
 ---
 
-## 10. Version History
+## 11. Version History
 
 | Version | Date | Changes |
 |---------|------|---------|

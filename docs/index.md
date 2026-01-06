@@ -306,7 +306,7 @@ This documentation is organized into 12 sections, designed to support users at d
 | Section | Purpose | Navigate By |
 |---------|---------|-------------|
 | **[API Reference](api/index.md)** | Python module documentation with function signatures and examples | Module (core, preprocessing, chemometrics, features) |
-| **[Advanced Topics](05-advanced-topics/deployment_artifact_versioning.md)** | Custom models, plugin development, HDF5 schema, deployment | Topic (plugins, versioning, artifacts) |
+| **[User Guide - Advanced](user-guide/model_registry.md)** | Model registry, lifecycle, and deployment | Feature (models, registry, lifecycle) |
 | **[Developer Guide](developer-guide/index.md)** | Contributing, testing, documentation style, release process | Activity (contributing, testing, documenting) |
 
 ### For Reference

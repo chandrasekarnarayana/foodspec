@@ -1,235 +1,127 @@
-# Stats API Reference
+# Statistics API
 
-!!! info "Module Purpose"
-    Statistical hypothesis testing, effect sizes, and correlation analysis for spectral data.
+Statistical testing and effect size calculations for spectral analysis.
 
----
-
-## Quick Navigation
-
-| Function | Purpose | Use Case |
-|----------|---------|----------|
-| [`run_ttest()`](#hypothesis-testing) | t-test with effect sizes | Compare two groups |
-| [`run_anova()`](#hypothesis-testing) | ANOVA with effect sizes | Compare multiple groups |
-| [`benjamini_hochberg()`](#multiple-testing) | FDR correction | Control false discoveries |
-| [`compute_cohens_d()`](#effect-sizes) | Cohen's d | Measure effect magnitude |
-| [`compute_correlations()`](#correlations) | Correlation analysis | Feature relationships |
-
----
-
-## Common Patterns
-
-### Pattern 1: Group Comparison with Effect Sizes
-
-```python
-from foodspec.stats import run_ttest, compute_cohens_d
-
-# Compare two varieties
-group_A = fs[fs.metadata['variety'] == 'A'].x[:, peak_idx]
-group_B = fs[fs.metadata['variety'] == 'B'].x[:, peak_idx]
-
-# t-test
-result = run_ttest(group_A, group_B)
-print(f"t-statistic: {result.statistic:.3f}")
-print(f"p-value: {result.pvalue:.4f}")
-
-# Effect size
-d = compute_cohens_d(group_A, group_B)
-print(f"Cohen's d: {d:.3f}")
-```
-
-### Pattern 2: Multiple Group Comparison
-
-```python
-from foodspec.stats import run_anova, benjamini_hochberg
-
-# ANOVA across varieties
-groups = [fs[fs.metadata['variety'] == v].x[:, peak_idx] 
-          for v in ['A', 'B', 'C']]
-
-result = run_anova(*groups)
-print(f"F-statistic: {result.statistic:.3f}")
-print(f"p-value: {result.pvalue:.4f}")
-
-# Multiple testing correction
-p_values = [0.001, 0.045, 0.12, 0.002]
-corrected = benjamini_hochberg(p_values, alpha=0.05)
-print(f"Significant after correction: {corrected.sum()}")
-```
-
-### Pattern 3: Feature Correlation Analysis
-
-```python
-from foodspec.stats import compute_correlations
-
-# Correlate spectral features with quality score
-correlations = compute_correlations(
-    fs.x,
-    fs.metadata['quality_score'],
-    method='pearson'
-)
-
-# Find most correlated wavenumbers
-top_features = correlations.argsort()[-10:]
-print(f"Top correlated wavenumbers: {fs.wavenumbers[top_features]}")
-```
-
----
+The `foodspec.stats` module provides hypothesis testing, correlation analysis, and statistical reporting tools for comparing spectral measurements.
 
 ## Hypothesis Testing
 
 ### run_ttest
 
-Independent or paired t-tests with effect sizes.
+Independent or paired t-test.
 
 ::: foodspec.stats.hypothesis_tests.run_ttest
     options:
       show_source: false
       heading_level: 4
 
-**Example:**
-
-```python
-from foodspec.stats import run_ttest
-
-# Independent t-test
-result = run_ttest(group1, group2, paired=False)
-if result.pvalue < 0.05:
-    print("Significantly different")
-```
-
 ### run_anova
 
-One-way ANOVA with effect sizes.
+One-way ANOVA for comparing multiple groups.
 
 ::: foodspec.stats.hypothesis_tests.run_anova
     options:
       show_source: false
       heading_level: 4
 
-**Example:**
+### run_manova
 
-```python
-from foodspec.stats import run_anova
+Multivariate ANOVA for multiple dependent variables.
 
-# ANOVA
-result = run_anova(group1, group2, group3)
-print(f"F={result.statistic:.2f}, p={result.pvalue:.4f}")
-```
-
----
-
-## Multiple Testing
-
-### benjamini_hochberg
-
-Benjamini-Hochberg FDR correction for multiple testing.
-
-::: foodspec.stats.hypothesis_tests.benjamini_hochberg
+::: foodspec.stats.hypothesis_tests.run_manova
     options:
       show_source: false
       heading_level: 4
 
-**Example:**
+### run_kruskal_wallis
 
-```python
-from foodspec.stats import benjamini_hochberg
+Non-parametric alternative to ANOVA.
 
-# Correct multiple p-values
-p_values = [0.001, 0.03, 0.08, 0.15, 0.002]
-significant = benjamini_hochberg(p_values, alpha=0.05)
-print(f"Significant: {significant}")
-```
+::: foodspec.stats.hypothesis_tests.run_kruskal_wallis
+    options:
+      show_source: false
+      heading_level: 4
 
----
+### run_mannwhitney_u
+
+Non-parametric alternative to t-test.
+
+::: foodspec.stats.hypothesis_tests.run_mannwhitney_u
+    options:
+      show_source: false
+      heading_level: 4
 
 ## Effect Sizes
 
 ### compute_cohens_d
 
-Cohen's d effect size for two-group comparisons.
+Cohen's d effect size for group comparisons.
 
 ::: foodspec.stats.effects.compute_cohens_d
     options:
       show_source: false
       heading_level: 4
 
-**Example:**
+### compute_anova_effect_sizes
 
-```python
-from foodspec.stats import compute_cohens_d
+Effect sizes (eta-squared, omega-squared) for ANOVA.
 
-# Effect size
-d = compute_cohens_d(treatment, control)
+::: foodspec.stats.effects.compute_anova_effect_sizes
+    options:
+      show_source: false
+      heading_level: 4
 
-# Interpretation:
-# |d| < 0.2: Small effect
-# |d| < 0.5: Medium effect
-# |d| >= 0.8: Large effect
-print(f"Effect size: {d:.3f} ({'small' if abs(d)<0.5 else 'large'})")
-```
-
----
-
-## Correlations
+## Correlations & Distances
 
 ### compute_correlations
 
-Correlation analysis between variables.
+Pearson or Spearman correlation between features.
 
 ::: foodspec.stats.correlations.compute_correlations
     options:
       show_source: false
       heading_level: 4
 
-**Example:**
+### euclidean_distance
 
-```python
-from foodspec.stats import compute_correlations
+Euclidean distance between spectra.
 
-# Pearson correlation
-r = compute_correlations(X, y, method='pearson')
+::: foodspec.stats.distances.euclidean_distance
+    options:
+      show_source: false
+      heading_level: 4
 
-# Spearman (non-parametric)
-rho = compute_correlations(X, y, method='spearman')
-```
+### cosine_distance
 
----
+Cosine distance (1 - cosine similarity).
 
-## Cross-References
+::: foodspec.stats.distances.cosine_distance
+    options:
+      show_source: false
+      heading_level: 4
 
-**Related Modules:**
-- [Metrics](metrics.md) - Model evaluation metrics
-- [Chemometrics](chemometrics.md) - Statistical modeling
+## Robustness Analysis
 
-**Related Workflows:**
-- [Statistical Validation](../workflows/standard_templates.md) - Hypothesis testing examples
+### bootstrap_metric
 
----
+Bootstrap confidence intervals for metrics.
 
-## Usage Examples
+::: foodspec.stats.robustness.bootstrap_metric
+    options:
+      show_source: false
+      heading_level: 4
 
-### T-Test with Effect Size
+### permutation_test_metric
 
-```python
-from foodspec.stats import run_ttest, compute_cohens_d
+Permutation test for statistical significance.
 
-# Compare two groups
-result = run_ttest(group_A, group_B)
-effect = compute_cohens_d(group_A, group_B)
+::: foodspec.stats.robustness.permutation_test_metric
+    options:
+      show_source: false
+      heading_level: 4
 
-print(f"t = {result.statistic:.3f}, p = {result.pvalue:.4f}")
-print(f"Cohen's d = {effect:.3f}")
-```
+## See Also
 
-### Multiple Testing Correction
-
-```python
-from foodspec.stats import benjamini_hochberg
-
-# Correct p-values from multiple tests
-p_values = [0.01, 0.03, 0.05, 0.12, 0.45]
-corrected = benjamini_hochberg(p_values, alpha=0.05)
-
-print(corrected)
-```
+- **[Statistics Methods](../methods/statistics/introduction_to_statistical_analysis.md)** - Statistical methodology
+- **[Study Design](../methods/statistics/study_design_and_data_requirements.md)** - Planning statistical analyses
+- **[Examples](../examples_gallery.md)** - Statistical analysis workflows

@@ -891,7 +891,58 @@ $ mkdocs build
 
 ---
 
-## 13. Maintainer Instructions
+## 13. Docstring Standards (FoodSpec API)
+
+**Standard:** Google style docstrings for all public APIs (modules, classes, functions, methods).
+
+**Required sections (in this order):**
+- **Args:** Each parameter with type, shape, and units if applicable (e.g., `np.ndarray, shape (n_samples, n_wavenumbers), units: a.u.`)
+- **Returns:** Type (and shape/units if array-like)
+- **Raises:** Explicit exceptions and conditions
+- **Notes:** "When to use / when not to use" for important functions; mention performance or data-quality caveats
+- **Examples:** One minimal runnable snippet (keep <15 lines)
+
+**Conventions:**
+- Prefer precise types (`np.ndarray`, `Sequence[float]`, `Mapping[str, Any]`), not "array-like" unless truly generic
+- Document expected dtypes and units for spectral axes (e.g., wavenumber cm⁻¹, wavelength nm)
+- For batch inputs, include axis meaning (e.g., axis 0 = samples)
+- If randomness is involved, mention `random_state` handling
+- If heavy I/O or memory use is expected, note it in **Notes**
+
+**Example docstring (representative of `foodspec.metrics.signal_to_noise_ratio`)**
+
+```python
+def signal_to_noise_ratio(spectra: np.ndarray, baseline: float = 0.0) -> float:
+    """Compute mean signal-to-noise ratio for a batch of spectra.
+
+    Args:
+        spectra (np.ndarray): Array of spectra, shape (n_samples, n_wavenumbers),
+            units: arbitrary intensity. Axis 0 = samples, axis 1 = spectral points.
+        baseline (float): Baseline offset to subtract before SNR estimation, units: intensity.
+
+    Returns:
+        float: Mean signal-to-noise ratio across samples (unitless).
+
+    Raises:
+        ValueError: If `spectra.ndim != 2` or contains NaN/inf values.
+
+    Notes:
+        When to use: quick QC on raw spectra prior to preprocessing.
+        When not to use: already normalized/denoised data—prefer post-QC metrics in `foodspec.metrics`.
+
+    Examples:
+        >>> import numpy as np
+        >>> rng = np.random.default_rng(0)
+        >>> spectra = 1.0 + 0.02 * rng.standard_normal((3, 5))  # mean signal ~1, noise ~0.02
+        >>> round(signal_to_noise_ratio(spectra), 1) >= 30
+        True
+    """
+    ...
+```
+
+---
+
+## 14. Maintainer Instructions
 
 **For maintainers reviewing documentation PRs:**
 
@@ -941,7 +992,7 @@ $ mkdocs build
 
 ---
 
-## 14. Tools & Resources
+## 15. Tools & Resources
 
 ### Recommended Tools
 
@@ -963,7 +1014,7 @@ $ mkdocs build
 
 ---
 
-## 15. Examples of Good Documentation
+## 16. Examples of Good Documentation
 
 **Internal examples (FoodSpec):**
 - [Oil Authentication Workflow](../workflows/authentication/oil_authentication.md) — Clear structure, working code
@@ -977,7 +1028,7 @@ $ mkdocs build
 
 ---
 
-## 16. FAQ (Meta)
+## 17. FAQ (Meta)
 
 **Q: How long should a tutorial be?**  
 A: Level 1: 5-15 min, Level 2: 20-40 min, Level 3: 45-90 min. Break long tutorials into multiple parts.
@@ -996,7 +1047,7 @@ A: Open a GitHub issue or submit a PR to update it.
 
 ---
 
-## 17. Contact & Questions
+## 18. Contact & Questions
 
 **Need help with documentation?**
 - **Ask in GitHub Discussions:** [foodspec/discussions](https://github.com/chandrasekarnarayana/foodspec/discussions)

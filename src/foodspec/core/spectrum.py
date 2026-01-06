@@ -15,15 +15,12 @@ AxisUnit = Literal["cm-1", "nm", "um", "1/cm"]
 def _validate_spectrum_schema(metadata: Dict[str, Any]) -> None:
     """Validate spectrum metadata against expected schema.
 
-    Parameters
-    ----------
-    metadata : dict
-        Metadata dictionary to validate.
+    Args:
+        metadata (dict): Metadata dictionary to validate.
 
-    Raises
-    ------
-    ValueError
-        If metadata fails validation.
+    Raises:
+        TypeError: If ``metadata`` is not a dict.
+        ValueError: If optional fields have incorrect types.
     """
     # Allow any metadata; basic checks only
     if not isinstance(metadata, dict):
@@ -38,35 +35,22 @@ def _validate_spectrum_schema(metadata: Dict[str, Any]) -> None:
 class Spectrum:
     """Single spectrum with axis, intensity, units, kind, and metadata.
 
-    Represents a single spectroscopic measurement with full provenance tracking.
+    Represents a single spectroscopic measurement with provenance tracking.
 
-    Parameters
-    ----------
-    x : np.ndarray
-        X-axis (wavenumber/wavelength) array, shape (n_points,).
-    y : np.ndarray
-        Y-axis (intensity) array, shape (n_points,).
-    kind : {'raman', 'ftir', 'nir'}
-        Spectroscopy modality.
-    x_unit : {'cm-1', 'nm', 'um', '1/cm'}, optional
-        Unit of x-axis. Default: 'cm-1'.
-    metadata : dict, optional
-        Additional metadata (sample_id, instrument, temperature, etc.).
+    Args:
+        x (np.ndarray): X-axis (wavenumber/wavelength), shape (n_points,).
+        y (np.ndarray): Intensity values, shape (n_points,).
+        kind (Literal['raman','ftir','nir']): Spectroscopy modality.
+        x_unit (Literal['cm-1','nm','um','1/cm']): Axis unit. Default 'cm-1'.
+        metadata (dict): Optional metadata (sample_id, instrument, etc.).
 
-    Attributes
-    ----------
-    x : np.ndarray
-        X-axis data.
-    y : np.ndarray
-        Y-axis data.
-    kind : str
-        Modality.
-    x_unit : str
-        Unit of x-axis.
-    metadata : dict
-        Validated metadata.
-    config_hash : str
-        Hash of metadata for reproducibility tracking.
+    Attributes:
+        x (np.ndarray): X-axis data.
+        y (np.ndarray): Y-axis data.
+        kind (str): Modality.
+        x_unit (str): Unit of x-axis.
+        metadata (dict): Validated metadata.
+        config_hash (str): Hash of metadata for reproducibility tracking.
     """
 
     x: np.ndarray
@@ -76,7 +60,7 @@ class Spectrum:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
-        """Validate and normalize inputs."""
+        """Validate and normalize inputs (shapes, modality, metadata)."""
         # Convert to numpy arrays
         self.x = np.asarray(self.x, dtype=np.float64)
         self.y = np.asarray(self.y, dtype=np.float64)
@@ -102,10 +86,8 @@ class Spectrum:
     def config_hash(self) -> str:
         """Hash of metadata for reproducibility tracking.
 
-        Returns
-        -------
-        str
-            SHA256 hash of metadata JSON.
+        Returns:
+            str: First 8 hex chars of SHA256 over metadata JSON.
         """
         import json
 
@@ -114,11 +96,19 @@ class Spectrum:
 
     @property
     def n_points(self) -> int:
-        """Number of spectral points."""
+        """Number of spectral points.
+
+        Returns:
+            int: Length of ``x``/``y``.
+        """
         return len(self.x)
 
     def copy(self) -> Spectrum:
-        """Return a deep copy of this spectrum."""
+        """Return a deep copy of this spectrum.
+
+        Returns:
+            Spectrum: Independent copy.
+        """
         return Spectrum(
             x=self.x.copy(),
             y=self.y.copy(),
@@ -128,19 +118,17 @@ class Spectrum:
         )
 
     def crop_wavenumber(self, x_min: float, x_max: float) -> Spectrum:
-        """Crop spectrum to wavenumber range.
+        """Crop spectrum to a wavenumber/wavelength range.
 
-        Parameters
-        ----------
-        x_min : float
-            Minimum wavenumber.
-        x_max : float
-            Maximum wavenumber.
+        Args:
+            x_min (float): Minimum axis value.
+            x_max (float): Maximum axis value.
 
-        Returns
-        -------
-        Spectrum
-            New spectrum with cropped data.
+        Returns:
+            Spectrum: New spectrum with cropped data.
+
+        Raises:
+            ValueError: If the range contains no points.
         """
         mask = (self.x >= x_min) & (self.x <= x_max)
         if not np.any(mask):
@@ -156,15 +144,14 @@ class Spectrum:
     def normalize(self, method: str = "vector") -> Spectrum:
         """Normalize spectrum.
 
-        Parameters
-        ----------
-        method : {'vector', 'max', 'area'}, optional
-            Normalization method. Default: 'vector'.
+        Args:
+            method (str): One of "vector", "max", or "area".
 
-        Returns
-        -------
-        Spectrum
-            Normalized spectrum.
+        Returns:
+            Spectrum: Normalized spectrum.
+
+        Raises:
+            ValueError: If method is unknown.
         """
         y_norm = self.y.copy()
 

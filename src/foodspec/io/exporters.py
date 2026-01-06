@@ -14,9 +14,14 @@ __all__ = ["to_tidy_csv", "to_hdf5"]
 
 
 def to_tidy_csv(spectra: FoodSpectrumSet, path: PathLike) -> None:
-    """Export spectra to a tidy (long-form) CSV.
+    """Export spectra to a tidy (long-form) CSV file.
 
-    Columns: ``sample_id``, all metadata fields, ``wavenumber``, ``intensity``.
+    Produces columns `sample_id`, all metadata fields, `wavenumber`, and
+    `intensity`.
+
+    Args:
+        spectra: Dataset to export.
+        path: Output file path where the CSV will be written.
     """
 
     metadata = spectra.metadata.copy()
@@ -44,8 +49,15 @@ def to_tidy_csv(spectra: FoodSpectrumSet, path: PathLike) -> None:
 def to_hdf5(spectra: FoodSpectrumSet, path: PathLike) -> None:
     """Persist spectra to an HDF5 file.
 
-    Stores datasets: ``x``, ``wavenumbers``; attribute ``modality``; dataset
-    ``metadata_json`` with metadata serialized via ``DataFrame.to_json``.
+    Stores datasets `x`, `wavenumbers`, and `metadata_json` (serialized via
+    `DataFrame.to_json`), plus the `modality` attribute.
+
+    Args:
+        spectra: Dataset to save.
+        path: Target HDF5 file path.
+
+    Raises:
+        ImportError: If `h5py` is not installed.
     """
 
     try:

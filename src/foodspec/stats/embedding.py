@@ -19,6 +19,25 @@ class EmbeddingReport:
 
 
 def evaluate_embedding(X_emb: np.ndarray, labels: np.ndarray) -> EmbeddingReport:
+    """Evaluate embedding quality using multiple metrics.
+
+    Args:
+        X_emb: Embedded data (n_samples, n_dimensions).
+        labels: Class labels for each sample.
+
+    Returns:
+        An `EmbeddingReport` with silhouette score, Davies-Bouldin index,
+        between/within variance ratio, and stability (bootstrap mean silhouette).
+
+    Examples:
+        >>> from foodspec.stats.embedding import evaluate_embedding
+        >>> import numpy as np
+        >>> X_emb = np.random.randn(100, 2)
+        >>> labels = np.repeat([0, 1, 2], [30, 40, 30])
+        >>> report = evaluate_embedding(X_emb, labels)
+        >>> hasattr(report, 'silhouette')
+        True
+    """
     sil = float(silhouette_score(X_emb, labels))
     db = float(davies_bouldin_score(X_emb, labels))
     # Between/within using simple variance decomposition

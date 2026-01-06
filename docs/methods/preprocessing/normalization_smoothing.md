@@ -86,6 +86,94 @@ X_norm = snv.transform(X_smooth)
    - Suggests over-normalization or data issue
    - **Fix:** Check raw spectra before normalization; ensure no zero values; use robust normalizations (MSC with outlier handling)
 
+## When to Use
+
+Use normalization when:
+
+- **Inter-sample comparison**: Spectra collected under varying conditions (different laser powers, ATR contact pressures, path lengths)
+- **Multiplicative scatter effects**: Raman spectra show variable baseline slopes from particle size differences
+- **Batch effects**: Spectra from different instruments or sessions need harmonization
+- **Classification/clustering**: Relative peak patterns matter more than absolute intensities
+- **Reference standardization**: Creating spectral libraries that must be instrument-independent
+
+Use smoothing when:
+
+- **Noisy spectra**: Electronic or shot noise obscures weak peaks
+- **Peak detection**: Preparing for automated peak finding algorithms
+- **Derivative calculations**: Computing 1st or 2nd derivatives that amplify noise
+- **Visual clarity**: Presenting spectra in figures or reports
+
+## When NOT to Use (Common Failure Modes)
+
+Avoid normalization when:
+
+- **Absolute intensities are meaningful**: Concentration measurements require preserving intensity scales
+- **Zero/negative values present**: Many normalizations fail with non-positive data
+- **Very sparse spectra**: Spectra with few peaks where normalization distorts relative heights
+- **After ratio calculation**: Normalizing ratios can invalidate calibration models
+- **Extreme outliers present**: SNV/vector norm amplify outlier effects before removal
+
+Avoid smoothing when:
+
+- **Sharp peaks are critical**: Narrow Raman bands (FWHM < 5 cm⁻¹) where smoothing causes peak broadening
+- **Already low noise**: Over-smoothing removes true spectral fine structure
+- **Before baseline correction**: Smoothing can complicate baseline identification
+- **Quantitative peak fitting**: Fitting Lorentzian/Gaussian profiles to smoothed data introduces bias
+
+## Recommended Defaults
+
+**For Savitzky-Golay smoothing:**
+```python
+from foodspec.preprocessing import savgol_smooth
+X_smoothed = savgol_smooth(X, window_length=11, polyorder=3, deriv=0)
+```
+- `window_length=11`: Balances noise reduction and peak preservation
+- `polyorder=3`: Cubic fit preserves peak shapes
+- `deriv=0`: Direct smoothing; use `deriv=1` or `deriv=2` for derivatives
+
+**For SNV normalization (scatter correction):**
+```python
+from foodspec.preprocessing import normalize_snv
+X_normalized = normalize_snv(X)
+```
+- No parameters; centers and scales each spectrum independently
+
+**For vector normalization (unit L2 norm):**
+```python
+from foodspec.preprocessing import VectorNormalizer
+normalizer = VectorNormalizer()
+X_normalized = normalizer.fit_transform(X)
+```
+- Preserves relative peak heights; reduces intensity scale differences
+
+**For MSC (multiplicative scatter correction):**
+```python
+from foodspec.preprocessing import MSCNormalizer
+msc = MSCNormalizer()
+X_corrected = msc.fit_transform(X)
+```
+- Fit on training data; removes linear scatter effects relative to mean spectrum
+
+## See Also
+
+**API Reference:**
+
+- [savgol_smooth](../../api/preprocessing.md) - Savitzky-Golay filter
+- [normalize_snv](../../api/preprocessing.md) - Standard Normal Variate
+- [VectorNormalizer](../../api/preprocessing.md) - L2 normalization
+- [MSCNormalizer](../../api/preprocessing.md) - Multiplicative scatter correction
+
+**Related Methods:**
+
+- [Baseline Correction](baseline_correction.md) - Apply before normalization
+- [Scatter Correction & Cosmic Ray Removal](scatter_correction_cosmic_ray_removal.md) - Complementary preprocessing
+- [Derivatives & Feature Enhancement](derivatives_and_feature_enhancement.md) - Advanced smoothing applications
+
+**Examples:**
+
+- [Preprocessing Pipeline](../../examples_gallery.md) - Complete normalization workflows
+- [Quality Control](../../examples_gallery.md) - Normalization for batch comparison
+
 ## Further reading / see also
 - [Baseline correction](baseline_correction.md)
 - [Scatter & cosmic-ray handling](scatter_correction_cosmic_ray_removal.md)

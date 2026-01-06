@@ -1,161 +1,111 @@
-# Features API Reference
+# Features API
 
-!!! info "Module Purpose"
-    Feature extraction from spectra: peak detection, band integration, peak ratios, and the Ratio-Quality (RQ) engine.
+Feature extraction and peak analysis functions for spectral data.
 
----
-
-## Quick Navigation
-
-| Function/Class | Purpose | Typical Use |
-|----------------|---------|-------------|
-| [`detect_peaks()`](#peak-detection) | Find spectral peaks | Peak-based analysis |
-| [`integrate_bands()`](#band-integration) | Integrate spectral regions | Quantitative band analysis |
-| [`compute_ratios()`](#peak-ratios) | Calculate peak/band ratios | Ratio-based features |
-| [`RatioQualityEngine`](#rq-engine) | RQ workflow | Automated ratio analysis |
-| [`PeakFeatureExtractor`](#peakfeatureextractor) | Extract peak features | Height, width, area |
-
----
-
-## Common Patterns
-
-### Pattern 1: Peak Detection
-
-```python
-from foodspec.features import detect_peaks
-
-# Detect peaks
-peaks = detect_peaks(
-    spectrum,
-    wavenumbers,
-    height=0.1,
-    prominence=0.05,
-    distance=10
-)
-
-print(f"Found {len(peaks['positions'])} peaks")
-print(f"Peak wavenumbers: {peaks['wavenumbers']}")
-```
-
-### Pattern 2: Band Integration
-
-```python
-from foodspec.features import integrate_bands
-
-# Define bands
-bands = {
-    'C-H stretch': (2800, 3000),
-    'C=O stretch': (1700, 1750),
-}
-
-# Integrate
-band_areas = integrate_bands(fs, bands, method='trapezoid')
-print(f"C-H area: {band_areas['C-H stretch'].mean():.2f}")
-```
-
-### Pattern 3: Ratio Features
-
-```python
-from foodspec.features import compute_ratios
-
-# Define peaks
-peaks = {'peak_A': 1650, 'peak_B': 1450}
-
-# Compute ratios
-ratios = compute_ratios(fs, peaks, method='height')
-ratio_AB = ratios['peak_A/peak_B']
-print(f"A/B ratio: {ratio_AB.mean():.3f}")
-```
-
----
+The `foodspec.features` module provides tools for extracting meaningful features from spectra, including peak detection, band integration, and ratio-based quality metrics.
 
 ## Peak Detection
 
 ### detect_peaks
 
-::: foodspec.features.detect_peaks
+Detect spectral peaks with prominence and width filtering.
+
+::: foodspec.features.peaks.detect_peaks
     options:
       show_source: false
-
-### PeakFeatureExtractor
-
-::: foodspec.features.PeakFeatureExtractor
-    options:
-      show_source: false
-
----
+      heading_level: 4
 
 ## Band Integration
 
+### compute_band_features
+
+Compute features from spectral bands (integral, mean, max, slope).
+
+::: foodspec.features.bands.compute_band_features
+    options:
+      show_source: false
+      heading_level: 4
+
 ### integrate_bands
 
-::: foodspec.features.integrate_bands
+Legacy wrapper for band integration.
+
+::: foodspec.features.bands.integrate_bands
     options:
       show_source: false
+      heading_level: 4
 
----
+## Similarity Metrics
 
-## Peak Ratios
+### cosine_similarity_matrix
 
-### compute_ratios
+Compute pairwise cosine similarity between spectra.
 
-::: foodspec.features.compute_ratios
+::: foodspec.features.fingerprint.cosine_similarity_matrix
     options:
       show_source: false
+      heading_level: 4
 
-### RatioFeatureGenerator
+### correlation_similarity_matrix
 
-::: foodspec.features.RatioFeatureGenerator
+Compute pairwise Pearson correlation between spectra.
+
+::: foodspec.features.fingerprint.correlation_similarity_matrix
     options:
       show_source: false
+      heading_level: 4
 
----
-
-## RQ Engine
+## Ratio Quality (RQ) Engine
 
 ### RatioQualityEngine
 
-::: foodspec.features.RatioQualityEngine
+Automated peak ratio-based quality assessment workflow.
+
+::: foodspec.features.rq.engine.RatioQualityEngine
     options:
       show_source: false
+      heading_level: 4
 
-### RatioQualityResult
+### RQConfig
 
-::: foodspec.features.RatioQualityResult
+Configuration for ratio quality analysis.
+
+::: foodspec.features.rq.types.RQConfig
     options:
       show_source: false
+      heading_level: 4
 
 ### PeakDefinition
 
-::: foodspec.features.PeakDefinition
+Define spectral peaks for ratio analysis.
+
+::: foodspec.features.rq.types.PeakDefinition
     options:
       show_source: false
+      heading_level: 4
 
----
+### RatioDefinition
 
-## Feature Specification
+Define peak ratios for quality metrics.
 
-### FeatureSpec
-
-::: foodspec.features.FeatureSpec
+::: foodspec.features.rq.types.RatioDefinition
     options:
       show_source: false
+      heading_level: 4
 
-### FeatureEngine
+## Library Search
 
-::: foodspec.features.FeatureEngine
+### similarity_search
+
+Find nearest neighbors in a spectral library.
+
+::: foodspec.features.library.similarity_search
     options:
       show_source: false
+      heading_level: 4
 
----
+## See Also
 
-## Cross-References
-
-**Related Modules:**
-- [Core](core.md) - FoodSpectrumSet data structure
-- [Preprocessing](preprocessing.md) - Preprocess before extraction
-- [Chemometrics](chemometrics.md) - Use features in models
-
-**Related Workflows:**
-- [Ratio-Quality Demo](../workflows/domain_templates.md) - RQ engine example
-- [Heating Quality](../workflows/quality-monitoring/heating_quality_monitoring.md) - Ratio-based monitoring
+- **[Feature Extraction Methods](../methods/preprocessing/feature_extraction.md)** - Detailed methodology
+- **[RQ Engine Theory](../theory/rq_engine_detailed.md)** - Ratio quality concepts
+- **[Examples](../examples_gallery.md)** - Feature extraction workflows

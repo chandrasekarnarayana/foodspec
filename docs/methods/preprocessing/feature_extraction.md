@@ -201,6 +201,139 @@ print(ratio_summary.head())
    - Models trained on feature artifacts don't generalize
    - **Fix:** Validate features across multiple batches/instruments; check feature stability over time
 
+## When to Use
+
+Use peak extraction when:
+
+- **Known spectral markers**: Literature identifies specific peaks for your application (e.g., 1655 cm⁻¹ for unsaturation)
+- **Interpretable features needed**: Regulatory or publication requirements for chemically meaningful descriptors
+- **Targeted analysis**: Specific functional groups of interest (carbonyl, unsaturation, protein content)
+- **QC monitoring**: Tracking specific peak heights/ratios as process indicators
+- **Small feature sets**: Need compact representation (5-20 features) instead of full spectra
+
+Use band integration when:
+
+- **Broad features**: NIR overtones or combination bands spanning 50+ cm⁻¹
+- **Overlapping peaks**: Multiple unresolved peaks in region of interest
+- **Robust quantification**: Area measurements less sensitive to peak position shifts than heights
+
+Use ratios when:
+
+- **Normalization needed**: Removing instrument/path length variations
+- **Relative composition**: Tracking unsaturation/saturation balance, oxidation markers
+- **Authenticity testing**: Reference ratios characteristic of genuine samples
+- **Simple interpretability**: Single ratio metric for decisions (QC pass/fail)
+
+## When NOT to Use (Common Failure Modes)
+
+Avoid peak extraction when:
+
+- **Unknown chemistry**: No literature guidance on relevant peaks; exploratory analysis needed
+- **Dense overlapping spectra**: Too many overlapping peaks; whole-spectrum methods (PCA) more appropriate
+- **High baseline curvature**: Uncorrected baselines bias peak heights
+- **Peak-free regions**: Expecting peaks in regions with no real signal
+- **Very low resolution**: Spectral resolution insufficient to resolve expected peaks
+
+Avoid band integration when:
+
+- **Sharp narrow peaks**: Integration includes too much baseline/noise relative to peak
+- **Variable baseline**: Uncorrected baseline contributes significantly to integrated area
+- **Well-separated peaks**: Peak heights sufficient; integration adds complexity
+
+Avoid ratios when:
+
+- **Weak denominator**: Denominator peak near noise floor; ratio unstable
+- **Absolute quantification needed**: Ratios remove calibration to concentration
+- **Denominator varies independently**: Denominator not truly stable reference
+- **Complex interpretation**: Multiple competing chemical effects make ratio ambiguous
+
+## Recommended Defaults
+
+**For peak detection (Raman oils):**
+```python
+from foodspec.features import detect_peaks
+
+# Common oil peaks
+peaks = detect_peaks(
+    X, 
+    wavenumbers=wn,
+    expected_peaks=[1655, 1742, 1440, 1265, 717],
+    tolerance=10,  # ±10 cm⁻¹ search window
+    min_snr=5      # Minimum signal-to-noise ratio
+)
+```
+- `tolerance=10`: Accounts for instrument calibration and matrix effects
+- `min_snr=5`: Ensures detected peaks above noise floor
+
+**For band integration:**
+```python
+from foodspec.features import compute_band_features
+
+# Integrate broad regions
+bands = compute_band_features(
+    X,
+    wavenumbers=wn,
+    band_definitions=[
+        ("unsaturation", 1650, 1665),
+        ("carbonyl", 1735, 1750),
+        ("CH2_bend", 1435, 1450)
+    ]
+)
+```
+- Bands span typical peak widths (10-15 cm⁻¹) plus shoulders
+
+**For ratio calculation:**
+```python
+from foodspec.features import RatioQualityEngine
+
+# Define chemistry-based ratios
+rq_engine = RatioQualityEngine(
+    ratios=[
+        ("unsat_ratio", "peak_1655", "peak_1742"),  # Unsaturation
+        ("oxidation", "peak_1742", "peak_1440")     # Carbonyl/backbone
+    ],
+    min_denominator=0.01  # Avoid division by near-zero
+)
+results = rq_engine.compute(peak_features)
+```
+- `min_denominator=0.01`: Guards against unstable ratios
+
+**For fingerprint similarity:**
+```python
+from foodspec.features import similarity_search
+
+# Compare spectra to reference library
+matches = similarity_search(
+    query=X_unknown,
+    library=X_reference,
+    metric="cosine",
+    top_k=5
+)
+```
+- `metric="cosine"`: Normalized similarity, robust to scaling
+
+## See Also
+
+**API Reference:**
+
+- [detect_peaks](../../api/features.md) - Automated peak finding
+- [compute_band_features](../../api/features.md) - Band integration
+- [RatioQualityEngine](../../api/features.md) - Ratio calculation framework
+- [similarity_search](../../api/features.md) - Spectral matching
+
+**Related Methods:**
+
+- [Baseline Correction](baseline_correction.md) - Essential preprocessing before peak extraction
+- [Normalization & Smoothing](normalization_smoothing.md) - Stabilize peak measurements
+- [Derivatives](derivatives_and_feature_enhancement.md) - Enhanced peak detection
+- [PCA](../chemometrics/pca_and_dimensionality_reduction.md) - Alternative to manual feature selection
+
+**Examples:**
+
+- [Oil Authentication Quickstart](../../examples_gallery.md) - Peak-based classification
+- [Heating Quality Monitoring](../../examples_gallery.md) - Ratio tracking over time
+- [Mixture Analysis](../../examples_gallery.md) - Band integration for concentration
+
 ## Further reading
 - [Baseline correction](baseline_correction.md)
 - [Normalization & smoothing](normalization_smoothing.md)

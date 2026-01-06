@@ -479,7 +479,7 @@ kappa_df = modality_agreement_kappa(predictions)
 print(kappa_df)  # Cohen's kappa matrix (κ > 0.8 = excellent agreement)
 ```
 
-**See full guide**: [Multi-Modal Workflows](../05-advanced-topics/multimodal_workflows.md)
+**See full guide**: [Multi-Modal Workflows](../workflows/multimodal_workflows.md)
 
 **Use cases:**
 - ✅ Olive oil authentication (Raman confirms FTIR)

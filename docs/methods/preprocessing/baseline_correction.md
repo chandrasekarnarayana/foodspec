@@ -87,6 +87,70 @@ X_corr = als.transform(X_raw)
 - ALS is a flexible default; rubberband is simple; polynomial fits suit mild curvature.
 - Always inspect corrections; avoid removing true broad features.
 
+## When to Use
+
+Use baseline correction when:
+
+- **Fluorescence interference**: Raman spectra show broad fluorescent backgrounds obscuring weak peaks
+- **Sloping baselines**: FTIR-ATR spectra have tilted baselines from poor crystal contact
+- **Ratio calculations**: Peak ratios are biased by uneven backgrounds
+- **Comparative analysis**: Baseline drift varies between samples, confounding comparisons
+- **PCA/classification**: Baseline variability dominates spectral differences and masks chemical variation
+
+## When NOT to Use (Common Failure Modes)
+
+Avoid baseline correction or use with extreme caution when:
+
+- **Broad informative features**: Sample contains wide absorption bands that could be mistaken for baseline (e.g., water bands, amorphous regions)
+- **Very low SNR**: Noise-dominated spectra where baseline fitting becomes unstable
+- **Dense peak patterns**: Closely spaced peaks with no clear baseline regions (rubberband will fail)
+- **Already normalized data**: Applying baseline correction after standard normal variate (SNV) or other normalizations can remove meaningful variation
+- **Negative intensities expected**: Some correction methods (aggressive ALS) can produce negative values, invalidating downstream ratio calculations
+
+## Recommended Defaults
+
+**For Raman spectroscopy (fluorescence backgrounds):**
+```python
+from foodspec.preprocessing import baseline_als
+X_corrected = baseline_als(X, lambda_=1e5, p=0.01, max_iter=10)
+```
+- `lambda_=1e5`: Moderate smoothness, handles typical curvature
+- `p=0.01`: Conservative asymmetry, preserves real peaks
+- `max_iter=10`: Usually sufficient for convergence
+
+**For FTIR-ATR (mild slopes):**
+```python
+from foodspec.preprocessing import baseline_polynomial
+X_corrected = baseline_polynomial(X, degree=2)
+```
+- `degree=2`: Quadratic baseline for gentle curvature
+
+**For quick exploratory analysis:**
+```python
+from foodspec.preprocessing import baseline_rubberband
+X_corrected = baseline_rubberband(X)
+```
+- No parameters needed; fast but less robust
+
+## See Also
+
+**API Reference:**
+
+- [baseline_als](../../api/preprocessing.md) - Asymmetric least squares baseline correction
+- [baseline_polynomial](../../api/preprocessing.md) - Polynomial baseline fitting
+- [baseline_rubberband](../../api/preprocessing.md) - Convex hull baseline
+
+**Related Methods:**
+
+- [Normalization & Smoothing](normalization_smoothing.md) - Apply after baseline correction
+- [Scatter Correction](scatter_correction_cosmic_ray_removal.md) - Complementary preprocessing
+- [Feature Extraction](feature_extraction.md) - Use corrected spectra for peak detection
+
+**Examples:**
+
+- [Preprocessing Workflow](../../examples_gallery.md) - End-to-end baseline correction examples
+- [Oil Authentication](../../examples_gallery.md) - Baseline correction in real workflow
+
 ---
 
 ## When Results Cannot Be Trusted

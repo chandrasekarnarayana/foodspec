@@ -16,19 +16,15 @@ from foodspec.core.dataset import FoodSpectrumSet, Modality
 
 @dataclass
 class MultiModalDataset:
-    """Collection of spectral datasets from multiple modalities with aligned metadata.
+    """Spectral datasets from multiple modalities with aligned metadata.
 
-    Each modality (e.g., Raman, FTIR, NIR) is stored as a separate FoodSpectrumSet.
-    Metadata is aligned across all modalities, indexed by a common sample_id.
+    Each modality (Raman, FTIR, NIR) is stored as a separate `FoodSpectrumSet`.
+    Metadata is aligned across modalities via a common sample identifier.
 
-    Parameters
-    ----------
-    datasets : Dict[Modality, FoodSpectrumSet]
-        Mapping from modality name to spectral dataset.
-    metadata : pd.DataFrame
-        Shared metadata with one row per sample, aligned across all modalities.
-    sample_id_col : str
-        Column name for sample identifier used to align modalities.
+    Args:
+        datasets (dict[Modality, FoodSpectrumSet]): Mapping modality → dataset.
+        metadata (pd.DataFrame): One row per sample aligned across modalities.
+        sample_id_col (str): Column used to align samples across datasets.
     """
 
     datasets: Dict[Modality, FoodSpectrumSet]
@@ -49,17 +45,41 @@ class MultiModalDataset:
                 raise ValueError(f"Dataset for {modality} has {len(ds)} samples, but metadata has {n_samples} rows.")
 
     def modalities(self) -> List[Modality]:
-        """Return list of available modalities."""
+        """Return list of available modalities.
+
+        Returns:
+            list[Modality]: Modalities present.
+        """
         return list(self.datasets.keys())
 
     def get_modality(self, modality: Modality) -> FoodSpectrumSet:
-        """Retrieve dataset for a specific modality."""
+        """Retrieve dataset for a specific modality.
+
+        Args:
+            modality (Modality): Modality key.
+
+        Returns:
+            FoodSpectrumSet: Dataset for requested modality.
+
+        Raises:
+            ValueError: If modality not found.
+        """
         if modality not in self.datasets:
             raise ValueError(f"Modality '{modality}' not found in dataset.")
         return self.datasets[modality]
 
     def subset_samples(self, indices: Sequence[int]) -> "MultiModalDataset":
-        """Return a subset of samples by index."""
+        """Return a subset of samples by index.
+
+        Args:
+            indices (Sequence[int]): Zero-based sample indices.
+
+        Returns:
+            MultiModalDataset: New dataset with subsets applied to all modalities.
+
+        Raises:
+            ValueError: If indices out of range.
+        """
         indices_arr = np.array(indices, dtype=int)
         if np.any(indices_arr < 0) or np.any(indices_arr >= len(self.metadata)):
             raise ValueError("indices contain out-of-range values.")
@@ -72,7 +92,17 @@ class MultiModalDataset:
         )
 
     def filter_by_metadata(self, **filters) -> "MultiModalDataset":
-        """Filter samples by metadata column values."""
+        """Filter samples by metadata column values.
+
+        Keyword Args:
+            **filters: Column → value constraints; sequences use membership.
+
+        Returns:
+            MultiModalDataset: Filtered dataset.
+
+        Raises:
+            ValueError: If a column not found in metadata.
+        """
         mask = np.ones(len(self.metadata), dtype=bool)
         for col, value in filters.items():
             if col not in self.metadata.columns:
@@ -90,7 +120,18 @@ class MultiModalDataset:
         datasets: Dict[Modality, FoodSpectrumSet],
         sample_id_col: str = "sample_id",
     ) -> "MultiModalDataset":
-        """Construct from dict of FoodSpectrumSets, aligning by sample_id."""
+        """Construct from dict of datasets, aligning by sample identifier.
+
+        Args:
+            datasets (dict[Modality, FoodSpectrumSet]): Input datasets.
+            sample_id_col (str): Column with sample IDs.
+
+        Returns:
+            MultiModalDataset: Aligned multi-modal dataset.
+
+        Raises:
+            ValueError: If inputs missing, sample_id_col missing, or IDs misaligned.
+        """
         if not datasets:
             raise ValueError("datasets must contain at least one modality.")
         # Use first dataset's metadata as template
@@ -113,7 +154,11 @@ class MultiModalDataset:
         return cls(datasets=datasets, metadata=metadata, sample_id_col=sample_id_col)
 
     def to_feature_dict(self) -> Dict[Modality, np.ndarray]:
-        """Return spectral matrices as dict for fusion."""
+        """Return spectral matrices as dict for fusion.
+
+        Returns:
+            dict[Modality, np.ndarray]: Modality → feature matrix.
+        """
         return {modality: ds.x for modality, ds in self.datasets.items()}
 
 

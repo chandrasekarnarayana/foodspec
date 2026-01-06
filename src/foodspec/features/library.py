@@ -41,6 +41,18 @@ class LibraryIndex:
         top_k: int = 5,
         query_ids: Optional[List[str]] = None,
     ) -> pd.DataFrame:
+        """Search library for top-k nearest neighbors.
+
+        Args:
+            X_query: Query spectra/features (n_queries × n_features).
+            metric: Distance metric ("euclidean", "cosine", "pearson", "sid", "sam").
+            top_k: Number of nearest neighbors to return per query.
+            query_ids: Optional list of query identifiers.
+
+        Returns:
+            DataFrame with columns: query_index, query_id, library_index, distance,
+            rank, and any metadata columns from the library (prefixed 'lib_').
+        """
         D = compute_distances(X_query, self.X, metric=metric)
         n_q = D.shape[0]
         rows: List[Dict[str, object]] = []
@@ -69,6 +81,18 @@ def similarity_search(
     metric: Literal["euclidean", "cosine", "pearson", "sid", "sam"] = "cosine",
     top_k: int = 5,
 ) -> pd.DataFrame:
+    """Perform similarity search between query and library datasets.
+
+    Args:
+        query_ds: Query dataset containing spectra to match.
+        library_ds: Library dataset to search against.
+        metric: Distance metric ("euclidean", "cosine", "pearson", "sid", "sam").
+        top_k: Number of nearest neighbors to return per query.
+
+    Returns:
+        DataFrame with search results including query_id, library_index, distance,
+        rank, and library metadata.
+    """
     lib = LibraryIndex.from_dataset(library_ds)
     return lib.search(
         query_ds.x,
@@ -79,7 +103,16 @@ def similarity_search(
 
 
 def overlay_plot(query_x: np.ndarray, match_x: np.ndarray, wavenumbers: np.ndarray):
-    """Create an overlay plot (query vs. match). Returns (fig, ax)."""
+    """Create an overlay plot (query vs. match).
+
+    Args:
+        query_x: Query spectrum (1D or 2D with one row).
+        match_x: Library match spectrum (1D or 2D with one row).
+        wavenumbers: 1D array of wavenumber values.
+
+    Returns:
+        Tuple of (fig, ax) matplotlib objects.
+    """
     from foodspec.core.dataset import FoodSpectrumSet
     from foodspec.viz.spectra import plot_spectra
 

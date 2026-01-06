@@ -354,6 +354,41 @@ def run_manova(
 
 
 def run_tukey_hsd(values, groups, alpha: float = 0.05) -> pd.DataFrame:
+    """Perform Tukey's Honestly Significant Difference (HSD) post-hoc test.
+    
+    Tukey's HSD is a multiple comparison test used after ANOVA to identify which
+    specific group means are significantly different from each other. It controls
+    the family-wise error rate and is appropriate when comparing all pairwise
+    combinations of group means.
+    
+    Args:
+        values: Array-like of continuous measurements across all groups.
+        groups: Array-like of group labels corresponding to each value.
+        alpha: Significance level for confidence intervals (default: 0.05).
+    
+    Returns:
+        DataFrame with columns:
+            - group1, group2: The two groups being compared
+            - meandiff: Difference in means (group1 - group2)
+            - p_adj: Adjusted p-value (Tukey correction)
+            - lower, upper: Confidence interval bounds
+            - reject: Boolean indicating if null hypothesis is rejected
+    
+    Raises:
+        ImportError: If statsmodels is not installed.
+    
+    Example:
+        >>> from foodspec import run_tukey_hsd
+        >>> values = [10, 12, 11, 20, 22, 21, 30, 32, 31]
+        >>> groups = ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C']
+        >>> results = run_tukey_hsd(values, groups)
+        >>> print(results)
+    
+    See Also:
+        run_anova: One-way ANOVA test (use before Tukey HSD)
+        games_howell: Alternative when variances are unequal
+        run_ttest: Pairwise t-tests (less conservative)
+    """
     if pairwise_tukeyhsd is None:
         raise ImportError("statsmodels is required for Tukey HSD.")
     res = pairwise_tukeyhsd(endog=np.asarray(values), groups=np.asarray(groups), alpha=alpha)
@@ -415,8 +450,49 @@ def games_howell(values, groups, alpha: float = 0.05) -> pd.DataFrame:
 
 
 def run_mannwhitney_u(
-    data, group_col: object | None = None, value_col: str | None = None, alternative: str = "two-sided"
+    data: pd.DataFrame | Iterable,
+    group_col: object | None = None,
+    value_col: str | None = None,
+    alternative: str = "two-sided",
 ) -> TestResult:
+    """Perform Mann-Whitney U test for comparing two independent samples.
+    
+    The Mann-Whitney U test (also called Wilcoxon rank-sum test) is a non-parametric
+    test for comparing the distributions of two independent groups. It does not assume
+    normality and is robust to outliers. Use this when data are ordinal or continuous
+    but violate t-test assumptions.
+    
+    Args:
+        data: Either a DataFrame or array-like. If DataFrame, must provide group_col
+            and value_col. If array-like, represents first sample (requires group_col
+            as second sample or unpacking into two samples).
+        group_col: Column name for group labels (if data is DataFrame) or second
+            sample array (if data is array-like).
+        value_col: Column name for values to compare (required if data is DataFrame).
+        alternative: Direction of test - "two-sided", "less", or "greater" (default: "two-sided").
+    
+    Returns:
+        TestResult with:
+            - statistic: Mann-Whitney U statistic
+            - pvalue: Two-tailed (or one-tailed) p-value
+            - df: None (non-parametric test has no degrees of freedom)
+            - summary: DataFrame with test details
+    
+    Raises:
+        ValueError: If data format is invalid or if not exactly two groups provided.
+    
+    Example:
+        >>> from foodspec import run_mannwhitney_u
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({'group': ['A']*10 + ['B']*10, 'value': range(20)})
+        >>> result = run_mannwhitney_u(df, 'group', 'value')
+        >>> print(f"U={result.statistic:.2f}, p={result.pvalue:.4f}")
+    
+    See Also:
+        run_ttest: Parametric alternative for normal data
+        run_kruskal_wallis: Extension to 3+ groups
+        run_wilcoxon_signed_rank: For paired samples
+    """
     if isinstance(data, pd.DataFrame):
         if group_col is None or value_col is None:
             raise ValueError("Provide group_col and value_col when passing a DataFrame.")
@@ -447,6 +523,37 @@ def run_mannwhitney_u(
 
 
 def run_wilcoxon_signed_rank(sample_before, sample_after, alternative: str = "two-sided") -> TestResult:
+    """Perform Wilcoxon signed-rank test for paired samples.
+    
+    The Wilcoxon signed-rank test is a non-parametric alternative to the paired t-test.
+    It tests whether the median difference between paired observations is zero. Use this
+    for repeated measurements or matched pairs when data are non-normal or ordinal.
+    
+    Args:
+        sample_before: Array-like of measurements in the first condition (e.g., before treatment).
+        sample_after: Array-like of measurements in the second condition (e.g., after treatment).
+            Must have the same length as sample_before.
+        alternative: Direction of test - "two-sided", "less", or "greater" (default: "two-sided").
+    
+    Returns:
+        TestResult with:
+            - statistic: Wilcoxon signed-rank statistic
+            - pvalue: Two-tailed (or one-tailed) p-value
+            - df: None (non-parametric test has no degrees of freedom)
+            - summary: DataFrame with test details
+    
+    Example:
+        >>> from foodspec import run_wilcoxon_signed_rank
+        >>> before = [10, 12, 11, 13, 15, 14, 16, 18]
+        >>> after = [11, 13, 12, 15, 16, 15, 18, 20]
+        >>> result = run_wilcoxon_signed_rank(before, after)
+        >>> print(f"W={result.statistic:.1f}, p={result.pvalue:.4f}")
+    
+    See Also:
+        run_ttest: Parametric paired t-test for normal data
+        run_mannwhitney_u: For independent (unpaired) samples
+        run_friedman_test: Extension to 3+ repeated measures
+    """
     s1 = _to_series(sample_before)
     s2 = _to_series(sample_after)
     stat, p = stats.wilcoxon(s1, s2, alternative=alternative)
@@ -456,7 +563,46 @@ def run_wilcoxon_signed_rank(sample_before, sample_after, alternative: str = "tw
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
 
 
-def run_kruskal_wallis(data, group_col: str | None = None, value_col: str | None = None) -> TestResult:
+def run_kruskal_wallis(
+    data: pd.DataFrame | Iterable, group_col: str | None = None, value_col: str | None = None
+) -> TestResult:
+    """Perform Kruskal-Wallis H-test for comparing three or more independent groups.
+    
+    The Kruskal-Wallis test is a non-parametric alternative to one-way ANOVA. It tests
+    whether samples from different groups come from the same distribution. Use this when
+    comparing 3+ groups with non-normal data or unequal variances.
+    
+    Args:
+        data: Either a DataFrame or list of arrays. If DataFrame, must provide group_col
+            and value_col. If list, each element is an array of values for one group.
+        group_col: Column name for group labels (required if data is DataFrame).
+        value_col: Column name for values to compare (required if data is DataFrame).
+    
+    Returns:
+        TestResult with:
+            - statistic: Kruskal-Wallis H statistic
+            - pvalue: p-value from chi-squared distribution
+            - df: None (df implicit in chi-squared approximation)
+            - summary: DataFrame with test details
+    
+    Raises:
+        ValueError: If fewer than 2 groups provided or if DataFrame arguments are missing.
+    
+    Example:
+        >>> from foodspec import run_kruskal_wallis
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({
+        ...     'group': ['A']*10 + ['B']*10 + ['C']*10,
+        ...     'value': list(range(10)) + list(range(10, 20)) + list(range(20, 30))
+        ... })
+        >>> result = run_kruskal_wallis(df, 'group', 'value')
+        >>> print(f"H={result.statistic:.2f}, p={result.pvalue:.4f}")
+    
+    See Also:
+        run_anova: Parametric alternative for normal data
+        run_mannwhitney_u: For comparing exactly 2 groups
+        run_friedman_test: For repeated measures (paired data)
+    """
     if isinstance(data, pd.DataFrame):
         if group_col is None or value_col is None:
             raise ValueError("Provide group_col and value_col when passing a DataFrame.")
@@ -471,6 +617,37 @@ def run_kruskal_wallis(data, group_col: str | None = None, value_col: str | None
 
 
 def run_friedman_test(*samples) -> TestResult:
+    """Perform Friedman test for repeated measures across three or more conditions.
+    
+    The Friedman test is a non-parametric alternative to repeated measures ANOVA. It tests
+    whether there are differences across multiple related (paired) groups. Use this for
+    repeated measurements or matched subjects when data are non-normal or ordinal.
+    
+    Args:
+        *samples: Variable number of array-like arguments, each representing measurements
+            from one condition. All arrays must have the same length (same subjects across
+            conditions). Minimum 3 conditions required.
+    
+    Returns:
+        TestResult with:
+            - statistic: Friedman chi-squared statistic
+            - pvalue: p-value from chi-squared distribution
+            - df: None (df implicit in chi-squared approximation)
+            - summary: DataFrame with test details
+    
+    Example:
+        >>> from foodspec import run_friedman_test
+        >>> condition1 = [10, 12, 11, 13, 15]
+        >>> condition2 = [11, 13, 12, 14, 16]
+        >>> condition3 = [12, 14, 13, 15, 17]
+        >>> result = run_friedman_test(condition1, condition2, condition3)
+        >>> print(f"χ²={result.statistic:.2f}, p={result.pvalue:.4f}")
+    
+    See Also:
+        run_anova: Parametric repeated measures ANOVA
+        run_wilcoxon_signed_rank: For exactly 2 paired conditions
+        run_kruskal_wallis: For independent (unpaired) groups
+    """
     stat, p = stats.friedmanchisquare(*samples)
     summary = pd.DataFrame([{"test": "friedman", "statistic": stat, "pvalue": p, "df": None}])
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)

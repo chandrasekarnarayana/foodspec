@@ -10,13 +10,31 @@ from sklearn.feature_selection import f_classif, mutual_info_classif
 
 
 def feature_cv(df: pd.DataFrame) -> pd.Series:
-    """Coefficient of variation per feature."""
+    """Compute coefficient of variation per feature.
+
+    Args:
+        df: Feature DataFrame (samples × features).
+
+    Returns:
+        Series with CV (std/mean) for each feature column.
+    """
 
     return df.std(ddof=1) / (df.mean() + 1e-12)
 
 
 def feature_stability_by_group(df: pd.DataFrame, groups: Iterable) -> pd.Series:
-    """Average CV across groups (replicate stability)."""
+    """Compute average CV across groups (replicate stability).
+
+    Args:
+        df: Feature DataFrame (samples × features).
+        groups: Iterable of group labels (length must match df rows).
+
+    Returns:
+        Series with mean CV for each feature column across groups.
+
+    Raises:
+        ValueError: If groups length does not match df rows.
+    """
 
     groups = list(groups)
     if len(groups) != len(df):
@@ -30,7 +48,20 @@ def feature_stability_by_group(df: pd.DataFrame, groups: Iterable) -> pd.Series:
 
 
 def discriminative_power(df: pd.DataFrame, labels: Iterable, n_neighbors: int = 3) -> Dict[str, float]:
-    """Compute ANOVA F and mutual information for features."""
+    """Compute ANOVA F and mutual information for features.
+
+    Args:
+        df: Feature DataFrame (samples × features).
+        labels: Iterable of class labels (length must match df rows).
+        n_neighbors: Number of neighbors for MI estimation.
+
+    Returns:
+        Dictionary with keys 'anova_f_mean' and 'mi_mean' (mean F-statistic
+        and mutual information across features).
+
+    Raises:
+        ValueError: If labels length does not match df rows.
+    """
 
     y = np.asarray(list(labels))
     if len(y) != len(df):
@@ -45,7 +76,14 @@ def discriminative_power(df: pd.DataFrame, labels: Iterable, n_neighbors: int = 
 
 
 def robustness_vs_variations(feature_tables: List[pd.DataFrame]) -> float:
-    """Measure robustness to preprocessing variation via mean pairwise correlation."""
+    """Measure robustness to preprocessing variation via mean pairwise correlation.
+
+    Args:
+        feature_tables: List of feature DataFrames (same columns, different preprocessing).
+
+    Returns:
+        Mean pairwise correlation (0.0 to 1.0) across all feature table pairs.
+    """
 
     if len(feature_tables) < 2:
         return 1.0

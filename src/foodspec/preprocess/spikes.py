@@ -34,6 +34,30 @@ class CosmicRayReport:
 
 
 def correct_cosmic_rays(X: np.ndarray, window: int = 5, zscore_thresh: float = 8.0) -> (np.ndarray, CosmicRayReport):
+    """Detect and correct cosmic ray spikes in spectra.
+
+    Uses robust z-score computed from local median and MAD (median absolute
+    deviation) to detect spikes. Corrects by replacing spike values with local
+    median.
+
+    Args:
+        X: Spectral data array (n_samples, n_wavenumbers).
+        window: Rolling window size for spike detection.
+        zscore_thresh: Threshold for spike detection (default 8.0).
+
+    Returns:
+        A tuple `(X_corrected, report)` where `report` is a `CosmicRayReport`
+        containing total spike count and per-spectrum spike counts.
+
+    Examples:
+        >>> import numpy as np
+        >>> from foodspec.preprocess.spikes import correct_cosmic_rays
+        >>> X = np.ones((2, 50))
+        >>> X[0, 25] = 100  # simulate spike
+        >>> X_corr, report = correct_cosmic_rays(X, window=5, zscore_thresh=5.0)
+        >>> report.total_spikes > 0
+        True
+    """
     Xc = X.copy()
     per_spec: List[int] = []
     for i in range(Xc.shape[0]):

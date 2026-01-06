@@ -370,7 +370,7 @@
 ## What's Next?
 
 - **See notation in context:** [RQ Engine Theory](../theory/rq_engine_detailed.md)
-- **Understand validation terms:** [Validation Strategies](../05-advanced-topics/validation_strategies.md)
+- **Understand validation terms:** [Validation Strategies](../methods/validation/advanced_validation_strategies.md)
 - **Learn preprocessing methods:** [Preprocessing Recipes](../methods/preprocessing/normalization_smoothing.md)
 
 ---

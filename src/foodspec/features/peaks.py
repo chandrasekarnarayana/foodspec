@@ -20,22 +20,27 @@ def detect_peaks(
 ) -> pd.DataFrame:
     """Detect peaks and return their properties.
 
-    Parameters
-    ----------
-    x :
-        1D intensity array.
-    wavenumbers :
-        1D axis array aligned with ``x``.
-    prominence :
-        Minimum prominence passed to ``scipy.signal.find_peaks``.
-    width :
-        Optional width parameter for ``find_peaks``.
+    Args:
+        x: 1D intensity array.
+        wavenumbers: 1D axis array aligned with `x`.
+        prominence: Minimum prominence passed to `scipy.signal.find_peaks`.
+        width: Optional width parameter for `find_peaks`.
 
-    Returns
-    -------
-    pandas.DataFrame
-        Columns: ``peak_index``, ``peak_wavenumber``, ``peak_intensity``,
-        ``prominence``, ``width``.
+    Returns:
+        A DataFrame with columns: `peak_index`, `peak_wavenumber`,
+        `peak_intensity`, `prominence`, `width`.
+
+    Raises:
+        ValueError: If `x` and `wavenumbers` are not 1D or have mismatched lengths.
+
+    Examples:
+        >>> import numpy as np
+        >>> from foodspec.features.peaks import detect_peaks
+        >>> x = np.array([0, 1, 2, 1, 0, 3, 0])
+        >>> wn = np.linspace(1000, 1600, 7)
+        >>> peaks_df = detect_peaks(x, wn, prominence=0.5)
+        >>> peaks_df.shape[0] > 0
+        True
     """
 
     x = np.asarray(x, dtype=float)

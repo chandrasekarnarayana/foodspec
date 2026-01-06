@@ -29,4 +29,4 @@ FoodSpec supports highly automated “one-click” analysis in two paths:
 - Use HDF5 for multi-instrument/HSI to retain harmonization metadata.
 - For repeated runs, organize CLI outputs under a project folder.
 
-Cross-links: [cli_guide.md](cli.md), [cookbook_rq_questions.md](../theory/rq_engine_detailed.md), [validation_strategies.md](../05-advanced-topics/validation_strategies.md).
+Cross-links: [cli_guide.md](cli.md), [cookbook_rq_questions.md](../theory/rq_engine_detailed.md), [validation_strategies.md](../methods/validation/advanced_validation_strategies.md).

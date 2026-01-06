@@ -182,6 +182,15 @@ def _finalize_metrics(raw: Dict[str, Any], dataset: FoodSpectrumSet) -> Dict[str
 
 
 def load_csv_or_txt(path: str | Path, modality: str = "raman") -> IngestResult:
+    """Load a single CSV/TXT spectrum file with delimiter inference.
+
+    Args:
+        path: Path to a text file containing wavenumber and intensity columns.
+        modality: Spectroscopy modality label.
+
+    Returns:
+        An `IngestResult` containing the `FoodSpectrumSet` and quality metrics.
+    """
     p = Path(path)
     dataset = _read_csv_or_txt(p, modality=modality)
     raw_metrics = {
@@ -195,6 +204,19 @@ def load_csv_or_txt(path: str | Path, modality: str = "raman") -> IngestResult:
 
 
 def load_folder_pattern(path: str | Path, pattern: str = "*.txt", modality: str = "raman") -> IngestResult:
+    """Load a folder of text spectra matching a pattern.
+
+    Args:
+        path: Directory containing spectrum files.
+        pattern: Glob pattern for files (e.g., "*.txt").
+        modality: Spectroscopy modality label.
+
+    Returns:
+        An `IngestResult` with the aggregated dataset and metrics.
+
+    Raises:
+        ValueError: If no files match the pattern.
+    """
     dataset, raw = _read_folder(Path(path), pattern=pattern, modality=modality)
     metrics = _finalize_metrics(raw, dataset)
     return IngestResult(dataset=dataset, metrics=metrics, diagnostics={"pattern": pattern})
@@ -223,6 +245,21 @@ def _coerce_ingest_result(result: object, fmt: str, modality: str) -> IngestResu
 
 
 def load_vendor(path: str | Path, format: Optional[str] = None, **kwargs) -> IngestResult:
+    """Load vendor formats (JCAMP, SPC, OPUS) with plugin support.
+
+    Tries plugin registry first; falls back to built-in readers.
+
+    Args:
+        path: Path to the vendor file.
+        format: Optional explicit format override.
+        **kwargs: Additional options forwarded to the vendor readers.
+
+    Returns:
+        An `IngestResult` with the dataset and metrics.
+
+    Raises:
+        ValueError: If the format is unsupported.
+    """
     fmt = (format or detect_format(path) or "unknown").lower()
     ensure_plugins_loaded()
     plugin_loader = vendor_loader_registry.get(fmt)
@@ -246,6 +283,18 @@ def load_vendor(path: str | Path, format: Optional[str] = None, **kwargs) -> Ing
 
 
 def load_hdf5(path: str | Path, modality: str = "raman") -> IngestResult:
+    """Load a `FoodSpectrumSet` from an HDF5 file.
+
+    Args:
+        path: Path to the HDF5 file.
+        modality: Spectroscopy modality label to tag the dataset.
+
+    Returns:
+        An `IngestResult` with the dataset and metrics.
+
+    Raises:
+        ImportError: If `h5py` is not installed.
+    """
     if h5py is None:
         raise ImportError("h5py is required for HDF5 loading")
     p = Path(path)
@@ -260,6 +309,18 @@ def load_hdf5(path: str | Path, modality: str = "raman") -> IngestResult:
 
 
 def save_hdf5(dataset: FoodSpectrumSet, path: str | Path) -> Path:
+    """Save a `FoodSpectrumSet` to an HDF5 file.
+
+    Args:
+        dataset: Dataset to persist.
+        path: Destination file path.
+
+    Returns:
+        The resolved output `Path`.
+
+    Raises:
+        ImportError: If `h5py` is not installed.
+    """
     if h5py is None:
         raise ImportError("h5py is required for HDF5 writing")
     p = Path(path)
@@ -275,6 +336,19 @@ def save_hdf5(dataset: FoodSpectrumSet, path: str | Path) -> Path:
 def load_spectral_cube(
     path: str | Path, wavenumbers: Optional[np.ndarray] = None, modality: str = "hsi"
 ) -> IngestResult:
+    """Load a hyperspectral cube (HSI) from `.npy`/`.npz`.
+
+    Args:
+        path: Path to a NumPy file. `.npz` should contain a `cube` key.
+        wavenumbers: Optional wavenumber axis; defaults to `range(bands)`.
+        modality: Modality label, defaults to "hsi".
+
+    Returns:
+        An `IngestResult` with the flattened spectra and metrics.
+
+    Raises:
+        ValueError: If unsupported extension is used or data shape is not 3D.
+    """
     p = Path(path)
     if p.suffix.lower() in {".npz"}:
         data = np.load(p)["cube"]

@@ -195,7 +195,12 @@ SPC_BLOCK_TYPES_SUPPORTED: Dict[str, BlockTypeSupportEntry] = {
 
 
 def get_opus_support_summary() -> str:
-    """Get human-readable OPUS block type support summary."""
+    """Get a human-readable OPUS block type support summary.
+
+    Returns:
+        A multi-line string summarizing supported, untested, and unsupported
+        OPUS block types with known limitations.
+    """
     supported = [k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if v.supported and v.tested]
     supported_untested = [k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if v.supported and not v.tested]
     unsupported = [k for k, v in OPUS_BLOCK_TYPES_SUPPORTED.items() if not v.supported]
@@ -217,7 +222,12 @@ Known Limitations:
 
 
 def get_spc_support_summary() -> str:
-    """Get human-readable SPC block type support summary."""
+    """Get a human-readable SPC block type support summary.
+
+    Returns:
+        A multi-line string summarizing supported, untested, and unsupported
+        SPC block types with known limitations.
+    """
     supported = [k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if v.supported and v.tested]
     supported_untested = [k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if v.supported and not v.tested]
     unsupported = [k for k, v in SPC_BLOCK_TYPES_SUPPORTED.items() if not v.supported]
@@ -241,15 +251,11 @@ Known Limitations:
 def validate_opus_blocks(present_blocks: Set[str]) -> Dict[str, bool]:
     """Validate which OPUS blocks are safe to import.
 
-    Parameters
-    ----------
-    present_blocks : set
-        Block types detected in file.
+    Args:
+        present_blocks: Block types detected in a file.
 
-    Returns
-    -------
-    dict
-        {block_type: is_safe_to_import}.
+    Returns:
+        A mapping `{block_type: is_safe_to_import}`.
     """
     return {
         block: OPUS_BLOCK_TYPES_SUPPORTED[block].supported
@@ -261,15 +267,11 @@ def validate_opus_blocks(present_blocks: Set[str]) -> Dict[str, bool]:
 def validate_spc_blocks(present_blocks: Set[str]) -> Dict[str, bool]:
     """Validate which SPC blocks are safe to import.
 
-    Parameters
-    ----------
-    present_blocks : set
-        Block types detected in file.
+    Args:
+        present_blocks: Block types detected in a file.
 
-    Returns
-    -------
-    dict
-        {block_type: is_safe_to_import}.
+    Returns:
+        A mapping `{block_type: is_safe_to_import}`.
     """
     return {
         block: SPC_BLOCK_TYPES_SUPPORTED[block].supported
@@ -279,7 +281,14 @@ def validate_spc_blocks(present_blocks: Set[str]) -> Dict[str, bool]:
 
 
 def get_untested_blocks_opus(present_blocks: Set[str]) -> List[str]:
-    """Get list of present OPUS blocks that are supported but untested."""
+    """List present OPUS blocks that are supported but untested.
+
+    Args:
+        present_blocks: Block types detected in a file.
+
+    Returns:
+        A list of block identifiers.
+    """
     return [
         block
         for block in present_blocks
@@ -290,7 +299,14 @@ def get_untested_blocks_opus(present_blocks: Set[str]) -> List[str]:
 
 
 def get_untested_blocks_spc(present_blocks: Set[str]) -> List[str]:
-    """Get list of present SPC blocks that are supported but untested."""
+    """List present SPC blocks that are supported but untested.
+
+    Args:
+        present_blocks: Block types detected in a file.
+
+    Returns:
+        A list of block identifiers.
+    """
     return [
         block
         for block in present_blocks

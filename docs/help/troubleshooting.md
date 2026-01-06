@@ -1,7 +1,26 @@
 # Troubleshooting
 
 !!! info "Quick Help"
-    This page provides solutions to common technical issues encountered when using FoodSpec. For conceptual questions, see the [FAQ](faq.md). For bug reports, see [Reporting Guidelines](../troubleshooting/reporting_guidelines.md).
+    This page provides solutions to common technical issues encountered when using FoodSpec. For conceptual questions, see the [FAQ](faq.md). For reporting and reproducibility guidelines, see [Reporting & Reproducibility](reporting_and_reproducibility.md).
+
+---
+
+## Quick Problem Index
+
+| Stage | Problem | Quick Fix |
+|-------|---------|-----------|
+| **Installation** | pip install fails | Check Python version ≥3.8; update pip |
+| **Installation** | Import errors | Verify same Python/pip environment |
+| **Data** | Missing labels | Use metadata validation tools |
+| **Data** | Class imbalance | Use F1/PR metrics; resample or weight |
+| **Preprocessing** | Over-smoothing | Reduce Savitzky–Golay window |
+| **Preprocessing** | Poor baseline | Tune ALS lambda; try rubberband baseline |
+| **ML** | Overfitting | Regularize; simplify; use stratified CV |
+| **ML** | Data leakage | Ensure preprocessing inside Pipeline |
+| **Stats** | Non-normal residuals | Use nonparametric tests |
+| **Stats** | Multiple comparisons | Apply FDR/Tukey correction |
+| **Visualization** | Unlabeled axes | Label wavenumber (cm⁻¹), intensity (a.u.) |
+| **Workflow** | Wrong metrics | Consult workflow design guide |
 
 ---
 
@@ -880,7 +899,7 @@ If your problem isn't covered here:
 ## Related Pages
 
 - [FAQ](faq.md) – Frequently asked questions
+- [Reporting & Reproducibility](reporting_and_reproducibility.md) – Document results for publication
+- [How to Cite](how_to_cite.md) – Citation instructions for FoodSpec
 - [Validation → Leakage Prevention](../methods/validation/cross_validation_and_leakage.md) – Prevent data leakage
 - [Reference → Data Format](../reference/data_format.md) – Data validation checklist
-- [Troubleshooting FAQ](../troubleshooting/troubleshooting_faq.md) – Additional common issues
-- [Reporting Guidelines](../troubleshooting/reporting_guidelines.md) – How to report bugs

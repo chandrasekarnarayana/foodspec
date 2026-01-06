@@ -21,7 +21,20 @@ __all__ = [
 
 
 class VectorNormalizer(BaseEstimator, TransformerMixin):
-    """Vector normalization across spectral axis."""
+    """Vector normalization across the spectral axis.
+
+    Args:
+        norm: Normalization type. One of "l1", "l2", or "max".
+
+    Examples:
+        >>> from foodspec.preprocess import VectorNormalizer
+        >>> import numpy as np
+        >>> X = np.array([[1, 2, 3], [4, 5, 6]], dtype=float)
+        >>> normalizer = VectorNormalizer(norm="l2")
+        >>> X_norm = normalizer.fit_transform(X)
+        >>> np.allclose(np.linalg.norm(X_norm, axis=1), 1.0)
+        True
+    """
 
     def __init__(self, norm: Literal["l1", "l2", "max"] = "l2"):
         self.norm = norm
@@ -48,7 +61,20 @@ class VectorNormalizer(BaseEstimator, TransformerMixin):
 
 
 class AreaNormalizer(BaseEstimator, TransformerMixin):
-    """Normalize spectra to unit area."""
+    """Normalize spectra to unit area under the curve.
+
+    Uses trapezoidal integration to compute area and scales each spectrum
+    so its integral equals 1.
+
+    Examples:
+        >>> from foodspec.preprocess import AreaNormalizer
+        >>> import numpy as np
+        >>> X = np.array([[1, 2, 3], [4, 5, 6]], dtype=float)
+        >>> normalizer = AreaNormalizer()
+        >>> X_norm = normalizer.fit_transform(X)
+        >>> np.allclose(np.trapezoid(X_norm[0]), 1.0, atol=0.1)
+        True
+    """
 
     def fit(self, X: np.ndarray, y: Optional[np.ndarray] = None) -> "AreaNormalizer":
         return self
@@ -64,7 +90,29 @@ class AreaNormalizer(BaseEstimator, TransformerMixin):
 
 
 class InternalPeakNormalizer(BaseEstimator, TransformerMixin):
-    """Normalize spectra using an internal reference peak window."""
+    """Normalize spectra using an internal reference peak window.
+
+    Identifies a region around `target_wavenumber` and normalizes by the mean
+    intensity in that window. Useful when a stable reference peak is known.
+
+    Args:
+        target_wavenumber: Center of the reference peak (cm⁻¹).
+        window: Width of the window around `target_wavenumber` (cm⁻¹).
+
+    Raises:
+        ValueError: If no wavenumbers fall within the window or if parameters
+            are invalid.
+
+    Examples:
+        >>> from foodspec.preprocess import InternalPeakNormalizer
+        >>> import numpy as np
+        >>> X = np.array([[1, 2, 3, 4], [2, 3, 4, 5]], dtype=float)
+        >>> wavenumbers = np.array([1000, 1010, 1020, 1030], dtype=float)
+        >>> normalizer = InternalPeakNormalizer(target_wavenumber=1020, window=10)
+        >>> X_norm = normalizer.fit_transform(X, wavenumbers=wavenumbers)
+        >>> X_norm.shape == X.shape
+        True
+    """
 
     def __init__(self, target_wavenumber: float, window: float = 10.0):
         self.target_wavenumber = target_wavenumber
@@ -104,7 +152,22 @@ class InternalPeakNormalizer(BaseEstimator, TransformerMixin):
 
 
 class SNVNormalizer(BaseEstimator, TransformerMixin):
-    """Standard normal variate (SNV) normalization per spectrum."""
+    """Standard Normal Variate (SNV) normalization.
+
+    Centers each spectrum to zero mean and unit variance. Useful for reducing
+    multiplicative scatter and additive baseline effects in NIR/Raman spectra.
+
+    Examples:
+        >>> from foodspec.preprocess import SNVNormalizer
+        >>> import numpy as np
+        >>> X = np.array([[1, 2, 3], [4, 5, 6]], dtype=float)
+        >>> normalizer = SNVNormalizer()
+        >>> X_norm = normalizer.fit_transform(X)
+        >>> np.allclose(X_norm.mean(axis=1), 0.0, atol=1e-12)
+        True
+        >>> np.allclose(X_norm.std(axis=1), 1.0)
+        True
+    """
 
     def fit(self, X: np.ndarray, y: Optional[np.ndarray] = None) -> "SNVNormalizer":
         return self

@@ -42,7 +42,7 @@ For understanding FoodSpec's internals:
 
 ## Related Sections
 
-- **[Advanced Topics](../05-advanced-topics/index.md)** — Power-user features
+- **[Advanced Topics](../theory/index.md)** — Power-user features
 - **[Troubleshooting](../10-help/troubleshooting.md)** — Debug development issues
 - **[Reference](../reference/glossary.md)** — Technical reference materials
 

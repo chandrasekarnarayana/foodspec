@@ -257,7 +257,7 @@ print(f"Per-batch performance: {result.batch_metrics}")
 
 **Output:** Realistic performance estimates respecting batch structure; per-batch accuracy breakdown showing generalization.
 
-**Learn more:** [Validation Strategies](05-advanced-topics/validation_strategies.md) • [Data Governance](user-guide/data_governance.md)
+**Learn more:** [Validation Strategies](methods/validation/advanced_validation_strategies.md) • [Data Governance](user-guide/data_governance.md)
 
 ---
 
@@ -368,7 +368,7 @@ print(narrative)
 - **New to FoodSpec?** Start with [15-Minute Quickstart](getting-started/quickstart_15min.md)
 - **Ready for full tutorials?** See [Tutorials Index](tutorials/index.md)
 - **Need specific recipes?** Browse [Methods & Validation](methods/validation/index.md)
-- **Building production systems?** Read [Advanced Topics](05-advanced-topics/index.md)
+- **Building production systems?** Read [Theory & Advanced Methods](theory/index.md)
 
 ---
 
@@ -379,7 +379,7 @@ print(narrative)
 | **Oil Authentication** | Recipe #1, #8 | [Oil Workflow](workflows/authentication/oil_authentication.md) |
 | **Quality Monitoring** | Recipe #3, #10 | [Heating Quality](workflows/quality-monitoring/heating_quality_monitoring.md) |
 | **Preprocessing** | Recipe #2, #4, #7, #11 | [Preprocessing Guide](methods/preprocessing/baseline_correction.md) |
-| **Validation** | Recipe #9, #10 | [Validation Strategies](05-advanced-topics/validation_strategies.md) |
+| **Validation** | Recipe #9, #10 | [Validation Strategies](methods/validation/advanced_validation_strategies.md) |
 | **Production** | Recipe #6, #12 | [Reproducible Pipelines](tutorials/advanced/01-reproducible-pipelines.md) |
 | **Matrix Effects** | Recipe #5 | [Harmonization Theory](theory/harmonization_theory.md) |
 

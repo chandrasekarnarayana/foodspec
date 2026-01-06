@@ -8,7 +8,24 @@ __all__ = ["cosine_similarity_matrix", "correlation_similarity_matrix"]
 
 
 def cosine_similarity_matrix(X_ref: np.ndarray, X_query: np.ndarray) -> np.ndarray:
-    """Compute cosine similarity matrix between reference and query spectra."""
+    """Compute cosine similarity matrix between reference and query spectra.
+
+    Args:
+        X_ref: Reference spectra (n_ref, n_features).
+        X_query: Query spectra (n_query, n_features).
+
+    Returns:
+        Similarity matrix (n_ref, n_query) with values in [0, 1].
+
+    Examples:
+        >>> import numpy as np
+        >>> from foodspec.features.fingerprint import cosine_similarity_matrix
+        >>> X_ref = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> X_query = np.array([[1, 2, 3]])
+        >>> sim = cosine_similarity_matrix(X_ref, X_query)
+        >>> sim.shape
+        (2, 1)
+    """
 
     X_ref = np.asarray(X_ref, dtype=float)
     X_query = np.asarray(X_query, dtype=float)
@@ -21,7 +38,24 @@ def cosine_similarity_matrix(X_ref: np.ndarray, X_query: np.ndarray) -> np.ndarr
 
 
 def correlation_similarity_matrix(X_ref: np.ndarray, X_query: np.ndarray) -> np.ndarray:
-    """Compute Pearson correlation similarity matrix."""
+    """Compute Pearson correlation similarity matrix.
+
+    Args:
+        X_ref: Reference spectra (n_ref, n_features).
+        X_query: Query spectra (n_query, n_features).
+
+    Returns:
+        Correlation matrix (n_ref, n_query) with values in [-1, 1].
+
+    Examples:
+        >>> import numpy as np
+        >>> from foodspec.features.fingerprint import correlation_similarity_matrix
+        >>> X_ref = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> X_query = np.array([[2, 3, 4]])
+        >>> corr = correlation_similarity_matrix(X_ref, X_query)
+        >>> corr.shape
+        (2, 1)
+    """
 
     X_ref = np.asarray(X_ref, dtype=float)
     X_query = np.asarray(X_query, dtype=float)

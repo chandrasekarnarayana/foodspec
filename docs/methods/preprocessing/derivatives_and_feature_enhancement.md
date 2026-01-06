@@ -90,6 +90,84 @@ Preview derivatives alongside raw spectra with `foodspec.viz.plot_spectra` or a 
    - May reflect noise or artifacts
    - **Fix:** Validate derivative-based features against independent measurements; use statistical tests; report uncertainty
 
+## When to Use
+
+Use derivatives when:
+
+- **Overlapping peaks**: Lipid CH stretches or protein amide bands with overlapping components
+- **Baseline suppression**: Removing slow baseline drift that resists correction
+- **Subtle differences**: Detecting small compositional changes (adulteration, oxidation) masked by overall intensity
+- **Peak sharpening**: Resolving closely spaced peaks in crowded spectral regions
+- **Classification tasks**: Improving class separation by emphasizing peak edges and fine structure
+
+Specific applications:
+
+- **1st derivative**: Peak location, slope changes, resolving overlaps
+- **2nd derivative**: Peak height (negative peaks), fine structure, maximum resolution
+
+## When NOT to Use (Common Failure Modes)
+
+Avoid derivatives when:
+
+- **High noise levels**: SNR < 50; derivatives will amplify noise more than signal
+- **Quantitative analysis**: Peak areas/heights in derivative domain are harder to calibrate
+- **Already sharp peaks**: Well-separated peaks don't benefit from derivative enhancement
+- **Absolute intensities needed**: Derivatives remove DC component; relative information only
+- **Interpretation required**: Derivatives harder to interpret chemically than original spectra
+
+Specific risks:
+
+- **2nd derivative + low SNR**: Noise amplification makes features unusable
+- **High derivative orders (>2)**: Almost always dominated by noise
+- **Small windows**: Window < 5 points produces unstable derivatives
+
+## Recommended Defaults
+
+**For 1st derivative (peak location, overlap resolution):**
+```python
+from foodspec.preprocessing import savgol_smooth
+X_d1 = savgol_smooth(X, window_length=11, polyorder=3, deriv=1)
+```
+- `window_length=11`: Balances noise suppression and peak preservation
+- `polyorder=3`: Cubic polynomial preserves peak shapes
+- `deriv=1`: First derivative for slope/edges
+
+**For 2nd derivative (peak sharpening):**
+```python
+from foodspec.preprocessing import savgol_smooth
+X_d2 = savgol_smooth(X, window_length=15, polyorder=3, deriv=2)
+```
+- `window_length=15`: Larger window for 2nd derivative to control noise
+- `deriv=2`: Second derivative for maximum peak separation
+- Use only on moderate-to-high SNR spectra (SNR > 50)
+
+**For feature extraction from derivatives:**
+```python
+# Smooth first, then derive
+X_smooth = savgol_smooth(X, window_length=7, polyorder=2, deriv=0)
+X_deriv = savgol_smooth(X_smooth, window_length=11, polyorder=3, deriv=1)
+```
+- Two-step approach: initial smoothing + derivative for best results
+
+## See Also
+
+**API Reference:**
+
+- [savgol_smooth](../../api/preprocessing.md) - Savitzky-Golay filter with derivatives
+- [SavitzkyGolaySmoother](../../api/preprocessing.md) - Transformer class for pipelines
+
+**Related Methods:**
+
+- [Normalization & Smoothing](normalization_smoothing.md) - Smoothing theory and noise reduction
+- [Baseline Correction](baseline_correction.md) - Complementary to derivative baseline suppression
+- [Feature Extraction](feature_extraction.md) - Extracting peaks from derivative spectra
+- [PCA](../chemometrics/pca_and_dimensionality_reduction.md) - Dimensionality reduction on derivatives
+
+**Examples:**
+
+- [Peak Detection](../../examples_gallery.md) - Using derivatives for peak finding
+- [Classification Workflow](../../examples_gallery.md) - Derivatives in discrimination tasks
+
 ## Further reading
 - [Normalization & smoothing](normalization_smoothing.md)
 - [Feature extraction](feature_extraction.md)

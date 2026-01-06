@@ -20,13 +20,15 @@ def main():
     print(result.cv_metrics)
 
     # Plot confusion matrix
-    fig_cm = plot_confusion_matrix(result.confusion_matrix, result.class_labels)
-    fig_cm.savefig("oil_auth_confusion.png", dpi=150)
+    ax_cm = plot_confusion_matrix(result.confusion_matrix, result.class_labels)
+    fig_cm = ax_cm.get_figure()
+    fig_cm.savefig("outputs/oil_auth_confusion.png", dpi=150, bbox_inches="tight")
 
     # PCA visualization on preprocessed spectra
     pca, res = run_pca(fs.x, n_components=2)
-    fig_scores = plot_pca_scores(res.scores, labels=fs.metadata["oil_type"])
-    fig_scores.savefig("oil_auth_pca.png", dpi=150)
+    ax_pca = plot_pca_scores(res.scores, labels=fs.metadata["oil_type"])
+    fig_pca = ax_pca.get_figure()
+    fig_pca.savefig("outputs/oil_auth_pca.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 

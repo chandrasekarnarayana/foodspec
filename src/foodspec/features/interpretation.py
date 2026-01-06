@@ -54,19 +54,15 @@ def find_chemical_meanings(
 ) -> List[str]:
     """Return likely chemical meanings for a wavenumber.
 
-    Parameters
-    ----------
-    wavenumber : float
-        Center wavenumber to interpret.
-    modality : str, optional
-        Modality filter (raman/ftir/nir/any). Defaults to "any".
-    tolerance : float, optional
-        Additional half-window to accept matches even when outside the
-        entry's nominal window.
-    library : sequence of ChemicalMeaning, optional
-        Override the default meaning library.
-    top_n : int, optional
-        Number of matches to return sorted by proximity.
+    Args:
+        wavenumber: Center wavenumber to interpret.
+        modality: Modality filter ("raman", "ftir", "nir", "any"). Defaults to "any".
+        tolerance: Additional half-window to accept matches outside entry's nominal window.
+        library: Override the default chemical meaning library.
+        top_n: Number of matches to return, sorted by proximity.
+
+    Returns:
+        List of ChemicalMeaning objects (up to top_n) sorted by proximity.
     """
 
     lib = list(library or DEFAULT_CHEMICAL_LIBRARY)

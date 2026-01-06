@@ -1,11 +1,15 @@
 """
-Core IO utilities: detect format and route to appropriate loader.
+Core IO utilities.
+
+Provides format detection and routing to the appropriate reader so inputs
+are normalized into `FoodSpectrumSet` instances.
 """
 
 from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 from foodspec.core.dataset import FoodSpectrumSet
 from foodspec.io import csv_import
@@ -14,10 +18,14 @@ from foodspec.io.vendor_formats import read_opus, read_spc
 
 
 def detect_format(path: str | os.PathLike) -> str:
-    """
-    Detect input format based on extension or folder.
+    """Detect input format based on path.
 
-    Returns a string key such as: 'csv', 'folder_csv', 'jcamp', 'spc', 'opus', 'txt'.
+    Args:
+        path: File or directory path.
+
+    Returns:
+        A short string key such as "csv", "folder_csv", "jcamp", "spc",
+        "opus", "txt", or "unknown".
     """
 
     p = Path(path)
@@ -38,10 +46,21 @@ def detect_format(path: str | os.PathLike) -> str:
 
 
 def _to_spectrum_set_from_df(df) -> FoodSpectrumSet:
-    """
-    Build FoodSpectrumSet from a DataFrame with wavenumber plus intensity columns.
+    """Convert a DataFrame into a `FoodSpectrumSet`.
 
-    Assumes first column is wavenumber and remaining columns are samples.
+    Assumes the first column contains wavenumbers and the remaining columns
+    are per-sample intensity values.
+
+    Args:
+        df: Input data where column 0 is wavenumbers and columns 1..N are
+            intensity values for each sample.
+
+    Returns:
+        A `FoodSpectrumSet` with `x` shaped as (n_samples, n_wavenumbers)
+        and the provided wavenumber axis.
+
+    Raises:
+        ValueError: If fewer than two columns are present (no intensity data).
     """
 
     if not isinstance(df, csv_import.pd.DataFrame):
@@ -54,20 +73,20 @@ def _to_spectrum_set_from_df(df) -> FoodSpectrumSet:
     return FoodSpectrumSet(x=spectra, wavenumbers=wavenumbers, metadata=metadata, modality="raman")
 
 
-def read_spectra(path: str | os.PathLike, format: str | None = None, **kwargs) -> FoodSpectrumSet:
-    """
-    High-level loader that normalizes various formats into FoodSpectrumSet.
+def read_spectra(path: str | os.PathLike, format: str | None = None, **kwargs: Any) -> FoodSpectrumSet:
+    """Read spectra from multiple possible formats into `FoodSpectrumSet`.
 
-    Parameters
-    ----------
-    path : str or Path
-        File or folder path.
-    format : str, optional
-        Override detected format ('csv', 'folder_csv', 'jcamp', 'spc', 'opus').
+    Args:
+        path: File or folder path.
+        format: Optional override for the detected format. One of
+            "csv", "folder_csv", "jcamp", "spc", "opus".
+        **kwargs: Extra keyword arguments forwarded to the underlying loader.
 
-    Returns
-    -------
-    FoodSpectrumSet
+    Returns:
+        A `FoodSpectrumSet` loaded from the provided path.
+
+    Raises:
+        ValueError: If the format is unsupported or cannot be inferred.
     """
 
     fmt = format or detect_format(path)

@@ -31,6 +31,19 @@ def stats_report_for_feature(
 
     Chooses ANOVA + t-tests (parametric) or Kruskal + Mann–Whitney (nonparametric)
     based on normality flag. Applies BH correction to pairwise p-values.
+
+    Args:
+        values: Feature values (array-like).
+        groups: Group labels (array-like, same length as values).
+        normality: If True, perform Shapiro-Wilk normality test. Defaults to True.
+        alpha: Significance level for testing. Defaults to 0.05.
+        feature_name: Name of the feature for reporting. Defaults to "feature".
+        nonparametric: Force nonparametric tests if True; if None, decide based on
+            normality test.
+
+    Returns:
+        DataFrame with columns: feature, test, statistic, pvalue, effect_size_d,
+        normality_p, nonparametric, p_adj, reject.
     """
 
     vals = np.asarray(values, dtype=float)

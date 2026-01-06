@@ -320,7 +320,7 @@ A: A Raman or FTIR spectrometer. If you have CSV files of spectra, you already h
 A: Yes! FoodSpec works on any food with spectroscopy data. Common uses: dairy, honey, spices, beverages.
 
 **Q: Is this suitable for regulatory/legal use?**  
-A: FoodSpec provides research-grade tools. For regulatory compliance, see [validation_strategies.md](../05-advanced-topics/validation_strategies.md) for proper validation protocols.
+A: FoodSpec provides research-grade tools. For regulatory compliance, see [validation_strategies.md](../methods/validation/advanced_validation_strategies.md) for proper validation protocols.
 
 **Q: How do I cite FoodSpec in a paper?**  
 A: See the [FAQ](../10-help/faq.md#how-do-i-cite-foodspec) for citation details.

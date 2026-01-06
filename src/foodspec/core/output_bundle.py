@@ -19,21 +19,14 @@ class OutputBundle:
 
     Manages the triple output (metrics + diagnostics + provenance) and exports to disk.
 
-    Parameters
-    ----------
-    run_record : RunRecord
-        Provenance record for the workflow.
+    Args:
+        run_record (RunRecord): Provenance record for the workflow.
 
-    Attributes
-    ----------
-    metrics : dict
-        Quantitative results (accuracy, F1, RMSE, etc.).
-    diagnostics : dict
-        Plots and tables (confusion matrix, feature importance, etc.).
-    artifacts : dict
-        Portable exports (model, preprocessor, etc.).
-    run_record : RunRecord
-        Provenance.
+    Attributes:
+        metrics (dict): Quantitative results (accuracy, F1, RMSE, etc.).
+        diagnostics (dict): Plots and tables (confusion matrix, feature importance, etc.).
+        artifacts (dict): Portable exports (model, preprocessor, etc.).
+        run_record (RunRecord): Provenance.
     """
 
     run_record: RunRecord
@@ -45,36 +38,27 @@ class OutputBundle:
     def add_metrics(self, name: str, value: Any) -> None:
         """Add a metric.
 
-        Parameters
-        ----------
-        name : str
-            Metric name (e.g., "accuracy").
-        value : Any
-            Metric value (number, array, dataframe).
+        Args:
+            name (str): Metric name (e.g., "accuracy").
+            value (Any): Metric value (number, array, DataFrame).
         """
         self.metrics[name] = value
 
     def add_diagnostic(self, name: str, value: Any) -> None:
         """Add a diagnostic (plot, table, figure).
 
-        Parameters
-        ----------
-        name : str
-            Diagnostic name (e.g., "confusion_matrix").
-        value : Any
-            Diagnostic (matplotlib Figure, np.ndarray, pd.DataFrame, dict).
+        Args:
+            name (str): Diagnostic name (e.g., "confusion_matrix").
+            value (Any): Diagnostic (Figure, ndarray, DataFrame, dict, str).
         """
         self.diagnostics[name] = value
 
     def add_artifact(self, name: str, value: Any) -> None:
         """Add an artifact (model, preprocessor, scaler, etc.).
 
-        Parameters
-        ----------
-        name : str
-            Artifact name (e.g., "model").
-        value : Any
-            Artifact object.
+        Args:
+            name (str): Artifact name (e.g., "model").
+            value (Any): Artifact object.
         """
         self.artifacts[name] = value
 
@@ -91,17 +75,12 @@ class OutputBundle:
         - artifacts/ (models as joblib/pickle)
         - provenance.json (run_record)
 
-        Parameters
-        ----------
-        output_dir : str or Path
-            Output directory.
-        formats : list of str, optional
-            Export formats to use. Default: ['json', 'csv', 'png', 'joblib'].
+        Args:
+            output_dir (str | Path): Output directory.
+            formats (list[str] | None): Export formats. Default: ["json", "csv", "png", "joblib"].
 
-        Returns
-        -------
-        Path
-            Output directory path.
+        Returns:
+            Path: Output directory path.
         """
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -128,7 +107,12 @@ class OutputBundle:
         return output_dir
 
     def _export_metrics(self, output_dir: Path, formats: List[str]) -> None:
-        """Export metrics to disk."""
+        """Export metrics to disk.
+
+        Args:
+            output_dir (Path): Destination directory.
+            formats (list[str]): Formats to export ("json", "csv").
+        """
         if not self.metrics:
             return
 
@@ -147,7 +131,12 @@ class OutputBundle:
                     value.to_csv(metrics_dir / f"{name}.csv", index=True)
 
     def _export_diagnostics(self, output_dir: Path, formats: List[str]) -> None:
-        """Export diagnostics to disk."""
+        """Export diagnostics to disk.
+
+        Args:
+            output_dir (Path): Destination directory.
+            formats (list[str]): Formats to export ("png", "pdf", "csv", "npy", "json").
+        """
         if not self.diagnostics:
             return
 
@@ -183,7 +172,12 @@ class OutputBundle:
                 (diag_dir / f"{name}.html").write_text(value, encoding="utf-8")
 
     def _export_artifacts(self, output_dir: Path, formats: List[str]) -> None:
-        """Export artifacts to disk."""
+        """Export artifacts to disk.
+
+        Args:
+            output_dir (Path): Destination directory.
+            formats (list[str]): Formats to export ("joblib", "pickle").
+        """
         if not self.artifacts:
             return
 
@@ -206,15 +200,11 @@ class OutputBundle:
     def _make_serializable(obj: Any) -> Any:
         """Recursively convert objects to JSON-serializable types.
 
-        Parameters
-        ----------
-        obj : Any
-            Object to convert.
+        Args:
+            obj (Any): Object to convert.
 
-        Returns
-        -------
-        Any
-            JSON-serializable version.
+        Returns:
+            Any: JSON-serializable version.
         """
         if isinstance(obj, dict):
             return {k: OutputBundle._make_serializable(v) for k, v in obj.items()}
@@ -232,12 +222,10 @@ class OutputBundle:
             return str(obj)
 
     def summary(self) -> str:
-        """Generate summary string of outputs.
+        """Generate human-readable summary of outputs.
 
-        Returns
-        -------
-        str
-            Human-readable summary.
+        Returns:
+            str: Summary string.
         """
         lines = [
             f"OutputBundle(run_id={self.run_record.run_id})",

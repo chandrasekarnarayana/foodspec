@@ -123,7 +123,7 @@ steps:
 - **CLI:** pass `--protocol path/to/protocol.yaml` or a known name if installed via plugin.  
 - **Plugins:** can register protocols via entry points; see [registry_and_plugins.md](registry_and_plugins.md) and [writing_plugins.md](../developer-guide/writing_plugins.md).
 
-For more on validation and harmonization options, see [validation_strategies.md](../05-advanced-topics/validation_strategies.md) and [hsi_and_harmonization.md](../theory/harmonization_theory.md).
+For more on validation and harmonization options, see [validation_strategies.md](../methods/validation/advanced_validation_strategies.md) and [hsi_and_harmonization.md](../theory/harmonization_theory.md).
 
 ---
 

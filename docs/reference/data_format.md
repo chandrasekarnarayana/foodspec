@@ -733,7 +733,7 @@ if __name__ == "__main__":
 - [Glossary](glossary.md) - Definitions of key terms
 - [IO API](../api/io.md) - Loading and saving functions
 - [Preprocessing Guide](../methods/preprocessing/normalization_smoothing.md) - Data cleaning
-- [Validation Strategies](../05-advanced-topics/validation_strategies.md) - CV best practices
+- [Validation Strategies](../methods/validation/advanced_validation_strategies.md) - CV best practices
 
 **Quick Start Guides:**
 - [Python API Quickstart](../getting-started/quickstart_python.md)

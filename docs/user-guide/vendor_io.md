@@ -58,7 +58,7 @@ ds_harmonized.to_hdf5("harmonized_data.h5")
 
 ## Next Steps
 
-- **Troubleshooting:** [Vendor format issues](../help/troubleshooting.md#vendor-io-errors)
+- **Troubleshooting:** [Vendor format issues](../help/troubleshooting.md#data-loading-issues)
 - **Data format details:** [CSV/HDF5 schema](data_formats_and_hdf5.md)
 - **Plugins:** [Register custom loaders](registry_and_plugins.md)
 - **Multi-instrument workflows:** [Harmonization guide](../workflows/harmonization_automated_calibration.md)
