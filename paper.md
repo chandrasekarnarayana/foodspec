@@ -35,239 +35,93 @@ bibliography: paper.bib
 
 ## Summary
 
-FoodSpec is a production-ready Python toolkit providing unified, reproducible workflows for food science spectroscopy analysis. It transforms raw Raman, FTIR, and hyperspectral imaging (HSI) data into actionable results through automated preprocessing, feature extraction, chemometrics, machine learning, and domain-specific workflows such as oil authentication and heating degradation assessment. Built on modern Python standards (PEP 517/518, type hints, comprehensive testing), FoodSpec enables research teams to implement FAIR-aligned protocols with built-in data governance, artifact versioning, and narrative reporting.
+FoodSpec is an open-source Python toolkit for vibrational spectroscopy analysis in food science. It addresses reproducibility and standardization gaps by providing unified data structures, validated preprocessing methods, and production-ready machine learning pipelines for Raman, FTIR, NIR, and hyperspectral imaging data. The software integrates 30+ preprocessing methods, 10+ machine learning algorithms, automated data governance checks, and domain workflows for oil authentication, thermal degradation, and mixture analysis. FoodSpec is built on modern Python packaging with 79% test coverage across 689 tests, ensuring reliability for research and industrial applications.
 
 ## Statement of Need
 
-Food science laboratories face a reproducibility crisis stemming from fragmented, proprietary analysis workflows. Published chemometrics studies show concerning gaps in rigor: a 2022 survey found that **42% of published papers** exhibit evidence of data leakage (preprocessing before cross-validation splitting, replicate leakage, or inadequate validation strategies), with many reporting >95% classification accuracies that fail to replicate in external validation [@survey2022].
+Vibrational spectroscopy (Raman, FTIR, NIR) enables rapid, non-destructive assessment of food composition, authenticity, and quality. However, spectroscopic workflows face critical barriers to reproducibility and standardization.
 
-### The Core Problem
+### Fragmentation and Vendor Lock-in
 
-**Fragmentation across instrument vendors**: Bruker, Thermo Fisher, Perkin Elmer, and others use incompatible formats (OPUS, SPC, proprietary binary). Analysts must manually convert, preprocess, and validate results, consuming **60–70% of analysis time**. This manual burden creates inconsistency and limits reproducibility.
+Commercial instruments (Bruker, Thermo Fisher, Perkin Elmer) generate data in proprietary formats (OPUS, SPC, binary files), requiring manual conversion and vendor-specific software [@larkin2011]. This prevents data sharing between laboratories and limits method transferability. Existing open-source tools address narrow aspects: ChemoSpec [@chemospec] provides multivariate analysis (PCA, PLS) in R but lacks machine learning and hyperspectral support; HyperSpy [@hyperspy] excels at HSI preprocessing but lacks chemometric workflows; commercial alternatives (ProspectuR, ENVI) remain closed-source and expensive.
 
-**Lack of standardized data models**: No unified representation for spectral data exists across labs. Each team reinvents preprocessing pipelines, parameter selection, and validation strategies, preventing knowledge transfer and method standardization.
+### Reproducibility Crisis in Chemometrics
 
-**Proprietary tools with vendor lock-in**: Commercial software (ChemoSpec Assistant, ENVI) are expensive, closed-source, and not suitable for peer-reviewed research requiring transparent methodology.
+Published food spectroscopy studies exhibit methodological issues compromising reproducibility. Common errors include preprocessing before train-test splitting (data leakage), splitting replicates across training and validation sets (inflating accuracy), and lack of standardized validation [@leite2013; @varoquaux2017]. Classification models reporting >95% accuracy on olive oil authentication often fail to generalize to external datasets or different instruments [@danezis2016]. No tools automatically detect and prevent such errors.
 
-**Existing open-source tools are incomplete**:
-- **ChemoSpec** (R ecosystem): Limited to multivariate analysis (PCA, PLS); no HSI support; no production ML algorithms
-- **HyperSpy** (Python): Excellent for raw HSI preprocessing but lacks ML pipelines, statistical validation, and domain workflows
-- **ProspectuR**: Proprietary; no transparent methodology
+### The Need for Integrated, Domain-Aware Tooling
 
-### Why FoodSpec Addresses This Gap
+Food science requires domain-specific workflows encoding expert knowledge. Authenticating extra virgin olive oil requires specific Raman band ratios (1440/1660 cm⁻¹, 1655/1440 cm⁻¹) [@cepeda2019], thermal degradation needs trajectory analysis over heating time [@galtier2007], and hyperspectral imaging demands per-pixel classification with spatial context [@gowen2007]. Existing tools do not provide these application-ready workflows.
 
-FoodSpec provides a **complete, unified toolkit** that researchers and industry labs can deploy immediately:
+### FoodSpec's Solution
 
-1. **Unified API**: Single Python interface for Raman, FTIR, NIR, and HSI, abstracting vendor format complexity
-2. **Reproducibility by Design**: Protocol-driven execution (YAML config), full provenance logging, artifact versioning, automatic report generation
-3. **Production-Ready Validation**: Nested cross-validation, data leakage detection, batch effect monitoring, replicate consistency checks
-4. **Domain Workflows**: Pre-configured, peer-reviewed protocols for oil authentication, heating degradation, mixture composition, and quality control
-5. **Enterprise Features**: Model registry with versioning, CLI automation, batch processing, narrative reporting
-6. **FAIR Alignment**: Open-source (MIT license), well-documented, discoverable, and interoperable with scikit-learn ecosystem
+FoodSpec provides the first comprehensive, open-source toolkit combining vendor-agnostic import, validated preprocessing, production machine learning, and domain workflows. It implements six baseline correction methods (ALS, rubberband, polynomial, airPLS, modified polynomial, rolling ball) [@eilers2005], four normalization approaches (vector, SNV, MSC, area), and automated data governance detecting preprocessing-before-split leakage, replicate contamination, and batch effects. Machine learning includes nested cross-validation, calibration diagnostics (Brier score, reliability diagrams), and hyperparameter optimization for 10+ algorithms. Domain workflows for oil authentication, heating degradation, and mixture analysis encapsulate peer-reviewed protocols.
 
-FoodSpec transforms food spectroscopy from a manual, error-prone process into a standardized, automated workflow suitable for high-throughput screening and regulatory approval.
+FoodSpec prioritizes reproducibility: protocol-driven execution via YAML ensures all parameters are version-controlled; automated artifact versioning tracks transformations, models, and figures; narrative report generation produces publication-ready markdown. The software is validated through 689 tests covering preprocessing correctness, statistical accuracy, and end-to-end workflows, with continuous integration on Python 3.10–3.12.
 
-## Key Features
+## Key Features and Implementation
 
-### Data Handling & Import
-- Unified data structures: `FoodSpectrumSet`, `HyperSpectralCube`, `MultiModalDataset`
-- Multi-format import: CSV, TXT, JCAMP-DX, HDF5
-- Optional vendor support: OPUS (Bruker), SPC (Thermo)
+FoodSpec's architecture separates data I/O, preprocessing, feature extraction, statistical analysis, and domain applications. The core data model provides `FoodSpectrumSet` for 1D spectra (Raman, FTIR, NIR), `HyperSpectralCube` for 3D spatial-spectral data, and `MultiModalDataset` for fused measurements. All structures support lazy HDF5 loading for large datasets.
 
-### Preprocessing
-- **6 baseline correction methods**: ALS, rubberband, polynomial, airPLS, modified polynomial, rolling ball
-- **4 normalization methods**: Vector, area, reference, SNV, MSC
-- **Smoothing**: Savitzky-Golay, moving average, Gaussian, median
-- **Derivatives & scatter correction**: MSC, EMSC, ATR correction
-- **Cosmic ray removal & spike detection**
+The preprocessing module implements validated methods: asymmetric least squares baseline correction [@eilers2005], rubberband (convex hull), polynomial fitting, airPLS, and rolling ball algorithms; normalization (vector, SNV, MSC, area); Savitzky-Golay smoothing; and derivatives. All operations are immutable, creating new spectral objects for reproducibility. Feature extraction includes automated peak detection with chemical lookups, band ratio calculations, spectral fingerprinting, PCA/PLS projections, and Variable Importance in Projection (VIP) scores.
 
-### Feature Extraction
-- Peak, band, and ratio detection with chemical library interpretation
-- Ratiometric Questions (RQ) engine for reproducible ratio computation
-- PCA/PLS dimensionality reduction with comprehensive visualization
-- Variable Importance in Projection (VIP) scores
+Machine learning integrates scikit-learn-compatible classifiers and regressors with nested cross-validation for unbiased performance estimation. The validation framework prevents errors: preprocessing occurs within cross-validation folds, replicate groups remain together, and batch effects are monitored. Calibration diagnostics (Brier score, expected calibration error, reliability diagrams) assess prediction uncertainty. Statistical testing includes parametric and non-parametric methods with multiple testing correction and effect size reporting.
 
-### Chemometrics & Machine Learning
-- **10+ classification algorithms**: Logistic Regression, SVM, Random Forest, Gradient Boosting, PLS-DA, SIMCA
-- **Regression**: Linear, PLS, Random Forest, XGBoost, LightGBM
-- **Mixture analysis**: NNLS, MCR-ALS
-- **Nested cross-validation** for unbiased evaluation
-- **Calibration diagnostics**: Reliability diagrams, Brier score, ECE
+Pre-configured workflows implement peer-reviewed protocols. Oil authentication combines Raman band ratios with PLS-DA classification [@muik2004; @cepeda2019]. Heating degradation tracks oxidation markers over time [@galtier2007]. Mixture analysis via NNLS and MCR-ALS quantifies component concentrations [@tauler1995]. Each workflow generates standardized reports with confusion matrices, ROC curves, and feature importance plots.
 
-### Statistical Analysis
-- Hypothesis tests: t-test, ANOVA, MANOVA, Kruskal-Wallis, Wilcoxon
-- Multiple testing correction: Bonferroni, Benjamini-Hochberg
-- Effect sizes: Cohen's d, eta², omega²
-- Power analysis, sample size calculation
-- Bland-Altman method comparison
-
-### Quality Control & Data Governance
-- **Batch QC**: Drift monitoring, novelty detection
-- **Replicate consistency**: Intra-assay RSD checks
-- **Leakage detection**: Identifies preprocessing-before-split errors
-- **Batch effect monitoring**: Detects instrument drift or sample handling bias
-
-### Domain Workflows
-- **Oil authentication**: Detect adulteration, verify purity (olive, vegetable, palm)
-- **Heating degradation**: Track oxidation/polymerization trajectories
-- **Mixture analysis**: Quantify component composition
-- **Hyperspectral imaging**: Pixel-level classification, spatial mapping
-- **Calibration transfer**: Direct standardization (DS), piecewise DS (PDS)
-
-### Reproducibility & Reporting
-- **Protocol-driven execution**: YAML configuration for reproducible runs
-- **Model registry**: Version control, lifecycle tracking, provenance
-- **Automated reporting**: Narrative markdown + figures + tables
-- **CLI commands**: 7 entry points for batch processing
-
-## Implementation
-
-### Architecture
-FoodSpec follows a **modular, layered architecture**:
-
-```
-┌─────────────────────────────────────────┐
-│         High-Level API (FoodSpec)       │  User-facing interface
-├─────────────────────────────────────────┤
-│    Domain Workflows (oils, heating)     │  Pre-built solutions
-├─────────────────────────────────────────┤
-│   Core Modules (preprocessing, ML,      │  Reusable components
-│    stats, chemometrics, features)       │
-├─────────────────────────────────────────┤
-│  Data Model (Spectrum, SpectrumSet,     │  Data structures
-│   HyperSpectralCube, MultiModalDataset) │
-├─────────────────────────────────────────┤
-│     IO Layer (CSV, HDF5, OPUS, SPC)     │  Input/output
-└─────────────────────────────────────────┘
-```
-
-### Core Components
-- **`spectral_dataset.py`**: Core data structures with lazy loading support
-- **`preprocessing_pipeline.py`**: Configurable preprocessing chains
-- **`chemometrics/`**: PCA, PLS, mixture analysis, validation
-- **`ml/`**: Classifier/regressor factories with hyperparameter tuning
-- **`apps/`**: Domain workflows (oils, heating, QC, mixtures)
-- **`protocol_engine.py`**: YAML-driven protocol execution
-- **`reporting.py`**: Automated narrative report generation
-
-### Design Decisions
-1. **NumPy/SciPy foundation**: Fast array operations, established ecosystem
-2. **scikit-learn compatibility**: Familiar API for data scientists
-3. **Lazy loading**: HDF5 libraries don't load into memory until needed
-4. **Immutable data flows**: Preprocessing chains don't modify originals
-5. **Type hints throughout**: Better IDE support, runtime validation
+FoodSpec employs modern Python packaging (PEP 517/518, pyproject.toml, type hints throughout). The test suite comprises 689 tests achieving 79% coverage. Continuous integration via GitHub Actions runs tests on Python 3.10–3.12 for every commit. Documentation uses MkDocs with 150+ pages of guides, API references, and examples.
 
 ## Usage Example
 
-### Python API (5 minutes)
+Oil authentication from Raman spectra:
+
 ```python
 from foodspec import load_library, FoodSpec
 
-# Load dataset
-library = load_library("oils_demo.h5")
-
-# Create FoodSpec instance
+library = load_library("oils_raman.h5")
 fs = FoodSpec(library)
 
-# Run oil authentication workflow
 result = fs.oil_authentication(
     label_column="oil_type",
     test_size=0.2,
-    cv_folds=10
+    cv_folds=10,
+    preprocessing=["baseline_als", "normalize_snv", "smooth_savgol"]
 )
 
-# Results
 print(f"Balanced Accuracy: {result.balanced_accuracy:.3f}")
-print(f"Confusion Matrix:\n{result.confusion_matrix}")
-
-# Generate report
-report = fs.generate_report(output_dir="results/")
+report_path = fs.generate_report(output_dir="results/")
 ```
 
-### CLI (5 minutes)
+Command-line batch processing:
+
 ```bash
-# Convert CSV to HDF5 library
 foodspec csv-to-library raw_spectra.csv library.h5 \
-  --wavenumber-col wavenumber \
-  --sample-id-col sample_id
+  --wavenumber-col wavenumber --sample-id-col sample_id
 
-# Run oil authentication
-foodspec oil-auth library.h5 \
-  --label oil_type \
-  --output results/
-
-# Inspect model registry
-foodspec registry ls
-foodspec registry info model_v1.pkl
+foodspec oil-auth library.h5 --label oil_type \
+  --preprocessing als,snv,savgol --output results/
 ```
 
-### Protocol-Driven (Reproducible Batch Processing)
+Protocol-driven execution via YAML:
+
 ```yaml
-# config.yaml
 protocol: oil_authentication
-library: oils.h5
-label_column: oil_type
+data: {library: oils_raman.h5, label_column: oil_type}
 preprocessing:
-  baseline: als
-  normalization: snv
-  smoothing: savgol
-model:
-  algorithm: random_forest
-  hyperparams:
-    n_estimators: 100
-    max_depth: 10
-validation:
-  cv_folds: 10
-  nested: true
-reporting:
-  figures: [confusion_matrix, roc, feature_importance]
-  output_dir: results/
+  - {method: baseline_als, lambda: 1e5}
+  - {method: normalize_snv}
+  - {method: smooth_savgol, window_length: 11}
+model: {algorithm: random_forest, hyperparameters: {n_estimators: 100}}
+validation: {cv_strategy: stratified_kfold, n_folds: 10, nested: true}
+output: {figures: [confusion_matrix, roc_curve, feature_importance]}
 ```
 
-```bash
-foodspec-run-protocol config.yaml
-```
+## Comparison to Related Software
 
-## Comparison to Existing Software
-
-| Feature | FoodSpec | ChemoSpec | HyperSpy | ProspectuR |
-|---------|----------|-----------|----------|-----------|
-| **Language** | Python 3.10+ | R | Python | Proprietary |
-| **Raman Support** | ✅ Full | ✅ Limited | ❌ No | Unknown |
-| **FTIR Support** | ✅ Full | ✅ Limited | ❌ No | ✅ Unknown |
-| **HSI Support** | ✅ Full | ❌ No | ✅ Raw only | ❌ No |
-| **Baseline Methods** | 6 | 2 | 1 | Unknown |
-| **ML Algorithms** | 10+ | ❌ None | ❌ None | Unknown |
-| **Nested CV** | ✅ Yes | ❌ No | ❌ No | Unknown |
-| **Data Leakage Detection** | ✅ Yes | ❌ No | ❌ No | Unknown |
-| **Domain Workflows** | ✅ Yes (oil, heating, QC) | ❌ No | ❌ No | Unknown |
-| **Model Registry** | ✅ Yes | ❌ No | ❌ No | Unknown |
-| **Protocol-Driven** | ✅ Yes | ❌ No | ❌ No | Unknown |
-| **Open Source** | ✅ MIT | ✅ GPL3 | ✅ GPL3 | ❌ No |
-| **Maintenance** | Active | Moderate | Very Active | Closed |
-
-**Why FoodSpec is Unique**: It's the only open-source toolkit combining **complete spectroscopy preprocessing + production ML + data governance + domain workflows** in a single, well-tested package.
-
-## Validation & Quality Assurance
-
-- **689 unit and integration tests** covering core functionality
-- **79% code coverage** (exceeds research standards)
-- **Continuous Integration**: GitHub Actions on every commit (Python 3.10–3.12)
-- **Type hints**: 95%+ of code base
-- **Code linting**: ruff (PEP 8, flake8) with zero violations
-- **Automated builds**: MkDocs documentation regeneration on release
-
-## Sustainability & Maintenance
-
-FoodSpec is maintained by Chandrasekar Subramani Narayana with active contribution from the food science group at SSSIHL. The project includes:
-- Comprehensive documentation (150+ pages)
-- Contributing guidelines and code of conduct
-- Automated testing and CI/CD pipeline
-- Clear versioning and release notes (semantic versioning)
-- Active issue tracking and community engagement
+FoodSpec differs from existing tools in scope and integration. ChemoSpec [@chemospec] provides PCA and clustering but lacks machine learning and data governance. HyperSpy [@hyperspy] excels at HSI preprocessing but omits classification pipelines and validation frameworks. Orange Data Mining offers visual workflows but is not spectroscopy-specialized. Commercial software (ProspectuR, ENVI) remains closed-source, limiting reproducibility. FoodSpec is the only open-source toolkit combining validated preprocessing, production machine learning, automated data governance, and food-specific workflows suitable for regulatory submissions.
 
 ## Acknowledgments
 
-We thank the Department of Food and Nutritional Sciences and Department of Physics at Sri Sathya Sai Institute of Higher Learning for scientific guidance and laboratory support. We acknowledge the open-source Python community, particularly scikit-learn, NumPy, SciPy, and XGBoost contributors.
+The authors thank Dr. Jhinuk Gupta, Dr. Sai Muthukumar V, Ms. Amrita Shaw (Department of Food and Nutritional Sciences and Department of Physics, Sri Sathya Sai Institute of Higher Learning, India), and Deepak L. N. Kallepalli (Cognievolve AI Inc., Canada) for scientific guidance, laboratory support, and collaborative development. This work benefited from infrastructure support at Aix-Marseille Université. We acknowledge the open-source Python scientific computing community, particularly the scikit-learn, NumPy, SciPy, XGBoost, and LightGBM development teams, whose libraries form the foundation of FoodSpec's implementation.
 
 ## References
