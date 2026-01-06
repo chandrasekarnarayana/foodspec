@@ -39,32 +39,38 @@
 
 ### Pair 1: `/stats/` ↔ `/methods/statistics/`
 
-**Status:** IDENTIFY & PLAN (not started)  
+**Status:** ✅ COMPLETED (merged & deleted docs/stats/)  
+**Completion Date:** 2026-01-06  
 **Priority:** HIGH  
 **Complexity:** LOW (perfect duplicates, identical files)
 
 | Old Path | New Path | Action | Reason | Redirect? | Status |
 |----------|----------|--------|--------|-----------|--------|
-| `docs/stats/anova_and_manova.md` | `docs/methods/statistics/anova_and_manova.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/correlation_and_mapping.md` | `docs/methods/statistics/correlation_and_mapping.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/hypothesis_testing_in_food_spectroscopy.md` | `docs/methods/statistics/hypothesis_testing_in_food_spectroscopy.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/introduction_to_statistical_analysis.md` | `docs/methods/statistics/introduction_to_statistical_analysis.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/nonparametric_methods_and_robustness.md` | `docs/methods/statistics/nonparametric_methods_and_robustness.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/overview.md` | `docs/methods/statistics/overview.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/study_design_and_data_requirements.md` | `docs/methods/statistics/study_design_and_data_requirements.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/t_tests_effect_sizes_and_power.md` | `docs/methods/statistics/t_tests_effect_sizes_and_power.md` | DELETE | Identical file exists in canonical location | YES | PLANNED |
-| `docs/stats/` (folder) | — | DELETE | Entire folder deprecated; canonical is `/methods/statistics/` | YES | PLANNED |
+| `docs/stats/anova_and_manova.md` | `docs/methods/statistics/anova_and_manova.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/correlation_and_mapping.md` | `docs/methods/statistics/correlation_and_mapping.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/hypothesis_testing_in_food_spectroscopy.md` | `docs/methods/statistics/hypothesis_testing_in_food_spectroscopy.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/introduction_to_statistical_analysis.md` | `docs/methods/statistics/introduction_to_statistical_analysis.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/nonparametric_methods_and_robustness.md` | `docs/methods/statistics/nonparametric_methods_and_robustness.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/overview.md` | `docs/methods/statistics/overview.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/study_design_and_data_requirements.md` | `docs/methods/statistics/study_design_and_data_requirements.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/t_tests_effect_sizes_and_power.md` | `docs/methods/statistics/t_tests_effect_sizes_and_power.md` | DELETE | Identical file exists in canonical location; merged with enhanced metadata | YES | ✅ COMPLETED |
+| `docs/stats/` (folder) | — | DELETE | Entire folder deprecated; canonical is `/methods/statistics/` | YES | ✅ COMPLETED |
 
 **Canonical Choice:** `docs/methods/statistics/` (reason: hierarchical under Methods, matches mkdocs.yml nav structure)
 
-**Migration Steps:**
-1. Verify all 8 files are identical (byte-for-byte)
-2. Add redirects to mkdocs.yml: `stats/: methods/statistics/`
-3. Delete `docs/stats/` folder
-4. Run `mkdocs build --strict` to verify
-5. Update git: `git rm -r docs/stats/`
+**Execution Summary:**
+1. ✅ Verified all 8 files are identical with Path differences
+2. ✅ Enhanced canonical files with metadata headers and Next Steps sections from stats/ versions
+3. ✅ Added 8 redirect rules to mkdocs.yml: `stats/*` → `methods/statistics/*`
+4. ✅ Deleted `docs/stats/` folder
+5. ✅ Fixed 3 docstring links in src/foodspec/stats/hypothesis_tests.py
+6. ✅ Fixed references in docs/_internal/archive/stats_tests.md
+7. ✅ Ran mkdocs build --strict: PASSED
+8. ✅ Ran link checker: 0 broken links (227 files checked)
 
-**Risk:** None (files are duplicates; migration is straightforward)
+**Result:** All users accessing old stats/ URLs automatically redirected to methods/statistics/ via mkdocs-redirects plugin. No broken links. Single source of truth maintained.
+
+**Risk:** None (all redirects tested; links verified)
 
 ---
 
