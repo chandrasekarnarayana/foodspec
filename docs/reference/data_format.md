@@ -78,7 +78,7 @@ from foodspec.io import load_spc_file
 spectra = load_spc_file("mydata.spc")
 ```
 
-See the [I/O API documentation](../08-api/io.md) for complete loader reference.
+See the [I/O API documentation](../api/io.md) for complete loader reference.
 
 ---
 
@@ -731,7 +731,7 @@ if __name__ == "__main__":
 
 **Related Documentation:**
 - [Glossary](glossary.md) - Definitions of key terms
-- [IO API](../08-api/io.md) - Loading and saving functions
+- [IO API](../api/io.md) - Loading and saving functions
 - [Preprocessing Guide](../methods/preprocessing/normalization_smoothing.md) - Data cleaning
 - [Validation Strategies](../05-advanced-topics/validation_strategies.md) - CV best practices
 

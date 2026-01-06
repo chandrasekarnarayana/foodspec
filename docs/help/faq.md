@@ -640,7 +640,7 @@ Archive your exact FoodSpec version on Zenodo for reproducibility:
 ## Chemometrics & Machine Learning
 
 - Model selection, tuning, and validation: see [Model Evaluation & Validation](../methods/chemometrics/model_evaluation_and_validation.md).
-- API details: [ML API](../08-api/ml.md) and [Chemometrics API](../08-api/chemometrics.md).
+- API details: [ML API](../api/ml.md) and [Chemometrics API](../api/chemometrics.md).
 - For workflows, start with [Oil Authentication](../workflows/authentication/oil_authentication.md).
 
 <a id="performance--optimization"></a>

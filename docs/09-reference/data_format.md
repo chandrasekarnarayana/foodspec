@@ -654,7 +654,7 @@ if __name__ == "__main__":
 
 **Related Documentation:**
 - [Glossary](glossary.md) - Definitions of key terms
-- [IO API](../08-api/io.md) - Loading and saving functions
+- [IO API](../api/io.md) - Loading and saving functions
 - [Preprocessing Guide](../methods/preprocessing/normalization_smoothing.md) - Data cleaning
 - [Validation Strategies](../05-advanced-topics/validation_strategies.md) - CV best practices
 

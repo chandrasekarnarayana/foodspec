@@ -99,7 +99,7 @@ class ALSBaseline(BaseEstimator, TransformerMixin):
     See Also:
         - Theory: docs/preprocessing/baseline_correction.md
         - Tutorial: docs/02-tutorials/beginner/oil_discrimination_basic.md
-        - API: docs/08-api/preprocessing/baseline.md
+        - API: docs/api/preprocessing.md
     """
 
     def __init__(self, lambda_: float = 1e5, p: float = 0.001, max_iter: int = 10):

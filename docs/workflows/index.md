@@ -209,7 +209,7 @@ What's your goal?
 - **[Cookbook](../workflows/index.md)** — Recipe-style how-to guides
 - **[User Guide](../user-guide/index.md)** — CLI and automation
 - **[Theory](../theory/index.md)** — Scientific foundations
-- **[API Reference](../08-api/index.md)** — Function/class documentation
+- **[API Reference](../api/index.md)** — Function/class documentation
 
 ---
 

@@ -67,4 +67,4 @@ See also
 - [Metrics & evaluation](../reference/metrics_reference.md)
 - [workflows/oil_authentication.md](../workflows/authentication/oil_authentication.md)
 
-- [API index](../08-api/index.md)
+- [API index](../api/index.md)

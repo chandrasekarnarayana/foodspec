@@ -329,7 +329,7 @@ weighted avg       0.95      0.98      0.97        45
 
 - **[Data Format Reference](../09-reference/data_format.md)** - Schema formats, unit conventions, validation checklist
 - **[Glossary](../reference/glossary.md)** - Definitions of wavenumber, baseline, normalization, CV strategy, etc.
-- **[API Reference](../08-api/index.md)** - Complete API documentation
+- **[API Reference](../api/index.md)** - Complete API documentation
 - **[Preprocessing Guide](../methods/preprocessing/normalization_smoothing.md)** - Detailed preprocessing recipes
 
 ---
@@ -439,7 +439,7 @@ import numpy as np; import pandas as pd; from foodspec import SpectralDataset; f
 - ✅ Try the CLI version: [CLI Quickstart](quickstart_cli.md)
 - ✅ Explore workflows: [Oil Authentication](../workflows/authentication/oil_authentication.md)
 - ✅ Custom preprocessing: [Preprocessing Guide](../methods/preprocessing/normalization_smoothing.md)
-- ✅ Advanced models: [ML Guide](../08-api/ml.md)
+- ✅ Advanced models: [ML Guide](../api/ml.md)
 
 ---
 

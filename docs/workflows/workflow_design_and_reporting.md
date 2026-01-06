@@ -97,7 +97,7 @@ See also:
 - ML: [Classification & regression](../methods/chemometrics/classification_regression.md), [Mixture models](../methods/chemometrics/mixture_models.md)
 - Stats: [Hypothesis testing](../methods/statistics/hypothesis_testing_in_food_spectroscopy.md), [ANOVA/MANOVA](../methods/statistics/anova_and_manova.md)
 - Protocols: [Reproducibility checklist](../protocols/reproducibility_checklist.md)
-- API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../08-api/workflows.md)
+- API: [`foodspec.preprocess.baseline.ALSBaseline`](../api/preprocessing.md), [`foodspec.stats.run_anova`](../api/stats.md), [`foodspec.apps.oils.run_oil_authentication_workflow`](../api/workflows.md)
 
 ## Instrument specs, calibration, limitations → data
 - **Range & resolution:** Determines which bands are captured/resolved. Choose ranges that cover key functional groups.

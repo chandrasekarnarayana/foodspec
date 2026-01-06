@@ -51,7 +51,7 @@ fs_loaded = load_library("libraries/oils.h5")
 - [CSV → HDF5 pipeline](../user-guide/csv_to_library.md)
 - [Libraries & public datasets](../user-guide/libraries.md)
 - [Reproducibility checklist](../protocols/reproducibility_checklist.md)
-- [API hub](../08-api/index.md)
+- [API hub](../api/index.md)
 
 ---
 
