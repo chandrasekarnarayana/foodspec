@@ -4,6 +4,37 @@ Statistical testing and effect size calculations for spectral analysis.
 
 The `foodspec.stats` module provides hypothesis testing, correlation analysis, and statistical reporting tools for comparing spectral measurements.
 
+## Time Metrics
+
+Functions for analyzing temporal degradation trends.
+
+### linear_slope
+
+Linear trend slope and intercept for time series.
+
+::: foodspec.stats.time_metrics.linear_slope
+    options:
+      show_source: false
+      heading_level: 4
+
+### quadratic_acceleration
+
+Acceleration coefficient from a quadratic fit to time series.
+
+::: foodspec.stats.time_metrics.quadratic_acceleration
+    options:
+      show_source: false
+      heading_level: 4
+
+### rolling_slope
+
+Rolling-window linear slope across time series.
+
+::: foodspec.stats.time_metrics.rolling_slope
+    options:
+      show_source: false
+      heading_level: 4
+
 ## Hypothesis Testing
 
 ### run_ttest

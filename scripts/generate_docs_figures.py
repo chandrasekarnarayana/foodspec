@@ -33,6 +33,8 @@ FIG_OUT = ROOT / "docs" / "assets" / "figures"
 FIG_OUT.mkdir(parents=True, exist_ok=True)
 WF_OUT = ROOT / "docs" / "assets" / "workflows" / "heating_quality_monitoring"
 WF_OUT.mkdir(parents=True, exist_ok=True)
+AGING_OUT = ROOT / "docs" / "assets" / "workflows" / "aging"
+AGING_OUT.mkdir(parents=True, exist_ok=True)
 
 RNG = np.random.default_rng(42)
 sns.set_theme(style="whitegrid")
@@ -194,6 +196,41 @@ def fig_hsi_and_roi():
     savefig(FIG_OUT / "roi_spectra.png")
 
 
+def fig_aging_trend_and_workflow():
+    days = np.arange(0, 181, 15)
+    ratio = 0.003 * days + RNG.normal(0, 0.02, len(days)) + 0.35
+    trend = np.poly1d(np.polyfit(days, ratio, 1))(days)
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(days, ratio, "o", label="observed", color="#2ca02c")
+    plt.plot(days, trend, "--", label="trend", color="#1f77b4")
+    plt.xlabel("Storage Time (days)")
+    plt.ylabel("Oxidation Ratio")
+    plt.title("Aging degradation trend")
+    plt.legend()
+    savefig(AGING_OUT / "degradation_trajectories.png")
+
+    # Shelf-life bar chart (synthetic t_star with CI)
+    entities = [f"E{i}" for i in range(1, 6)]
+    t_star = np.array([120, 150, 135, 110, 160], dtype=float)
+    ci = np.array([15, 20, 18, 12, 22], dtype=float)
+    plt.figure(figsize=(6, 4))
+    plt.bar(entities, t_star, yerr=ci, capsize=4)
+    plt.ylabel("Time to Threshold (days)")
+    plt.title("Shelf-Life Estimates (synthetic)")
+    savefig(AGING_OUT / "shelf_life_estimates.png")
+
+    # Residuals vs time
+    residuals = ratio - trend
+    plt.figure(figsize=(6, 4))
+    plt.axhline(0, color="gray", lw=1)
+    plt.scatter(days, residuals, color="#ff7f0e")
+    plt.xlabel("Storage Time (days)")
+    plt.ylabel("Residual")
+    plt.title("Residual diagnostics (linear fit)")
+    savefig(AGING_OUT / "residual_plot.png")
+
+
 def main():
     fig_architecture()
     fig_confusion_and_pca()
@@ -202,6 +239,7 @@ def main():
     fig_cv_boxplot()
     fig_heating_trend_and_workflow()
     fig_hsi_and_roi()
+    fig_aging_trend_and_workflow()
 
 
 if __name__ == "__main__":  # pragma: no cover

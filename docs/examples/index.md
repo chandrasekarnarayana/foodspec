@@ -20,6 +20,9 @@ Learn how to build a classifier to distinguish olive oils from adulterants using
 **[Heating Quality Monitoring](02_heating_quality_monitoring.md)** – Time-Series Analysis  
 Analyze how cooking oils degrade over time. Extract chemical indicators, fit degradation models, and estimate shelf-life.
 
+**[Aging Workflow (Storage Stability)](aging_workflow.md)** – Shelf-Life Prediction  
+Model degradation trajectories over storage (days/months) and estimate remaining shelf-life with confidence intervals.
+
 ### Intermediate Examples (Build deeper understanding)
 
 **[Mixture Analysis](03_mixture_analysis.md)** – Quantification via NNLS  

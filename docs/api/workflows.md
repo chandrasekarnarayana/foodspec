@@ -4,6 +4,35 @@ High-level domain-specific analysis workflows.
 
 The `foodspec.workflows` module provides end-to-end workflows for common food spectroscopy applications.
 
+## Aging
+
+### AgingResult
+
+Structured results for degradation trajectory analysis.
+
+::: foodspec.workflows.aging.AgingResult
+    options:
+      show_source: false
+      heading_level: 4
+
+### TrajectoryFit
+
+Per-entity trajectory fit parameters and diagnostics.
+
+::: foodspec.workflows.aging.TrajectoryFit
+    options:
+      show_source: false
+      heading_level: 4
+
+### compute_degradation_trajectories
+
+Fit degradation trajectories across entities over storage time.
+
+::: foodspec.workflows.aging.compute_degradation_trajectories
+    options:
+      show_source: false
+      heading_level: 4
+
 ## Oil Authentication
 
 Complete oil authentication workflows are available through the CLI and protocol system. See the [Oil Authentication Guide](../workflows/authentication/oil_authentication.md) for details.

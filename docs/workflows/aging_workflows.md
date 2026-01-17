@@ -276,3 +276,24 @@ Python API
 - Shelf-life:
   - `from foodspec.workflows.shelf_life import estimate_remaining_shelf_life`
   - `df = estimate_remaining_shelf_life(ts, value_col='degrade', threshold=2.0)`
+
+---
+
+## 🔗 See Also
+
+**Methods**
+- [Baseline Correction](../methods/preprocessing/baseline_correction.md)
+- [Normalization & Smoothing](../methods/preprocessing/normalization_smoothing.md)
+- [Feature Extraction](../methods/preprocessing/feature_extraction.md)
+- [Model Evaluation & Validation](../methods/chemometrics/model_evaluation_and_validation.md)
+- [Statistics: Introduction](../methods/statistics/introduction_to_statistical_analysis.md)
+- [Statistics: Study Design](../methods/statistics/study_design_and_data_requirements.md)
+
+**Examples**
+- [Aging Workflow (Storage Stability)](../examples/aging_workflow.md)
+- [Heating Quality Monitoring](../examples/02_heating_quality_monitoring.md)
+
+**API**
+- [Aging Trajectories & Result Types](../api/workflows.md)
+- [Shelf-Life Estimation](../api/workflows.md#estimate_remaining_shelf_life)
+- [Time Metrics (linear slope, acceleration)](../api/stats.md)
