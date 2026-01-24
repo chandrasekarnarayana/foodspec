@@ -14,9 +14,16 @@ FoodSpec v2 Definition of Done:
 Deploy module: Model serving, batch prediction, API deployment.
 
 Deploying and serving models:
-    from foodspec.deploy import PredictionServer, batch_predict
-    server = PredictionServer(model_path="./model.pkl")
-    predictions = batch_predict(model, new_data, batch_size=32)
+    from foodspec.deploy import save_bundle, load_bundle, predict_from_bundle
+    bundle_path = save_bundle(run_dir, bundle_dir, protocol=protocol, model_path=model_path)
+    bundle = load_bundle(bundle_path)
+    predictions = predict_from_bundle(bundle, input_csv="new_data.csv", output_dir="./results")
 """
+
+from .bundle import load_bundle, save_bundle
+from .predict import predict_from_bundle, predict_from_bundle_path
+
+__all__ = ["save_bundle", "load_bundle", "predict_from_bundle", "predict_from_bundle_path"]
+
 
 __all__ = []

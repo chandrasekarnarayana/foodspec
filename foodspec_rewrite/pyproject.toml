@@ -46,7 +46,7 @@ viz = [
 ]
 
 [project.scripts]
-foodspec = "foodspec.cli.main:app"
+foodspec = "foodspec.cli.main:main"
 
 [tool.pytest.ini_options]
 minversion = "7.0"

@@ -14,9 +14,11 @@ FoodSpec v2 Definition of Done:
 CLI module: Command-line interface commands and utilities.
 
 Running FoodSpec from the command line:
-    foodspec preprocess --input data.csv --method als
-    foodspec train --data preprocessed.csv --model rf
-    foodspec predict --model trained.pkl --input new_data.csv
+    foodspec run --protocol config.yaml --outdir runs/exp1 --seed 42
+    foodspec predict --bundle ./bundle --input new_data.csv --outdir predictions
+    foodspec report --run-dir runs/exp1 --output report.html
 """
 
-__all__ = []
+from .main import app, main
+
+__all__ = ["app", "main"]
