@@ -14,9 +14,10 @@ FoodSpec v2 Definition of Done:
 Features module: Spectral, statistical, and domain-specific feature extraction.
 
 Extracting features from spectra:
-    from foodspec.features import extract_peaks, extract_ratios
-    peaks = extract_peaks(spectra, seed=42)
-    ratios = extract_ratios(spectra, peak_pairs=[(1030, 1050)])
+    from foodspec.features import PeakRatios
+    ratios = PeakRatios(peak_pairs=[(1030, 1050)], window=15).compute(X, x)
 """
+from foodspec.features.peaks import PeakRatios
+from foodspec.features.chemometrics import PCAFeatureExtractor
 
-__all__ = []
+__all__ = ["PeakRatios", "PCAFeatureExtractor"]

@@ -14,9 +14,24 @@ FoodSpec v2 Definition of Done:
 Validation module: Cross-validation, train/test splits, evaluation metrics.
 
 Validating model performance:
-    from foodspec.validation import train_test_split, cross_validate
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-    scores = cross_validate(model, X, y, cv=5, seed=42)
+    from foodspec.validation import LeaveOneGroupOutSplitter, StratifiedKFoldOrGroupKFold
+    splitter = StratifiedKFoldOrGroupKFold(n_splits=5, seed=42)
+    for train_idx, test_idx in splitter.split(X, y, groups):
+        ...
 """
+from foodspec.validation.splits import LeaveOneGroupOutSplitter, StratifiedKFoldOrGroupKFold
+from foodspec.validation.metrics import accuracy, macro_f1, auroc_ovr, ece, brier
+from foodspec.validation.evaluation import EvaluationRunner, EvaluationResult, bootstrap_ci
 
-__all__ = []
+__all__ = [
+    "LeaveOneGroupOutSplitter",
+    "StratifiedKFoldOrGroupKFold",
+    "accuracy",
+    "macro_f1",
+    "auroc_ovr",
+    "ece",
+    "brier",
+    "EvaluationRunner",
+    "EvaluationResult",
+    "bootstrap_ci",
+]

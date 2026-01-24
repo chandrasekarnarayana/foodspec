@@ -14,10 +14,11 @@ FoodSpec v2 Definition of Done:
 Models module: ML model wrappers for sklearn, XGBoost, Keras.
 
 Training and predicting with models:
-    from foodspec.models import RandomForestModel
-    model = RandomForestModel(n_estimators=100, random_state=42)
+    from foodspec.models import LogisticRegressionClassifier
+    model = LogisticRegressionClassifier(random_state=42)
     model.fit(X_train, y_train)
-    predictions = model.predict(X_test)
+    proba = model.predict_proba(X_test)
 """
+from foodspec.models.classical import LogisticRegressionClassifier
 
-__all__ = []
+__all__ = ["LogisticRegressionClassifier"]
