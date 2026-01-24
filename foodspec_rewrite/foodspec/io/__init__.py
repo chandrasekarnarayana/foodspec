@@ -13,9 +13,10 @@ FoodSpec v2 Definition of Done:
 - PEP 8 style, standards, and guidelines enforced.
 I/O module: Data loading, format detection, library management.
 
-Loading spectral data from various formats:
-    from foodspec.io import load_folder, load_csv_spectra
-    dataset = load_folder("./data/oils/")
+Loading spectral data from CSV:
+    from foodspec.io import load_csv_spectra
+    dataset = load_csv_spectra("./data/oils.csv", data_spec)
 """
+from foodspec.io.readers import load_csv_spectra
 
-__all__ = []
+__all__ = ["load_csv_spectra"]

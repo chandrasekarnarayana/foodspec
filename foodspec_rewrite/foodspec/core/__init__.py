@@ -39,6 +39,7 @@ from .artifacts import ArtifactRegistry
 from .manifest import RunManifest
 from .orchestrator import ExecutionEngine, RunResult
 from .pipeline import Pipeline, PipelineNode
+from .data import Spectrum, SpectraSet
 
 
 @dataclasses.dataclass
@@ -189,6 +190,8 @@ __all__ = [
     "RunResult",
     "Pipeline",
     "PipelineNode",
+    "Spectrum",
+    "SpectraSet",
     "SpectrumMetadata",
     "Spectrum",
     "SpectralDataset",
