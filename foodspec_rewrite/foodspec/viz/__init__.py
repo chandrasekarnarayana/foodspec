@@ -11,12 +11,26 @@ FoodSpec v2 Definition of Done:
 - All functions and variables: docstrings + comments as necessary.
 - Modularity, scalability, flexibility, reproducibility, reliability.
 - PEP 8 style, standards, and guidelines enforced.
-Visualization module: Spectral plots, model diagnostics, interactive dashboards.
+Visualization module: Spectral plots and diagnostics.
 
 Visualizing spectral data and model results:
-    from foodspec.viz import plot_spectra, plot_pca
-    plot_spectra(spectra, wavenumbers)
-    plot_pca(X_features, labels=y)
+    from foodspec.viz import plot_raw_vs_processed, plot_pca_scatter
+    plot_raw_vs_processed(wavenumbers, raw, processed, artifacts)
+    plot_pca_scatter(scores, labels, artifacts)
 """
 
-__all__ = []
+from foodspec.viz.plots import (
+    plot_confusion_matrix,
+    plot_heatmap,
+    plot_pca_scatter,
+    plot_raw_vs_processed,
+    plot_reliability_diagram,
+)
+
+__all__ = [
+    "plot_confusion_matrix",
+    "plot_heatmap",
+    "plot_pca_scatter",
+    "plot_raw_vs_processed",
+    "plot_reliability_diagram",
+]

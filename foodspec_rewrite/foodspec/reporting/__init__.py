@@ -14,9 +14,10 @@ FoodSpec v2 Definition of Done:
 Reporting module: Report templates, export formats, formatting utilities.
 
 Generating reports of results:
-    from foodspec.reporting import generate_report, export_pdf
-    report = generate_report(model, metrics, plots)
-    export_pdf(report, "results.pdf")
+    from foodspec.reporting import generate_html_report
+    report_path = generate_html_report(...)
 """
 
-__all__ = []
+from foodspec.reporting.report import DEFAULT_TEMPLATE, generate_html_report
+
+__all__ = ["generate_html_report", "DEFAULT_TEMPLATE"]
