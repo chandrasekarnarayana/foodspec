@@ -11,23 +11,26 @@ FoodSpec v2 Definition of Done:
 - All functions and variables: docstrings + comments as necessary.
 - Modularity, scalability, flexibility, reproducibility, reliability.
 - PEP 8 style, standards, and guidelines enforced.
-QC module: Quality control checks, validation, reporting.
-
-Running QC checks on spectral data:
-    from foodspec.qc import QCMetric, QCSummary
-    summary = QCSummary({"snr": {"min": 3.0}})
-    result = summary.evaluate(metrics_df)
 """
-from foodspec.qc.base import QCMetric, QCSummary
-from foodspec.qc.dataset import DatasetQC
-from foodspec.qc.policy import Policy, apply_qc_policy
+
+import numpy as np
+import pandas as pd
+
 from foodspec.qc.spectral import SpectralQC
 
-__all__ = [
-    "QCMetric",
-    "QCSummary",
-    "SpectralQC",
-    "DatasetQC",
-    "Policy",
-    "apply_qc_policy",
-]
+
+def test_spectral_qc_snr_and_clipping() -> None:
+    clean = np.linspace(0, 1, 50)
+    noisy = clean + np.random.normal(0, 0.5, size=clean.shape)
+    clipped = np.clip(clean.copy(), 0.2, 0.8)
+
+    X = np.vstack([clean, noisy, clipped])
+    meta = pd.DataFrame(index=[0, 1, 2])
+
+    qc = SpectralQC()
+    df = qc.compute(X, meta)
+
+    assert set(df.columns) == {"snr", "clip_frac", "entropy"}
+    assert df.shape[0] == 3
+    assert df.loc[1, "snr"] < df.loc[0, "snr"]  # noisy should have lower SNR
+    assert df.loc[2, "clip_frac"] > df.loc[0, "clip_frac"]  # clipped higher

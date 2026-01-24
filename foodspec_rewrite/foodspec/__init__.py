@@ -39,17 +39,15 @@ __version__ = "2.0.0-alpha"
 __author__ = "FoodSpec Contributors"
 __license__ = "MIT"
 
-# Clean imports from core
-from .core.registry import Registry
-from .core.orchestrator import Orchestrator
-from .core.manifest import Manifest
-from .core.artifacts import ArtifactBundle
-from .core.cache import Cache
+# Clean imports from core (aligned with v2 rewrite module names)
+from .core.registry import ComponentRegistry as Registry
+from .core.orchestrator import ExecutionEngine as Orchestrator
+from .core.manifest import RunManifest as Manifest
+from .core.artifacts import ArtifactRegistry as ArtifactBundle
 
 __all__ = [
     "Registry",
     "Orchestrator",
     "Manifest",
     "ArtifactBundle",
-    "Cache",
 ]
