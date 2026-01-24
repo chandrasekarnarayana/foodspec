@@ -39,8 +39,7 @@ def _mondrian_quantile(scores: np.ndarray, coverage: float) -> float:
     n = vals.size
     if n == 0:
         raise ValueError("Cannot compute threshold with no calibration scores")
-    alpha = 1.0 - coverage
-    k = int(np.ceil((n + 1) * alpha))
+    k = int(np.ceil((n + 1) * coverage))
     k = max(1, min(k, n))
     return float(vals[k - 1])
 
@@ -219,7 +218,13 @@ class MondrianConformalClassifier:
                 raise RuntimeError("No threshold available for prediction")
             thresholds.append(float(t))
             # Include classes with nonconformity <= t -> prob >= 1 - t
-            keep = [int(cls) for cls in np.argsort(-proba[i]) if proba[i, cls] >= 1.0 - t]
+            keep = [
+                int(cls)
+                for cls in np.argsort(-proba[i])
+                if proba[i, cls] >= 1.0 - t - 1e-12
+            ]
+            if not keep:
+                keep = [int(np.argmax(proba[i]))]
             prediction_sets.append(keep)
             set_sizes.append(len(keep))
 

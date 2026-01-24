@@ -77,7 +77,9 @@ class QCSummary:
                 "fail_reasons": ";".join(reasons),
             }
 
-        return pd.DataFrame.from_dict(summaries, orient="index")
+        df = pd.DataFrame.from_dict(summaries, orient="index")
+        df["pass"] = df["pass"].map(bool).astype(object)
+        return df
 
 
 __all__ = ["QCMetric", "QCSummary"]

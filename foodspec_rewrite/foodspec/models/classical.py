@@ -18,6 +18,7 @@ Classical ML model wrappers.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import warnings
 from pathlib import Path
 from typing import Optional
 
@@ -68,20 +69,28 @@ class LogisticRegressionClassifier:
     solver: str = "lbfgs"
     max_iter: int = 1000
     random_state: Optional[int] = 0
-    multi_class: str = "auto"
+    multi_class: str | None = None
 
     _model: LogisticRegression = field(init=False, repr=False)
     _fitted: bool = field(default=False, init=False, repr=False)
 
     def _make_model(self) -> LogisticRegression:
-        return LogisticRegression(
-            C=self.C,
-            penalty=self.penalty,
-            solver=self.solver,
-            max_iter=self.max_iter,
-            random_state=self.random_state,
-            multi_class=self.multi_class,
-        )
+        kwargs = {
+            "C": self.C,
+            "penalty": self.penalty,
+            "solver": self.solver,
+            "max_iter": self.max_iter,
+            "random_state": self.random_state,
+        }
+        if self.multi_class is not None and self.multi_class != "multinomial":
+            kwargs["multi_class"] = self.multi_class
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="'multi_class' was deprecated",
+                category=FutureWarning,
+            )
+            return LogisticRegression(**kwargs)
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> "LogisticRegressionClassifier":
         X = np.asarray(X, dtype=float)

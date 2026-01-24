@@ -127,7 +127,10 @@ class ExecutionEngine:
     def _check_stage_requests(self, protocol: ProtocolV2) -> None:
         """Surface NotImplementedError only when a stage is requested."""
 
-        if protocol.preprocess.recipe or protocol.preprocess.steps:
+        preprocess = protocol.preprocess
+        recipe = preprocess.recipe if hasattr(preprocess, "recipe") else preprocess.get("recipe") if isinstance(preprocess, dict) else None
+        steps = preprocess.steps if hasattr(preprocess, "steps") else preprocess.get("steps", []) if isinstance(preprocess, dict) else []
+        if recipe or steps:
             raise NotImplementedError("Preprocess stage not implemented yet.")
         if protocol.qc.thresholds or protocol.qc.metrics:
             raise NotImplementedError("QC stage not implemented yet.")

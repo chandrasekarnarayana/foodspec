@@ -22,17 +22,17 @@ import json
 import platform
 import sys
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
 
 def _now_utc() -> datetime:
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 
 def _iso(dt: datetime) -> str:
-    return dt.replace(microsecond=0).isoformat() + "Z"
+    return dt.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def _sha256_bytes(payload: bytes) -> str:

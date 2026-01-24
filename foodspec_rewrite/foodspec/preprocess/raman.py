@@ -62,6 +62,8 @@ class DespikeHampel(IdentityTransformer):
                 median = np.median(window)
                 mad = np.median(np.abs(window - median))
                 if mad == 0:
+                    if row[idx] != median:
+                        out[i, idx] = median
                     continue
                 if abs(row[idx] - median) > self.threshold * 1.4826 * mad:
                     out[i, idx] = median

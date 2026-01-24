@@ -89,8 +89,12 @@ class SNV(IdentityTransformer):
     def transform(self, X: np.ndarray) -> np.ndarray:
         mean = X.mean(axis=1, keepdims=True)
         std = X.std(axis=1, keepdims=True)
-        if np.any(std == 0):
+        zero_std = std == 0
+        if np.any(zero_std & (mean == 0)):
             raise ValueError("Standard deviation zero for at least one spectrum")
+        if np.any(zero_std):
+            std = std.copy()
+            std[zero_std] = 1.0
         return (X - mean) / std
 
     def fit_transform(self, X: np.ndarray, y: np.ndarray | None = None) -> np.ndarray:
