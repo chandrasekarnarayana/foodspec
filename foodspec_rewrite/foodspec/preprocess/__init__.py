@@ -14,9 +14,23 @@ FoodSpec v2 Definition of Done:
 Preprocessing module: Baseline correction, normalization, harmonization.
 
 Preprocessing spectral data:
-    from foodspec.preprocess import baseline_als, normalize
-    baseline_corrected = baseline_als(spectra, seed=42)
-    normalized = normalize(baseline_corrected)
+    from foodspec.preprocess.ir import MultiplicativeScatterCorrection
+    corrected = MultiplicativeScatterCorrection().fit_transform(spectra)
 """
+from foodspec.preprocess.ir import (
+    MultiplicativeScatterCorrection,
+    ExtendedMultiplicativeScatterCorrection,
+)
+from foodspec.preprocess.recipes import (
+    resolve_recipe,
+    raman_auth_default,
+    ftir_auth_default,
+)
 
-__all__ = []
+__all__ = [
+    "MultiplicativeScatterCorrection",
+    "ExtendedMultiplicativeScatterCorrection",
+    "resolve_recipe",
+    "raman_auth_default",
+    "ftir_auth_default",
+]

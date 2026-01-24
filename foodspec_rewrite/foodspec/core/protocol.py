@@ -23,6 +23,8 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from foodspec.preprocess import recipes as preprocess_recipes
+
 try:  # Optional YAML support; actionable error if missing
     import yaml
 except ImportError:  # pragma: no cover - exercised in runtime, not unit tests
@@ -297,19 +299,25 @@ class ProtocolV2(BaseModel):
                 f"Unknown model estimator '{self.model.estimator}'. Register it or update the workflow."
             )
 
-    def expand_recipes(self, recipe_registry: Mapping[str, Sequence[Mapping[str, Any]]]) -> "ProtocolV2":
-        """Expand preprocess.recipe into explicit steps using a registry."""
+    def expand_recipes(self, recipe_registry: Optional[Mapping[str, Sequence[Mapping[str, Any]]]] = None) -> "ProtocolV2":
+        """Expand preprocess.recipe into explicit steps using a registry or built-ins.
+
+        If no recipe_registry is provided, uses built-in recipes from
+        foodspec.preprocess.recipes.resolve_recipe.
+        """
 
         if not self.preprocess.recipe:
             return self
 
         recipe_name = self.preprocess.recipe
-        if recipe_name not in recipe_registry:
-            raise ValueError(
-                f"Unknown preprocess recipe '{recipe_name}'. Register it in recipe_registry."
-            )
 
-        steps = [PreprocessStep.model_validate(step) for step in recipe_registry[recipe_name]]
+        steps_payload: Sequence[Mapping[str, Any]]
+        if recipe_registry and recipe_name in recipe_registry:
+            steps_payload = recipe_registry[recipe_name]
+        else:
+            steps_payload = preprocess_recipes.resolve_recipe(recipe_name)
+
+        steps = [PreprocessStep.model_validate(step) for step in steps_payload]
         new_preprocess = PreprocessSpec(recipe=None, steps=steps)
         return self.model_copy(update={"preprocess": new_preprocess})
 
