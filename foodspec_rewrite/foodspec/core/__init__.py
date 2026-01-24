@@ -35,6 +35,10 @@ from abc import ABC, abstractmethod
 
 from .protocol import ProtocolV2
 from .registry import ComponentRegistry
+from .artifacts import ArtifactRegistry
+from .manifest import RunManifest
+from .orchestrator import ExecutionEngine, RunResult
+from .pipeline import Pipeline, PipelineNode
 
 
 @dataclasses.dataclass
@@ -179,6 +183,12 @@ class Cache:
 __all__ = [
     "ProtocolV2",
     "ComponentRegistry",
+    "ArtifactRegistry",
+    "RunManifest",
+    "ExecutionEngine",
+    "RunResult",
+    "Pipeline",
+    "PipelineNode",
     "SpectrumMetadata",
     "Spectrum",
     "SpectralDataset",
