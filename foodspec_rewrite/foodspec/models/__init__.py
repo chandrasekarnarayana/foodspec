@@ -14,11 +14,13 @@ FoodSpec v2 Definition of Done:
 Models module: ML model wrappers for sklearn, XGBoost, Keras.
 
 Training and predicting with models:
-    from foodspec.models import LogisticRegressionClassifier
+    from foodspec.models import LogisticRegressionClassifier, CalibratedClassifier
     model = LogisticRegressionClassifier(random_state=42)
-    model.fit(X_train, y_train)
-    proba = model.predict_proba(X_test)
-"""
+    cal = CalibratedClassifier(model, method="sigmoid")
+    cal.fit_and_calibrate(X_train, y_train, X_val, y_val)
+    proba = cal.predict_proba(X_test)
+ """
 from foodspec.models.classical import LogisticRegressionClassifier
+from foodspec.models.calibration import CalibratedClassifier, calibration_metrics
 
-__all__ = ["LogisticRegressionClassifier"]
+__all__ = ["LogisticRegressionClassifier", "CalibratedClassifier", "calibration_metrics"]

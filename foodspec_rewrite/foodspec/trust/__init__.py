@@ -14,9 +14,21 @@ FoodSpec v2 Definition of Done:
 Trust module: Uncertainty quantification, calibration, robustness checks.
 
 Quantifying model uncertainty:
-    from foodspec.trust import confidence_interval, calibration_curve
-    ci = confidence_interval(model, X_test, y_test, seed=42)
-    cal_prob, true_prob = calibration_curve(model, X_test, y_test)
+    from foodspec.trust import MondrianConformalClassifier, evaluate_abstention
+    cp = MondrianConformalClassifier(model, target_coverage=0.9)
+    cp.fit(X_train, y_train)
+    cp.calibrate(X_cal, y_cal, bins=stage_bins)
+    result = cp.predict_sets(X_test, bins=stage_bins_test)
+    abstain = evaluate_abstention(resulting_proba, y_test, threshold=0.6)
+    print(result.coverage, abstain.abstain_rate)
 """
 
-__all__ = []
+from foodspec.trust.conformal import ConformalPredictionResult, MondrianConformalClassifier
+from foodspec.trust.abstain import AbstentionResult, evaluate_abstention
+
+__all__ = [
+    "MondrianConformalClassifier",
+    "ConformalPredictionResult",
+    "AbstentionResult",
+    "evaluate_abstention",
+]
