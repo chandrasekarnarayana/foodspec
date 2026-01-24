@@ -40,6 +40,7 @@ from .manifest import RunManifest
 from .orchestrator import ExecutionEngine, RunResult
 from .pipeline import Pipeline, PipelineNode
 from .data import Spectrum, SpectraSet
+from .cache import CacheManager, CacheEntry
 
 
 @dataclasses.dataclass

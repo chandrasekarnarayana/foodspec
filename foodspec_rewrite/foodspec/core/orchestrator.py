@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from foodspec.core.artifacts import ArtifactRegistry
+from foodspec.core.cache import CacheManager
 from foodspec.core.manifest import RunManifest
 from foodspec.core.protocol import ProtocolV2
 
@@ -50,8 +51,24 @@ class ExecutionEngine:
     raises NotImplementedError if explicitly requested.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, cache_dir: Optional[Path] = None, enable_cache: bool = True) -> None:
+        """Initialize execution engine.
+
+        Parameters
+        ----------
+        cache_dir : Path, optional
+            Directory for stage caching. Defaults to .foodspec_cache in cwd.
+        enable_cache : bool, default True
+            Enable hash-based caching for expensive stages.
+        """
         self.logs: List[str] = []
+        self.cache_hits: List[str] = []
+        self.cache_misses: List[str] = []
+        default_cache = Path.cwd() / ".foodspec_cache"
+        self.cache = CacheManager(
+            cache_dir=cache_dir or default_cache,
+            enabled=enable_cache
+        )
 
     def _log(self, msg: str) -> None:
         self.logs.append(msg)
@@ -73,9 +90,15 @@ class ExecutionEngine:
 
         Minimal implementation: validates and records manifest; other stages
         raise NotImplementedError only if requested by protocol contents.
+        
+        When cache is enabled, checks for cached preprocess/features outputs
+        before recomputing expensive stages. Cache hits/misses are recorded
+        in the manifest.
         """
 
         self.logs.clear()
+        self.cache_hits.clear()
+        self.cache_misses.clear()
         self._seed(seed)
 
         protocol = self._load_protocol(protocol_or_path)
@@ -91,9 +114,58 @@ class ExecutionEngine:
         # deterministic and clear.
         self._check_stage_requests(protocol)
 
-        # Build manifest (uses data fingerprint if file exists)
+        # Prepare data path for fingerprinting
         data_path = Path(protocol.data.input)
         data_file = data_path if data_path.exists() else None
+
+        # Example cache integration point (to be expanded when stages are implemented):
+        # For now, we demonstrate the wiring without executing actual preprocess/features
+        data_fingerprint = RunManifest.compute_data_fingerprint(data_file) if data_file else ""
+        library_version = protocol.version
+        
+        # Preprocess stage cache check (placeholder)
+        if protocol.preprocess.recipe or protocol.preprocess.steps:
+            preprocess_spec = {
+                "recipe": protocol.preprocess.recipe,
+                "steps": [s.model_dump() for s in protocol.preprocess.steps]
+            }
+            preprocess_key = self.cache.compute_key(
+                data_fingerprint=data_fingerprint,
+                stage_spec=preprocess_spec,
+                stage_name="preprocess",
+                library_version=library_version,
+            )
+            cached_preprocess = self.cache.get(preprocess_key)
+            if cached_preprocess:
+                self.cache_hits.append("preprocess")
+                self._log(f"Cache hit: preprocess (key={preprocess_key[:12]}...)")
+            else:
+                self.cache_misses.append("preprocess")
+                self._log(f"Cache miss: preprocess (key={preprocess_key[:12]}...)")
+                # Future: execute preprocess and cache.put(...)
+        
+        # Features stage cache check (placeholder)
+        if protocol.features.modules or protocol.features.strategy not in {"auto", ""}:
+            features_spec = {
+                "strategy": protocol.features.strategy,
+                "modules": protocol.features.modules,
+            }
+            features_key = self.cache.compute_key(
+                data_fingerprint=data_fingerprint,
+                stage_spec=features_spec,
+                stage_name="features",
+                library_version=library_version,
+            )
+            cached_features = self.cache.get(features_key)
+            if cached_features:
+                self.cache_hits.append("features")
+                self._log(f"Cache hit: features (key={features_key[:12]}...)")
+            else:
+                self.cache_misses.append("features")
+                self._log(f"Cache miss: features (key={features_key[:12]}...)")
+                # Future: execute features and cache.put(...)
+
+        # Build manifest (uses data fingerprint if file exists)
         manifest = RunManifest.build(
             protocol_snapshot=protocol.model_dump(mode="python"),
             data_path=data_file,
@@ -110,6 +182,8 @@ class ExecutionEngine:
                 "logs": str(artifacts.logs_path),
             },
             warnings=[] if data_file else ["Data file not found; fingerprint omitted."],
+            cache_hits=self.cache_hits,
+            cache_misses=self.cache_misses,
         )
         artifacts.write_json(artifacts.manifest_path, json.loads(json.dumps(manifest.__dict__)))
         self._log("Manifest written")

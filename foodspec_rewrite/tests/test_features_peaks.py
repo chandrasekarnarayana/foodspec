@@ -34,13 +34,13 @@ def test_peak_ratios_basic_behavior() -> None:
 
     X = np.vstack([y1, y2])
 
-    pr = PeakRatios(peak_pairs=[(1030, 1050)], window=10)
+    pr = PeakRatios(pairs=[(1030, 1050)], window=10.0)
     df = pr.compute(X, x)
 
-    assert list(df.columns) == ["ratio_1030_1050"]
+    assert list(df.columns) == ["ratio@1030/1050"]
     assert df.shape == (2, 1)
-    assert df.loc[0, "ratio_1030_1050"] > 1.0  # sample 1 has higher 1030 peak
-    assert df.loc[1, "ratio_1030_1050"] < 1.0  # sample 2 has higher 1050 peak
+    assert df.loc[0, "ratio@1030/1050"] > 1.0  # sample 1 has higher 1030 peak
+    assert df.loc[1, "ratio@1030/1050"] < 1.0  # sample 2 has higher 1050 peak
 
 
 def test_peak_ratios_window_captures_shifted_peaks() -> None:
@@ -50,18 +50,18 @@ def test_peak_ratios_window_captures_shifted_peaks() -> None:
     y = _gauss(x, 1032, amp=1.5) + _gauss(x, 1052, amp=0.5)
     X = np.vstack([y])
 
-    pr = PeakRatios(peak_pairs=[(1030, 1050)], window=5)
+    pr = PeakRatios(pairs=[(1030, 1050)], window=5.0)
     df = pr.compute(X, x)
 
     # Despite target mismatch, window search should find the shifted maxima
-    assert df.loc[0, "ratio_1030_1050"] > 1.0
+    assert df.loc[0, "ratio@1030/1050"] > 1.0
 
 
 def test_peak_ratios_input_validation() -> None:
     x = np.linspace(100, 200, 10)
     X = np.ones((2, 10))
 
-    pr = PeakRatios(peak_pairs=[(120, 150)])
+    pr = PeakRatios(pairs=[(120, 150)])
 
     with pytest.raises(ValueError):
         pr.compute(X.reshape(20, 1), x)  # wrong X shape
@@ -70,4 +70,4 @@ def test_peak_ratios_input_validation() -> None:
         pr.compute(X, x[:5])  # mismatched x
 
     with pytest.raises(ValueError):
-        PeakRatios(peak_pairs=[]).compute(X, x)  # empty pairs
+        PeakRatios(pairs=[])  # empty pairs - should fail at initialization

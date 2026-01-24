@@ -69,6 +69,9 @@ class RunManifest:
     duration_seconds: float
     artifacts: Dict[str, str]
     warnings: List[str] = field(default_factory=list)
+    cache_hits: List[str] = field(default_factory=list)
+    cache_misses: List[str] = field(default_factory=list)
+    hyperparameters_per_fold: List[Dict[str, Any]] = field(default_factory=list)
 
     # Construction helpers
     @classmethod
@@ -79,6 +82,9 @@ class RunManifest:
         seed: Optional[int],
         artifacts: Dict[str, str],
         warnings: Optional[List[str]] = None,
+        cache_hits: Optional[List[str]] = None,
+        cache_misses: Optional[List[str]] = None,
+        hyperparameters_per_fold: Optional[List[Dict[str, Any]]] = None,
         dependencies: Optional[Dict[str, str]] = None,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
@@ -90,6 +96,9 @@ class RunManifest:
 
         deps = dependencies or {}
         warning_list = warnings or []
+        cache_hit_list = cache_hits or []
+        cache_miss_list = cache_misses or []
+        hyperparams_list = hyperparameters_per_fold or []
 
         return cls(
             protocol_hash=protocol_hash,
@@ -104,6 +113,9 @@ class RunManifest:
             duration_seconds=max((end - start).total_seconds(), 0.0),
             artifacts=artifacts,
             warnings=warning_list,
+            cache_hits=cache_hit_list,
+            cache_misses=cache_miss_list,
+            hyperparameters_per_fold=hyperparams_list,
         )
 
     @staticmethod

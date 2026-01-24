@@ -30,8 +30,10 @@ def _ensure_numeric(array: np.ndarray, name: str) -> None:
 
 
 def _ensure_no_nan(array: np.ndarray, name: str) -> None:
-    if np.isnan(array).any():
-        raise ValueError(f"{name} contains NaN values; clean or allow explicitly")
+    # Only check for NaN in numeric arrays
+    if np.issubdtype(array.dtype, np.number):
+        if np.isnan(array).any():
+            raise ValueError(f"{name} contains NaN values; clean or allow explicitly")
 
 
 @dataclass
@@ -155,6 +157,43 @@ class SpectraSet:
         """Mean and std per wavenumber."""
 
         return {"mean": self.X.mean(axis=0), "std": self.X.std(axis=0, ddof=0)}
+
+    def validate_required_metadata(self, required_keys: List[str]) -> None:
+        """Validate that required metadata keys are present.
+
+        Parameters
+        ----------
+        required_keys : List[str]
+            List of metadata column names that must be present.
+
+        Raises
+        ------
+        ValueError
+            If any required keys are missing, with actionable error message.
+
+        Examples
+        --------
+        >>> import pandas as pd
+        >>> ds = SpectraSet(X=[[1, 2]], x=[100, 200], metadata=pd.DataFrame({"batch": ["A"]}))
+        >>> ds.validate_required_metadata(["batch"])  # OK
+        >>> ds.validate_required_metadata(["batch", "instrument"])  # Raises
+        Traceback (most recent call last):
+            ...
+        ValueError: Missing required metadata keys: instrument. Available: batch
+        """
+        if not required_keys:
+            return
+
+        available = set(self.metadata.columns)
+        missing = [k for k in required_keys if k not in available]
+        
+        if missing:
+            available_str = ", ".join(sorted(available))
+            missing_str = ", ".join(sorted(missing))
+            raise ValueError(
+                f"Missing required metadata keys: {missing_str}. "
+                f"Available: {available_str}"
+            )
 
     def export_to_dataframe(self) -> pd.DataFrame:
         """Flatten spectra to tabular form with metadata and optional labels."""

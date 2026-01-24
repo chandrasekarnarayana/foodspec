@@ -41,6 +41,8 @@ def load_csv_spectra(path: str | Path, data_spec: DataSpec, allow_nans: bool = F
     ------
     ValueError
         If required columns are missing or wavenumber headers are non-numeric.
+    FileNotFoundError
+        If the CSV file does not exist.
 
     Examples
     --------
@@ -66,7 +68,31 @@ def load_csv_spectra(path: str | Path, data_spec: DataSpec, allow_nans: bool = F
 
     missing = [c for c in [label_col, *metadata_cols] if c not in df.columns]
     if missing:
-        raise ValueError(f"Missing required columns: {', '.join(missing)}")
+        available = sorted(df.columns.tolist())
+        raise ValueError(
+            f"Missing required columns: {', '.join(missing)}. "
+            f"Available columns: {', '.join(available)}"
+        )
+
+    # Check required metadata keys (after metadata_map applied)
+    if data_spec.required_metadata_keys:
+        # Map required keys to dataset columns
+        required_cols = []
+        for req_key in data_spec.required_metadata_keys:
+            dataset_col = data_spec.metadata_map.get(req_key, req_key)
+            if dataset_col not in df.columns:
+                required_cols.append(dataset_col)
+            else:
+                # Add to metadata_cols so it's not treated as wavenumber
+                metadata_cols.add(dataset_col)
+        
+        if required_cols:
+            available = sorted(df.columns.tolist())
+            raise ValueError(
+                f"Missing required metadata columns: {', '.join(required_cols)}. "
+                f"Required for validation/QC configuration. "
+                f"Available columns: {', '.join(available)}"
+            )
 
     # Wavenumber columns are everything else
     wave_cols = [c for c in df.columns if c not in metadata_cols and c != label_col]

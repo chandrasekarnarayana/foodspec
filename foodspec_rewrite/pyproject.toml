@@ -53,6 +53,12 @@ minversion = "7.0"
 testpaths = ["tests"]
 python_files = "test_*.py"
 addopts = "--strict-markers -v"
+filterwarnings = [
+    'ignore:invalid escape sequence:SyntaxWarning',
+    'ignore:datetime.datetime.utcfromtimestamp\(\).*deprecated:DeprecationWarning',
+    "ignore:'penalty' was deprecated in version 1.8 and will be removed:FutureWarning:sklearn",
+    'ignore:Inconsistent values: UserWarning:sklearn.linear_model._logistic',
+]
 
 [tool.black]
 line-length = 100

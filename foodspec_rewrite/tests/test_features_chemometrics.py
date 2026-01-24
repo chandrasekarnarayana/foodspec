@@ -14,7 +14,6 @@ FoodSpec v2 Definition of Done:
 """
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from foodspec.features import PCAFeatureExtractor
@@ -23,10 +22,10 @@ from foodspec.features import PCAFeatureExtractor
 def test_pca_fit_transform_shapes_and_columns() -> None:
     rng = np.random.default_rng(0)
     X = rng.normal(size=(20, 10))
-    pca = PCAFeatureExtractor(n_components=3, random_state=0)
+    pca = PCAFeatureExtractor(n_components=3, seed=0)
 
-    Z_train = pca.fit_transform(X)
-    assert list(Z_train.columns) == ["pc1", "pc2", "pc3"]
+    Z_train, names = pca.fit_transform(X)
+    assert names == ["pca_1", "pca_2", "pca_3"]
     assert Z_train.shape == (20, 3)
     evr = pca.explained_variance_ratio_
     assert evr.shape == (3,)
@@ -38,13 +37,13 @@ def test_pca_train_only_then_transform_holdout() -> None:
     X = rng.normal(size=(30, 8))
     X_train, X_test = X[:20], X[20:]
 
-    pca = PCAFeatureExtractor(n_components=2, random_state=42)
-    Z_fit = pca.fit_transform(X_train)
-    Z_tr_again = pca.transform(X_train)
-    Z_te = pca.transform(X_test)
+    pca = PCAFeatureExtractor(n_components=2, seed=42)
+    Z_fit, names_fit = pca.fit_transform(X_train)
+    Z_tr_again, names_tr_again = pca.transform(X_train)
+    Z_te, names_te = pca.transform(X_test)
 
     # Fit-then-transform on train equals fit_transform on train
-    assert np.allclose(Z_fit.values, Z_tr_again.values)
+    assert np.allclose(Z_fit, Z_tr_again)
     # Transform works on test and has correct shape
     assert Z_te.shape == (10, 2)
 

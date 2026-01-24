@@ -42,6 +42,10 @@ class DataSpec(BaseModel):
     metadata_map: Dict[str, str] = Field(
         default_factory=dict, description="Mapping of canonical keys to dataset columns"
     )
+    required_metadata_keys: List[str] = Field(
+        default_factory=list,
+        description="Metadata keys that must be present in dataset (enforced at load time)"
+    )
 
 
 class TaskSpec(BaseModel):
@@ -80,6 +84,10 @@ class QCSpec(BaseModel):
     thresholds: Dict[str, float] = Field(default_factory=dict)
     metrics: List[str] = Field(default_factory=list)
     policy: str = "warn"  # warn | fail_fast
+    group_by: Optional[str] = Field(
+        None,
+        description="Metadata key for grouping QC (e.g., 'batch', 'instrument', 'matrix')"
+    )
 
 
 class FeatureSpec(BaseModel):
@@ -299,6 +307,37 @@ class ProtocolV2(BaseModel):
                 f"Unknown model estimator '{self.model.estimator}'. Register it or update the workflow."
             )
 
+        interpretability_required = bool(self.task.constraints.get("interpretability", False))
+        allow_opaque = bool(self.task.constraints.get("allow_opaque_models", False))
+        if interpretability_required and not allow_opaque:
+            allowed_feature_modules = {
+                "peak_heights",
+                "peak_areas",
+                "peak_ratios",
+                "band_integration",
+                "pca",
+                "pls",
+            }
+            allowed_models = {"logreg", "calibrated_logreg"}
+
+            disallowed_features = [m for m in self.features.modules if m not in allowed_feature_modules]
+            if disallowed_features:
+                listed = ", ".join(sorted(set(disallowed_features)))
+                allowed_list = ", ".join(sorted(allowed_feature_modules))
+                raise ValueError(
+                    "Interpretability constraint enabled: only interpretable feature modules are allowed. "
+                    f"Allowed: {allowed_list}. Found disallowed: {listed}. "
+                    "To use opaque feature pipelines, set task.constraints.allow_opaque_models=true and accept the tradeoffs."
+                )
+
+            if self.model.estimator not in allowed_models:
+                allowed_models_list = ", ".join(sorted(allowed_models))
+                raise ValueError(
+                    "Interpretability constraint enabled: only interpretable models are allowed. "
+                    f"Allowed: {allowed_models_list}. Found: {self.model.estimator}. "
+                    "To use opaque models (e.g., RF/XGB), set task.constraints.allow_opaque_models=true."
+                )
+
     def expand_recipes(self, recipe_registry: Optional[Mapping[str, Sequence[Mapping[str, Any]]]] = None) -> "ProtocolV2":
         """Expand preprocess.recipe into explicit steps using a registry or built-ins.
 
@@ -340,6 +379,37 @@ class ProtocolV2(BaseModel):
             proto.reporting.sections = ["summary", "metrics", "figures"]
 
         return proto
+
+    def infer_required_metadata_keys(self) -> List[str]:
+        """Infer required metadata keys from validation scheme and QC config.
+
+        Returns
+        -------
+        List[str]
+            List of metadata keys that must be present in the dataset.
+
+        Examples
+        --------
+        >>> protocol = ProtocolV2(
+        ...     data=DataSpec(input="data.csv", modality="raman", label="target"),
+        ...     task=TaskSpec(name="test", objective="classification"),
+        ...     validation=ValidationSpec(scheme="group_kfold", group_key="batch")
+        ... )
+        >>> keys = protocol.infer_required_metadata_keys()
+        >>> "batch" in keys
+        True
+        """
+        required = []
+
+        # Validation scheme requirements
+        if self.validation.group_key:
+            required.append(self.validation.group_key)
+
+        # QC grouping requirements
+        if self.qc.group_by:
+            required.append(self.qc.group_by)
+
+        return list(set(required))  # deduplicate
 
 
 __all__ = [

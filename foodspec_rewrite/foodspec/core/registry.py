@@ -102,3 +102,43 @@ class ComponentRegistry:
 
 
 __all__ = ["ComponentRegistry"]
+
+
+def register_default_feature_components(registry: ComponentRegistry) -> None:
+    """Register core feature-engineering components into the registry.
+
+    Components are registered under category "features" with predictable names
+    so ProtocolV2 can reference them by string identifier.
+    """
+
+    from foodspec.features import (  # Imported lazily to avoid circular deps
+        BandIntegration,
+        FeatureUnion,
+        PCAFeatureExtractor,
+        PeakAreas,
+        PeakHeights,
+        PeakRatios,
+        PLSFeatureExtractor,
+        StabilitySelector,
+    )
+
+    registrations = {
+        "peak_heights": PeakHeights,
+        "peak_areas": PeakAreas,
+        "peak_ratios": PeakRatios,
+        "band_integration": BandIntegration,
+        "pca": PCAFeatureExtractor,
+        "pls": PLSFeatureExtractor,
+        "feature_union": FeatureUnion,
+        # Alias per prompt naming
+        "stability_selector": StabilitySelector,
+        "stability_selection_selector": StabilitySelector,
+    }
+
+    for name, cls in registrations.items():
+        if name in registry.categories["features"]:
+            continue
+        registry.register("features", name, cls)
+
+
+__all__.append("register_default_feature_components")
