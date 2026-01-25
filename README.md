@@ -8,13 +8,18 @@
 [![Coverage](https://img.shields.io/badge/coverage-79%25-brightgreen)](https://github.com/chandrasekarnarayana/foodspec)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Release](https://img.shields.io/badge/release-v1.1.0--rc1-orange)](https://github.com/chandrasekarnarayana/foodspec/releases/tag/v1.1.0-rc1)
+
+> 🎉 **NEW**: v1.1.0-rc1 released! Modern architecture with trust subsystem, reporting infrastructure, and visualization suite. [Migration guide](docs/migration/v1-to-v2.md) | [Release notes](https://github.com/chandrasekarnarayana/foodspec/releases/tag/v1.1.0-rc1)
+
+> ⚠️ **DEPRECATION NOTICE**: Root-level modules will be removed in v2.0.0 (July 2026). See [migration guide](docs/migration/v1-to-v2.md) for update instructions.
 
 > "Food decides the nature of your mind… Mind is born of the food you take."  
 > — Sri Sathya Sai Baba, *Effect of Food on the Mind*, Summer Showers 1993 – Indian Culture and Spirituality (29 May 1993)
 
 Production-ready Python toolkit for Raman/FTIR/NIR spectroscopy in food science. FoodSpec provides reproducible workflows for preprocessing, feature extraction, statistics, and machine learning, with built-in support for protocol-driven analysis, model management, and automated reporting.
 
-**Version:** 1.0.0 | **Status:** Production Ready | **Tests:** 685 passing (79% coverage)
+**Version:** 1.1.0-rc1 | **Status:** Release Candidate | **Tests:** 685+ passing (88%+ coverage on new modules)
 
 ## Statement of Need
 
