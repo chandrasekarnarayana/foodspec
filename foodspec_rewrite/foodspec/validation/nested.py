@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 
 from foodspec.core.artifacts import ArtifactRegistry
-from foodspec.validation.metrics import accuracy, auroc_ovr, macro_f1
+from foodspec.validation.metrics import accuracy, auroc_macro, macro_f1
 from foodspec.validation.splits import StratifiedKFoldOrGroupKFold
 
 
@@ -178,15 +178,19 @@ class GridSearchTuner:
             estimator = self.estimator_factory(**params)
             estimator.fit(X_train, y_train)
             proba = estimator.predict_proba(X_val)
+            pred = proba.argmax(axis=1) if proba.ndim == 2 else (proba > 0.5).astype(int)
 
             # Compute metric
             if self.metric == "accuracy":
-                score = accuracy(y_val, proba)
+                score_dict = accuracy(y_val, pred, proba)
+                score = score_dict["accuracy"]
             elif self.metric == "macro_f1":
-                score = macro_f1(y_val, proba)
+                score_dict = macro_f1(y_val, pred, proba)
+                score = score_dict["macro_f1"]
             elif self.metric == "auroc":
                 try:
-                    score = auroc_ovr(y_val, proba)
+                    score_dict = auroc_macro(y_val, pred, proba)
+                    score = score_dict["auroc_macro"]
                 except Exception:
                     score = 0.0
             else:
@@ -358,12 +362,16 @@ class NestedCVRunner:
             pred = proba.argmax(axis=1) if proba.ndim == 2 else (proba > 0.5).astype(int)
 
             # Compute metrics on outer test set
-            acc = accuracy(y_test_outer, proba)
-            f1 = macro_f1(y_test_outer, proba)
+            acc_dict = accuracy(y_test_outer, pred, proba)
+            f1_dict = macro_f1(y_test_outer, pred, proba)
             try:
-                roc = auroc_ovr(y_test_outer, proba)
+                roc_dict = auroc_macro(y_test_outer, pred, proba)
+                roc = roc_dict["auroc_macro"]
             except Exception:
                 roc = np.nan
+
+            acc = acc_dict["accuracy"]
+            f1 = f1_dict["macro_f1"]
 
             accuracies.append(acc)
             macro_f1s.append(f1)

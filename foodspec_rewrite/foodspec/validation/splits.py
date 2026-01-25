@@ -12,26 +12,37 @@ FoodSpec v2 Definition of Done:
 - Modularity, scalability, flexibility, reproducibility, reliability.
 - PEP 8 style, standards, and guidelines enforced.
 
-Deterministic group-aware splitters for validation.
+Deterministic group-aware splitters for validation with metadata support.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Generator, Iterable, Iterator, Sequence, Tuple
+from typing import Any, Dict, Generator, Iterable, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import GroupKFold, LeaveOneGroupOut, StratifiedKFold
 
 
 @dataclass
 class LeaveOneGroupOutSplitter:
-    """Leave-One-Group-Out splitter.
+    """Leave-One-Group-Out splitter with metadata support and backward compatibility.
 
-    Yields (train_idx, test_idx) pairs; one group held out each fold.
+    Supports both legacy API (with groups array) and new metadata-based API.
+    Yields (train_idx, test_idx) pairs or (train_idx, test_idx, fold_info) tuples
+    depending on input format. Groups are ordered deterministically.
+
+    Parameters
+    ----------
+    group_key : str, default "group"
+        Column name in metadata DataFrame for group identifiers.
+        Only used when meta is a DataFrame; ignored for legacy groups array.
 
     Examples
     --------
+    Legacy API (groups as array):
+    
     >>> import numpy as np
     >>> X = np.zeros((6, 2))
     >>> y = np.array([0, 0, 1, 1, 0, 1])
@@ -40,21 +51,131 @@ class LeaveOneGroupOutSplitter:
     >>> folds = list(splitter.split(X, y, groups))
     >>> len(folds)
     3
-    >>> sorted(len(te) for _, te in folds)
-    [2, 2, 2]
+
+    New API (metadata DataFrame):
+    
+    >>> import pandas as pd
+    >>> meta = pd.DataFrame({"group": [1, 1, 2, 2, 3, 3]})
+    >>> folds = list(splitter.split(X, y, meta))
+    >>> len(folds)
+    3
+    >>> train_idx, test_idx, fold_info = folds[0]
+    >>> fold_info
+    {'fold_id': 0, 'held_out_group': 1, 'n_train': 4, 'n_test': 2}
     """
 
+    group_key: str = "group"
+
     def split(
-        self, X: np.ndarray, y: np.ndarray, groups: Sequence[object]
-    ) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        groups_or_meta: np.ndarray | pd.DataFrame | Sequence[object],
+    ):
+        """Split data leaving one group out at a time.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Feature matrix.
+        y : ndarray, shape (n_samples,)
+            Target labels.
+        groups_or_meta : ndarray, DataFrame, or sequence
+            Either:
+            - Legacy API: array-like of group identifiers
+            - New API: DataFrame with group column
+
+        Yields
+        ------
+        Legacy API (array input):
+            train_idx, test_idx : tuple of ndarrays
+        
+        New API (DataFrame input):
+            train_idx, test_idx, fold_info : tuple with dict
+
+        Raises
+        ------
+        ValueError
+            If group_key not in metadata columns (DataFrame only).
+        """
         X = np.asarray(X)
         y = np.asarray(y)
+
+        # Detect which API is being used
+        if isinstance(groups_or_meta, pd.DataFrame):
+            # New API: metadata-based
+            yield from self._split_with_metadata(X, y, groups_or_meta)
+        else:
+            # Legacy API: groups array
+            yield from self._split_with_groups_array(X, y, groups_or_meta)
+
+    def _split_with_metadata(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        meta: pd.DataFrame,
+    ) -> Iterator[Tuple[np.ndarray, np.ndarray, Dict[str, Any]]]:
+        """New API: Split using metadata DataFrame.
+        
+        Yields (train_idx, test_idx, fold_info).
+        """
+        if X.shape[0] != y.shape[0] or y.shape[0] != len(meta):
+            raise ValueError("X, y, and meta must have the same length")
+
+        # Validate group_key exists
+        if self.group_key not in meta.columns:
+            available = list(meta.columns)
+            raise ValueError(
+                f"Group key '{self.group_key}' not found in metadata. "
+                f"Available keys: {available}"
+            )
+
+        groups = np.asarray(meta[self.group_key])
+
+        # Get unique groups and sort deterministically
+        unique_groups = np.unique(groups)
+        unique_groups = np.sort(unique_groups)
+
+        fold_id = 0
+        for held_out_group in unique_groups:
+            test_mask = groups == held_out_group
+            test_idx = np.where(test_mask)[0]
+            train_idx = np.where(~test_mask)[0]
+
+            fold_info = {
+                "fold_id": fold_id,
+                "held_out_group": held_out_group,
+                "n_train": len(train_idx),
+                "n_test": len(test_idx),
+            }
+
+            yield train_idx, test_idx, fold_info
+            fold_id += 1
+
+    def _split_with_groups_array(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        groups: Sequence[object],
+    ) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+        """Legacy API: Split using groups array.
+        
+        Yields (train_idx, test_idx) pairs.
+        """
         groups = np.asarray(groups)
         if X.shape[0] != y.shape[0] or y.shape[0] != groups.shape[0]:
             raise ValueError("X, y, and groups must have the same length")
-        logo = LeaveOneGroupOut()
-        for tr, te in logo.split(X, y, groups=groups):
-            yield tr, te
+
+        # Get unique groups and sort deterministically
+        unique_groups = np.unique(groups)
+        unique_groups = np.sort(unique_groups)
+
+        for held_out_group in unique_groups:
+            test_mask = groups == held_out_group
+            test_idx = np.where(test_mask)[0]
+            train_idx = np.where(~test_mask)[0]
+
+            yield train_idx, test_idx
 
 
 @dataclass
@@ -116,4 +237,120 @@ class StratifiedKFoldOrGroupKFold:
             yield tr, te
 
 
-__all__ = ["LeaveOneGroupOutSplitter", "StratifiedKFoldOrGroupKFold"]
+@dataclass
+class LeaveOneBatchOutSplitter:
+    """Convenience wrapper for Leave-One-Batch-Out using "batch" metadata key.
+
+    Equivalent to LeaveOneGroupOutSplitter(group_key="batch").
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> X = np.zeros((6, 2))
+    >>> y = np.array([0, 0, 1, 1, 0, 1])
+    >>> meta = pd.DataFrame({
+    ...     "batch": ["A", "A", "B", "B", "C", "C"],
+    ...     "date": ["2024-01-01"] * 6,
+    ... })
+    >>> splitter = LeaveOneBatchOutSplitter()
+    >>> folds = list(splitter.split(X, y, meta))
+    >>> len(folds)
+    3
+    >>> train_idx, test_idx, fold_info = folds[0]
+    >>> fold_info["held_out_group"]
+    'A'
+    """
+
+    def split(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        meta: pd.DataFrame,
+    ) -> Iterator[Tuple[np.ndarray, np.ndarray, Dict[str, Any]]]:
+        """Split data leaving one batch out at a time.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Feature matrix.
+        y : ndarray, shape (n_samples,)
+            Target labels.
+        meta : DataFrame
+            Metadata with "batch" column.
+
+        Yields
+        ------
+        train_idx, test_idx, fold_info
+            Training indices, test indices, and fold metadata.
+
+        Raises
+        ------
+        ValueError
+            If "batch" column not in metadata.
+        """
+        splitter = LeaveOneGroupOutSplitter(group_key="batch")
+        yield from splitter.split(X, y, meta)
+
+
+@dataclass
+class LeaveOneStageOutSplitter:
+    """Convenience wrapper for Leave-One-Stage-Out using "stage" metadata key.
+
+    Equivalent to LeaveOneGroupOutSplitter(group_key="stage").
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> X = np.zeros((6, 2))
+    >>> y = np.array([0, 0, 1, 1, 0, 1])
+    >>> meta = pd.DataFrame({
+    ...     "stage": ["discovery", "discovery", "validation", "validation", "test", "test"],
+    ... })
+    >>> splitter = LeaveOneStageOutSplitter()
+    >>> folds = list(splitter.split(X, y, meta))
+    >>> len(folds)
+    3
+    >>> train_idx, test_idx, fold_info = folds[0]
+    >>> fold_info["held_out_group"]
+    'discovery'
+    """
+
+    def split(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        meta: pd.DataFrame,
+    ) -> Iterator[Tuple[np.ndarray, np.ndarray, Dict[str, Any]]]:
+        """Split data leaving one stage out at a time.
+
+        Parameters
+        ----------
+        X : ndarray, shape (n_samples, n_features)
+            Feature matrix.
+        y : ndarray, shape (n_samples,)
+            Target labels.
+        meta : DataFrame
+            Metadata with "stage" column.
+
+        Yields
+        ------
+        train_idx, test_idx, fold_info
+            Training indices, test indices, and fold metadata.
+
+        Raises
+        ------
+        ValueError
+            If "stage" column not in metadata.
+        """
+        splitter = LeaveOneGroupOutSplitter(group_key="stage")
+        yield from splitter.split(X, y, meta)
+
+
+__all__ = [
+    "LeaveOneGroupOutSplitter",
+    "LeaveOneBatchOutSplitter",
+    "LeaveOneStageOutSplitter",
+    "StratifiedKFoldOrGroupKFold",
+]

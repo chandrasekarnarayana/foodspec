@@ -72,6 +72,8 @@ class RunManifest:
     cache_hits: List[str] = field(default_factory=list)
     cache_misses: List[str] = field(default_factory=list)
     hyperparameters_per_fold: List[Dict[str, Any]] = field(default_factory=list)
+    validation_spec: Dict[str, Any] = field(default_factory=dict)
+    trust_config: Dict[str, Any] = field(default_factory=dict)
 
     # Construction helpers
     @classmethod
@@ -85,6 +87,8 @@ class RunManifest:
         cache_hits: Optional[List[str]] = None,
         cache_misses: Optional[List[str]] = None,
         hyperparameters_per_fold: Optional[List[Dict[str, Any]]] = None,
+        validation_spec: Optional[Dict[str, Any]] = None,
+        trust_config: Optional[Dict[str, Any]] = None,
         dependencies: Optional[Dict[str, str]] = None,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
@@ -99,6 +103,8 @@ class RunManifest:
         cache_hit_list = cache_hits or []
         cache_miss_list = cache_misses or []
         hyperparams_list = hyperparameters_per_fold or []
+        validation_spec_dict = validation_spec or {}
+        trust_config_dict = trust_config or {}
 
         return cls(
             protocol_hash=protocol_hash,
@@ -116,6 +122,8 @@ class RunManifest:
             cache_hits=cache_hit_list,
             cache_misses=cache_miss_list,
             hyperparameters_per_fold=hyperparams_list,
+            validation_spec=validation_spec_dict,
+            trust_config=trust_config_dict,
         )
 
     @staticmethod

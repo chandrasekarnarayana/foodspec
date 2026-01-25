@@ -24,11 +24,93 @@ Quantifying model uncertainty:
 """
 
 from foodspec.trust.conformal import ConformalPredictionResult, MondrianConformalClassifier
-from foodspec.trust.abstain import AbstentionResult, evaluate_abstention
+from foodspec.trust.abstain import (
+    AbstentionResult,
+    evaluate_abstention,
+    MaxProbAbstainer,
+    ConformalSizeAbstainer,
+    CombinedAbstainer,
+)
+from foodspec.trust.calibration import (
+    expected_calibration_error,
+    TemperatureScaler,
+    IsotonicCalibrator,
+    PlattCalibrator,
+)
+from foodspec.trust.evaluator import TrustEvaluator, TrustEvaluationResult
+from foodspec.trust.reliability import (
+    brier_score,
+    compute_calibration_metrics,
+    reliability_curve_data,
+    top_class_confidence,
+    CalibrationMetrics,
+)
+from foodspec.trust.coverage import (
+    coverage_by_group,
+    format_coverage_table,
+    to_markdown,
+    to_latex,
+    check_coverage_guarantees,
+    coverage_comparison,
+    summarize_coverage,
+)
+from foodspec.trust.interpretability import (
+    extract_linear_coefficients,
+    top_k_features,
+    coefficient_summary,
+    to_markdown_coefficients,
+    compare_coefficients,
+)
+from foodspec.trust.permutation import (
+    permutation_importance,
+    permutation_importance_with_names,
+    top_k_important_features,
+    compare_importances,
+)
+from foodspec.trust.marker_panel_link import link_marker_panel_explanations
+from foodspec.trust.regulatory import (
+    validate_reproducibility,
+    integrity_checks,
+    generate_trust_summary,
+)
 
 __all__ = [
     "MondrianConformalClassifier",
     "ConformalPredictionResult",
     "AbstentionResult",
     "evaluate_abstention",
+    "MaxProbAbstainer",
+    "ConformalSizeAbstainer",
+    "CombinedAbstainer",
+    "expected_calibration_error",
+    "TemperatureScaler",
+    "IsotonicCalibrator",
+    "PlattCalibrator",
+    "TrustEvaluator",
+    "TrustEvaluationResult",
+    "brier_score",
+    "compute_calibration_metrics",
+    "reliability_curve_data",
+    "top_class_confidence",
+    "CalibrationMetrics",
+    "coverage_by_group",
+    "format_coverage_table",
+    "to_markdown",
+    "to_latex",
+    "check_coverage_guarantees",
+    "coverage_comparison",
+    "summarize_coverage",
+    "extract_linear_coefficients",
+    "top_k_features",
+    "coefficient_summary",
+    "to_markdown_coefficients",
+    "compare_coefficients",
+    "permutation_importance",
+    "permutation_importance_with_names",
+    "top_k_important_features",
+    "compare_importances",
+    "link_marker_panel_explanations",
+    "validate_reproducibility",
+    "integrity_checks",
+    "generate_trust_summary",
 ]

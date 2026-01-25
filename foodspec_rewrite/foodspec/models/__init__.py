@@ -15,12 +15,21 @@ Models module: ML model wrappers for sklearn, XGBoost, Keras.
 
 Training and predicting with models:
     from foodspec.models import LogisticRegressionClassifier, CalibratedClassifier
+    from foodspec.models.base import BaseEstimator, LabelEncoderWrapper
     model = LogisticRegressionClassifier(random_state=42)
     cal = CalibratedClassifier(model, method="sigmoid")
     cal.fit_and_calibrate(X_train, y_train, X_val, y_val)
     proba = cal.predict_proba(X_test)
  """
+from foodspec.models.base import BaseEstimator, LabelEncoderWrapper
 from foodspec.models.classical import LogisticRegressionClassifier
 from foodspec.models.calibration import CalibratedClassifier, calibration_metrics
 
-__all__ = ["LogisticRegressionClassifier", "CalibratedClassifier", "calibration_metrics"]
+__all__ = [
+    "BaseEstimator",
+    "LabelEncoderWrapper",
+    "LogisticRegressionClassifier",
+    "CalibratedClassifier",
+    "calibration_metrics",
+]
+

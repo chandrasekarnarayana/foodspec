@@ -19,19 +19,50 @@ Validating model performance:
     for train_idx, test_idx in splitter.split(X, y, groups):
         ...
 """
-from foodspec.validation.splits import LeaveOneGroupOutSplitter, StratifiedKFoldOrGroupKFold
-from foodspec.validation.metrics import accuracy, macro_f1, auroc_ovr, ece, brier
-from foodspec.validation.evaluation import EvaluationRunner, EvaluationResult, bootstrap_ci
+from foodspec.validation.splits import (
+    LeaveOneGroupOutSplitter,
+    StratifiedKFoldOrGroupKFold,
+)
+from foodspec.validation.metrics import (
+    accuracy,
+    macro_f1,
+    precision_macro,
+    recall_macro,
+    auroc_macro,
+    expected_calibration_error,
+    compute_classification_metrics,
+    ece,  # Legacy API
+    brier,  # Additional calibration metric
+)
+from foodspec.validation.evaluation import (
+    EvaluationRunner,
+    EvaluationResult,
+    evaluate_model_cv,
+    evaluate_model_nested_cv,
+)
+from foodspec.validation.statistics import (
+    bootstrap_ci,
+    anova_on_metric,
+    manova_placeholder,
+)
 
 __all__ = [
     "LeaveOneGroupOutSplitter",
     "StratifiedKFoldOrGroupKFold",
     "accuracy",
     "macro_f1",
-    "auroc_ovr",
+    "precision_macro",
+    "recall_macro",
+    "auroc_macro",
+    "expected_calibration_error",
+    "compute_classification_metrics",
     "ece",
     "brier",
     "EvaluationRunner",
     "EvaluationResult",
     "bootstrap_ci",
+    "anova_on_metric",
+    "manova_placeholder",
+    "evaluate_model_cv",
+    "evaluate_model_nested_cv",
 ]

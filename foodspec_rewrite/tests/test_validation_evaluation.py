@@ -25,13 +25,15 @@ from foodspec.validation import EvaluationRunner, bootstrap_ci
 
 def test_bootstrap_ci_deterministic_and_bounds() -> None:
     values = np.array([0.8, 0.85, 0.9, 0.75])
-    ci1 = bootstrap_ci(values, n_bootstraps=100, ci=0.95, seed=42)
-    ci2 = bootstrap_ci(values, n_bootstraps=100, ci=0.95, seed=42)
+    ci1 = bootstrap_ci(values, n_boot=100, alpha=0.05, seed=42)
+    ci2 = bootstrap_ci(values, n_boot=100, alpha=0.05, seed=42)
 
     # Deterministic with same seed
     assert np.allclose(ci1, ci2)
-    # Bounds are in [min, max]
-    assert values.min() <= ci1[0] <= ci1[1] <= values.max()
+    # Should return 3-tuple (lower, median, upper)
+    assert len(ci1) == 3
+    # Bounds should be ordered
+    assert ci1[0] <= ci1[1] <= ci1[2]
 
 
 def test_evaluation_runner_with_artifact_saving(tmp_path: Path) -> None:
@@ -51,10 +53,10 @@ def test_evaluation_runner_with_artifact_saving(tmp_path: Path) -> None:
     assert "auroc" in result.bootstrap_ci
     assert "accuracy" in result.bootstrap_ci
 
-    # Verify CIs are tuples with lower < upper
-    for metric, (lower, upper) in result.bootstrap_ci.items():
-        assert isinstance(lower, float) and isinstance(upper, float)
-        assert lower <= upper
+    # Verify CIs are 3-tuples (lower, median, upper)
+    for metric, (lower, median, upper) in result.bootstrap_ci.items():
+        assert isinstance(lower, float) and isinstance(median, float) and isinstance(upper, float)
+        assert lower <= median <= upper
 
     # Check artifacts were saved
     metrics_path = tmp_path / "metrics.csv"

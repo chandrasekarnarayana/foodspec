@@ -165,6 +165,15 @@ class ExecutionEngine:
                 self._log(f"Cache miss: features (key={features_key[:12]}...)")
                 # Future: execute features and cache.put(...)
 
+        # Extract validation spec from protocol for manifest
+        validation_spec_dict = {
+            "scheme": protocol.validation.scheme,
+            "group_key": protocol.validation.group_key,
+            "allow_random_cv": protocol.validation.allow_random_cv,
+            "nested": protocol.validation.nested,
+            "metrics": protocol.validation.metrics,
+        }
+
         # Build manifest (uses data fingerprint if file exists)
         manifest = RunManifest.build(
             protocol_snapshot=protocol.model_dump(mode="python"),
@@ -172,6 +181,9 @@ class ExecutionEngine:
             seed=seed,
             artifacts={
                 "metrics": str(artifacts.metrics_path),
+                "metrics_per_fold": str(artifacts.metrics_per_fold_path),
+                "metrics_summary": str(artifacts.metrics_summary_path),
+                "best_params": str(artifacts.best_params_path),
                 "qc": str(artifacts.qc_path),
                 "predictions": str(artifacts.predictions_path),
                 "plots": str(artifacts.plots_dir),
@@ -180,6 +192,21 @@ class ExecutionEngine:
                 "bundle": str(artifacts.bundle_dir),
                 "manifest": str(artifacts.manifest_path),
                 "logs": str(artifacts.logs_path),
+                # Trust artifacts
+                "calibration_metrics": str(artifacts.calibration_metrics_path),
+                "conformal_coverage": str(artifacts.conformal_coverage_path),
+                "conformal_sets": str(artifacts.conformal_sets_path),
+                "abstention_summary": str(artifacts.abstention_summary_path),
+                "coefficients": str(artifacts.coefficients_path),
+                "permutation_importance": str(artifacts.permutation_importance_path),
+                "marker_panel_explanations": str(artifacts.marker_panel_explanations_path),
+            },
+            validation_spec=validation_spec_dict,
+            trust_config={
+                "calibration_enabled": bool(protocol.uncertainty.conformal.get("calibration")),
+                "conformal_enabled": bool(protocol.uncertainty.conformal.get("conformal")),
+                "abstention_enabled": bool(protocol.uncertainty.conformal.get("abstention")),
+                "interpretability_enabled": bool(protocol.interpretability.methods or protocol.interpretability.marker_panel),
             },
             warnings=[] if data_file else ["Data file not found; fingerprint omitted."],
             cache_hits=self.cache_hits,
@@ -212,7 +239,7 @@ class ExecutionEngine:
             raise NotImplementedError("Features stage not implemented yet.")
         if protocol.model.estimator not in {"logreg", ""}:  # baseline accepted but not run
             raise NotImplementedError("Model stage not implemented yet.")
-        if protocol.validation.scheme not in {"train_test_split", ""}:
+        if protocol.validation.scheme not in {"train_test_split", "leave_one_group_out", ""}:
             raise NotImplementedError("Validation stage not implemented yet.")
         if protocol.uncertainty.conformal:
             raise NotImplementedError("Uncertainty stage not implemented yet.")
@@ -225,6 +252,42 @@ class ExecutionEngine:
                 raise NotImplementedError("Reporting stage not implemented yet.")
         if protocol.export.bundle:
             raise NotImplementedError("Export stage not implemented yet.")
+
+    def save_evaluation_artifacts(
+        self,
+        evaluation_result: "EvaluationResult",
+        artifacts: ArtifactRegistry,
+    ) -> None:
+        """Save evaluation outputs to artifact directory.
+        
+        Writes predictions.csv, metrics.csv (combined per-fold + summary),
+        and best_params.csv (if nested CV).
+        
+        Parameters
+        ----------
+        evaluation_result : EvaluationResult
+            Result from evaluate_model_cv or evaluate_model_nested_cv.
+        artifacts : ArtifactRegistry
+            Artifact registry for output directory.
+        
+        Examples
+        --------
+        >>> from foodspec.validation.evaluation import EvaluationResult
+        >>> result = EvaluationResult(fold_predictions=[], fold_metrics=[], bootstrap_ci={})
+        >>> engine.save_evaluation_artifacts(result, artifacts)
+        """
+        # Save predictions.csv
+        evaluation_result.save_predictions_csv(artifacts.predictions_path)
+        self._log(f"Saved predictions to {artifacts.predictions_path}")
+        
+        # Save metrics.csv (combined per-fold + summary)
+        evaluation_result.save_metrics_csv(artifacts.metrics_path, include_summary=True)
+        self._log(f"Saved metrics to {artifacts.metrics_path}")
+        
+        # Save best_params.csv (nested CV only)
+        if evaluation_result.hyperparameters_per_fold:
+            evaluation_result.save_best_params_csv(artifacts.best_params_path)
+            self._log(f"Saved hyperparameters to {artifacts.best_params_path}")
 
 
 __all__ = ["ExecutionEngine", "RunResult"]

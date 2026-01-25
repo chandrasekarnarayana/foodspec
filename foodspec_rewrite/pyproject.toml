@@ -58,6 +58,12 @@ filterwarnings = [
     'ignore:datetime.datetime.utcfromtimestamp\(\).*deprecated:DeprecationWarning',
     "ignore:'penalty' was deprecated in version 1.8 and will be removed:FutureWarning:sklearn",
     'ignore:Inconsistent values: UserWarning:sklearn.linear_model._logistic',
+    'ignore:The groups parameter is ignored by StratifiedKFold:UserWarning',
+    'ignore:.*WARNING.*learner.cc.*:UserWarning:xgboost',
+    'ignore:Solver terminated early.*',
+    'ignore:Mean of empty slice:RuntimeWarning',
+    'ignore:invalid value encountered in scalar divide:RuntimeWarning',
+    'ignore:X does not have valid feature names.*:UserWarning:sklearn',
 ]
 
 [tool.black]

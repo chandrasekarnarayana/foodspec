@@ -118,10 +118,186 @@ class ValidationSpec(BaseModel):
     group_key: Optional[str] = None
     nested: bool = False
     metrics: List[str] = Field(default_factory=lambda: ["accuracy"])
+    allow_random_cv: bool = Field(
+        default=False,
+        description="Explicit flag to allow random CV for food data. Should be False for most use cases."
+    )
+    validation_warnings: List[str] = Field(
+        default_factory=list,
+        description="Warnings generated during protocol validation (e.g., random CV override)"
+    )
+
+
+class CalibrationSpec(BaseModel):
+    """Calibration method configuration for probability calibration."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    method: str = Field(
+        default="none",
+        description="Calibration method: 'none' | 'platt' | 'isotonic'",
+    )
+
+    def validate_method(self) -> None:
+        """Validate calibration method is supported."""
+        valid_methods = {"none", "platt", "isotonic"}
+        if self.method not in valid_methods:
+            raise ValueError(
+                f"Invalid calibration method: {self.method}. "
+                f"Must be one of {valid_methods}."
+            )
+
+
+class ConformalSpec(BaseModel):
+    """Conformal prediction configuration."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable conformal prediction for prediction set generation",
+    )
+    alpha: float = Field(
+        default=0.1,
+        description="Miscoverage rate target (e.g., 0.1 for 90% coverage)",
+        ge=0.0,
+        le=1.0,
+    )
+    condition_key: Optional[str] = Field(
+        default=None,
+        description="Metadata column for Mondrian stratification (e.g., 'stage', 'batch')",
+    )
+
+
+class AbstentionRuleSpec(BaseModel):
+    """Single abstention rule configuration."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: str = Field(
+        ...,
+        description="Rule type: 'max_prob' | 'conformal_size'",
+    )
+    threshold: Optional[float] = Field(
+        default=None,
+        description="For max_prob: confidence threshold in (0, 1]",
+        gt=0.0,
+        le=1.0,
+    )
+    max_size: Optional[int] = Field(
+        default=None,
+        description="For conformal_size: maximum acceptable set size",
+        ge=1,
+    )
+
+    def validate_rule(self) -> None:
+        """Validate rule has required parameters."""
+        valid_types = {"max_prob", "conformal_size"}
+        if self.type not in valid_types:
+            raise ValueError(
+                f"Invalid abstention rule type: {self.type}. "
+                f"Must be one of {valid_types}."
+            )
+
+        if self.type == "max_prob" and self.threshold is None:
+            raise ValueError(
+                "max_prob rule requires 'threshold' parameter in (0, 1]"
+            )
+        if self.type == "conformal_size" and self.max_size is None:
+            raise ValueError(
+                "conformal_size rule requires 'max_size' parameter (positive int)"
+            )
+
+
+class AbstentionSpec(BaseModel):
+    """Abstention / selective classification configuration."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable selective classification with abstention",
+    )
+    rules: List[AbstentionRuleSpec] = Field(
+        default_factory=list,
+        description="List of abstention rules to apply",
+    )
+    mode: str = Field(
+        default="any",
+        description="Combination mode: 'any' (OR) | 'all' (AND)",
+    )
+
+    def validate_mode(self) -> None:
+        """Validate combination mode."""
+        valid_modes = {"any", "all"}
+        if self.mode not in valid_modes:
+            raise ValueError(
+                f"Invalid abstention mode: {self.mode}. "
+                f"Must be one of {valid_modes}."
+            )
+
+
+class TrustInterpretabilitySpec(BaseModel):
+    """Interpretability and explainability methods."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable interpretability analysis",
+    )
+    methods: List[str] = Field(
+        default_factory=list,
+        description="Interpretability methods: 'coefficients' | 'permutation_importance' | 'marker_panels'",
+    )
+
+    def validate_methods(self) -> None:
+        """Validate interpretability methods are supported."""
+        valid_methods = {"coefficients", "permutation_importance", "marker_panels"}
+        for method in self.methods:
+            if method not in valid_methods:
+                raise ValueError(
+                    f"Invalid interpretability method: {method}. "
+                    f"Must be one of {valid_methods}."
+                )
+
+
+class TrustSpec(BaseModel):
+    """Trust, uncertainty, and calibration configuration."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    calibration: CalibrationSpec = Field(
+        default_factory=CalibrationSpec,
+        description="Probability calibration settings",
+    )
+    conformal: ConformalSpec = Field(
+        default_factory=ConformalSpec,
+        description="Conformal prediction settings",
+    )
+    abstention: AbstentionSpec = Field(
+        default_factory=AbstentionSpec,
+        description="Selective classification abstention rules",
+    )
+    interpretability: TrustInterpretabilitySpec = Field(
+        default_factory=TrustInterpretabilitySpec,
+        description="Interpretability and explainability methods",
+    )
+
+    def validate(self) -> None:
+        """Validate all trust configuration."""
+        self.calibration.validate_method()
+        self.conformal.alpha  # Already validated by Pydantic (ge/le)
+
+        for rule in self.abstention.rules:
+            rule.validate_rule()
+        self.abstention.validate_mode()
+
+        self.interpretability.validate_methods()
 
 
 class UncertaintySpec(BaseModel):
-    """Uncertainty and conformal settings."""
+    """Uncertainty and conformal settings (legacy, for backward compatibility)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -202,6 +378,7 @@ class ProtocolV2(BaseModel):
     model: ModelSpec = Field(default_factory=ModelSpec)
     validation: ValidationSpec = Field(default_factory=ValidationSpec)
     uncertainty: UncertaintySpec = Field(default_factory=UncertaintySpec)
+    trust: TrustSpec = Field(default_factory=TrustSpec, description="Trust, uncertainty, and calibration")
     interpretability: InterpretabilitySpec = Field(default_factory=InterpretabilitySpec)
     visualization: VisualizationSpec = Field(default_factory=VisualizationSpec)
     reporting: ReportingSpec = Field(default_factory=ReportingSpec)
@@ -264,6 +441,7 @@ class ProtocolV2(BaseModel):
         - Ensures required metadata keys are mapped.
         - Flags unknown components when a registry is provided.
         - Validates recipe presence when recipes are named.
+        - Enforces "No random CV for real food data" design principle.
         """
 
         required_metadata = {"sample_id", "modality", "label"}
@@ -274,6 +452,9 @@ class ProtocolV2(BaseModel):
                 f"metadata_map is missing required keys: {missing}. "
                 "Map each key to a column in your dataset."
             )
+
+        # Validate CV scheme: "No random CV for real food data"
+        self._validate_cv_scheme()
 
         if self.preprocess.recipe and recipe_registry is not None:
             if self.preprocess.recipe not in recipe_registry:
@@ -338,6 +519,83 @@ class ProtocolV2(BaseModel):
                     "To use opaque models (e.g., RF/XGB), set task.constraints.allow_opaque_models=true."
                 )
 
+        # Validate trust configuration
+        self.trust.validate()
+
+    def _validate_cv_scheme(self) -> None:
+        """Validate CV scheme follows 'No random CV for real food data' principle.
+        
+        Enforces:
+        1. If metadata has batch/stage keys, default to leave_one_group_out
+        2. If task is authentication/adulteration, random CV requires explicit override
+        3. Random CV with food data requires allow_random_cv=True with warning
+        """
+        # Check if metadata has batch/stage keys
+        metadata_keys = set(self.data.metadata_map.keys())
+        has_batch_keys = bool(metadata_keys & {"batch", "stage", "batch_id", "stage_id"})
+        
+        # Check if task is critical (authentication/adulteration)
+        task_name_lower = self.task.name.lower()
+        task_objective_lower = self.task.objective.lower()
+        is_critical_task = any(
+            keyword in task_name_lower or keyword in task_objective_lower
+            for keyword in ["authentication", "adulteration", "fraud", "origin"]
+        )
+        
+        # Check if scheme is random CV
+        random_cv_schemes = {"stratified_kfold", "kfold", "k_fold", "stratified_k_fold"}
+        is_random_cv = self.validation.scheme.lower() in random_cv_schemes
+        
+        # Enforcement logic
+        if is_random_cv:
+            # Critical tasks with batch data absolutely require override
+            if is_critical_task and has_batch_keys:
+                if not self.validation.allow_random_cv:
+                    raise ValueError(
+                        f"Random CV ('{self.validation.scheme}') is not allowed for "
+                        f"task '{self.task.name}' with batch/stage metadata. "
+                        f"This violates the 'No random CV for real food data' principle.\n\n"
+                        f"Reasons:\n"
+                        f"  - Task type: {self.task.objective} (critical for safety/authenticity)\n"
+                        f"  - Metadata contains: {sorted(metadata_keys & {'batch', 'stage', 'batch_id', 'stage_id'})}\n"
+                        f"  - Random CV can leak batch effects and overestimate performance\n\n"
+                        f"Recommended actions:\n"
+                        f"  1. Use 'leave_one_group_out' with group_key='batch' (strongly recommended)\n"
+                        f"  2. Use 'group_kfold' if you have many batches\n\n"
+                        f"Only if you understand the risks and have consulted with domain experts:\n"
+                        f"  - Set validation.allow_random_cv=true to override this check\n"
+                        f"  - Document why random CV is acceptable for this specific use case"
+                    )
+                else:
+                    # Override is set - record warning
+                    warning_msg = (
+                        f"WARNING: Random CV override active for critical task '{self.task.name}'. "
+                        f"Scheme '{self.validation.scheme}' may leak batch effects. "
+                        f"Performance estimates may be optimistic. Proceed with caution."
+                    )
+                    if warning_msg not in self.validation.validation_warnings:
+                        self.validation.validation_warnings.append(warning_msg)
+            
+            # Any food data with batch keys should use LOBO
+            elif has_batch_keys:
+                if not self.validation.allow_random_cv:
+                    raise ValueError(
+                        f"Random CV ('{self.validation.scheme}') is not recommended for data "
+                        f"with batch/stage metadata: {sorted(metadata_keys & {'batch', 'stage', 'batch_id', 'stage_id'})}\n\n"
+                        f"Random CV can cause batch effects to leak between train/test splits, "
+                        f"leading to overoptimistic performance estimates.\n\n"
+                        f"Recommended: Use 'leave_one_group_out' with group_key='batch' or 'group_kfold'.\n\n"
+                        f"To override (not recommended): Set validation.allow_random_cv=true"
+                    )
+                else:
+                    # Override is set - record warning
+                    warning_msg = (
+                        f"WARNING: Random CV override active. Scheme '{self.validation.scheme}' "
+                        f"used despite batch metadata. Performance may be overestimated."
+                    )
+                    if warning_msg not in self.validation.validation_warnings:
+                        self.validation.validation_warnings.append(warning_msg)
+
     def expand_recipes(self, recipe_registry: Optional[Mapping[str, Sequence[Mapping[str, Any]]]] = None) -> "ProtocolV2":
         """Expand preprocess.recipe into explicit steps using a registry or built-ins.
 
@@ -361,7 +619,10 @@ class ProtocolV2(BaseModel):
         return self.model_copy(update={"preprocess": new_preprocess})
 
     def apply_defaults(self) -> "ProtocolV2":
-        """Apply sensible defaults for zero-config usage."""
+        """Apply sensible defaults for zero-config usage.
+        
+        Automatically selects leave_one_group_out when batch/stage metadata is present.
+        """
 
         proto = self.model_copy(deep=True)
 
@@ -371,6 +632,18 @@ class ProtocolV2(BaseModel):
                 "modality": proto.data.modality,
                 "label": proto.data.label,
             }
+
+        # Auto-select LOBO if batch metadata present and scheme not explicitly set
+        metadata_keys = set(proto.data.metadata_map.keys())
+        has_batch_keys = bool(metadata_keys & {"batch", "stage", "batch_id", "stage_id"})
+        
+        if has_batch_keys and proto.validation.scheme == "train_test_split":
+            # Default scheme - auto-upgrade to LOBO
+            proto.validation.scheme = "leave_one_group_out"
+            # Set group_key to first available batch key
+            batch_keys_found = sorted(metadata_keys & {"batch", "stage", "batch_id", "stage_id"})
+            if batch_keys_found:
+                proto.validation.group_key = batch_keys_found[0]
 
         if proto.validation.metrics == []:
             proto.validation.metrics = ["accuracy"]
