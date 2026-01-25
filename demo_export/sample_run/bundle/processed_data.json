@@ -1,0 +1,9 @@
+{
+  "n_samples": 250,
+  "n_variables": 500,
+  "preprocessing_applied": [
+    "SNV",
+    "baseline_removal"
+  ],
+  "pca_variance_explained": 0.92
+}

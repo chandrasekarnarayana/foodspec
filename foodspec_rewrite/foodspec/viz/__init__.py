@@ -82,6 +82,14 @@ from foodspec.viz.embeddings import (
     get_embedding_statistics,
 )
 from foodspec.viz.paper_styles import apply_paper_style, PAPER_STYLES, DEFAULT_DPI
+from foodspec.viz.paper import (
+    FigurePreset,
+    apply_figure_preset,
+    figure_context,
+    save_figure,
+    get_figure_preset_config,
+    list_presets,
+)
 from foodspec.viz.visualization_manager import (
     VisualizationManager,
     run_all_visualizations,
@@ -131,6 +139,12 @@ __all__ = [
     "apply_paper_style",
     "PAPER_STYLES",
     "DEFAULT_DPI",
+    "FigurePreset",
+    "apply_figure_preset",
+    "figure_context",
+    "save_figure",
+    "get_figure_preset_config",
+    "list_presets",
     "VisualizationManager",
     "run_all_visualizations",
 ]

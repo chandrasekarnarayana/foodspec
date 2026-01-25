@@ -1,0 +1,13 @@
+{
+  "pack_created": "2026-01-25T12:27:53.640743",
+  "source_run": "/home/cs/FoodSpec/demo_export/sample_run",
+  "pack_contents": [
+    "manifest.json - Execution metadata",
+    "protocol_snapshot.json - Protocol configuration (JSON)",
+    "protocol_snapshot.txt - Protocol configuration (readable)",
+    "environment.txt - Python dependencies",
+    "tables/ - Metrics, predictions, QC data",
+    "plots_index.txt - Index of generated plots",
+    "pack_metadata.json - This file"
+  ]
+}

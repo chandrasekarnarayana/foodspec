@@ -1,0 +1,42 @@
+PROTOCOL SNAPSHOT
+======================================================================
+
+Name: Oil Authentication Protocol v2.1
+Version: 2.1
+
+PROCESSING STEPS
+----------------------------------------------------------------------
+
+Step 1: Data Loading
+Type: input
+Description: Load spectral data from CSV
+Parameters:
+  - format: csv
+  - wavelength_range: [900, 1700]
+
+Step 2: SNV Normalization
+Type: preprocessing
+Description: Apply Standard Normal Variate normalization
+Parameters:
+  - method: snv
+
+Step 3: Baseline Removal
+Type: preprocessing
+Description: Remove baseline using polynomial fitting
+Parameters:
+  - method: poly
+  - order: 3
+
+Step 4: PLS-DA Model
+Type: analysis
+Description: Partial Least Squares Discriminant Analysis
+Parameters:
+  - n_components: 5
+  - cv_folds: 5
+
+Step 5: Validation
+Type: validation
+Description: Cross-validation and performance assessment
+Parameters:
+  - metrics: ['accuracy', 'precision', 'recall']
+

@@ -28,6 +28,25 @@ from .uncertainty import (
     plot_abstention_distribution,
     get_uncertainty_statistics,
 )
+from .compare import (
+    RunSummary,
+    scan_runs,
+    load_run_summary,
+    create_leaderboard,
+    create_radar_plot,
+    create_monitoring_plot,
+    create_comparison_dashboard,
+    compute_baseline_deltas,
+    compare_runs,
+)
+from .paper import (
+    FigurePreset,
+    apply_figure_preset,
+    figure_context,
+    save_figure,
+    get_figure_preset_config,
+    list_presets,
+)
 
 __all__ = [
     "plot_spectra_overlay",
@@ -54,4 +73,10 @@ __all__ = [
     "plot_coverage_efficiency",
     "plot_abstention_distribution",
     "get_uncertainty_statistics",
+    "FigurePreset",
+    "apply_figure_preset",
+    "figure_context",
+    "save_figure",
+    "get_figure_preset_config",
+    "list_presets",
 ]

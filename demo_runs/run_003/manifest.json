@@ -1,0 +1,6 @@
+{
+  "run_id": "run_003",
+  "timestamp": "2026-01-17T12:00:00Z",
+  "algorithm": "XGBoost",
+  "validation_scheme": "holdout"
+}
