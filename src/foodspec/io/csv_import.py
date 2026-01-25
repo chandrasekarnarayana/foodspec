@@ -1,3 +1,4 @@
+from __future__ import annotations
 """CSV import utilities.
 
 Converts public spectral datasets into `FoodSpectrumSet` instances.
@@ -11,7 +12,6 @@ The resulting `FoodSpectrumSet` can be used across FoodSpec workflows and
 persisted using HDF5 utilities.
 """
 
-from __future__ import annotations
 
 from pathlib import Path
 from typing import Iterable, Optional

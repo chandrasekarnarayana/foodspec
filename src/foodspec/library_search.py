@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Spectral library search utilities.
 
@@ -39,7 +40,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List, Tuple

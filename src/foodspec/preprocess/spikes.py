@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Cosmic ray (spike) detection and correction as a standalone step.
 
@@ -5,7 +6,6 @@ Detect spikes via robust z-score and correct by local median interpolation.
 Reports per-spectrum spike counts.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List

@@ -63,3 +63,36 @@ examples/sample_runs/*.json
 .DS_Store
 Thumbs.db
 *.db
+
+# Build outputs
+site/
+dist/
+build/
+*.egg-info/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.benchmarks/
+
+# Application cache
+.foodspec_cache/
+
+# Demo/test outputs
+outputs/
+demo_*/
+comparison_output/
+protocol_runs_test/
+*_runs/
+*_output/
+*_export/
+
+# Temporary files
+*.tmp
+*.log

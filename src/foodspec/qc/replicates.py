@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Replicate consistency analysis for assessing experimental reliability.
 
@@ -20,7 +21,6 @@ CV is expected but must be quantified for ML uncertainty estimation.
     >>> print(f"Median technical CV: {consistency['median_cv']:.1f}%")
 """
 
-from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Optional

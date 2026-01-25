@@ -1,3 +1,4 @@
+from __future__ import annotations
 """PDF export functionality with graceful dependency handling.
 
 Supports PDF generation from HTML with optional WeasyPrint support.
@@ -13,7 +14,6 @@ Usage:
         print("PDF export not available - HTML export generated instead")
 """
 
-from __future__ import annotations
 
 import warnings
 from pathlib import Path

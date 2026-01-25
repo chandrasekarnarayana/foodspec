@@ -1,6 +1,6 @@
 """Core data model for spectral datasets."""
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass
 from pathlib import Path

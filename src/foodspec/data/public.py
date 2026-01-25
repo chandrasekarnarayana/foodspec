@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Public dataset loaders for foodspec.
 
 These functions expect users to manually download open datasets to a known
@@ -6,7 +7,6 @@ and attaches basic metadata. They will raise clear errors with instructions
 if the expected files are not present.
 """
 
-from __future__ import annotations
 
 from os import PathLike
 from pathlib import Path

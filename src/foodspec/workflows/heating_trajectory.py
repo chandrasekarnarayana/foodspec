@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Heating and oxidation trajectory analysis for time-series spectroscopy.
 
@@ -27,7 +28,6 @@ This module provides tools for analyzing spectral changes over time:
     >>> #   shelf_life_threshold: 2.0
 """
 
-from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, List, Literal, Optional, Tuple

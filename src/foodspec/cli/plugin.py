@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 Plugin manager CLI for FoodSpec.
 
@@ -7,7 +8,6 @@ Examples:
     foodspec-plugin install my_foodspec_plugin
 """
 
-from __future__ import annotations
 
 import argparse
 import sys

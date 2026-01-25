@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Oil vs chips matrix divergence analysis for RQ.
 
@@ -5,7 +6,6 @@ Provides `compare_oil_vs_chips()` and helper logic to compute divergence
 between matrix types on ratio/feature columns.
 """
 
-from __future__ import annotations
 
 from typing import Sequence
 

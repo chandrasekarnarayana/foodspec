@@ -135,9 +135,19 @@ class TestImportPaths:
             pytest.fail(f"Cannot import TrustEvaluator from foodspec.trust: {e}")
 
     def test_no_rewrite_imports(self):
-        """No imports from foodspec_rewrite should work."""
-        with pytest.raises(ImportError):
-            import foodspec_rewrite  # noqa: F401
+        """No imports from foodspec_rewrite in codebase."""
+        repo_root = Path(__file__).parent.parent
+
+        result = subprocess.run(
+            ["grep", "-r", "from foodspec_rewrite", "src/", "--include=*.py"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+        )
+
+        assert result.returncode != 0, (
+            f"Found foodspec_rewrite imports in codebase:\n{result.stdout}"
+        )
 
 
 class TestPackageStructure:

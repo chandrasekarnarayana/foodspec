@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Plugin system for FoodSpec.
 
@@ -13,7 +14,6 @@ Each entry point should expose a `get_plugins()` function returning a dict with 
     {"protocols": [...], "vendor_loaders": {...}, "harmonization": {...}, "feature_indices": {...}, "workflows": {...}}
 """
 
-from __future__ import annotations
 
 import importlib
 from dataclasses import dataclass, field

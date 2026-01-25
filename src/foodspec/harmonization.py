@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Advanced harmonization utilities:
 - Instrument-specific calibration curves for wavenumber drift correction.
@@ -38,7 +39,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple

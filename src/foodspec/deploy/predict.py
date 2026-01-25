@@ -1,10 +1,10 @@
+from __future__ import annotations
 """Deployment helpers: prediction scaffolding.
 
 Defines `DeployedPredictor` to restore a model from a single-file artifact and
 run batch predictions. This is a scaffold; loading and prediction are stubbed.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path

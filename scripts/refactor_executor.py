@@ -451,10 +451,12 @@ class RefactorExecutor:
 
     def save_manifest(self, path: Path):
         """Save operation manifest to JSON."""
+        import time
+
         manifest = {
-            "timestamp": str(Path("/tmp").stat()),
+            "timestamp": time.time(),
             "operations": [op.to_dict() for op in self.operations],
-            "success_count": sum(1 for op in self.operations if op.success or self.dry_run),
+            "success_count": sum(1 for op in self.operations if op.success),
             "total_count": len(self.operations),
         }
 

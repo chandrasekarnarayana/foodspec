@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 HDF5 schema versioning with forward/backward compatibility.
 
 Manages schema versions, migration strategies, and compatibility checking.
 """
 
-from __future__ import annotations
 
 from enum import Enum
 from typing import Dict, Tuple

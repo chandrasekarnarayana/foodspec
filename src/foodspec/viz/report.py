@@ -1,6 +1,6 @@
 """Simple HTML report generation for oil authentication results."""
-
 from __future__ import annotations
+
 
 from os import PathLike
 from pathlib import Path

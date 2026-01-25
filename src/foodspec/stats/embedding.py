@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Embedding metrics and representation evaluation.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 

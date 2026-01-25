@@ -1,4 +1,5 @@
 """Reporting utilities for CLI workflows."""
+from __future__ import annotations
 
 """
 reporting - DEPRECATED
@@ -33,7 +34,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 import json
 import pathlib

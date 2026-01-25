@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 FoodSpec Report Context and Builder.
 
@@ -13,7 +14,6 @@ Load a run and build an HTML report::
     html_path = builder.build_html(Path("/tmp/run/report.html"), mode=ReportMode.RESEARCH)
 """
 
-from __future__ import annotations
 
 import csv
 import json

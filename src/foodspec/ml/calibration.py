@@ -1,9 +1,9 @@
+from __future__ import annotations
 """Probability calibration diagnostics and recalibration methods.
 
 Provides tools for assessing and improving classifier calibration in production.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Literal, Tuple

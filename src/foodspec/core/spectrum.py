@@ -1,6 +1,6 @@
 """Core Spectrum object: single spectrum with validated metadata and provenance."""
-
 from __future__ import annotations
+
 
 import hashlib
 from dataclasses import dataclass, field

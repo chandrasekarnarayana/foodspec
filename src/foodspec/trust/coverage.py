@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Coverage analysis utilities for conformal prediction.
 
@@ -13,7 +14,6 @@ Key Functions:
     check_coverage_guarantees - Verify coverage ≥ target
 """
 
-from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 

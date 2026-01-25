@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Scientific dossier generator for structured submission packs.
 
 The dossier is a comprehensive, automatically generated document set that
@@ -18,7 +19,6 @@ Usage:
     # dossier_index.html
 """
 
-from __future__ import annotations
 
 import json
 import re

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Calibration transfer toolkit for spectroscopy.
 
@@ -24,7 +25,6 @@ This module provides tools for transferring calibration models between instrumen
     >>> #   transfer_samples: transfer_set.csv
 """
 
-from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Literal, Optional, Tuple

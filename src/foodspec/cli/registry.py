@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 CLI for the Feature/Model registry.
 
@@ -7,7 +8,6 @@ Examples:
     foodspec-registry --registry registry.json --query-protocol EdibleOil_Classification_v1 --version 0.1.0
 """
 
-from __future__ import annotations
 
 import argparse
 import sys

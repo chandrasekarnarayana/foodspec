@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Model lifecycle utilities: train → freeze → predict.
 
@@ -39,7 +40,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 import json
 import os

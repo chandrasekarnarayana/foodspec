@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Hypothesis testing utilities for FoodSpec.
 
@@ -5,7 +6,6 @@ Wrappers around common tests (t-test, ANOVA, MANOVA, Tukey HSD, Games–Howell,
 nonparametric tests), plus FDR correction.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterable, List, Optional

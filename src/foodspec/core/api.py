@@ -1,6 +1,6 @@
 """Unified FoodSpec entry point: one class to rule them all."""
-
 from __future__ import annotations
+
 
 import hashlib
 import json

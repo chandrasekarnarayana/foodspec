@@ -1,6 +1,6 @@
 """Reusable figure caption generator for papers and slide decks."""
-
 from __future__ import annotations
+
 
 from typing import List, Literal, Optional
 

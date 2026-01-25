@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Feature & model registry for provenance and audit trails.
 Stores entries in a JSON index (could be swapped for SQLite later).
 """
 
-from __future__ import annotations
 
 import hashlib
 import json

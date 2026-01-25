@@ -113,12 +113,12 @@ reporting:
             output_dir = tmpdir_path / "run_output"
             output_dir.mkdir()
 
-            # Execute: foodspec run protocol.yaml --output-dir ./run
+            # Execute: foodspec run --protocol protocol.yaml --output-dir ./run
             result = subprocess.run(
                 [
                     "python", "-m", "foodspec.cli.main",
                     "run",
-                    str(protocol_file),
+                    "--protocol", str(protocol_file),
                     "--output-dir", str(output_dir),
                     "--no-viz",
                     "--no-report",
@@ -294,7 +294,7 @@ class TestImportIntegration:
             pytest.fail(f"Preprocess-to-features chain broken: {e}")
 
 
-class TestArtefactCreation:
+class TestArtifactCreation:
     """Verify all expected output artifacts are created."""
 
     def test_artifact_registry_paths(self):

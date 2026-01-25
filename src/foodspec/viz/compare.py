@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Multi-run comparison utilities for analysis tracking and benchmarking.
 
 Compare multiple analysis runs to identify best models, track performance
@@ -16,7 +17,6 @@ Usage:
     compare_runs(summaries, output_dir="comparison_output")
 """
 
-from __future__ import annotations
 
 import json
 import warnings

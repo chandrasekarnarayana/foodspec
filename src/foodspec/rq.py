@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Deprecated shim for Ratio-Quality (RQ) engine.
 
@@ -37,7 +38,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 import warnings
 

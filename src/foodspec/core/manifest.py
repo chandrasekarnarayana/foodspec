@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 FoodSpec v2 Definition of Done:
 - Deterministic outputs: seed is explicit; CV splits reproducible.
@@ -15,7 +16,6 @@ FoodSpec v2 Definition of Done:
 RunManifest captures execution metadata and artifacts for reproducibility.
 """
 
-from __future__ import annotations
 
 import hashlib
 import json

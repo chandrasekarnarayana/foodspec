@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Data leakage detection for food spectroscopy ML workflows.
 
@@ -25,7 +26,6 @@ overly optimistic performance estimates. Common sources:
     >>>     print("⚠️ Batch effects confounded with labels!")
 """
 
-from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Optional

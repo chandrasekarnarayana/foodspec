@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Matrix correction for food spectroscopy: background subtraction, robust scaling, domain adaptation.
 
@@ -24,7 +25,6 @@ This module provides tools to correct for matrix effects (e.g., chips vs. pure o
     >>> #   matrix_column: matrix_type
 """
 
-from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Literal, Optional, Tuple

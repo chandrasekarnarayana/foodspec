@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Simple loaders/savers for vendor-neutral spectra.
 Includes stubs for vendor formats (OPUS, WiRE, ENVI) that can be upgraded later.
@@ -36,7 +37,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 from pathlib import Path
 from typing import List, Optional, Union

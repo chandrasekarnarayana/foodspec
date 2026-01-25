@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Correlation and mapping utilities.
 
@@ -6,7 +7,6 @@ time-based sequences. Accepts arrays/DataFrames or FoodSpectrumSet-derived
 features.
 """
 
-from __future__ import annotations
 
 __all__ = ["compute_correlations", "compute_correlation_matrix", "compute_cross_correlation"]
 

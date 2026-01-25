@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Core IO utilities.
 
@@ -5,7 +6,6 @@ Provides format detection and routing to the appropriate reader so inputs
 are normalized into `FoodSpectrumSet` instances.
 """
 
-from __future__ import annotations
 
 import os
 from pathlib import Path

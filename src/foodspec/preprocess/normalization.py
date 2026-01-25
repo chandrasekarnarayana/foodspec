@@ -1,10 +1,10 @@
+from __future__ import annotations
 """Normalization transformers.
 
 Includes vector, area, internal-peak, standard normal variate (SNV), and
 multiplicative scatter correction (MSC) methods commonly used in spectroscopy.
 """
 
-from __future__ import annotations
 
 from typing import Literal, Optional
 

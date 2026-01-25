@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Mondrian conformal prediction for multiclass classification with bin conditioning.
 
@@ -12,7 +13,6 @@ Key References:
     Lei et al. (2018): "Classification with honest confidence"
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence

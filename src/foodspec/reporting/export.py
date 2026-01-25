@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Reproducibility and archive export system.
 
 Build reproducibility packs and create stable, shareable archives
@@ -20,7 +21,6 @@ Usage:
     )
 """
 
-from __future__ import annotations
 
 import hashlib
 import json

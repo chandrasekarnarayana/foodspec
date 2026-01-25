@@ -327,7 +327,7 @@ def main():
     if args.strict and not all_passed:
         sys.exit(1)
 
-    sys.exit(0 if all_passed else 0)  # Always exit 0 unless --strict
+    sys.exit(1 if (args.strict and not all_passed) else 0)
 
 
 if __name__ == "__main__":

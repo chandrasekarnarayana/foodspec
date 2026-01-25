@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 FoodSpec v2 Definition of Done:
 - Deterministic outputs: seed is explicit; CV splits reproducible.
@@ -15,7 +16,6 @@ FoodSpec v2 Definition of Done:
 ArtifactRegistry manages standard run artifacts under a run directory.
 """
 
-from __future__ import annotations
 
 import csv
 import json

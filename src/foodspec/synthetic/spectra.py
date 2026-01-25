@@ -1,6 +1,6 @@
 """Utilities to generate simple synthetic Raman and FTIR spectra for demos and tests."""
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass
 from typing import Sequence, Tuple

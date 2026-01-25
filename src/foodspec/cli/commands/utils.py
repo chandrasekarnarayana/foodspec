@@ -1,6 +1,6 @@
 """Utility commands: about, version, report generation."""
-
 from __future__ import annotations
+
 
 import importlib.util
 import sys

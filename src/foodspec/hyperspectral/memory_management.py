@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Memory-efficient processing for large hyperspectral image cubes.
 
@@ -5,7 +6,6 @@ Provides streaming, chunking, and tiling strategies for HyperspectralDataset
 to handle large cubes without loading entirely into memory.
 """
 
-from __future__ import annotations
 
 from typing import Iterator, Tuple
 

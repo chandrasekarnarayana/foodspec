@@ -1,4 +1,5 @@
 """Simple model registry for saving/loading trained models with metadata."""
+from __future__ import annotations
 
 """
 model_registry - DEPRECATED
@@ -33,7 +34,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 import json
 import pathlib

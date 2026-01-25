@@ -100,8 +100,9 @@ jobs:
 
       - name: Run CI integration tests
         run: |
-          python -m pytest tests/test_architecture_ci.py -v --tb=short || true
-          echo "⚠ CI integration tests completed (some may be optional)"
+          pip install pytest 2>&1 | tail -3
+          python -m pytest tests/test_architecture_ci.py -v --tb=short
+          echo "✓ CI integration tests passed"
 
       - name: Validate git history preserved
         run: |

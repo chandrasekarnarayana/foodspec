@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Effect size and summary utilities.
 
@@ -5,7 +6,6 @@ Provides Cohen's d for two-group comparisons and eta-squared/partial eta-squared
 for ANOVA. Designed to pair with hypothesis test outputs.
 """
 
-from __future__ import annotations
 
 import numpy as np
 import pandas as pd

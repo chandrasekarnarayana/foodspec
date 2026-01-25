@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reliability and calibration evaluation utilities.
 
@@ -5,7 +6,6 @@ Provides metrics for assessing whether predicted probabilities are well-calibrat
 (i.e., predicted confidence matches empirical accuracy).
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Literal, Tuple

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Text report generation for Ratio-Quality (RQ) analysis.
 
@@ -5,7 +6,6 @@ Provides `generate_text_report()` which formats the RQ results into
 human-readable sections for CLI and protocol outputs.
 """
 
-from __future__ import annotations
 
 from typing import Any, List, Mapping, Optional, Sequence
 

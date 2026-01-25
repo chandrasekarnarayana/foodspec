@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Similarity search over spectra or features (top-k).
 
 Provides a simple kNN-style search that returns a similarity table
@@ -5,7 +6,6 @@ with distances using chosen metrics, and optional overlay plots
 using the existing visualization utilities.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Literal, Optional

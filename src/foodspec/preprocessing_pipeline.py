@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Preprocessing pipeline for RQ analysis.
 
@@ -38,7 +39,6 @@ warnings.warn(
 
 
 
-from __future__ import annotations
 
 from typing import Iterable, List
 

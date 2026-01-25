@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 output_bundle - DEPRECATED
 
@@ -28,8 +29,6 @@ warnings.warn(
 # Original module content continues below...
 # ==============================================
 
-
-from __future__ import annotations
 
 import json
 from datetime import datetime

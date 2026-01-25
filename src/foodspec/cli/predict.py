@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 Apply a frozen FoodSpec model to new data.
 
@@ -6,7 +7,6 @@ Example:
     foodspec-predict --model runs/model --input data/new.csv --output preds.csv
 """
 
-from __future__ import annotations
 
 import argparse
 import sys

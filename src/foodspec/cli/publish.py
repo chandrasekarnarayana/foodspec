@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 CLI to generate Methods/figure bundle from a FoodSpec run folder.
 
@@ -6,7 +7,6 @@ Example:
     foodspec-publish --run-dir protocol_runs/20240101_run --out out_bundle
 """
 
-from __future__ import annotations
 
 import argparse
 import sys
