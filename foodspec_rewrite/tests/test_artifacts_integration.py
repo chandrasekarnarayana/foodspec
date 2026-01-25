@@ -227,6 +227,40 @@ class TestArtifactRegistryPaths:
         assert registry.metrics_per_fold_path == tmp_path / "metrics_per_fold.csv"
         assert registry.metrics_summary_path == tmp_path / "metrics_summary.csv"
 
+    def test_artifact_registry_viz_layout_and_helpers(self, tmp_path):
+        """Test visualization directories are created and helpers save PNGs."""
+        registry = ArtifactRegistry(tmp_path)
+        registry.ensure_layout()
+
+        # Directories exist
+        assert registry.viz_dir.exists()
+        assert registry.viz_pipeline_dir.exists()
+        assert registry.viz_drift_dir.exists()
+        assert registry.viz_interpretability_dir.exists()
+        assert registry.viz_uncertainty_dir.exists()
+
+        class DummyFig:
+            def __init__(self):
+                self.called = False
+                self.path = None
+                self.dpi = None
+                self.kwargs = None
+
+            def savefig(self, path, dpi=300, bbox_inches=None):
+                self.called = True
+                self.path = Path(path)
+                self.dpi = dpi
+                self.kwargs = {"bbox_inches": bbox_inches}
+
+        fig = DummyFig()
+        saved_path = registry.save_pipeline_plot(fig, "dag")
+
+        assert fig.called
+        assert fig.dpi == 300
+        assert fig.kwargs == {"bbox_inches": "tight"}
+        assert saved_path.suffix == ".png"
+        assert saved_path.parent == registry.viz_pipeline_dir
+
 
 class TestRunManifestValidationSpec:
     """Test RunManifest includes validation_spec field."""

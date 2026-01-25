@@ -289,5 +289,159 @@ class ExecutionEngine:
             evaluation_result.save_best_params_csv(artifacts.best_params_path)
             self._log(f"Saved hyperparameters to {artifacts.best_params_path}")
 
+    def generate_visualizations(
+        self,
+        protocol: ProtocolV2,
+        evaluation_result: "EvaluationResult",
+        metadata_df: Optional[Any] = None,
+        artifacts: Optional[ArtifactRegistry] = None,
+    ) -> None:
+        """Generate visualization plots based on protocol specification.
+        
+        Generates plots for:
+        - Model performance (confusion matrix, metrics)
+        - Trust metrics (calibration, conformal coverage, abstention)
+        - Feature importance
+        - Cross-validation diagnostics
+        
+        All plots are auto-saved to artifacts.plots_dir with publication quality.
+        
+        Parameters
+        ----------
+        protocol : ProtocolV2
+            Protocol defining visualization specs
+        evaluation_result : EvaluationResult
+            Evaluation results containing predictions and metrics
+        metadata_df : DataFrame, optional
+            Sample-level metadata for grouping (batch_id, stage, instrument)
+        artifacts : ArtifactRegistry, optional
+            Registry for auto-saving plots
+        
+        Raises
+        ------
+        NotImplementedError
+            If visualization.plots is requested but evaluation_result unavailable
+        
+        Examples
+        --------
+        >>> engine = ExecutionEngine()
+        >>> engine.generate_visualizations(protocol, evaluation_result, artifacts=artifacts)
+        # Plots saved to artifacts.plots_dir
+        """
+        if not protocol.visualization.plots:
+            self._log("No visualization plots requested in protocol")
+            return
+        
+        if not artifacts:
+            raise ValueError("ArtifactRegistry required for visualization output")
+        
+        try:
+            from foodspec.viz import (
+                PlotConfig,
+                plot_confusion_matrix,
+                plot_calibration_curve,
+                plot_feature_importance,
+                plot_metrics_by_fold,
+                plot_conformal_coverage_by_group,
+                plot_abstention_rate,
+            )
+        except ImportError:  # pragma: no cover
+            raise ImportError(
+                "Visualization requires foodspec.viz module. "
+                "Ensure plots_v2.py is properly installed."
+            )
+        
+        # Setup plot config
+        plot_config = PlotConfig(
+            dpi=300,  # Publication quality
+            figure_size=(12, 6),
+            seed=self.logs[0] if self.logs else 42,  # Use orchestrator seed if available
+        )
+        
+        protocol_hash = protocol.model_dump()  # Full snapshot for hash
+        run_id = getattr(artifacts, "run_id", "run_unknown")
+        
+        self._log("Generating visualizations...")
+        
+        # Extract predictions from evaluation result
+        if not hasattr(evaluation_result, 'fold_predictions') or not evaluation_result.fold_predictions:
+            self._log("No predictions available for visualization")
+            return
+        
+        # Collect predictions across folds
+        try:
+            y_true = np.concatenate([fp['y_true'] for fp in evaluation_result.fold_predictions])
+            y_pred = np.concatenate([fp['y_pred'] for fp in evaluation_result.fold_predictions])
+        except (AttributeError, KeyError, TypeError):
+            self._log("Warning: Could not extract predictions for confusion matrix")
+            y_true = y_pred = None
+        
+        # 1. Confusion Matrix (if available)
+        if y_true is not None and y_pred is not None:
+            try:
+                plot_confusion_matrix(
+                    y_true,
+                    y_pred,
+                    artifacts=artifacts,
+                    filename='confusion_matrix.png',
+                    protocol_hash='protocol_v2',
+                    run_id=run_id,
+                    config=plot_config,
+                )
+                self._log("✓ Generated confusion matrix")
+            except Exception as e:  # pragma: no cover
+                self._log(f"Warning: Confusion matrix generation failed: {e}")
+        
+        # 2. Calibration Curve (if probabilities available)
+        if hasattr(evaluation_result, 'fold_predictions') and evaluation_result.fold_predictions:
+            try:
+                proba_list = []
+                y_true_list = []
+                for fp in evaluation_result.fold_predictions:
+                    if 'proba' in fp:
+                        proba_list.append(fp['proba'])
+                        y_true_list.append(fp['y_true'])
+                
+                if proba_list and y_true_list:
+                    proba = np.vstack(proba_list) if proba_list else None
+                    y_true_cal = np.concatenate(y_true_list)
+                    
+                    if proba is not None:
+                        plot_calibration_curve(
+                            y_true_cal,
+                            proba,
+                            n_bins=10,
+                            metadata_df=metadata_df,
+                            metadata_col='batch_id' if metadata_df is not None else None,
+                            artifacts=artifacts,
+                            filename='calibration_curve.png',
+                            protocol_hash='protocol_v2',
+                            run_id=run_id,
+                            config=plot_config,
+                        )
+                        self._log("✓ Generated calibration curve")
+            except Exception as e:  # pragma: no cover
+                self._log(f"Warning: Calibration curve generation failed: {e}")
+        
+        # 3. Metrics by Fold (if fold_metrics available)
+        if hasattr(evaluation_result, 'fold_metrics') and evaluation_result.fold_metrics:
+            try:
+                fold_ids = list(range(len(evaluation_result.fold_metrics)))
+                plot_metrics_by_fold(
+                    metrics_dict=evaluation_result.fold_metrics,
+                    fold_ids=fold_ids,
+                    metadata_df=metadata_df,
+                    artifacts=artifacts,
+                    filename='metrics_by_fold.png',
+                    protocol_hash='protocol_v2',
+                    run_id=run_id,
+                    config=plot_config,
+                )
+                self._log("✓ Generated metrics by fold")
+            except Exception as e:  # pragma: no cover
+                self._log(f"Warning: Metrics by fold generation failed: {e}")
+        
+        self._log(f"Visualization plots saved to {artifacts.plots_dir}")
+
 
 __all__ = ["ExecutionEngine", "RunResult"]

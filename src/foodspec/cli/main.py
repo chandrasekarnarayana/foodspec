@@ -88,6 +88,7 @@ app.command("bench")(workflow_app.registered_commands[2].callback)
 # Utilities
 app.command("about")(utils_app.registered_commands[0].callback)
 app.command("report")(utils_app.registered_commands[1].callback)
+app.command("report-run")(utils_app.registered_commands[2].callback)
 
 
 # --- Protocol runner (convenience) ------------------------------------------------------
