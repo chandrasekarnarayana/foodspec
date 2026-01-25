@@ -6,6 +6,39 @@ search over a library to return top-k matches with confidence and an
 optional overlay plot.
 """
 
+"""
+library_search - DEPRECATED
+
+.. deprecated:: 1.1.0
+    This module is deprecated and will be removed in v2.0.0.
+    Use foodspec.workflows.library_search instead.
+
+This module is maintained for backward compatibility only.
+All new code should use the modern API.
+
+Migration Guide:
+    Old: from foodspec.library_search import ...
+    New: from foodspec.workflows.library_search import ...
+
+See: docs/migration/v1-to-v2.md
+"""
+
+import warnings
+
+warnings.warn(
+    f"foodspec.library_search is deprecated and will be removed in v2.0.0. "
+    f"Use foodspec.workflows.library_search instead. "
+    f"See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Original module content continues below...
+# ==============================================
+
+
+
+
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,0 +1,12 @@
+{
+  "run_id": "demo_run_001",
+  "timestamp": "2024-01-15T10:30:00",
+  "algorithm": "PLS-DA",
+  "parameters": {
+    "n_components": 5,
+    "cv_folds": 5,
+    "preprocessing": "SNV + baseline_removal"
+  },
+  "data_source": "oil_authentication_dataset",
+  "samples_processed": 250
+}

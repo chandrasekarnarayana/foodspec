@@ -1,0 +1,6 @@
+{
+  "run_id": "run_002",
+  "timestamp": "2026-01-16T11:00:00Z",
+  "algorithm": "SVM",
+  "validation_scheme": "5-fold-cv"
+}

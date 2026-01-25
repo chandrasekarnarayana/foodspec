@@ -13,6 +13,40 @@ from .plots import (
     plot_spectra_overlay,
 )
 from .ratios import plot_ratio_by_group, plot_ratio_scatter, plot_ratio_vs_continuous
+from .coefficients import (
+    plot_coefficients_heatmap,
+    get_coefficient_statistics,
+)
+from .stability import (
+    plot_feature_stability,
+    get_stability_statistics,
+)
+from .uncertainty import (
+    plot_confidence_map,
+    plot_set_size_distribution,
+    plot_coverage_efficiency,
+    plot_abstention_distribution,
+    get_uncertainty_statistics,
+)
+from .compare import (
+    RunSummary,
+    scan_runs,
+    load_run_summary,
+    create_leaderboard,
+    create_radar_plot,
+    create_monitoring_plot,
+    create_comparison_dashboard,
+    compute_baseline_deltas,
+    compare_runs,
+)
+from .paper import (
+    FigurePreset,
+    apply_figure_preset,
+    figure_context,
+    save_figure,
+    get_figure_preset_config,
+    list_presets,
+)
 
 __all__ = [
     "plot_spectra_overlay",
@@ -30,4 +64,19 @@ __all__ = [
     "plot_ratio_by_group",
     "plot_ratio_scatter",
     "plot_ratio_vs_continuous",
+    "plot_coefficients_heatmap",
+    "get_coefficient_statistics",
+    "plot_feature_stability",
+    "get_stability_statistics",
+    "plot_confidence_map",
+    "plot_set_size_distribution",
+    "plot_coverage_efficiency",
+    "plot_abstention_distribution",
+    "get_uncertainty_statistics",
+    "FigurePreset",
+    "apply_figure_preset",
+    "figure_context",
+    "save_figure",
+    "get_figure_preset_config",
+    "list_presets",
 ]

@@ -1,0 +1,22 @@
+{
+  "sample_001": {
+    "predicted": "EVOO",
+    "confidence": 0.98
+  },
+  "sample_002": {
+    "predicted": "EVOO",
+    "confidence": 0.95
+  },
+  "sample_003": {
+    "predicted": "non-EVOO",
+    "confidence": 0.92
+  },
+  "sample_004": {
+    "predicted": "non-EVOO",
+    "confidence": 0.87
+  },
+  "sample_005": {
+    "predicted": "EVOO",
+    "confidence": 0.93
+  }
+}

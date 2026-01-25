@@ -1,0 +1,9 @@
+PLOTS INDEX
+======================================================================
+Generated: 2026-01-25T12:27:53.640287
+
+- confusion_matrix.png (34 bytes)
+- loadings_plot.pdf (26 bytes)
+- pls_scores_plot.png (28 bytes)
+- roc_curve.png (27 bytes)
+- variable_importance.png (26 bytes)
