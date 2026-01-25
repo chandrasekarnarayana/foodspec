@@ -5,6 +5,39 @@ Detects raw spectra vs precomputed peak tables, applies baseline/smoothing/norma
 and extracts peak intensities for downstream RatioQualityEngine.
 """
 
+"""
+preprocessing_pipeline - DEPRECATED
+
+.. deprecated:: 1.1.0
+    This module is deprecated and will be removed in v2.0.0.
+    Use foodspec.preprocess.PreprocessingEngine instead.
+
+This module is maintained for backward compatibility only.
+All new code should use the modern API.
+
+Migration Guide:
+    Old: from foodspec.preprocessing_pipeline import ...
+    New: from foodspec.preprocess.PreprocessingEngine import ...
+
+See: docs/migration/v1-to-v2.md
+"""
+
+import warnings
+
+warnings.warn(
+    f"foodspec.preprocessing_pipeline is deprecated and will be removed in v2.0.0. "
+    f"Use foodspec.preprocess.PreprocessingEngine instead. "
+    f"See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Original module content continues below...
+# ==============================================
+
+
+
+
 from __future__ import annotations
 
 from typing import Iterable, List

@@ -4,6 +4,39 @@ Delegates to the canonical argparse CLI in `foodspec.cli.predict`.
 This shim will be removed in a future major release.
 """
 
+"""
+cli_predict - DEPRECATED
+
+.. deprecated:: 1.1.0
+    This module is deprecated and will be removed in v2.0.0.
+    Use foodspec.cli instead.
+
+This module is maintained for backward compatibility only.
+All new code should use the modern API.
+
+Migration Guide:
+    Old: from foodspec.cli_predict import ...
+    New: from foodspec.cli import ...
+
+See: docs/migration/v1-to-v2.md
+"""
+
+import warnings
+
+warnings.warn(
+    f"foodspec.cli_predict is deprecated and will be removed in v2.0.0. "
+    f"Use foodspec.cli instead. "
+    f"See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Original module content continues below...
+# ==============================================
+
+
+
+
 from __future__ import annotations
 
 import sys

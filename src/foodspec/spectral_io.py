@@ -3,6 +3,39 @@ Simple loaders/savers for vendor-neutral spectra.
 Includes stubs for vendor formats (OPUS, WiRE, ENVI) that can be upgraded later.
 """
 
+"""
+spectral_io - DEPRECATED
+
+.. deprecated:: 1.1.0
+    This module is deprecated and will be removed in v2.0.0.
+    Use foodspec.io instead.
+
+This module is maintained for backward compatibility only.
+All new code should use the modern API.
+
+Migration Guide:
+    Old: from foodspec.spectral_io import ...
+    New: from foodspec.io import ...
+
+See: docs/migration/v1-to-v2.md
+"""
+
+import warnings
+
+warnings.warn(
+    f"foodspec.spectral_io is deprecated and will be removed in v2.0.0. "
+    f"Use foodspec.io instead. "
+    f"See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Original module content continues below...
+# ==============================================
+
+
+
+
 from __future__ import annotations
 
 from pathlib import Path

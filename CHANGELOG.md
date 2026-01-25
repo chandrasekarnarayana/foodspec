@@ -1,5 +1,29 @@
 # Changelog
 
+
+## [1.1.0] - 2026-01-25
+
+### Added
+- ✨ **New Protocol-Driven Architecture** - Complete rewrite with modern design
+- 🛡️  **Trust Subsystem** - Uncertainty quantification and abstention logic
+- 📊 **Reporting System** - PDF export, dossiers, and paper presets
+- 📈 **Visualization Suite** - Multi-run comparison, uncertainty plots
+- 🔧 **Deprecation Warnings** - All legacy code marked for removal in v2.0.0
+
+### Deprecated
+- ⚠️  Root-level modules (spectral_dataset.py, output_bundle.py, etc.)
+- ⚠️  Old CLI scripts (cli_*.py)
+- ⚠️  demo/ package
+- ⚠️  report/ package
+
+See `docs/migration/v1-to-v2.md` for migration guide.
+
+### Migration Path
+v1.1.0 → v1.2.0 → v1.3.0 → v1.4.0 → v2.0.0 (deprecated code removed)
+
+**Action Required:** Update your code to use new imports before v2.0.0 (planned: June 2026)
+
+
 All notable changes to FoodSpec will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

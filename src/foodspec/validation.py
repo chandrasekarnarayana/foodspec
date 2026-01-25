@@ -2,6 +2,39 @@
 Validation utilities for FoodSpec: batch-aware CV, group-stratified splits, nested CV.
 """
 
+"""
+validation - DEPRECATED
+
+.. deprecated:: 1.1.0
+    This module is deprecated and will be removed in v2.0.0.
+    Use foodspec.chemometrics.validation instead.
+
+This module is maintained for backward compatibility only.
+All new code should use the modern API.
+
+Migration Guide:
+    Old: from foodspec.validation import ...
+    New: from foodspec.chemometrics.validation import ...
+
+See: docs/migration/v1-to-v2.md
+"""
+
+import warnings
+
+warnings.warn(
+    f"foodspec.validation is deprecated and will be removed in v2.0.0. "
+    f"Use foodspec.chemometrics.validation instead. "
+    f"See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Original module content continues below...
+# ==============================================
+
+
+
+
 from __future__ import annotations
 
 from dataclasses import dataclass

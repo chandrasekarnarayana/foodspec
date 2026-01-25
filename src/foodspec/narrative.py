@@ -7,6 +7,39 @@ Takes a run folder (protocol bundle) and produces:
 - Supplemental summary CSV (stub)
 """
 
+"""
+narrative - DEPRECATED
+
+.. deprecated:: 1.1.0
+    This module is deprecated and will be removed in v2.0.0.
+    Use foodspec.reporting instead.
+
+This module is maintained for backward compatibility only.
+All new code should use the modern API.
+
+Migration Guide:
+    Old: from foodspec.narrative import ...
+    New: from foodspec.reporting import ...
+
+See: docs/migration/v1-to-v2.md
+"""
+
+import warnings
+
+warnings.warn(
+    f"foodspec.narrative is deprecated and will be removed in v2.0.0. "
+    f"Use foodspec.reporting instead. "
+    f"See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Original module content continues below...
+# ==============================================
+
+
+
+
 from __future__ import annotations
 
 import json
