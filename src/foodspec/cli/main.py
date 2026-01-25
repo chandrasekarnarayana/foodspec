@@ -23,8 +23,14 @@ matplotlib.use("Agg")
 
 from foodspec.cli.commands.analysis import analysis_app
 from foodspec.cli.commands.data import data_app
+from foodspec.cli.commands.mindmap import (
+    features_app as mindmap_features_app,
+    io_app as mindmap_io_app,
+    preprocess_app as mindmap_preprocess_app,
+    qc_app as mindmap_qc_app,
+    train_app as mindmap_train_app,
+)
 from foodspec.cli.commands.modeling import modeling_app
-from foodspec.cli.commands.preprocess import preprocess_app
 from foodspec.cli.commands.utils import utils_app
 from foodspec.cli.commands.workflow import workflow_app
 from foodspec.core.spectral_dataset import HyperspectralDataset, SpectralDataset
@@ -34,6 +40,13 @@ import glob
 import json
 
 app = typer.Typer(help="foodspec command-line interface")
+
+# Mindmap-aligned commands (new structure)
+app.add_typer(mindmap_io_app, name="io")
+app.add_typer(mindmap_qc_app, name="qc")
+app.add_typer(mindmap_preprocess_app, name="preprocess")
+app.add_typer(mindmap_features_app, name="features")
+app.add_typer(mindmap_train_app, name="train")
 
 
 # Global options for root command
@@ -63,11 +76,7 @@ app.command("library-search")(data_app.registered_commands[1].callback)
 app.command("library-auth")(data_app.registered_commands[2].callback)
 app.command("model-info")(data_app.registered_commands[3].callback)
 
-# Preprocessing
-app.command("preprocess")(preprocess_app.registered_commands[0].callback)
-
 # Modeling
-app.command("qc")(modeling_app.registered_commands[0].callback)
 app.command("fit")(modeling_app.registered_commands[1].callback)
 app.command("predict")(modeling_app.registered_commands[2].callback)
 
@@ -276,4 +285,3 @@ def main():
 
 if __name__ == "__main__":  # pragma: no cover
     main()
-

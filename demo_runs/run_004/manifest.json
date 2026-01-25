@@ -1,6 +1,0 @@
-{
-  "run_id": "run_004",
-  "timestamp": "2026-01-18T13:00:00Z",
-  "algorithm": "LogisticRegression",
-  "validation_scheme": "5-fold-cv"
-}

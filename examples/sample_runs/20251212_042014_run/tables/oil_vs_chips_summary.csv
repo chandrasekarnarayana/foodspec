@@ -1,2 +1,0 @@
-feature,oil_cv,chips_cv,oil_slope,chips_slope,oil_p_value,chips_p_value,diverges,mean_diff,p_mean,cohen_d,delta_cv,delta_slope,oil_spearman_rho,chips_spearman_rho,oil_spearman_p,chips_spearman_p,p_mean_adj,significant_mean_fdr,p_trend_adj,significant_trend_fdr,interpretation
-1742/2720,31.739681904634892,,-0.19999999999999996,,0.7574643749636671,,False,,,,,,-0.4472135954999579,,0.552786404500042,,1.0,False,1.0,False,matrix-robust marker

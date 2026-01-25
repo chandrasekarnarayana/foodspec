@@ -1,5 +1,7 @@
 """foodspec: Raman and FTIR spectroscopy toolkit for food science."""
 
+from ._version import __version__
+
 __all__ = [
     "__version__",
     # Phase 1: Core unified entry point
@@ -82,8 +84,6 @@ __all__ = [
     "load_plugins",
 ]
 
-# Single source of truth for the package version.
-__version__ = "1.0.0"
 
 # Phase 1: Core unified entry point and provenance
 from .artifact import Predictor, load_artifact, save_artifact

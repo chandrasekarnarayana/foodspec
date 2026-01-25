@@ -1,6 +1,0 @@
-{
-  "ece": 0.12,
-  "abstain_rate": 0.05,
-  "brier_score": 0.1,
-  "nll": 0.3
-}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 
+import json
 from pathlib import Path
 from typing import Optional
 
@@ -10,9 +11,10 @@ import typer
 
 from foodspec.apps.qc import apply_qc_model, train_qc_model
 from foodspec.data.libraries import load_library
-from foodspec.logging_utils import get_logger
+from foodspec.logging_utils import get_logger, setup_logging
 from foodspec.model_lifecycle import FrozenModel
 from foodspec.model_registry import save_model as registry_save_model
+from foodspec.utils.reproducibility import write_reproducibility_snapshot
 
 logger = get_logger(__name__)
 
@@ -112,6 +114,7 @@ def predict(
     glob: str = typer.Option("*.csv", help="Glob for --input-dir."),
     output: Optional[str] = typer.Option(None, help="Output CSV for single input."),
     output_dir: Optional[str] = typer.Option(None, help="Directory for batch predictions."),
+    run_dir: Optional[str] = typer.Option(None, help="Run directory for logs and summaries."),
 ):
     """Apply a frozen FoodSpec model to new data (unified CLI)."""
     inputs: list[Path] = []
@@ -121,6 +124,11 @@ def predict(
         inputs.extend([Path(p) for p in Path(input_dir).glob(glob)])
     if not inputs:
         raise typer.BadParameter("Provide --input or --input-dir.")
+
+    run_dir_path = Path(run_dir or output_dir or "runs/predict").resolve()
+    run_dir_path.mkdir(parents=True, exist_ok=True)
+    setup_logging(run_dir=run_dir_path / "logs")
+    write_reproducibility_snapshot(run_dir_path)
 
     fm = FrozenModel.load(Path(model))
 
@@ -147,11 +155,22 @@ def predict(
         df = pd.read_csv(inputs[0])
         preds = fm.predict(df)
         preds = _apply_qc(preds)
-        out_path = Path(output or "predictions.csv")
+        out_path = Path(output or run_dir_path / "predictions.csv")
         preds.to_csv(out_path, index=False)
         print(f"Predictions saved to {out_path}")
+        summary_path = run_dir_path / "run_summary.json"
+        payload = {"rows": len(preds), "inputs": [str(inputs[0])]}
+        if summary_path.exists():
+            try:
+                data = json.loads(summary_path.read_text())
+            except Exception:
+                data = {}
+            data.update(payload)
+        else:
+            data = payload
+        summary_path.write_text(json.dumps(data, indent=2))
     else:
-        out_dir_path = Path(output_dir or "predictions_batch")
+        out_dir_path = Path(output_dir or run_dir_path / "predictions_batch")
         out_dir_path.mkdir(parents=True, exist_ok=True)
         for inp in inputs:
             df = pd.read_csv(inp)
@@ -160,3 +179,14 @@ def predict(
             out_path = out_dir_path / f"{inp.stem}_preds.csv"
             preds.to_csv(out_path, index=False)
             print(f"[{inp.name}] -> {out_path}")
+        summary_path = run_dir_path / "run_summary.json"
+        payload = {"rows": len(inputs), "inputs": [str(p) for p in inputs]}
+        if summary_path.exists():
+            try:
+                data = json.loads(summary_path.read_text())
+            except Exception:
+                data = {}
+            data.update(payload)
+        else:
+            data = payload
+        summary_path.write_text(json.dumps(data, indent=2))

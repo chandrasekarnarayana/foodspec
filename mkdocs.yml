@@ -163,6 +163,13 @@ nav:
     - Understanding Results: getting-started/getting_started.md
     - FAQ: getting-started/faq_basic.md
 
+  - Concepts:
+    - Design Philosophy: concepts/design_philosophy.md
+    - Data Objects: concepts/data_objects.md
+    - QC System: concepts/qc_system.md
+    - Trust & Uncertainty: concepts/trust_uncertainty.md
+    - Computational Landscape: concepts/computational_landscape.md
+
   # === EXAMPLES & GALLERY ===
   - Examples:
     - Landing: examples/index.md

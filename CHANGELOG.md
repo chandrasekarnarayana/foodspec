@@ -1,6 +1,23 @@
 # Changelog
 
 
+## [1.2.0] - Unreleased
+
+### Added
+- Mindmap-aligned namespaces (`data_objects`, `engine`, `modeling`) with compatibility shims
+- Design philosophy documentation and mindmap mapping table
+- IO validators and loader wrappers for Raman/FTIR/vendor inputs
+- CLI groups for `io`, `qc`, `preprocess`, `features`, `train`
+- Reproducibility snapshot helper and model/dataset card scaffolds
+- Pre-commit configuration and formatting/typing configuration
+
+### Changed
+- README rewritten to clarify goals, non-goals, and mindmap-aligned features
+- CLI `report` command updated to support `--run-dir` reporting
+
+### Deprecated
+- None (backward compatibility maintained via wrappers)
+
 ## [1.1.0] - 2026-01-25
 
 ### Added

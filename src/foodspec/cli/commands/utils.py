@@ -3,6 +3,7 @@ from __future__ import annotations
 
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 from typing import Optional
@@ -10,7 +11,7 @@ from typing import Optional
 import typer
 
 from foodspec import __version__
-from foodspec.logging_utils import get_logger
+from foodspec.logging_utils import get_logger, setup_logging
 from foodspec.report.methods import MethodsConfig, generate_methods_text
 from foodspec.reporting import write_markdown_report
 from foodspec.reporting import (
@@ -19,6 +20,8 @@ from foodspec.reporting import (
     ReportBuilder,
     build_experiment_card,
 )
+from foodspec.reporting.pdf import PDFExporter
+from foodspec.utils.reproducibility import write_reproducibility_snapshot
 
 logger = get_logger(__name__)
 
@@ -48,9 +51,12 @@ def about() -> None:
 
 @utils_app.command("report")
 def report(
-    dataset: str = typer.Option(..., help="Dataset name."),
-    sample_size: int = typer.Option(..., help="Number of samples."),
-    target: str = typer.Option(..., help="Target variable description."),
+    run_dir: Optional[Path] = typer.Option(None, "--run-dir", "-r", help="Run directory with outputs."),
+    format: str = typer.Option("html", "--format", help="html or pdf"),
+    title: str = typer.Option("FoodSpec Report", help="Report title for HTML output."),
+    dataset: Optional[str] = typer.Option(None, help="Dataset name."),
+    sample_size: Optional[int] = typer.Option(None, help="Number of samples."),
+    target: Optional[str] = typer.Option(None, help="Target variable description."),
     modality: str = typer.Option("raman", help="Modality: raman|ftir|nir"),
     instruments: Optional[str] = typer.Option(None, help="Comma-separated instruments."),
     preprocessing: Optional[str] = typer.Option(None, help="Comma-separated preprocessing steps."),
@@ -59,7 +65,43 @@ def report(
     out_dir: str = typer.Option("report_methods", help="Output directory for methods.md."),
     style: str = typer.Option("journal", help="Style: journal|concise|bullet"),
 ):
-    """Generate a paper-ready methods.md from structured inputs."""
+    """Generate a report from a run directory or a methods.md document."""
+    if run_dir is not None:
+        run_path = Path(run_dir).resolve()
+        if not run_path.exists():
+            typer.echo(f"❌ Run directory not found: {run_path}", err=True)
+            raise typer.Exit(1)
+        logs_dir = run_path / "logs"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        setup_logging(run_dir=logs_dir)
+        write_reproducibility_snapshot(run_path)
+        html_path = run_path / "report.html"
+        html_path.write_text(
+            f"<html><body><h1>{title}</h1>"
+            f"<p>Run directory: {run_path}</p>"
+            "<p>See run_summary.json and tables for details.</p>"
+            "</body></html>"
+        )
+        if format == "pdf":
+            exporter = PDFExporter()
+            pdf_path = run_path / "report.pdf"
+            exporter.export(html_path, pdf_path)
+        summary_path = run_path / "run_summary.json"
+        payload = {"report_format": format, "run_dir": str(run_path)}
+        if summary_path.exists():
+            try:
+                data = json.loads(summary_path.read_text())
+            except Exception:
+                data = {}
+            data.update(payload)
+        else:
+            data = payload
+        summary_path.write_text(json.dumps(data, indent=2))
+        typer.echo("Report generated.")
+        return
+
+    if dataset is None or sample_size is None or target is None:
+        raise typer.BadParameter("dataset, sample_size, and target are required for methods report.")
     cfg = MethodsConfig(
         dataset=dataset,
         sample_size=sample_size,
