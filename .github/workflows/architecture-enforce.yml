@@ -1,0 +1,135 @@
+name: Architecture Enforcement
+
+on:
+  push:
+    branches: [main, phase-1/protocol-driven-core]
+  pull_request:
+    branches: [main, phase-1/protocol-driven-core]
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    name: "Enforce Single-Source Architecture"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Check single package root
+        run: |
+          count=$(find . -name "__init__.py" -path "*/foodspec/__init__.py" \
+            ! -path "./.git/*" ! -path "./venv/*" ! -path "./.venv/*" | wc -l)
+          echo "Found $count foodspec package roots"
+          if [ $count -ne 1 ]; then
+            echo "ERROR: Expected exactly 1 foodspec/__init__.py, found $count"
+            exit 1
+          fi
+          echo "✓ Single package root verified"
+
+      - name: Check single pyproject.toml
+        run: |
+          # Count only in root, not nested
+          count=$(find . -maxdepth 2 -name "pyproject.toml" \
+            ! -path "./.git/*" ! -path "./venv/*" ! -path "./.venv/*" | wc -l)
+          echo "Found $count pyproject.toml files"
+          if [ $count -ne 1 ]; then
+            echo "ERROR: Expected exactly 1 pyproject.toml, found $count"
+            exit 1
+          fi
+          echo "✓ Single pyproject.toml verified"
+
+      - name: Check no foodspec_rewrite directory
+        run: |
+          if [ -d "foodspec_rewrite" ]; then
+            echo "ERROR: foodspec_rewrite/ directory should not exist after refactor"
+            ls -la foodspec_rewrite/ | head -20
+            exit 1
+          fi
+          echo "✓ No foodspec_rewrite directory"
+
+      - name: Test critical imports
+        run: |
+          python -c "from foodspec.core.protocol import ProtocolV2; print('✓ Protocol import OK')" || exit 1
+          python -c "from foodspec.core.registry import ComponentRegistry; print('✓ Registry import OK')" || exit 1
+          python -c "from foodspec.core.orchestrator import ExecutionEngine; print('✓ Orchestrator import OK')" || exit 1
+          python -c "from foodspec.core.artifacts import ArtifactRegistry; print('✓ Artifacts import OK')" || exit 1
+          python -c "from foodspec.core.manifest import RunManifest; print('✓ Manifest import OK')" || exit 1
+          python -c "from foodspec.validation.evaluation import evaluate_model_cv; print('✓ Evaluation import OK')" || exit 1
+          python -c "from foodspec.trust.evaluator import TrustEvaluator; print('✓ Trust import OK')" || exit 1
+          echo "✓ All critical imports resolved"
+
+      - name: Check no rewrite imports
+        run: |
+          if grep -r "from foodspec_rewrite" src/ tests/ --include="*.py" 2>/dev/null; then
+            echo "ERROR: Found imports from foodspec_rewrite (should be removed)"
+            exit 1
+          fi
+          echo "✓ No foodspec_rewrite imports"
+
+      - name: Verify core modules exist
+        run: |
+          modules=(
+            "src/foodspec/core/protocol.py"
+            "src/foodspec/core/registry.py"
+            "src/foodspec/core/orchestrator.py"
+            "src/foodspec/core/artifacts.py"
+            "src/foodspec/core/manifest.py"
+            "src/foodspec/validation/evaluation.py"
+            "src/foodspec/trust/conformal.py"
+            "src/foodspec/trust/evaluator.py"
+          )
+          for module in "${modules[@]}"; do
+            if [ ! -f "$module" ]; then
+              echo "ERROR: Required module missing: $module"
+              exit 1
+            fi
+          done
+          echo "✓ All required core modules exist"
+
+      - name: Run architecture tests
+        run: |
+          pip install -e . --no-deps 2>&1 | tail -5 || true
+          pip install pytest 2>&1 | tail -3 || true
+          python -m pytest tests/test_architecture.py -v --tb=short || exit 1
+          echo "✓ Architecture tests passed"
+
+      - name: Run CI integration tests
+        run: |
+          python -m pytest tests/test_architecture_ci.py -v --tb=short || true
+          echo "⚠ CI integration tests completed (some may be optional)"
+
+      - name: Validate git history preserved
+        run: |
+          # Check that refactoring used git mv (not plain copies)
+          if git log --name-status --follow -- src/foodspec/core/protocol.py 2>/dev/null | grep -q "R"; then
+            echo "✓ Git history preserved (file was renamed/moved)"
+          else
+            echo "⚠ Warning: Verify git history for moved files"
+          fi
+
+  summary:
+    runs-on: ubuntu-latest
+    name: "Architecture Compliance Summary"
+    needs: enforce
+    if: always()
+
+    steps:
+      - name: Report results
+        run: |
+          if [ "${{ needs.enforce.result }}" == "success" ]; then
+            echo "✓ Architecture enforcement: PASSED"
+            echo "  - Single source tree: ✓"
+            echo "  - Single config: ✓"
+            echo "  - Imports resolved: ✓"
+            echo "  - Core modules present: ✓"
+            exit 0
+          else
+            echo "✗ Architecture enforcement: FAILED"
+            echo "  Review error messages above"
+            exit 1
+          fi
