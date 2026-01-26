@@ -283,6 +283,16 @@ def run_phase3_workflow(
         "--enable-reporting/--skip-reporting",
         help="Enable reporting. In regulatory mode, always enabled.",
     ),
+    allow_placeholder_trust: bool = typer.Option(
+        False,
+        "--allow-placeholder-trust/--require-real-trust",
+        help="Task A: Allow placeholder trust implementation (for development). Default: require real trust in regulatory mode.",
+    ),
+    phase: int = typer.Option(
+        3,
+        "--phase",
+        help="Task C: Workflow phase (1=minimal, 2=QC+regulatory, 3=full pipeline). Default: 3.",
+    ),
     verbose: bool = typer.Option(
         False,
         "--verbose",
@@ -344,6 +354,7 @@ def run_phase3_workflow(
         enforce_qc=True,  # Phase 3: strict QC
         enable_trust=enable_trust,
         enable_reporting=enable_reporting,
+        allow_placeholder_trust=allow_placeholder_trust,  # Task A
         verbose=verbose,
         dry_run=dry_run,
     )
@@ -356,8 +367,21 @@ def run_phase3_workflow(
             "torch_seed": seed,
         })
 
-    # Execute Phase 3 workflow with strict regulatory semantics
-    exit_code = run_workflow_phase3(cfg, strict_regulatory=True)
+    # Task C: Route to appropriate orchestrator based on phase
+    if phase == 1:
+        # Phase 1: Minimal workflow (relaxed QC, basic features)
+        cfg.enforce_qc = False  # Phase 1: advisory QC
+        exit_code = run_workflow(cfg)
+    elif phase == 2:
+        # Phase 2: QC + regulatory (strict QC, no trust/reporting yet)
+        # Note: Phase 2 orchestrator is same as Phase 1 with enforce_qc=True
+        exit_code = run_workflow(cfg)
+    elif phase == 3:
+        # Phase 3: Full pipeline with strict regulatory semantics
+        exit_code = run_workflow_phase3(cfg, strict_regulatory=True)
+    else:
+        logger.error(f"Invalid phase: {phase}. Must be 1, 2, or 3.")
+        sys.exit(1)
 
     # Exit with code
     sys.exit(exit_code)

@@ -81,6 +81,9 @@ class WorkflowConfig:
     enable_reporting: bool = True
     """Enable structured reporting."""
     
+    allow_placeholder_trust: bool = False
+    """Allow placeholder trust in strict regulatory mode (for development). Default: False (reject placeholder)."""
+    
     # Advanced
     generate_pdf: bool = False
     """Generate PDF report in addition to HTML."""

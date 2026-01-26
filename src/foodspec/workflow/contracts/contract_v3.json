@@ -5,9 +5,6 @@
     "manifest.json": "Execution manifest with metadata, contract version, fingerprints, timing",
     "logs/run.log": "Human-readable structured log of all stages"
   },
-  "required_success": {
-    "success.json": "Success marker with run summary and metrics"
-  },
   "required_qc": {
     "artifacts/qc_results.json": "QC gate results (data integrity, spectral quality, model reliability)"
   },

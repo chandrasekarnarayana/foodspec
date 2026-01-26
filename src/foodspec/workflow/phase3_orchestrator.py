@@ -380,6 +380,7 @@ def _run_trust_stack_real(
     y_true: np.ndarray,
     groups: Optional[np.ndarray] = None,
     strict_regulatory: bool = False,
+    allow_placeholder: bool = False,
 ) -> Dict[str, Any]:
     """Run real trust stack (calibration + conformal + abstention).
     
@@ -392,47 +393,64 @@ def _run_trust_stack_real(
     groups : Optional[np.ndarray]
         Group labels (optional)
     strict_regulatory : bool
-        If True, trust stack cannot return "skipped" (Part B)
+        If True, strict regulatory semantics apply
+    allow_placeholder : bool
+        If True, allow placeholder implementation in strict mode (for development)
     
     Placeholder: returns stub results. Real trust module wiring TBD.
     
     Returns
     -------
-    trust_result dict
+    trust_result dict with "implementation" field indicating "placeholder" or "real"
     
     Raises
     ------
     TrustError
-        If strict_regulatory=True and skipped (Part B)
+        If strict_regulatory=True and allow_placeholder=False and implementation is placeholder
     """
     logger.info("Trust stack stage: running real pipeline...")
 
     try:
         # TODO: Wire actual trust stack when available
-        # For now, return stub with note
-        logger.info("Trust: placeholder (real trust stack TBD)")
+        # For now, return stub with explicit placeholder marking
+        logger.info("Trust: placeholder implementation (real trust stack TBD)")
         
-        # Part B: In strict regulatory mode, return success (not skipped)
-        # to satisfy artifact contract, but mark as placeholder
-        if strict_regulatory:
-            return {
-                "status": "success",
-                "reason": "Placeholder (real trust stack TBD, strict regulatory requires non-skipped result)",
-                "coverage": 1.0,
-                "calibration": {"status": "placeholder"},
-                "conformal": {"status": "placeholder"},
-                "abstention": {"status": "placeholder"},
-            }
-        else:
-            # Research mode: can skip
-            return {
-                "status": "skipped",
-                "reason": "Real trust stack TBD",
-                "coverage": 0.0,
-                "calibration": {},
-                "conformal": {},
-                "abstention": {},
-            }
+        # Task A: Explicit placeholder governance
+        trust_result = {
+            "status": "success",
+            "implementation": "placeholder",  # Task A: explicit field
+            "capabilities": [],  # No real capabilities in placeholder
+            "reason": "Placeholder (real trust stack not yet implemented)",
+            "coverage": 1.0,
+            "calibration": {"status": "placeholder", "value": None},
+            "conformal": {"status": "placeholder", "value": None},
+            "abstention": {"status": "placeholder", "value": None},
+            "ood": {"status": "placeholder", "value": None},
+        }
+        
+        # Task A: In strict regulatory mode, reject placeholder unless explicitly allowed
+        if strict_regulatory and trust_result.get("implementation") == "placeholder":
+            if not allow_placeholder:
+                raise TrustError(
+                    message="Placeholder trust stack not allowed in strict regulatory mode",
+                    stage="trust_stack",
+                    hint=(
+                        "Trust stack implementation is still a placeholder (not production-ready). "
+                        "For development/testing, use: --allow-placeholder-trust. "
+                        "For production regulatory submissions, implement real trust stack with "
+                        "calibration, conformal prediction, and abstention mechanisms."
+                    ),
+                )
+            else:
+                logger.warning(
+                    "⚠️  Placeholder trust stack being used in strict regulatory mode "
+                    "(enabled via --allow-placeholder-trust for development only). "
+                    "This is NOT suitable for real regulatory submissions."
+                )
+        
+        return trust_result
+    except TrustError:
+        raise  # Re-raise TrustError as-is
     except Exception as e:
         logger.error(f"Trust stack failed: {e}")
         raise TrustError(
@@ -796,11 +814,12 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
             predictions = modeling_result.get("predictions", np.array([]))
             y_true = df_features[label_col].to_numpy() if label_col else None
             if predictions is not None and y_true is not None:
-                # Pass strict_regulatory flag so trust knows not to skip (Part B)
+                # Task A: Pass allow_placeholder_trust flag
                 trust_result = _run_trust_stack_real(
                     predictions, 
                     y_true,
                     strict_regulatory=strict_regulatory,
+                    allow_placeholder=cfg.allow_placeholder_trust,  # Task A
                 )
                 logger_ref.info(f"Trust stack: {trust_result.get('reason', trust_result.get('status'))}")
                 
