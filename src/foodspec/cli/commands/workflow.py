@@ -286,12 +286,12 @@ def run_phase3_workflow(
     allow_placeholder_trust: bool = typer.Option(
         False,
         "--allow-placeholder-trust/--require-real-trust",
-        help="Task A: Allow placeholder trust implementation (for development). Default: require real trust in regulatory mode.",
+        help="[DEVELOPMENT ONLY] Allow placeholder trust implementation. In regulatory mode (--mode regulatory), placeholder trust is NON-COMPLIANT and will cause exit code 6 unless this flag is set. For production, use real trust stack.",
     ),
     phase: int = typer.Option(
         3,
         "--phase",
-        help="Task C: Workflow phase (1=minimal, 2=QC+regulatory, 3=full pipeline). Default: 3.",
+        help="Workflow phase: 1 (minimal validation, no QC/trust), 2 (QC gates + regulatory semantics), 3 (full pipeline with trust/reporting). Default: 3 (full compliance).",
     ),
     verbose: bool = typer.Option(
         False,
