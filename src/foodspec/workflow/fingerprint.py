@@ -165,6 +165,10 @@ class Manifest:
     # Artifacts
     artifacts: Dict[str, str] = field(default_factory=dict)
     
+    # Contract tracking (Phase 3)
+    artifact_contract_version: str = "v3"
+    artifact_contract_digest: str = ""
+    
     # Warnings and notes
     warnings: List[str] = field(default_factory=list)
     notes: List[str] = field(default_factory=list)

@@ -1,0 +1,50 @@
+name: "FoodSpec_Phase3_Regulatory"
+version: "2.0.0"
+description: "Complete protocol for Phase 3 strict regulatory workflow"
+
+metadata:
+  author: "FoodSpec Team"
+  created: "2026-01-26"
+  contact: "support@foodspec.dev"
+  regulatory_note: "Designed for regulatory submissions with full audit trail"
+
+# Preprocessing: baseline removal for food spectra
+preprocessing:
+  preset: "baseline_remove"
+  steps:
+    - name: "baseline_removal"
+      method: "airpls"
+      lambda: 1000
+      order: 2
+
+# Features: spectral feature extraction
+features:
+  preset: "spectral"
+  methods:
+    - "peak_heights"
+    - "peak_areas"
+    - "spectral_moments"
+
+# Modeling: approved RandomForest for robust performance
+modeling:
+  model: "RandomForest"
+  scheme: "stratified"
+  cv_folds: 5
+  n_estimators: 100
+  random_state: 42
+
+# Expected columns
+expected_columns:
+  - "label"
+  - "wavelength_start"
+  - "wavelength_end"
+
+# QC Configuration: strict thresholds for regulatory
+qc_config:
+  data_integrity:
+    max_missingness_per_col: 0.01
+    max_duplicate_fraction: 0.005
+    min_samples_per_class: 10
+  spectral_quality:
+    max_outlier_fraction: 0.02
+    min_snr: 10.0

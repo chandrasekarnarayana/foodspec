@@ -1,0 +1,40 @@
+{
+  "version": "v3",
+  "description": "Phase 3 artifact contract for deterministic workflow validation",
+  "required_always": {
+    "manifest.json": "Execution manifest with metadata, contract version, fingerprints, timing",
+    "logs/run.log": "Human-readable structured log of all stages"
+  },
+  "required_success": {
+    "success.json": "Success marker with run summary and metrics"
+  },
+  "required_qc": {
+    "artifacts/qc_results.json": "QC gate results (data integrity, spectral quality, model reliability)"
+  },
+  "required_trust": {
+    "artifacts/trust_stack.json": "Trust stack placeholders (calibration, conformal, abstention)"
+  },
+  "required_reporting": {
+    "artifacts/report.html": "HTML report artifact (for contract)",
+    "report/index.html": "HTML report (for browsing)"
+  },
+  "required_modeling": {
+    "tables/predictions.csv": "Model predictions (only if enable_modeling=True)",
+    "artifacts/metrics.json": "Model metrics (accuracy, precision, recall, F1)"
+  },
+  "required_preprocessing": {
+    "tables/preprocessed.csv": "Preprocessed data matrix"
+  },
+  "required_features": {
+    "tables/features.csv": "Feature-engineered data matrix"
+  },
+  "required_failure": {
+    "error.json": "Error details, hints, exit code, and stage"
+  },
+  "strict_regulatory_addendum": {
+    "enforce_qc": "Must pass QC gates (not advisory)",
+    "enable_trust": "Must run trust stack (non-skippable)",
+    "enable_reporting": "Must generate report (non-skippable)",
+    "model_approval": "Model must be in approved registry"
+  }
+}

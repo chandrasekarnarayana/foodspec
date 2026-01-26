@@ -1,0 +1,21 @@
+name: "Phase3_Minimal"
+version: "2.0.0"
+description: "Minimal protocol for Phase 3 end-to-end testing"
+
+metadata:
+  author: "FoodSpec Testing"
+  created: "2026-01-26"
+
+preprocessing:
+  preset: "none"
+
+features:
+  preset: "hybrid"
+
+modeling:
+  model: "logreg"
+  scheme: "kfold"
+  cv_folds: 3
+
+expected_columns:
+  label_col: "label"

@@ -1,0 +1,28 @@
+name: "FoodSpec_Phase3_Minimal"
+version: "2.0.0"
+description: "Minimal protocol for Phase 3 workflow - research and regulatory use"
+
+metadata:
+  author: "FoodSpec Team"
+  created: "2026-01-26"
+  contact: "support@foodspec.dev"
+
+# Preprocessing: none (pass-through) for minimal example
+preprocessing:
+  preset: "none"
+
+# Features: use all columns as-is
+features:
+  preset: "hybrid"
+
+# Modeling: simple logistic regression with 3-fold CV
+modeling:
+  model: "logreg"
+  scheme: "kfold"
+  cv_folds: 3
+
+# Expected columns: feature_1, feature_2, ..., label
+expected_columns:
+  - "label"
+
+# QC gates are implicit and will use defaults

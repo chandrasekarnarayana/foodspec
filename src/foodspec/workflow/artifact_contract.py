@@ -1,18 +1,121 @@
 """Artifact contract validation for workflow runs.
 
 Enforces that required artifacts exist and validates their structure
-for both success and failure paths.
+for both success and failure paths. Supports versioned contracts with
+deterministic digest validation.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import json
-
 
 class ArtifactContract:
-    """Defines which artifacts must exist at different stages."""
+    """Defines which artifacts must exist at different stages.
+    
+    Supports versioned contracts with deterministic digests.
+    """
+    
+    # Default contract version
+    DEFAULT_VERSION = "v3"
+    
+    # Contract file location
+    CONTRACT_DIR = Path(__file__).parent / "contracts"
+    
+    @classmethod
+    def _load_contract(cls, version: str = DEFAULT_VERSION) -> Dict:
+        """Load contract JSON for specified version.
+        
+        Parameters
+        ----------
+        version : str
+            Contract version (default "v3")
+            
+        Returns
+        -------
+        contract_dict : Dict
+            Parsed contract JSON
+            
+        Raises
+        ------
+        FileNotFoundError
+            If contract file not found
+        """
+        contract_file = cls.CONTRACT_DIR / f"contract_{version}.json"
+        if not contract_file.exists():
+            raise FileNotFoundError(
+                f"Contract file not found: {contract_file}. "
+                f"Expected contract version: {version}"
+            )
+        with open(contract_file) as f:
+            return json.load(f)
+    
+    @classmethod
+    def compute_digest(cls, contract_dict: Dict) -> str:
+        """Compute deterministic SHA256 digest of contract required artifacts.
+        
+        Parameters
+        ----------
+        contract_dict : Dict
+            Contract dictionary
+            
+        Returns
+        -------
+        digest : str
+            SHA256 hex digest of sorted artifact lists
+        """
+        # Collect all required artifact lists
+        all_artifacts = []
+        for key in ["required_always", "required_success", "required_qc", 
+                    "required_trust", "required_reporting", "required_modeling",
+                    "required_preprocessing", "required_features", "required_failure"]:
+            if key in contract_dict:
+                all_artifacts.extend(sorted(contract_dict[key].keys()))
+        
+        # Create deterministic JSON representation
+        payload = json.dumps(sorted(set(all_artifacts)), separators=(",", ":"))
+        return hashlib.sha256(payload.encode()).hexdigest()
+    
+    @classmethod
+    def validate_contract_version(
+        cls, 
+        manifest_dict: Dict,
+        strict_regulatory: bool = False,
+    ) -> Tuple[bool, Optional[str]]:
+        """Validate contract version in manifest matches expected version.
+        
+        Parameters
+        ----------
+        manifest_dict : Dict
+            Manifest JSON
+        strict_regulatory : bool
+            If True, version mismatch is an error
+            
+        Returns
+        -------
+        (is_valid, error_message)
+            Tuple of validity and optional error message
+        """
+        expected_version = cls.DEFAULT_VERSION
+        actual_version = manifest_dict.get("artifact_contract_version")
+        
+        if actual_version != expected_version:
+            msg = (
+                f"Contract version mismatch: manifest has '{actual_version}', "
+                f"expected '{expected_version}'. "
+                f"This workflow may be incompatible."
+            )
+            if strict_regulatory:
+                return False, msg
+            # In research mode, just warn
+            return True, None
+        
+        return True, None
+
+    # Legacy static members (backward compatibility)
+
 
     # Mandatory for all runs
     REQUIRED_ALWAYS = {

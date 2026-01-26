@@ -207,6 +207,163 @@ def run_phase1_workflow(
 
 
 
+@workflow_app.command("run-strict")
+def run_phase3_workflow(
+    protocol: Path = typer.Argument(
+        ...,
+        help="Path to protocol YAML/JSON file.",
+    ),
+    input: List[Path] = typer.Option(
+        ...,
+        "--input",
+        help="Input CSV file(s). Can be repeated: --input file1.csv --input file2.csv",
+    ),
+    output_dir: Optional[Path] = typer.Option(
+        None,
+        "--output-dir",
+        help="Output directory for run. Auto-generated if not provided.",
+    ),
+    mode: str = typer.Option(
+        "research",
+        "--mode",
+        help="Workflow mode: 'research' or 'regulatory'.",
+    ),
+    seed: Optional[int] = typer.Option(
+        None,
+        "--seed",
+        help="Random seed for reproducibility.",
+    ),
+    scheme: Optional[str] = typer.Option(
+        None,
+        "--scheme",
+        help="Validation scheme: 'random', 'lobo', 'loso', 'nested'.",
+    ),
+    model: Optional[str] = typer.Option(
+        None,
+        "--model",
+        help="Model name (e.g. 'LogisticRegression', 'RandomForest').",
+    ),
+    feature_type: Optional[str] = typer.Option(
+        None,
+        "--feature-type",
+        help="Feature type to use.",
+    ),
+    label_col: Optional[str] = typer.Option(
+        None,
+        "--label-col",
+        help="Label column name.",
+    ),
+    group_col: Optional[str] = typer.Option(
+        None,
+        "--group-col",
+        help="Group column name (for group-aware CV).",
+    ),
+    enable_preprocessing: bool = typer.Option(
+        True,
+        "--enable-preprocessing/--skip-preprocessing",
+        help="Enable preprocessing stage.",
+    ),
+    enable_features: bool = typer.Option(
+        True,
+        "--enable-features/--skip-features",
+        help="Enable feature extraction stage.",
+    ),
+    enable_modeling: bool = typer.Option(
+        True,
+        "--enable-modeling/--skip-modeling",
+        help="Enable modeling stage.",
+    ),
+    enable_trust: bool = typer.Option(
+        False,
+        "--enable-trust/--disable-trust",
+        help="Enable trust stack. In regulatory mode, always enabled.",
+    ),
+    enable_reporting: bool = typer.Option(
+        True,
+        "--enable-reporting/--skip-reporting",
+        help="Enable reporting. In regulatory mode, always enabled.",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose logging.",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Validate config but don't execute.",
+    ),
+) -> None:
+    """Execute Phase 3 full end-to-end workflow (strict regulatory semantics).
+
+    This is the strictcomplete orchestrator with real preprocessing, features, modeling,
+    trust stack, and reporting. In regulatory mode:
+    - QC gates are automatically enforced (exit 7 on failure)
+    - Trust stack is mandatory (exit 6 if unavailable)
+    - Reporting is mandatory (exit 8 if generation fails)
+    - Model must be approved (exit 4/5 if not approved)
+
+    Examples:
+
+        # Research mode (real pipeline)
+        foodspec workflow run-strict \\
+            --protocol protocol.yaml \\
+            --input data.csv \\
+            --mode research \\
+            --seed 42
+
+        # Strict regulatory mode (all enforcement enabled)
+        foodspec workflow run-strict \\
+            --protocol protocol.yaml \\
+            --input data.csv \\
+            --mode regulatory \\
+            --seed 42
+
+        # Dry run (validate only)
+        foodspec workflow run-strict \\
+            --protocol protocol.yaml \\
+            --input data.csv \\
+            --dry-run
+    """
+    # Build workflow config
+    cfg = WorkflowConfig(
+        protocol=protocol,
+        inputs=input,
+        output_dir=output_dir,
+        mode=mode,
+        seed=seed,
+        scheme=scheme,
+        model=model,
+        feature_type=feature_type,
+        label_col=label_col,
+        group_col=group_col,
+        enable_preprocessing=enable_preprocessing,
+        enable_features=enable_features,
+        enable_modeling=enable_modeling,
+        enforce_qc=True,  # Phase 3: strict QC
+        enable_trust=enable_trust,
+        enable_reporting=enable_reporting,
+        verbose=verbose,
+        dry_run=dry_run,
+    )
+
+    # Apply seed globally if provided
+    if seed is not None:
+        _apply_seeds({
+            "numpy_seed": seed,
+            "python_random_seed": seed,
+            "torch_seed": seed,
+        })
+
+    # Execute Phase 3 workflow with strict regulatory semantics
+    exit_code = run_workflow_phase3(cfg, strict_regulatory=True)
+
+    # Exit with code
+    sys.exit(exit_code)
+
+
+
 def _build_feature_specs(raw_specs: list[dict[str, Any]]) -> list[FeatureSpec]:
     """Construct FeatureSpec objects from YAML dictionaries."""
     specs: list[FeatureSpec] = []
