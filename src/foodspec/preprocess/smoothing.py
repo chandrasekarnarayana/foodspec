@@ -6,7 +6,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 from sklearn.base import BaseEstimator, TransformerMixin
 
-__all__ = ["SavitzkyGolaySmoother", "MovingAverageSmoother"]
+__all__ = ["SavitzkyGolaySmoother", "MovingAverageSmoother", "WaveletDenoiser"]
 
 
 class SavitzkyGolaySmoother(BaseEstimator, TransformerMixin):
@@ -100,3 +100,39 @@ class MovingAverageSmoother(BaseEstimator, TransformerMixin):
             return out
 
         return np.apply_along_axis(_smooth_row, 1, X)
+
+
+class WaveletDenoiser(BaseEstimator, TransformerMixin):
+    """Wavelet denoising for spectra.
+
+    Uses discrete wavelet decomposition with soft thresholding.
+    """
+
+    def __init__(self, wavelet: str = "db4", level: int | None = None, mode: str = "soft"):
+        self.wavelet = wavelet
+        self.level = level
+        self.mode = mode
+
+    def fit(self, X: np.ndarray, y=None) -> "WaveletDenoiser":
+        return self
+
+    def transform(self, X: np.ndarray) -> np.ndarray:
+        X = np.asarray(X, dtype=float)
+        if X.ndim != 2:
+            raise ValueError("X must be 2D array of shape (n_samples, n_wavenumbers).")
+        try:
+            import pywt  # type: ignore
+        except Exception as exc:  # pragma: no cover - optional dependency
+            raise ImportError("PyWavelets is required for wavelet denoising.") from exc
+
+        out = np.zeros_like(X)
+        for i, row in enumerate(X):
+            coeffs = pywt.wavedec(row, self.wavelet, level=self.level)
+            detail = coeffs[-1]
+            sigma = np.median(np.abs(detail)) / 0.6745 if detail.size else 0.0
+            thresh = sigma * np.sqrt(2.0 * np.log(len(row) + 1))
+            coeffs_filt = [coeffs[0]]
+            coeffs_filt.extend(pywt.threshold(c, thresh, mode=self.mode) for c in coeffs[1:])
+            rec = pywt.waverec(coeffs_filt, self.wavelet)
+            out[i] = rec[: row.shape[0]]
+        return out

@@ -1,0 +1,14 @@
+modality: raman
+description: "Meat preset with stronger baseline removal and mild smoothing"
+steps:
+  - op: baseline
+    method: rubberband
+  - op: smoothing
+    method: gaussian
+    sigma: 1.2
+  - op: normalization
+    method: snv
+  - op: derivative
+    order: 1
+    window_length: 11
+    polyorder: 2

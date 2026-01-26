@@ -671,4 +671,295 @@ class ScientificDossierBuilder:
                     zf.write(path, path.relative_to(dossier_dir))
 
 
-__all__ = ["DossierBuilder", "ScientificDossierBuilder"]
+__all__ = ["DossierBuilder", "ScientificDossierBuilder", "RegulatoryDossierGenerator"]
+
+
+# ============================================================================
+# REGULATORY DOSSIER COMPONENTS (GxP/CFR 21 Part 11 Compliance)
+# ============================================================================
+
+
+import hashlib
+
+
+class RegulatoryDossierGenerator:
+    """
+    Generate regulatory-compliant dossiers with version locking and audit trails.
+    
+    Features:
+    - Version control with SHA256 fingerprints
+    - Full audit trail of all decisions
+    - Governance metadata integration
+    - Compliance checklist
+    - Digital signatures support
+    """
+
+    def __init__(self, model_id: str, version: str = "1.0.0"):
+        """
+        Initialize regulatory dossier generator.
+
+        Parameters
+        ----------
+        model_id : str
+            Unique model identifier
+        version : str
+            Semantic version string
+        """
+        self.model_id = model_id
+        self.version = version
+        self.created_at = datetime.utcnow().isoformat()
+        self.sections = {}
+        self.fingerprint_chain = []
+
+    def add_model_card(
+        self,
+        model_type: str,
+        intended_use: str,
+        developers: list,
+        training_data: dict,
+        limitations: list,
+    ) -> None:
+        """Add model card with governance details."""
+        self.sections["1_model_card"] = {
+            "type": model_type,
+            "intended_use": intended_use,
+            "developers": developers,
+            "training_data": training_data,
+            "known_limitations": limitations,
+            "regulatory_classification": "ML-based analytical instrument",
+        }
+
+    def add_validation_data(
+        self,
+        test_metrics: dict,
+        test_set_characteristics: dict,
+        statistical_analysis: dict,
+    ) -> None:
+        """Add validation section with statistical rigor."""
+        self.sections["2_validation_results"] = {
+            "performance_metrics": test_metrics,
+            "test_set_characteristics": test_set_characteristics,
+            "statistical_analysis": statistical_analysis,
+        }
+
+    def add_uncertainty_section(
+        self,
+        method: str,
+        calibration_metrics: dict,
+        prediction_intervals: dict,
+    ) -> None:
+        """Add uncertainty quantification section."""
+        self.sections["3_uncertainty_quantification"] = {
+            "method": method,
+            "calibration": calibration_metrics,
+            "prediction_intervals": prediction_intervals,
+        }
+
+    def add_drift_monitoring(
+        self,
+        frequency: str,
+        detector_type: str,
+        alert_thresholds: dict,
+        action_plan: list,
+    ) -> None:
+        """Add drift monitoring and maintenance plan."""
+        self.sections["4_drift_monitoring_plan"] = {
+            "monitoring_frequency": frequency,
+            "detector_type": detector_type,
+            "alert_thresholds": alert_thresholds,
+            "corrective_action_plan": action_plan,
+        }
+
+    def add_decision_rules(
+        self,
+        policy_type: str,
+        decision_criteria: dict,
+        cost_matrix: dict,
+        audit_requirements: dict,
+    ) -> None:
+        """Add decision policy section."""
+        self.sections["5_decision_policy"] = {
+            "policy_type": policy_type,
+            "decision_criteria": decision_criteria,
+            "cost_sensitive_matrix": cost_matrix,
+            "audit_requirements": audit_requirements,
+        }
+
+    def add_governance(
+        self,
+        responsible_personnel: list,
+        approval_date: str,
+        review_schedule: str,
+        data_sources: list,
+        instrument_profiles: dict,
+    ) -> None:
+        """Add governance and metadata section."""
+        self.sections["6_governance"] = {
+            "responsible_personnel": responsible_personnel,
+            "approval_date": approval_date,
+            "review_schedule": review_schedule,
+            "data_sources": data_sources,
+            "instrument_profiles": instrument_profiles,
+        }
+
+    def add_compliance_checklist(self, checklist_items: dict) -> None:
+        """Add regulatory compliance checklist."""
+        self.sections["7_compliance_checklist"] = {
+            "items": checklist_items,
+            "completion_date": datetime.utcnow().isoformat(),
+            "all_items_complete": all(checklist_items.values()),
+        }
+
+    def add_audit_trail(
+        self,
+        policy_decisions: list,
+        key_events: list,
+        signature_info: dict = None,
+    ) -> None:
+        """Add immutable audit trail section."""
+        self.sections["8_audit_trail"] = {
+            "policy_decisions": policy_decisions,
+            "key_events": key_events,
+            "signature_info": signature_info or {},
+            "dossier_created_at": self.created_at,
+        }
+
+    def get_fingerprint(self) -> str:
+        """
+        Get SHA256 fingerprint for version locking.
+
+        Returns
+        -------
+        fingerprint : str
+            SHA256 hash of current dossier state
+        """
+        content = json.dumps(
+            {"model_id": self.model_id, "version": self.version, "sections": self.sections},
+            sort_keys=True,
+            default=str,
+        )
+        return hashlib.sha256(content.encode()).hexdigest()
+
+    def lock_version(self) -> str:
+        """
+        Lock current version with fingerprint.
+
+        Returns
+        -------
+        fingerprint : str
+            Immutable fingerprint for this version
+        """
+        fp = self.get_fingerprint()
+        self.fingerprint_chain.append({
+            "version": self.version,
+            "fingerprint": fp,
+            "locked_at": datetime.utcnow().isoformat(),
+        })
+        return fp
+
+    def to_json(self, indent: int = 2) -> str:
+        """Export dossier as JSON."""
+        return json.dumps(
+            {
+                "model_id": self.model_id,
+                "version": self.version,
+                "created_at": self.created_at,
+                "fingerprint": self.get_fingerprint(),
+                "fingerprint_chain": self.fingerprint_chain,
+                "sections": self.sections,
+            },
+            indent=indent,
+            default=str,
+        )
+
+    def to_markdown(self) -> str:
+        """Export dossier as Markdown."""
+        md = f"""# Regulatory Dossier
+**Model ID:** {self.model_id}
+**Version:** {self.version}
+**Created:** {self.created_at}
+**Fingerprint:** {self.get_fingerprint()}
+
+---
+
+"""
+        for section_key in sorted(self.sections.keys()):
+            section = self.sections[section_key]
+            section_title = section_key.replace("_", " ").title()
+            md += f"## {section_title}\n\n"
+
+            for key, value in section.items():
+                if isinstance(value, dict):
+                    md += f"### {key.replace('_', ' ').title()}\n\n"
+                    for k, v in value.items():
+                        md += f"- **{k}:** {v}\n"
+                elif isinstance(value, list):
+                    md += f"- **{key}:**\n"
+                    for item in value:
+                        md += f"  - {item}\n"
+                else:
+                    md += f"- **{key}:** {value}\n"
+
+            md += "\n---\n\n"
+
+        return md.strip()
+
+    def save(self, output_dir: str, formats: list = None) -> dict:
+        """
+        Save dossier in multiple formats.
+
+        Parameters
+        ----------
+        output_dir : str
+            Output directory
+        formats : list
+            Formats to save: 'json', 'markdown'
+
+        Returns
+        -------
+        files : dict
+            Paths to saved files
+        """
+        if formats is None:
+            formats = ["json", "markdown"]
+
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        files = {}
+
+        if "json" in formats:
+            json_file = output_dir / f"{self.model_id}_regulatory_dossier_v{self.version}.json"
+            with open(json_file, "w") as f:
+                f.write(self.to_json())
+            files["json"] = str(json_file)
+
+        if "markdown" in formats:
+            md_file = output_dir / f"{self.model_id}_regulatory_dossier_v{self.version}.md"
+            with open(md_file, "w") as f:
+                f.write(self.to_markdown())
+            files["markdown"] = str(md_file)
+
+        return files
+
+    @staticmethod
+    def standard_compliance_checklist() -> dict:
+        """Get standard regulatory compliance checklist."""
+        return {
+            "Model documentation complete": False,
+            "Intended use clearly defined": False,
+            "Validation study performed and documented": False,
+            "Uncertainty quantification implemented": False,
+            "Drift monitoring plan established": False,
+            "Decision policy documented and tested": False,
+            "Governance metadata captured": False,
+            "Audit trail enabled and tested": False,
+            "Calibration verified with standards": False,
+            "Environmental conditions documented": False,
+            "Training data provenance documented": False,
+            "Test data representative and balanced": False,
+            "Model performance acceptable": False,
+            "Risk assessment completed": False,
+            "Approval by responsible person obtained": False,
+            "Version lock and fingerprint verified": False,
+        }

@@ -41,6 +41,22 @@ from foodspec.qc.multivariate import (
 from foodspec.qc.readiness import compute_readiness_score
 from foodspec.qc.replicates import assess_variability_sources, compute_replicate_consistency
 from foodspec.qc.regression_diagnostics import summarize_regression_diagnostics
+from foodspec.qc.control_charts import (
+    ControlChartGroup,
+    ControlChartResult,
+    capability_analysis,
+    c_chart,
+    cusum_chart,
+    ewma_chart,
+    individuals_mr_chart,
+    levey_jennings,
+    np_chart,
+    p_chart,
+    pareto_counts,
+    u_chart,
+    xbar_r_chart,
+    xbar_s_chart,
+)
 
 __all__ = [
     # Existing QC engine
@@ -83,4 +99,19 @@ __all__ = [
     "outlier_flags",
     "batch_drift",
     "MultivariateQCPolicy",
+    # Control charts
+    "ControlChartResult",
+    "ControlChartGroup",
+    "xbar_r_chart",
+    "xbar_s_chart",
+    "individuals_mr_chart",
+    "cusum_chart",
+    "ewma_chart",
+    "p_chart",
+    "np_chart",
+    "c_chart",
+    "u_chart",
+    "levey_jennings",
+    "capability_analysis",
+    "pareto_counts",
 ]

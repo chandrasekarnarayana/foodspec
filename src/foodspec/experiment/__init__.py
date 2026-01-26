@@ -8,6 +8,7 @@ Provides:
   - ExperimentConfig: Configuration dataclass
 """
 from foodspec.experiment.experiment import (
+    BatchRunResult,
     Experiment,
     ExperimentConfig,
     RunMode,
@@ -16,6 +17,7 @@ from foodspec.experiment.experiment import (
 )
 
 __all__ = [
+    "BatchRunResult",
     "Experiment",
     "ExperimentConfig",
     "RunMode",

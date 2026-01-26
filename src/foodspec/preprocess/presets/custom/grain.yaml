@@ -1,0 +1,12 @@
+modality: raman
+description: "Grain preset with MSC normalization and smoothing"
+steps:
+  - op: baseline
+    method: als
+    lam: 1.0e5
+    p: 0.01
+  - op: smoothing
+    method: moving_average
+    window: 5
+  - op: normalization
+    method: msc

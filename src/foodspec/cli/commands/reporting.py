@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 import json
+import shutil
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -215,9 +216,16 @@ def report_run(
         cards_dir.mkdir(parents=True, exist_ok=True)
         card_path = card.to_markdown(cards_dir / "experiment_card.md")
         card.to_json(cards_dir / "experiment_card.json")
+        flat_card_md = run_dir / "card.md"
+        flat_card_json = run_dir / "card.json"
+        card.to_markdown(flat_card_md)
+        card.to_json(flat_card_json)
 
         report_builder = HtmlReportBuilder(bundle, mode=mode)
         html_path = report_builder.build(run_dir, embed_images=embed_images)
+        flat_report = run_dir / "report.html"
+        if html_path != flat_report:
+            shutil.copy2(html_path, flat_report)
         pdf_path = None
         if format in {"pdf", "both"}:
             pdf_path = export_pdf(html_path, run_dir / "reports" / "report.pdf")
@@ -227,9 +235,11 @@ def report_run(
 
         artifacts = {
             "report_html": str(html_path),
+            "report_html_flat": str(flat_report),
             "report_pdf": str(pdf_path) if pdf_path else None,
             "figures_dir": str(figures_dir),
             "experiment_card": str(card_path),
+            "experiment_card_flat": str(flat_card_md),
             "dossier": str(run_dir / "dossier" / "dossier.md"),
             "qc_report": str(run_dir / "qc_report.json"),
         }

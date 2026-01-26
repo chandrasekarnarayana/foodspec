@@ -198,6 +198,9 @@ nav:
   - User Guide:
     - Overview: user-guide/index.md
     - 🧭 Decision Guide: user-guide/decision_guide.md
+    - Preprocessing Presets: user-guide/preprocessing_presets.md
+    - Streaming Monitoring: user-guide/monitoring.md
+    - Compliance Suite: user-guide/compliance.md
     - Data Management:
       - CSV to Library: user-guide/csv_to_library.md
       - Data Formats & HDF5: user-guide/data_formats_and_hdf5.md
@@ -217,6 +220,7 @@ nav:
       - Feature Engineering: user-guide/features.md
       - Visualization: user-guide/visualization.md
       - Visualizations Library: user-guide/visualizations.md
+      - QC Control Charts: user-guide/qc_control_charts.md
       - Reporting: user-guide/reporting.md
     - Advanced Features:
       - Registry & Plugins: user-guide/registry_and_plugins.md

@@ -120,15 +120,21 @@ class ReportContext:
         # Load manifest
         if not artifacts.manifest_path.exists():
             raise FileNotFoundError(f"manifest.json not found in {run_dir}")
-        manifest = RunManifest.load(artifacts.manifest_path)
+        manifest = cls._load_manifest(artifacts.manifest_path)
 
         # Load protocol snapshot
         protocol_snapshot = manifest.protocol_snapshot
 
         # Load optional artifact tables
         metrics = cls._load_csv(artifacts.metrics_path)
+        if not metrics:
+            metrics = cls._load_csv(run_dir / "tables" / "metrics.csv")
         predictions = cls._load_csv(artifacts.predictions_path)
+        if not predictions:
+            predictions = cls._load_csv(run_dir / "tables" / "predictions.csv")
         qc = cls._load_csv(artifacts.qc_path)
+        if not qc:
+            qc = cls._load_csv(run_dir / "tables" / "qc.csv")
 
         # Load trust outputs if present (multiple possible locations)
         trust_outputs = cls._load_trust_outputs(run_dir)
@@ -215,6 +221,12 @@ class ReportContext:
                     trust_data["qc_summary"] = json.loads(qc_summary_path.read_text())
                 except (json.JSONDecodeError, OSError):
                     pass
+            qc_control_path = qc_dir / "control_charts.json"
+            if qc_control_path.exists():
+                try:
+                    trust_data["qc_control_charts"] = json.loads(qc_control_path.read_text())
+                except (json.JSONDecodeError, OSError):
+                    pass
         
         return trust_data
 
@@ -228,6 +240,42 @@ class ReportContext:
             reader = csv.DictReader(f)
             rows = list(reader)
         return rows
+
+    @staticmethod
+    def _load_manifest(path: Path) -> RunManifest:
+        """Load manifest.json with compatibility for multiple schemas."""
+        try:
+            return RunManifest.load(path)
+        except Exception:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            protocol_snapshot = raw.get("protocol_snapshot", {})
+            artifacts = raw.get("artifacts", {})
+            seed = raw.get("seed")
+            manifest = RunManifest.build(
+                protocol_snapshot=protocol_snapshot,
+                data_path=None,
+                seed=seed,
+                artifacts=artifacts,
+            )
+            manifest.protocol_hash = raw.get("protocol_hash") or raw.get("protocol_sha256") or manifest.protocol_hash
+            manifest.data_fingerprint = raw.get("data_fingerprint", manifest.data_fingerprint)
+            manifest.python_version = raw.get("python_version", manifest.python_version)
+            manifest.platform = raw.get("platform", manifest.platform)
+            manifest.start_time = raw.get("start_time") or raw.get("timestamp") or manifest.start_time
+            manifest.end_time = raw.get("end_time", manifest.end_time)
+            duration = raw.get("duration_seconds")
+            if duration is not None:
+                try:
+                    manifest.duration_seconds = float(duration)
+                except (TypeError, ValueError):
+                    pass
+            dependencies = dict(manifest.dependencies or {})
+            if isinstance(raw.get("dependencies"), dict):
+                dependencies.update(raw.get("dependencies", {}))
+            if raw.get("foodspec_version"):
+                dependencies.setdefault("foodspec", raw.get("foodspec_version"))
+            manifest.dependencies = dependencies
+            return manifest
 
     @classmethod
     def _load_multivariate_tables(cls, run_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
@@ -408,6 +456,33 @@ class ReportBuilder:
 
         mv_section = build_multivariate_section(self.context)
         context_dict["multivariate_section"] = mv_section
+        context_dict["figures"] = _prepare_figures(self.context.figures, out_path.parent)
+
+        from foodspec.reporting.cards import build_experiment_card
+
+        card = build_experiment_card(self.context, mode=mode)
+        context_dict["card"] = {
+            "run_id": card.run_id,
+            "timestamp": card.timestamp,
+            "task": card.task,
+            "modality": card.modality,
+            "model": card.model,
+            "validation_scheme": card.validation_scheme,
+            "macro_f1": card.macro_f1,
+            "auroc": card.auroc,
+            "ece": card.ece,
+            "coverage": card.coverage,
+            "abstain_rate": card.abstain_rate,
+            "mean_set_size": card.mean_set_size,
+            "drift_score": card.drift_score,
+            "qc_pass_rate": card.qc_pass_rate,
+            "confidence_level": card.confidence_level.value,
+            "confidence_reasoning": card.confidence_reasoning,
+            "deployment_readiness": card.deployment_readiness.value,
+            "readiness_reasoning": card.readiness_reasoning,
+            "key_risks": card.key_risks,
+            "auto_summary": card.auto_summary,
+        }
 
         # Render template
         template = self.env.get_template("base.html")
@@ -491,3 +566,26 @@ def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
         figures[category] = sorted(set(figures[category]))  # Remove duplicates
 
     return figures
+
+
+def _prepare_figures(
+    figures: Dict[str, List[Path]],
+    base_dir: Path,
+) -> Dict[str, List[Dict[str, str]]]:
+    payload: Dict[str, List[Dict[str, str]]] = {}
+    for category, paths in figures.items():
+        entries: List[Dict[str, str]] = []
+        for path in paths:
+            try:
+                rel = path.relative_to(base_dir)
+            except ValueError:
+                rel = path
+            entries.append(
+                {
+                    "path": str(rel).replace("\\", "/"),
+                    "name": path.stem,
+                }
+            )
+        if entries:
+            payload[category] = entries
+    return payload

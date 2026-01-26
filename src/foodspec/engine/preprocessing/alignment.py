@@ -3,16 +3,18 @@ from __future__ import annotations
 
 import numpy as np
 
-from foodspec.data_objects.spectral_dataset import harmonize_datasets
-
-
-def align_spectra(reference_wavenumbers: np.ndarray, target_wavenumbers: np.ndarray, target_spectra: np.ndarray):
-    """Align target spectra to a reference wavenumber grid.
-
-    Uses the existing harmonization helper to interpolate spectra.
-    """
-
-    aligned = harmonize_datasets(reference_wavenumbers, target_wavenumbers, target_spectra)
+def align_spectra(
+    reference_wavenumbers: np.ndarray,
+    target_wavenumbers: np.ndarray,
+    target_spectra: np.ndarray,
+) -> np.ndarray:
+    """Align target spectra to a reference wavenumber grid via interpolation."""
+    target = np.asarray(target_wavenumbers, dtype=float)
+    ref = np.asarray(reference_wavenumbers, dtype=float)
+    X = np.asarray(target_spectra, dtype=float)
+    if X.ndim == 1:
+        X = X[None, :]
+    aligned = np.vstack([np.interp(ref, target, row) for row in X])
     return aligned
 
 

@@ -50,6 +50,7 @@ dependencies = [
   "statsmodels>=0.14",
   "matplotlib>=3.8",
   "pyyaml>=6.0",
+  "pywavelets>=1.5.0",
   "typer>=0.9.0",
   "h5py>=3.11.0",
   "xgboost>=1.7.0",
@@ -82,6 +83,11 @@ docs = [
 ]
 viz = [
   "matplotlib>=3.8",
+]
+deploy = [
+  "skl2onnx>=1.15.0",
+  "onnx>=1.14.0",
+  "sklearn2pmml>=0.102.0",
 ]
 
 

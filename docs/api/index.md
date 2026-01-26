@@ -25,6 +25,7 @@ Complete API documentation for FoodSpec Python modules with auto-generated signa
 |--------|---------|----------------|
 | [**Chemometrics**](chemometrics.md) | PCA, PLS, MCR-ALS | `run_pca()`, `make_pls_da()` |
 | [**ML**](ml.md) | Model training & validation | `nested_cross_validate()` |
+| [**Diagnostics**](diagnostics.md) | ROC/AUC analysis | `compute_roc_diagnostics()` |
 | [**Stats**](stats.md) | Hypothesis testing | `run_ttest()`, `run_anova()` |
 | [**Metrics**](metrics.md) | Evaluation metrics | `compute_classification_metrics()` |
 

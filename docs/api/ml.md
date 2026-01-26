@@ -95,6 +95,7 @@ Artifacts written under `tables/` include `multivariate_scores.csv`, `multivaria
 
 ## See Also
 
+- **[Diagnostics & Model Evaluation](./diagnostics.md)** - ROC/AUC analysis, threshold optimization
 - **[Model Validation](../methods/validation/index.md)** - Validation strategies
 - **[Cross-Validation Guide](../methods/validation/cross_validation_and_leakage.md)** - CV best practices
 - **[Examples](../examples_gallery.md)** - ML workflows

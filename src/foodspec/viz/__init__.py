@@ -54,6 +54,16 @@ from .paper import (
     get_figure_preset_config,
     list_presets,
 )
+from .control_charts import (
+    plot_control_chart,
+    plot_control_chart_group,
+    plot_cusum,
+    plot_ewma,
+    plot_pareto,
+    plot_runs,
+)
+from .distribution import plot_probability_plot
+from .clustering import plot_dendrogram
 
 __all__ = [
     "plot_spectra_overlay",
@@ -86,4 +96,12 @@ __all__ = [
     "save_figure",
     "get_figure_preset_config",
     "list_presets",
+    "plot_control_chart",
+    "plot_control_chart_group",
+    "plot_cusum",
+    "plot_ewma",
+    "plot_pareto",
+    "plot_runs",
+    "plot_probability_plot",
+    "plot_dendrogram",
 ]

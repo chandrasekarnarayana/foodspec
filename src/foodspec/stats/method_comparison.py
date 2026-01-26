@@ -5,9 +5,11 @@ Bland–Altman analysis for method comparison.
 
 
 from dataclasses import dataclass
+from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 
 
 @dataclass
@@ -15,6 +17,65 @@ class BlandAltmanResult:
     mean_diff: float
     loa_low: float
     loa_high: float
+
+
+@dataclass
+class PassingBablokResult:
+    slope: float
+    intercept: float
+    slope_ci: Tuple[float, float]
+    intercept_ci: Tuple[float, float]
+    n_pairs: int
+
+
+def passing_bablok(
+    x: np.ndarray,
+    y: np.ndarray,
+    *,
+    alpha: float = 0.05,
+) -> PassingBablokResult:
+    """Passing-Bablok regression for method comparison (robust, nonparametric)."""
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n = x.size
+    slopes = []
+    for i in range(n - 1):
+        for j in range(i + 1, n):
+            dx = x[j] - x[i]
+            if dx != 0:
+                slopes.append((y[j] - y[i]) / dx)
+    slopes = np.asarray(slopes)
+    if slopes.size == 0:
+        raise ValueError("Passing-Bablok requires varying x values.")
+    slope = float(np.median(slopes))
+    intercept = float(np.median(y - slope * x))
+
+    slopes_sorted = np.sort(slopes)
+    m = slopes_sorted.size
+    z = stats.norm.ppf(1 - alpha / 2)
+    k = int(np.floor((m - z * np.sqrt(m * (m - 1) / 2)) / 2))
+    l = int(np.ceil((m + z * np.sqrt(m * (m - 1) / 2)) / 2))
+    k = max(0, min(m - 1, k))
+    l = max(0, min(m - 1, l))
+    slope_ci = (float(slopes_sorted[k]), float(slopes_sorted[l]))
+    intercept_ci = (float(np.median(y - slope_ci[1] * x)), float(np.median(y - slope_ci[0] * x)))
+    return PassingBablokResult(
+        slope=slope,
+        intercept=intercept,
+        slope_ci=slope_ci,
+        intercept_ci=intercept_ci,
+        n_pairs=int(m),
+    )
+
+
+def lins_concordance_correlation(x: np.ndarray, y: np.ndarray) -> float:
+    """Lin's concordance correlation coefficient."""
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    mean_x, mean_y = float(np.mean(x)), float(np.mean(y))
+    var_x, var_y = float(np.var(x, ddof=1)), float(np.var(y, ddof=1))
+    cov = float(np.cov(x, y, ddof=1)[0, 1])
+    return float((2 * cov) / (var_x + var_y + (mean_x - mean_y) ** 2 + 1e-12))
 
 
 def bland_altman(a: np.ndarray, b: np.ndarray, alpha: float = 0.05) -> BlandAltmanResult:
@@ -86,3 +147,36 @@ def bland_altman_plot(a: np.ndarray, b: np.ndarray, title: str = "Bland–Altman
     plt.legend()
     plt.tight_layout()
     return plt.gcf()
+
+
+def passing_bablok_plot(
+    x: np.ndarray,
+    y: np.ndarray,
+    title: str = "Passing-Bablok",
+) -> plt.Figure:
+    """Plot Passing-Bablok regression with identity line."""
+    res = passing_bablok(x, y)
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    plt.figure(figsize=(5, 4))
+    plt.scatter(x, y, alpha=0.7)
+    xs = np.linspace(float(np.min(x)), float(np.max(x)), 100)
+    plt.plot(xs, res.slope * xs + res.intercept, color="#2a6fdb", label="Passing-Bablok")
+    plt.plot(xs, xs, color="gray", linestyle="--", label="Identity")
+    plt.xlabel("Method A")
+    plt.ylabel("Method B")
+    plt.title(title)
+    plt.legend()
+    plt.tight_layout()
+    return plt.gcf()
+
+
+__all__ = [
+    "BlandAltmanResult",
+    "PassingBablokResult",
+    "bland_altman",
+    "bland_altman_plot",
+    "passing_bablok",
+    "passing_bablok_plot",
+    "lins_concordance_correlation",
+]

@@ -1,0 +1,6 @@
+sample_id,wavenumber_1,wavenumber_2,wavenumber_3,wavenumber_4,wavenumber_5,label
+1,0.1,0.2,0.15,0.25,0.3,bad
+2,,,0.17,0.27,0.32,bad
+3,0.11,0.21,,0.26,0.31,bad
+4,0.13,0.23,0.18,,0.33,bad
+5,1.5,1.6,1.55,1.65,1.7,bad

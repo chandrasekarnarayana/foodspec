@@ -82,6 +82,78 @@ Non-parametric alternative to t-test.
       show_source: false
       heading_level: 4
 
+### run_anderson_darling
+
+Anderson-Darling normality test.
+
+::: foodspec.stats.hypothesis_tests.run_anderson_darling
+    options:
+      show_source: false
+      heading_level: 4
+
+### run_levene
+
+Levene test for equal variances.
+
+::: foodspec.stats.hypothesis_tests.run_levene
+    options:
+      show_source: false
+      heading_level: 4
+
+### run_bartlett
+
+Bartlett test for equal variances (normality assumed).
+
+::: foodspec.stats.hypothesis_tests.run_bartlett
+    options:
+      show_source: false
+      heading_level: 4
+
+### run_ancova
+
+ANCOVA with group factor + covariates.
+
+::: foodspec.stats.hypothesis_tests.run_ancova
+    options:
+      show_source: false
+      heading_level: 4
+
+### run_tost_equivalence
+
+Equivalence testing using TOST.
+
+::: foodspec.stats.hypothesis_tests.run_tost_equivalence
+    options:
+      show_source: false
+      heading_level: 4
+
+### run_noninferiority
+
+Noninferiority testing against a margin.
+
+::: foodspec.stats.hypothesis_tests.run_noninferiority
+    options:
+      show_source: false
+      heading_level: 4
+
+### group_sequential_boundaries
+
+Group sequential boundary calculator.
+
+::: foodspec.stats.hypothesis_tests.group_sequential_boundaries
+    options:
+      show_source: false
+      heading_level: 4
+
+### check_group_sequential
+
+Evaluate sequential z-statistics against boundaries.
+
+::: foodspec.stats.hypothesis_tests.check_group_sequential
+    options:
+      show_source: false
+      heading_level: 4
+
 ## Effect Sizes
 
 ### compute_cohens_d
@@ -147,6 +219,153 @@ Bootstrap confidence intervals for metrics.
 Permutation test for statistical significance.
 
 ::: foodspec.stats.robustness.permutation_test_metric
+    options:
+      show_source: false
+      heading_level: 4
+
+## Clustering
+
+### kmeans_cluster
+
+K-means clustering with diagnostics.
+
+::: foodspec.stats.clustering.kmeans_cluster
+    options:
+      show_source: false
+      heading_level: 4
+
+### hierarchical_cluster
+
+Hierarchical clustering with linkage output.
+
+::: foodspec.stats.clustering.hierarchical_cluster
+    options:
+      show_source: false
+      heading_level: 4
+
+### fuzzy_c_means
+
+Fuzzy clustering for soft assignments.
+
+::: foodspec.stats.clustering.fuzzy_c_means
+    options:
+      show_source: false
+      heading_level: 4
+
+## Distribution Fitting
+
+### fit_distribution
+
+Fit common distributions (Weibull/Gamma/Beta/Normal).
+
+::: foodspec.stats.distribution_fitting.fit_distribution
+    options:
+      show_source: false
+      heading_level: 4
+
+### probability_plot_data
+
+Probability plot diagnostics.
+
+::: foodspec.stats.distribution_fitting.probability_plot_data
+    options:
+      show_source: false
+      heading_level: 4
+
+## Design of Experiments
+
+### full_factorial_2level
+
+Full factorial 2-level design.
+
+::: foodspec.stats.doe.full_factorial_2level
+    options:
+      show_source: false
+      heading_level: 4
+
+### central_composite_design
+
+Response surface central composite design.
+
+::: foodspec.stats.doe.central_composite_design
+    options:
+      show_source: false
+      heading_level: 4
+
+## Time Series
+
+### fit_arima
+
+ARIMA forecasting.
+
+::: foodspec.stats.time_series.fit_arima
+    options:
+      show_source: false
+      heading_level: 4
+
+### fit_exponential_smoothing
+
+Exponential smoothing forecasting.
+
+::: foodspec.stats.time_series.fit_exponential_smoothing
+    options:
+      show_source: false
+      heading_level: 4
+
+## Method Comparison
+
+### passing_bablok
+
+Passing-Bablok regression.
+
+::: foodspec.stats.method_comparison.passing_bablok
+    options:
+      show_source: false
+      heading_level: 4
+
+### lins_concordance_correlation
+
+Lin's concordance correlation coefficient.
+
+::: foodspec.stats.method_comparison.lins_concordance_correlation
+    options:
+      show_source: false
+      heading_level: 4
+
+## Diagnostics
+
+### adjusted_r2
+
+Adjusted R-squared.
+
+::: foodspec.stats.diagnostics.adjusted_r2
+    options:
+      show_source: false
+      heading_level: 4
+
+### cronbach_alpha
+
+Cronbach's alpha reliability.
+
+::: foodspec.stats.diagnostics.cronbach_alpha
+    options:
+      show_source: false
+      heading_level: 4
+
+### runs_test
+
+Runs test for randomness.
+
+::: foodspec.stats.diagnostics.runs_test
+    options:
+      show_source: false
+      heading_level: 4
+
+### normal_tolerance_interval
+
+Approximate tolerance interval for normal data.
+
+::: foodspec.stats.diagnostics.normal_tolerance_interval
     options:
       show_source: false
       heading_level: 4

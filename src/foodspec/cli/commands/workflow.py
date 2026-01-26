@@ -1,10 +1,11 @@
-"""Workflow orchestration commands: experiment runner, benchmarks."""
+"""Workflow orchestration commands: experiment runner, benchmarks, Phase 1 orchestrator."""
 from __future__ import annotations
 
 
 import json
+import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import numpy as np
 import typer
@@ -15,6 +16,8 @@ from foodspec.core.api import FoodSpec
 from foodspec.features.specs import FeatureSpec
 from foodspec.logging_utils import get_logger, log_run_metadata
 from foodspec.repro.experiment import ExperimentConfig, ExperimentEngine
+from foodspec.workflow.config import WorkflowConfig
+from foodspec.workflow.phase1_orchestrator import run_workflow
 
 logger = get_logger(__name__)
 
@@ -38,6 +41,169 @@ def _apply_seeds(seeds: dict[str, Any]) -> None:
             torch.manual_seed(int(seeds["torch_seed"]))
     except Exception:
         pass
+
+
+@workflow_app.command("run")
+def run_phase1_workflow(
+    protocol: Path = typer.Argument(
+        ...,
+        help="Path to protocol YAML/JSON file.",
+    ),
+    input: List[Path] = typer.Option(
+        ...,
+        "--input",
+        help="Input CSV file(s). Can be repeated: --input file1.csv --input file2.csv",
+    ),
+    output_dir: Optional[Path] = typer.Option(
+        None,
+        "--output-dir",
+        help="Output directory for run. Auto-generated if not provided.",
+    ),
+    mode: str = typer.Option(
+        "research",
+        "--mode",
+        help="Workflow mode: 'research' or 'regulatory'.",
+    ),
+    seed: Optional[int] = typer.Option(
+        None,
+        "--seed",
+        help="Random seed for reproducibility.",
+    ),
+    scheme: Optional[str] = typer.Option(
+        None,
+        "--scheme",
+        help="Validation scheme: 'random', 'lobo', 'loso', 'nested'.",
+    ),
+    model: Optional[str] = typer.Option(
+        None,
+        "--model",
+        help="Model name (e.g. 'LogisticRegression', 'RandomForest').",
+    ),
+    feature_type: Optional[str] = typer.Option(
+        None,
+        "--feature-type",
+        help="Feature type to use.",
+    ),
+    label_col: Optional[str] = typer.Option(
+        None,
+        "--label-col",
+        help="Label column name.",
+    ),
+    group_col: Optional[str] = typer.Option(
+        None,
+        "--group-col",
+        help="Group column name (for group-aware CV).",
+    ),
+    enable_preprocessing: bool = typer.Option(
+        True,
+        "--enable-preprocessing/--skip-preprocessing",
+        help="Enable preprocessing stage.",
+    ),
+    enable_features: bool = typer.Option(
+        True,
+        "--enable-features/--skip-features",
+        help="Enable feature extraction stage.",
+    ),
+    enable_modeling: bool = typer.Option(
+        True,
+        "--enable-modeling/--skip-modeling",
+        help="Enable modeling stage.",
+    ),
+    enforce_qc: bool = typer.Option(
+        False,
+        "--enforce-qc/--no-enforce-qc",
+        help="Enforce QC gates (fail on gate failure). Default: advisory.",
+    ),
+    enable_trust: bool = typer.Option(
+        False,
+        "--enable-trust/--disable-trust",
+        help="Enable trust stack (calibration + conformal + abstention).",
+    ),
+    enable_reporting: bool = typer.Option(
+        True,
+        "--enable-reporting/--skip-reporting",
+        help="Enable reporting stage.",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose logging.",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Validate config but don't execute.",
+    ),
+) -> None:
+    """Execute Phase 1 minimal workflow orchestrator.
+
+    This command runs the guaranteed E2E workflow pipeline with proper:
+    - Input validation + dataset fingerprinting
+    - Protocol loading + override governance
+    - Run directory structure + manifest
+    - Sequential orchestration with error handling
+    - Exit codes + error.json artifacts
+    - Artifact contract validation
+
+    Examples:
+
+        # Research mode (minimal)
+        foodspec workflow run \\
+            --protocol examples/protocols/oils.yaml \\
+            --input data/oils.csv \\
+            --mode research \\
+            --seed 42
+
+        # With model override
+        foodspec workflow run \\
+            --protocol protocol.yaml \\
+            --input data.csv \\
+            --model RandomForest \\
+            --scheme lobo
+
+        # Dry run (validate only)
+        foodspec workflow run \\
+            --protocol protocol.yaml \\
+            --input data.csv \\
+            --dry-run
+    """
+    # Build workflow config
+    cfg = WorkflowConfig(
+        protocol=protocol,
+        inputs=input,
+        output_dir=output_dir,
+        mode=mode,
+        seed=seed,
+        scheme=scheme,
+        model=model,
+        feature_type=feature_type,
+        label_col=label_col,
+        group_col=group_col,
+        enable_preprocessing=enable_preprocessing,
+        enable_features=enable_features,
+        enable_modeling=enable_modeling,
+        enforce_qc=enforce_qc,
+        enable_trust=enable_trust,
+        enable_reporting=enable_reporting,
+        verbose=verbose,
+        dry_run=dry_run,
+    )
+
+    # Apply seed globally if provided
+    if seed is not None:
+        _apply_seeds({
+            "numpy_seed": seed,
+            "python_random_seed": seed,
+            "torch_seed": seed,
+        })
+
+    # Execute workflow
+    exit_code = run_workflow(cfg)
+
+    # Exit with code
+    sys.exit(exit_code)
+
 
 
 def _build_feature_specs(raw_specs: list[dict[str, Any]]) -> list[FeatureSpec]:

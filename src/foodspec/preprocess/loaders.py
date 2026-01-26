@@ -87,6 +87,10 @@ def load_preset_yaml(name: str) -> Dict[str, Any]:
         "ftir": "ftir.yaml",
         "oil_auth": "custom/oil_auth.yaml",
         "chips_matrix": "custom/chips_matrix.yaml",
+        "dairy": "custom/dairy.yaml",
+        "meat": "custom/meat.yaml",
+        "fruit": "custom/fruit.yaml",
+        "grain": "custom/grain.yaml",
     }
 
     if name not in preset_files:

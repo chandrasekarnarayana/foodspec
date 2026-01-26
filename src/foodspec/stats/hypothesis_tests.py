@@ -8,7 +8,7 @@ nonparametric tests), plus FDR correction.
 
 
 from dataclasses import dataclass
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -213,6 +213,278 @@ def run_shapiro(values) -> TestResult:
     summary = pd.DataFrame([{"test": "shapiro", "statistic": stat, "pvalue": p, "df": None}])
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
 
+
+def run_anderson_darling(values, dist: str = "norm") -> TestResult:
+    """Anderson-Darling test for distributional fit (normality by default).
+
+    Unlike Shapiro-Wilk, Anderson-Darling returns critical values instead of an exact
+    p-value. We provide a coarse p-value approximation by interpolating between
+    reported significance levels.
+
+    Parameters
+    ----------
+    values : array-like
+        Data to test.
+    dist : str
+        Distribution name supported by scipy.stats.anderson (default "norm").
+
+    Returns
+    -------
+    TestResult
+        statistic = A^2, pvalue = approximate, summary includes critical values.
+    """
+    vals = np.asarray(values, dtype=float)
+    result = stats.anderson(vals, dist=dist)
+    stat = float(result.statistic)
+    sig_levels = np.asarray(result.significance_level, dtype=float) / 100.0
+    crit_vals = np.asarray(result.critical_values, dtype=float)
+
+    # Approximate p-value by linear interpolation of critical values
+    p_approx = float("nan")
+    if stat < crit_vals.min():
+        p_approx = float(sig_levels.max())
+    elif stat > crit_vals.max():
+        p_approx = float(sig_levels.min())
+    else:
+        idx = np.searchsorted(crit_vals, stat)
+        lo = max(idx - 1, 0)
+        hi = min(idx, len(crit_vals) - 1)
+        if crit_vals[hi] == crit_vals[lo]:
+            p_approx = float(sig_levels[lo])
+        else:
+            frac = (stat - crit_vals[lo]) / (crit_vals[hi] - crit_vals[lo])
+            p_approx = float(sig_levels[lo] + frac * (sig_levels[hi] - sig_levels[lo]))
+
+    summary = pd.DataFrame(
+        [
+            {
+                "test": "anderson_darling",
+                "statistic": stat,
+                "pvalue": p_approx,
+                "dist": dist,
+                "critical_values": crit_vals.tolist(),
+                "significance_levels": sig_levels.tolist(),
+            }
+        ]
+    )
+    return TestResult(statistic=stat, pvalue=p_approx, df=None, summary=summary)
+
+
+def run_levene(*groups, center: str = "median") -> TestResult:
+    """Levene test for homoscedasticity (equal variances across groups)."""
+    arrays = [np.asarray(g, dtype=float) for g in groups if g is not None]
+    if len(arrays) < 2:
+        raise ValueError("Levene test requires at least two groups.")
+    stat, p = stats.levene(*arrays, center=center)
+    summary = pd.DataFrame(
+        [{"test": "levene", "statistic": stat, "pvalue": p, "df": None, "center": center}]
+    )
+    return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
+
+
+def run_bartlett(*groups) -> TestResult:
+    """Bartlett test for homoscedasticity (assumes normality)."""
+    arrays = [np.asarray(g, dtype=float) for g in groups if g is not None]
+    if len(arrays) < 2:
+        raise ValueError("Bartlett test requires at least two groups.")
+    stat, p = stats.bartlett(*arrays)
+    summary = pd.DataFrame([{"test": "bartlett", "statistic": stat, "pvalue": p, "df": None}])
+    return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
+
+
+def run_welch_ttest(
+    sample1,
+    sample2,
+    alternative: str = "two-sided",
+) -> TestResult:
+    """Welch's t-test (unequal variances) for two independent samples."""
+    return run_ttest(sample1, sample2, paired=False, alternative=alternative)
+
+
+def run_ancova(
+    data: pd.DataFrame,
+    dv: str,
+    group: str,
+    covariates: Sequence[str],
+    *,
+    typ: int = 2,
+) -> TestResult:
+    """ANCOVA using OLS with group factor and covariates.
+
+    Returns a TestResult focusing on the group effect, with full ANOVA table in summary.
+    """
+    try:
+        import statsmodels.formula.api as smf
+        from statsmodels.stats.anova import anova_lm
+    except Exception as exc:  # pragma: no cover
+        raise ImportError("statsmodels is required for ANCOVA.") from exc
+
+    covariate_terms = " + ".join([c for c in covariates])
+    formula = f"{dv} ~ C({group})"
+    if covariate_terms:
+        formula += f" + {covariate_terms}"
+    model = smf.ols(formula, data=data).fit()
+    table = anova_lm(model, typ=typ)
+
+    group_term = f"C({group})"
+    row = table.loc[group_term] if group_term in table.index else table.loc[group]
+    stat = float(row.get("F", row.get("F Value", np.nan)))
+    pvalue = float(row.get("PR(>F)", row.get("Pr(>F)", np.nan)))
+    summary = table.reset_index().rename(columns={"index": "term"})
+    summary["formula"] = formula
+    return TestResult(statistic=stat, pvalue=pvalue, df=None, summary=summary)
+
+
+@dataclass
+class EquivalenceTestResult:
+    """Result for equivalence testing via TOST."""
+
+    mean_diff: float
+    se: float
+    df: float
+    delta: float
+    pvalue_lower: float
+    pvalue_upper: float
+    equivalent: bool
+    ci_low: float
+    ci_high: float
+
+
+def _welch_stats(sample1: np.ndarray, sample2: np.ndarray) -> Tuple[float, float, float]:
+    n1, n2 = sample1.size, sample2.size
+    v1 = np.var(sample1, ddof=1)
+    v2 = np.var(sample2, ddof=1)
+    se = np.sqrt(v1 / n1 + v2 / n2)
+    df = (v1 / n1 + v2 / n2) ** 2 / ((v1**2) / (n1**2 * (n1 - 1)) + (v2**2) / (n2**2 * (n2 - 1)))
+    return float(se), float(df), float(np.mean(sample1) - np.mean(sample2))
+
+
+def run_tost_equivalence(
+    sample1,
+    sample2,
+    delta: float,
+    *,
+    paired: bool = False,
+    alpha: float = 0.05,
+) -> EquivalenceTestResult:
+    """Two One-Sided Tests (TOST) for equivalence within +/- delta."""
+    s1 = np.asarray(sample1, dtype=float)
+    s2 = np.asarray(sample2, dtype=float)
+    if paired:
+        diff = s1 - s2
+        n = diff.size
+        mean_diff = float(np.mean(diff))
+        se = float(np.std(diff, ddof=1) / np.sqrt(n))
+        df = float(n - 1)
+    else:
+        se, df, mean_diff = _welch_stats(s1, s2)
+
+    t_low = (mean_diff + delta) / se
+    t_high = (mean_diff - delta) / se
+    p_low = 1 - stats.t.cdf(t_low, df)
+    p_high = stats.t.cdf(t_high, df)
+    equivalent = p_low < alpha and p_high < alpha
+    tcrit = stats.t.ppf(1 - alpha, df)
+    ci_low = mean_diff - tcrit * se
+    ci_high = mean_diff + tcrit * se
+    return EquivalenceTestResult(
+        mean_diff=mean_diff,
+        se=se,
+        df=df,
+        delta=float(delta),
+        pvalue_lower=float(p_low),
+        pvalue_upper=float(p_high),
+        equivalent=equivalent,
+        ci_low=float(ci_low),
+        ci_high=float(ci_high),
+    )
+
+
+@dataclass
+class NoninferiorityResult:
+    """Result for noninferiority testing against a margin."""
+
+    mean_diff: float
+    se: float
+    df: float
+    margin: float
+    pvalue: float
+    noninferior: bool
+
+
+def run_noninferiority(
+    sample1,
+    sample2,
+    margin: float,
+    *,
+    paired: bool = False,
+    alpha: float = 0.05,
+) -> NoninferiorityResult:
+    """Noninferiority test: mean difference > -margin."""
+    s1 = np.asarray(sample1, dtype=float)
+    s2 = np.asarray(sample2, dtype=float)
+    if paired:
+        diff = s1 - s2
+        n = diff.size
+        mean_diff = float(np.mean(diff))
+        se = float(np.std(diff, ddof=1) / np.sqrt(n))
+        df = float(n - 1)
+    else:
+        se, df, mean_diff = _welch_stats(s1, s2)
+
+    t_stat = (mean_diff + margin) / se
+    pvalue = 1 - stats.t.cdf(t_stat, df)
+    noninferior = pvalue < alpha
+    return NoninferiorityResult(
+        mean_diff=mean_diff,
+        se=se,
+        df=df,
+        margin=float(margin),
+        pvalue=float(pvalue),
+        noninferior=noninferior,
+    )
+
+
+def group_sequential_boundaries(
+    n_looks: int,
+    alpha: float = 0.05,
+    *,
+    method: str = "obrien_fleming",
+    two_sided: bool = True,
+) -> np.ndarray:
+    """Compute approximate group sequential boundaries for z-tests."""
+    if n_looks < 1:
+        raise ValueError("n_looks must be >= 1.")
+    z_alpha = stats.norm.ppf(1 - alpha / (2 if two_sided else 1))
+    boundaries = []
+    for look in range(1, n_looks + 1):
+        t = look / n_looks
+        if method == "obrien_fleming":
+            alpha_i = 2 * (1 - stats.norm.cdf(z_alpha / np.sqrt(t))) if two_sided else 1 - stats.norm.cdf(z_alpha / np.sqrt(t))
+        elif method == "pocock":
+            alpha_i = alpha / n_looks
+        else:
+            raise ValueError(f"Unknown method {method}.")
+        z_i = stats.norm.ppf(1 - alpha_i / (2 if two_sided else 1))
+        boundaries.append(z_i)
+    return np.asarray(boundaries, dtype=float)
+
+
+def check_group_sequential(
+    z_values: Sequence[float],
+    boundaries: Sequence[float],
+) -> dict:
+    """Check sequential z-statistics against boundaries and report first crossing."""
+    z_vals = np.asarray(z_values, dtype=float)
+    bounds = np.asarray(boundaries, dtype=float)
+    n = min(len(z_vals), len(bounds))
+    crossed = np.abs(z_vals[:n]) >= bounds[:n]
+    first_idx = int(np.argmax(crossed)) if crossed.any() else -1
+    return {
+        "crossed": bool(crossed.any()),
+        "first_look": None if first_idx < 0 else int(first_idx + 1),
+        "z_at_crossing": None if first_idx < 0 else float(z_vals[first_idx]),
+    }
 
 def benjamini_hochberg(pvalues: Iterable[float], alpha: float = 0.05) -> pd.DataFrame:
     """Benjamini-Hochberg FDR correction for multiple hypothesis testing.

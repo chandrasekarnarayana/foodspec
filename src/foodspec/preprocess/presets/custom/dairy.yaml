@@ -1,0 +1,17 @@
+modality: raman
+description: "Dairy preset with robust baseline and SNV normalization"
+steps:
+  - op: baseline
+    method: als
+    lam: 1.0e6
+    p: 0.01
+  - op: smoothing
+    method: savgol
+    window_length: 9
+    polyorder: 3
+  - op: normalization
+    method: snv
+  - op: derivative
+    order: 1
+    window_length: 9
+    polyorder: 2

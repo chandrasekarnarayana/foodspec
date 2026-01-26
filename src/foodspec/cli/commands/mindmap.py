@@ -24,6 +24,7 @@ from foodspec.modeling.validation.quality import validate_dataset
 from foodspec.qc.dataset_qc import check_class_balance, diagnose_imbalance
 from foodspec.qc.engine import compute_health_scores, detect_outliers
 from foodspec.qc.policy import QCPolicy
+from foodspec.qc import control_charts as qc_charts
 from foodspec.trust.dataset_cards import DatasetCard, write_dataset_card
 from foodspec.trust.model_cards import ModelCard, write_model_card
 from foodspec.utils.run_artifacts import (
@@ -616,6 +617,119 @@ def preprocess_run(
         typer.echo(f"Runtime error: {exc}", err=True)
         raise typer.Exit(code=4)
 
+
+def _chart_result_to_dict(result: qc_charts.ControlChartResult) -> dict:
+    return {
+        "chart": result.chart,
+        "center": result.center,
+        "ucl": result.ucl,
+        "lcl": result.lcl,
+        "signals": result.signals,
+        "run_signals": result.run_signals,
+        "meta": result.meta,
+        "points": result.points.tolist(),
+    }
+
+
+@qc_app.command("control-chart")
+def qc_control_chart(
+    csv_path: Path = typer.Argument(..., help="CSV with measurements."),
+    value_col: str = typer.Option(..., "--value-col", help="Column with numeric values."),
+    chart: str = typer.Option("imr", "--chart", help="xbar_r|xbar_s|imr|cusum|ewma|levey|p|np|c|u"),
+    subgroup_size: int = typer.Option(5, "--subgroup-size", help="Subgroup size for xbar charts."),
+    defect_col: Optional[str] = typer.Option(None, "--defect-col", help="Defect count column for attribute charts."),
+    sample_size: Optional[int] = typer.Option(None, "--sample-size", help="Fixed sample size for NP chart."),
+    sample_size_col: Optional[str] = typer.Option(None, "--sample-size-col", help="Per-row sample size column."),
+    run_dir: Path = typer.Option(Path("runs/qc_control_chart"), help="Run output directory."),
+):
+    """Run control chart diagnostics on a CSV column."""
+    run_dir = init_run_dir(run_dir)
+    get_logger(run_dir)
+    write_manifest(
+        run_dir,
+        {
+            "command": "qc.control_chart",
+            "inputs": [csv_path],
+            "value_col": value_col,
+            "chart": chart,
+            "subgroup_size": subgroup_size,
+            "defect_col": defect_col,
+            "sample_size": sample_size,
+            "sample_size_col": sample_size_col,
+        },
+    )
+    try:
+        df = pd.read_csv(csv_path)
+        if value_col not in df.columns:
+            raise FoodSpecValidationError(f"value_col '{value_col}' not found in CSV.")
+        values = df[value_col].to_numpy(dtype=float)
+
+        chart_key = chart.lower()
+        payload: dict = {"chart": chart_key}
+        if chart_key == "xbar_r":
+            result = qc_charts.xbar_r_chart(values, subgroup_size=subgroup_size)
+            payload["xbar"] = _chart_result_to_dict(result.xbar)
+            payload["r"] = _chart_result_to_dict(result.variability)
+        elif chart_key == "xbar_s":
+            result = qc_charts.xbar_s_chart(values, subgroup_size=subgroup_size)
+            payload["xbar"] = _chart_result_to_dict(result.xbar)
+            payload["s"] = _chart_result_to_dict(result.variability)
+        elif chart_key == "imr":
+            result = qc_charts.individuals_mr_chart(values)
+            payload["individuals"] = _chart_result_to_dict(result.xbar)
+            payload["mr"] = _chart_result_to_dict(result.variability)
+        elif chart_key == "cusum":
+            result = qc_charts.cusum_chart(values)
+            payload["cusum"] = {"pos": result["pos"].tolist(), "neg": result["neg"].tolist(), "signals": result["signals"]}
+        elif chart_key == "ewma":
+            result = qc_charts.ewma_chart(values)
+            payload["ewma"] = {
+                "ewma": result["ewma"].tolist(),
+                "lcl": result["lcl"].tolist(),
+                "ucl": result["ucl"].tolist(),
+                "signals": result["signals"],
+            }
+        elif chart_key == "levey":
+            result = qc_charts.levey_jennings(values)
+            payload["levey_jennings"] = _chart_result_to_dict(result)
+        elif chart_key in {"p", "np", "c", "u"}:
+            if defect_col is None:
+                raise FoodSpecValidationError("--defect-col is required for attribute charts.")
+            if defect_col not in df.columns:
+                raise FoodSpecValidationError(f"defect_col '{defect_col}' not found in CSV.")
+            defects = df[defect_col].to_numpy(dtype=float)
+            if chart_key == "p":
+                if sample_size_col is None:
+                    raise FoodSpecValidationError("--sample-size-col is required for p chart.")
+                sample_sizes = df[sample_size_col].to_numpy(dtype=float)
+                result = qc_charts.p_chart(defects, sample_sizes)
+            elif chart_key == "np":
+                if sample_size is None:
+                    raise FoodSpecValidationError("--sample-size is required for np chart.")
+                result = qc_charts.np_chart(defects, sample_size=sample_size)
+            elif chart_key == "c":
+                result = qc_charts.c_chart(defects)
+            else:
+                if sample_size_col is None:
+                    raise FoodSpecValidationError("--sample-size-col is required for u chart.")
+                sample_sizes = df[sample_size_col].to_numpy(dtype=float)
+                result = qc_charts.u_chart(defects, sample_sizes)
+            payload["attribute"] = _chart_result_to_dict(result)
+        else:
+            raise FoodSpecValidationError(f"Unknown chart type '{chart}'.")
+
+        output_path = run_dir / "qc" / "control_charts.json"
+        safe_json_dump(output_path, payload)
+        _write_status(run_dir, "success", {"qc_control_chart": str(output_path)})
+        typer.echo("Control chart QC complete.")
+    except FoodSpecValidationError as exc:
+        _write_status(run_dir, "fail", {"error": str(exc)})
+        typer.echo(f"Validation error: {exc}", err=True)
+        raise typer.Exit(code=2)
+    except Exception as exc:
+        _write_status(run_dir, "fail", {"error": str(exc)})
+        typer.echo(f"Runtime error: {exc}", err=True)
+        raise typer.Exit(code=4)
 
 @features_app.command("extract")
 def features_extract(

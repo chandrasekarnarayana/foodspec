@@ -22,6 +22,7 @@ from foodspec.preprocess.spectroscopy_operators import (
     InterpolationOperator,
     MSCOperator,
 )
+from foodspec.preprocess.smoothing import WaveletDenoiser
 from foodspec.preprocess.loaders import (
     build_pipeline_from_recipe,
     list_operators,
@@ -67,6 +68,7 @@ __all__ = [
     "MSCOperator",
     "AtmosphericCorrectionOperator",
     "InterpolationOperator",
+    "WaveletDenoiser",
     # Recipe loading
     "load_preset_yaml",
     "build_pipeline_from_recipe",

@@ -90,6 +90,25 @@ class RunResult:
 
 
 @dataclass
+class BatchRunResult:
+    """Result bundle for batch execution."""
+
+    results: List[RunResult]
+    status: str
+    success_count: int
+    failure_count: int
+    summary_path: Optional[Path] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "status": self.status,
+            "success_count": self.success_count,
+            "failure_count": self.failure_count,
+            "summary_path": str(self.summary_path) if self.summary_path else None,
+            "results": [r.to_dict() for r in self.results],
+        }
+
+@dataclass
 class ExperimentConfig:
     """Configuration for an orchestrated experiment run."""
 
@@ -325,6 +344,90 @@ class Experiment:
                 duration_seconds=duration,
                 error=str(e),
             )
+
+    def run_batch(
+        self,
+        csv_paths: List[Union[str, Path]],
+        outdir: Union[str, Path],
+        *,
+        parallel: bool = False,
+        max_workers: Optional[int] = None,
+        continue_on_error: bool = True,
+        seed: Optional[int] = None,
+    ) -> BatchRunResult:
+        """Execute multiple runs as a batch.
+
+        Parameters
+        ----------
+        csv_paths : List[Union[str, Path]]
+            List of CSV file paths to process.
+        outdir : Union[str, Path]
+            Base output directory where per-run subfolders are created.
+        parallel : bool, default False
+            Whether to run in parallel (threaded).
+        max_workers : int | None
+            Maximum parallel workers (threads). Uses default if None.
+        continue_on_error : bool, default True
+            Continue remaining runs if a run fails.
+        seed : int | None
+            Optional base seed; if provided, run seeds are offset by index.
+
+        Returns
+        -------
+        BatchRunResult
+            Summary of batch execution and per-run results.
+        """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        base_outdir = Path(outdir)
+        base_outdir.mkdir(parents=True, exist_ok=True)
+
+        def _make_run_dir(path: Path, index: int) -> Path:
+            stem = path.stem or f"run_{index}"
+            candidate = base_outdir / f"{stem}_{index:03d}"
+            if not candidate.exists():
+                return candidate
+            suffix = 1
+            while (base_outdir / f"{stem}_{index:03d}_{suffix}").exists():
+                suffix += 1
+            return base_outdir / f"{stem}_{index:03d}_{suffix}"
+
+        def _run_one(idx: int, path: Union[str, Path]) -> RunResult:
+            run_seed = None
+            if seed is not None:
+                run_seed = int(seed) + idx
+            return self.run(csv_path=path, outdir=_make_run_dir(Path(path), idx), seed=run_seed)
+
+        results: List[RunResult] = []
+        if parallel and len(csv_paths) > 1:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = {executor.submit(_run_one, idx, path): idx for idx, path in enumerate(csv_paths)}
+                for future in as_completed(futures):
+                    result = future.result()
+                    results.append(result)
+                    if result.status != "success" and not continue_on_error:
+                        break
+        else:
+            for idx, path in enumerate(csv_paths):
+                result = _run_one(idx, path)
+                results.append(result)
+                if result.status != "success" and not continue_on_error:
+                    break
+
+        success_count = sum(1 for r in results if r.status == "success")
+        failure_count = len(results) - success_count
+        status = "success" if failure_count == 0 else ("partial" if success_count > 0 else "failed")
+
+        summary = BatchRunResult(
+            results=results,
+            status=status,
+            success_count=success_count,
+            failure_count=failure_count,
+        )
+        summary_path = base_outdir / "batch_summary.json"
+        safe_json_dump(summary_path, summary.to_dict())
+        summary.summary_path = summary_path
+        return summary
 
     def _validate_inputs(self, csv_path: Path, run_dir: Path) -> RunResult:
         """Validate input data and schema.

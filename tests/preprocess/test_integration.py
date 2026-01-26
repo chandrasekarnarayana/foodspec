@@ -241,6 +241,13 @@ class TestErrorHandling:
         with pytest.raises(ValueError, match="Unknown preset"):
             load_preset_yaml("nonexistent_preset")
 
+    def test_food_specific_presets_load(self):
+        """Test that food-specific presets load correctly."""
+        for name in ["dairy", "meat", "fruit", "grain"]:
+            preset = load_preset_yaml(name)
+            assert "steps" in preset
+            assert len(preset["steps"]) > 0
+
     def test_unknown_operator_skips_gracefully(self, synthetic_raman_data):
         """Test that unknown operator is skipped."""
         recipe = {

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -18,6 +19,8 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 from foodspec.chemometrics.models import make_classifier, make_pls_da
 from foodspec.core.errors import FoodSpecValidationError
+from foodspec.modeling.diagnostics.roc import compute_roc_diagnostics
+from foodspec.modeling.diagnostics.artifacts import save_roc_artifacts
 from foodspec.modeling.validation.metrics import (
     bootstrap_classification_ci,
     classification_metrics_bundle,
@@ -51,6 +54,8 @@ class FitPredictResult:
     best_params: Dict[str, Any] = field(default_factory=dict)
     outcome_type: OutcomeType = OutcomeType.CLASSIFICATION
     diagnostics: Dict[str, Any] = field(default_factory=dict)
+    roc_diagnostics: Optional[Any] = None  # RocDiagnosticsResult if computed
+    roc_artifacts: Dict[str, str] = field(default_factory=dict)  # Saved artifact paths
 
 
 def _normalize_model_name(model_name: str) -> str:
@@ -178,7 +183,15 @@ def _generate_splits(
             )
             return list(splitter.split(X, y))
 
-    if scheme in {"lobo", "loso", "leave_one_group_out", "leave_one_batch_out", "leave_one_stage_out"}:
+    if scheme in {
+        "lobo",
+        "loso",
+        "lolo",
+        "leave_one_group_out",
+        "leave_one_batch_out",
+        "leave_one_stage_out",
+        "leave_one_lab_out",
+    }:
         if groups is None:
             raise FoodSpecValidationError("Group column required for LOBO/LOSO schemes.")
         if len(np.unique(groups)) < 2:
@@ -231,7 +244,15 @@ def _generate_regression_splits(
             raise FoodSpecValidationError("Random CV is blocked; pass allow_random_cv=True to override.")
         return _kfold_splits()
 
-    if scheme in {"lobo", "loso", "leave_one_group_out", "leave_one_batch_out", "leave_one_stage_out"}:
+    if scheme in {
+        "lobo",
+        "loso",
+        "lolo",
+        "leave_one_group_out",
+        "leave_one_batch_out",
+        "leave_one_stage_out",
+        "leave_one_lab_out",
+    }:
         if groups is None:
             raise FoodSpecValidationError("Group column required for LOBO/LOSO schemes.")
         if len(np.unique(groups)) < 2:
@@ -390,8 +411,50 @@ def fit_predict(
     param_grid: Optional[Dict[str, Iterable[Any]]] = None,
     outcome_type: OutcomeType | str = OutcomeType.CLASSIFICATION,
     embedding: Optional[Dict[str, Any]] = None,
+    compute_roc: bool = True,
+    roc_output_dir: Optional[str] = None,
+    roc_n_bootstrap: int = 1000,
 ) -> FitPredictResult:
-    """Fit a model and run validation according to the selected scheme."""
+    """Fit a model and run validation according to the selected scheme.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Feature matrix of shape (n_samples, n_features)
+    y : np.ndarray
+        Target array of shape (n_samples,)
+    model_name : str
+        Name of the model to fit
+    scheme : str, default="nested"
+        Cross-validation scheme: "nested", "kfold", "loso", "lobo"
+    groups : Optional[np.ndarray], default=None
+        Group labels for group-based CV
+    outer_splits : int, default=5
+        Number of outer CV folds
+    inner_splits : int, default=3
+        Number of inner CV folds (for nested CV)
+    seed : int, default=0
+        Random seed for reproducibility
+    allow_random_cv : bool, default=False
+        Whether to allow randomized grid search
+    param_grid : Optional[Dict[str, Iterable[Any]]], default=None
+        Hyperparameter grid for GridSearchCV
+    outcome_type : OutcomeType | str, default=OutcomeType.CLASSIFICATION
+        Type of outcome: "classification", "regression", "count"
+    embedding : Optional[Dict[str, Any]], default=None
+        Embedding configuration
+    compute_roc : bool, default=True
+        Whether to compute ROC/AUC diagnostics (classification only)
+    roc_output_dir : Optional[str], default=None
+        Directory to save ROC artifacts (CSV, JSON, PNG). If None, no artifacts saved.
+    roc_n_bootstrap : int, default=1000
+        Number of bootstrap samples for ROC CI calculation
+
+    Returns
+    -------
+    FitPredictResult
+        Result object containing predictions, metrics, ROC diagnostics, and artifacts
+    """
 
     X = np.asarray(X, dtype=float)
     y = np.asarray(y)
@@ -515,6 +578,37 @@ def fit_predict(
             seed=seed,
         )
 
+        # --- ROC/AUC computation and artifact saving ---
+        roc_diagnostics = None
+        roc_artifacts = {}
+        if compute_roc and y_proba_all_arr is not None:
+            try:
+                roc_diagnostics = compute_roc_diagnostics(
+                    y_true_all_arr,
+                    y_proba_all_arr,
+                    n_bootstrap=roc_n_bootstrap,
+                    random_seed=seed,
+                )
+                # Save ROC artifacts if output directory provided
+                if roc_output_dir:
+                    output_path = Path(roc_output_dir)
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    roc_artifacts = save_roc_artifacts(
+                        output_dir=output_path,
+                        roc_result=roc_diagnostics,
+                        y_true=y_true_all_arr,
+                        y_proba=y_proba_all_arr,
+                        classes=list(label_encoder.classes_),
+                    )
+            except Exception as e:
+                import warnings
+                warnings.warn(
+                    f"ROC diagnostics computation failed: {str(e)}. "
+                    "Continuing without ROC artifacts.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+
         X_fit = X
         if embed_builder is not None:
             embed_final = embed_builder()
@@ -534,6 +628,16 @@ def fit_predict(
         if final_params:
             best_params = final_params
 
+        diagnostics: Dict[str, Any] = {"embedding": embed_info} if embed_info else {}
+        if group_all_arr is not None:
+            diagnostics["metrics_by_group"] = metrics_by_group(
+                y_true_all_arr,
+                y_pred_all_arr,
+                y_proba_all_arr,
+                group_all_arr,
+                class_labels=list(label_encoder.classes_),
+            )
+
         return FitPredictResult(
             model=final_model,
             folds=folds,
@@ -548,7 +652,9 @@ def fit_predict(
             classes=list(label_encoder.classes_),
             best_params=best_params,
             outcome_type=outcome_enum,
-            diagnostics={"embedding": embed_info} if embed_info else {},
+            diagnostics=diagnostics,
+            roc_diagnostics=roc_diagnostics,
+            roc_artifacts=roc_artifacts,
         )
 
     # --- Regression / count path -------------------------------------------
@@ -694,4 +800,87 @@ def metrics_by_group(
     return results
 
 
-__all__ = ["FitPredictResult", "fit_predict", "metrics_by_group"]
+def compute_roc_for_result(
+    result: FitPredictResult,
+    *,
+    n_bootstrap: int = 1000,
+    confidence_level: float = 0.95,
+    random_seed: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Compute ROC/AUC diagnostics for a FitPredictResult object.
+
+    Provides a convenient wrapper to compute ROC curves and confidence intervals
+    directly from a FitPredictResult, useful for adding rigorous model evaluation
+    after fit_predict() completes.
+
+    Parameters
+    ----------
+    result : FitPredictResult
+        Result object from fit_predict().
+    n_bootstrap : int
+        Number of bootstrap replicates for AUC CI (default: 1000).
+    confidence_level : float
+        Confidence level for CI (default: 0.95 for 95% CI).
+    random_seed : int, optional
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    dict
+        Dictionary with 'roc_result' (RocDiagnosticsResult) and metadata.
+
+    Raises
+    ------
+    ValueError
+        If y_proba is not available in result.
+
+    Examples
+    --------
+    Compute ROC diagnostics after model training::
+
+        from foodspec.modeling import fit_predict, compute_roc_for_result
+
+        # Train model
+        result = fit_predict(
+            X_train, y_train,
+            model_name="logreg",
+            strategy="nested_cv",
+            n_folds_outer=5,
+        )
+
+        # Compute ROC/AUC diagnostics
+        roc_diag = compute_roc_for_result(result, random_seed=42)
+        print(f"AUC: {roc_diag['roc_result'].per_class[1].auc:.3f}")
+        print(f"95% CI: {roc_diag['roc_result'].per_class[1].ci_lower:.3f} - "
+              f"{roc_diag['roc_result'].per_class[1].ci_upper:.3f}")
+    """
+    from foodspec.modeling.diagnostics import compute_roc_diagnostics
+
+    if result.y_proba is None:
+        raise ValueError("y_proba not available in result; cannot compute ROC diagnostics")
+
+    # Auto-detect task
+    n_classes = len(result.classes) if result.classes else len(np.unique(result.y_true))
+    task = "binary" if n_classes == 2 else "multiclass" if n_classes > 2 else "binary"
+
+    roc_result = compute_roc_diagnostics(
+        result.y_true,
+        result.y_proba,
+        task=task,
+        n_bootstrap=n_bootstrap,
+        confidence_level=confidence_level,
+        random_seed=random_seed,
+    )
+
+    return {
+        "roc_result": roc_result,
+        "metadata": {
+            "n_samples": len(result.y_true),
+            "n_classes": n_classes,
+            "n_bootstrap": n_bootstrap,
+            "random_seed": random_seed,
+        },
+    }
+
+
+__all__ = ["FitPredictResult", "fit_predict", "metrics_by_group", "compute_roc_for_result"]

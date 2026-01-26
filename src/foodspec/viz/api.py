@@ -16,6 +16,11 @@ from foodspec.viz.style import apply_style
 from foodspec.viz import drift as drift_viz
 from foodspec.viz import interpretability as interp_viz
 from foodspec.viz import provenance as prov_viz
+from foodspec.viz import control_charts as qc_viz
+from foodspec.qc import control_charts as qc_stats
+from foodspec.stats.clustering import hierarchical_cluster
+from foodspec.viz.clustering import plot_dendrogram as _plot_dendrogram
+from foodspec.viz.distribution import plot_probability_plot as _plot_probability_plot
 from foodspec.viz.embeddings import plot_pca_scatter as _plot_pca_scatter
 from foodspec.viz.embeddings import plot_umap_scatter as _plot_umap_scatter
 from foodspec.viz.classification import plot_reliability_diagram as _plot_reliability_diagram
@@ -945,6 +950,366 @@ def plot_abstention_distribution(
     return fig
 
 
+def plot_xbar_r_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    subgroup_size = int(payload.get("subgroup_size", 5))
+    if values.size == 0:
+        values = _rng(seed).normal(loc=0.0, scale=1.0, size=subgroup_size * 8)
+    result = qc_stats.xbar_r_chart(values, subgroup_size=subgroup_size)
+    fig = qc_viz.plot_control_chart_group(result, title="X-bar / R")
+    base = _figure_base(outdir, name or "xbar_r_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "X-bar and R control chart",
+                "inputs": {"subgroup_size": subgroup_size},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_xbar_s_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    subgroup_size = int(payload.get("subgroup_size", 5))
+    if values.size == 0:
+        values = _rng(seed).normal(loc=0.0, scale=1.0, size=subgroup_size * 8)
+    result = qc_stats.xbar_s_chart(values, subgroup_size=subgroup_size)
+    fig = qc_viz.plot_control_chart_group(result, title="X-bar / S")
+    base = _figure_base(outdir, name or "xbar_s_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "X-bar and S control chart",
+                "inputs": {"subgroup_size": subgroup_size},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_individuals_mr_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    if values.size == 0:
+        values = _rng(seed).normal(loc=0.0, scale=1.0, size=40)
+    result = qc_stats.individuals_mr_chart(values)
+    fig = qc_viz.plot_control_chart_group(result, title="Individuals / MR")
+    base = _figure_base(outdir, name or "individuals_mr_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "Individuals and moving range chart",
+                "inputs": {"n_points": len(values)},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_cusum_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    if values.size == 0:
+        values = _rng(seed).normal(size=50)
+    k = float(payload.get("k", 0.5))
+    h = float(payload.get("h", 5.0))
+    result = qc_stats.cusum_chart(values, k=k, h=h)
+    fig = qc_viz.plot_cusum(result["pos"], result["neg"], result["h"], title="CUSUM")
+    base = _figure_base(outdir, name or "cusum_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "CUSUM chart",
+                "inputs": {"n_points": len(values), "k": k, "h": h},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_ewma_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    if values.size == 0:
+        values = _rng(seed).normal(size=50)
+    lam = float(payload.get("lam", 0.2))
+    l_val = float(payload.get("l", 3.0))
+    result = qc_stats.ewma_chart(values, lam=lam, l=l_val)
+    fig = qc_viz.plot_ewma(result["ewma"], result["lcl"], result["ucl"], title="EWMA")
+    base = _figure_base(outdir, name or "ewma_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "EWMA chart",
+                "inputs": {"n_points": len(values), "lam": lam, "l": l_val},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_levey_jennings_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    if values.size == 0:
+        values = _rng(seed).normal(size=50)
+    result = qc_stats.levey_jennings(values)
+    fig = qc_viz.plot_control_chart(result, title="Levey-Jennings")
+    base = _figure_base(outdir, name or "levey_jennings_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "Levey-Jennings chart",
+                "inputs": {"n_points": len(values)},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_probability_plot(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    if values.size == 0:
+        values = _rng(seed).normal(size=60)
+    dist = str(payload.get("dist", "normal"))
+    fig = _plot_probability_plot(values, dist=dist, title=f"{dist.title()} Probability Plot")
+    base = _figure_base(outdir, name or "probability_plot")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "Probability plot",
+                "inputs": {"n_points": len(values), "dist": dist},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(data_bundle if isinstance(data_bundle, RunBundle) else None),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_dendrogram(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    bundle = data_bundle if isinstance(data_bundle, RunBundle) else None
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    X = np.asarray(payload.get("X", []), dtype=float)
+    if X.size == 0:
+        X = _extract_features(bundle, seed)
+    result = hierarchical_cluster(X, n_clusters=2)
+    if result.linkage_matrix is None:
+        raise ValueError("Linkage matrix unavailable (scipy required).")
+    fig = _plot_dendrogram(result.linkage_matrix, title="Hierarchical Dendrogram")
+    base = _figure_base(outdir, name or "dendrogram")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "Hierarchical clustering dendrogram",
+                "inputs": {"n_samples": X.shape[0]},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(bundle),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_pareto_chart(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    bundle = data_bundle if isinstance(data_bundle, RunBundle) else None
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    categories = payload.get("categories")
+    if categories is None:
+        categories = [f"type_{i%3}" for i in range(30)]
+    counts = qc_stats.pareto_counts(list(categories))
+    fig = qc_viz.plot_pareto(counts, title="Pareto Chart")
+    base = _figure_base(outdir, name or "pareto_chart")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "Pareto chart",
+                "inputs": {"n_items": len(categories)},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(bundle),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
+def plot_runs_analysis(
+    data_bundle: RunBundle | Mapping[str, Any],
+    *,
+    outdir: Path | None = None,
+    name: str | None = None,
+    fmt=("png", "svg"),
+    dpi: int = 300,
+    seed: int = 0,
+) -> plt.Figure:
+    payload: Dict[str, Any] = {}
+    bundle = data_bundle if isinstance(data_bundle, RunBundle) else None
+    if isinstance(data_bundle, Mapping):
+        payload.update(data_bundle)
+    values = np.asarray(payload.get("values", []), dtype=float)
+    if values.size == 0:
+        values = _rng(seed).normal(size=40)
+    fig = qc_viz.plot_runs(values, title="Runs Analysis")
+    base = _figure_base(outdir, name or "runs_analysis")
+    if base is not None:
+        save_figure(
+            fig,
+            base,
+            metadata={
+                "description": "Runs analysis plot",
+                "inputs": {"n_points": len(values)},
+                "code_version": __version__,
+                "seed": seed,
+                **_bundle_meta(bundle),
+            },
+            fmt=fmt,
+            dpi=dpi,
+        )
+    return fig
+
+
 __all__ = [
     "plot_raw_processed_overlay",
     "plot_spectra_heatmap",
@@ -969,4 +1334,14 @@ __all__ = [
     "plot_conformal_set_sizes",
     "plot_coverage_efficiency",
     "plot_abstention_distribution",
+    "plot_xbar_r_chart",
+    "plot_xbar_s_chart",
+    "plot_individuals_mr_chart",
+    "plot_cusum_chart",
+    "plot_ewma_chart",
+    "plot_levey_jennings_chart",
+    "plot_probability_plot",
+    "plot_dendrogram",
+    "plot_pareto_chart",
+    "plot_runs_analysis",
 ]

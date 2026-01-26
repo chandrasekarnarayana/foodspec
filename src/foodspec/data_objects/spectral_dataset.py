@@ -600,6 +600,29 @@ class HyperspectralDataset(SpectralDataset):
         meta = pd.DataFrame({"roi_pixels": [mask_bool.sum()]})
         return SpectralDataset(self.wavenumbers.copy(), avg, meta, self.instrument_meta.copy(), list(self.logs))
 
+    def unmix_mcr_als(
+        self,
+        n_components: int = 3,
+        max_iter: int = 100,
+        tol: float = 1e-5,
+        random_state: int = 0,
+    ) -> Dict[str, Any]:
+        """Unmix hyperspectral data using MCR-ALS."""
+        from foodspec.hyperspectral.unmixing import mcr_als
+
+        C, S, info = mcr_als(
+            self.spectra,
+            n_components=n_components,
+            max_iter=max_iter,
+            tol=tol,
+            random_state=random_state,
+        )
+        y, x = self.shape_xy
+        if y * x != C.shape[0]:
+            raise ValueError("shape_xy does not match spectra length.")
+        abundances = C.reshape((y, x, n_components))
+        return {"abundances": abundances, "components": S, "info": info}
+
     def save_hdf5(self, path: Union[str, Path]):
         """Save hyperspectral cube to HDF5, including ROI artifacts if present.
 

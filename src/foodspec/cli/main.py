@@ -163,9 +163,10 @@ app.command("aging")(analysis_app.registered_commands[5].callback)
 app.command("shelf-life")(analysis_app.registered_commands[6].callback)
 
 # Workflow
-app.command("run-exp")(workflow_app.registered_commands[0].callback)
-app.command("protocol-benchmarks")(workflow_app.registered_commands[1].callback)
-app.command("bench")(workflow_app.registered_commands[2].callback)
+app.command("workflow-run")(workflow_app.registered_commands[0].callback)
+app.command("run-exp")(workflow_app.registered_commands[1].callback)
+app.command("protocol-benchmarks")(workflow_app.registered_commands[2].callback)
+app.command("bench")(workflow_app.registered_commands[3].callback)
 
 # Utilities
 app.command("about")(utils_app.registered_commands[0].callback)

@@ -22,6 +22,7 @@ from .strategies import (
     leave_one_batch_out,
     leave_one_stage_out,
 )
+from .multilab import leave_one_lab_out, multilab_metrics
 
 __all__ = [
     "compute_classification_metrics",
@@ -37,6 +38,8 @@ __all__ = [
     "leave_one_group_out",
     "leave_one_batch_out",
     "leave_one_stage_out",
+    "leave_one_lab_out",
+    "multilab_metrics",
     "nested_cross_validate",
     "nested_cross_validate_custom",
     "nested_cross_validate_regression",

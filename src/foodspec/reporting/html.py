@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -40,7 +41,12 @@ class HtmlReportBuilder:
         card = build_experiment_card_from_bundle(self.bundle, mode=self.mode)
 
         _, missing = validate_artifacts(self.mode, self.bundle.available_artifacts)
-        sections = self._build_sections(mode_config.enabled_sections, embed_images, missing)
+        sections = self._build_sections(
+            mode_config.enabled_sections,
+            embed_images,
+            missing,
+            base_dir=reports_dir,
+        )
         html = self._render_html(sections, card)
         report_path.write_text(html, encoding="utf-8")
         return report_path
@@ -50,6 +56,8 @@ class HtmlReportBuilder:
         enabled_sections: List[str],
         embed_images: bool,
         missing_artifacts: List[str],
+        *,
+        base_dir: Path,
     ) -> Dict[str, str]:
         content: Dict[str, str] = {}
         if "summary" in enabled_sections:
@@ -87,7 +95,7 @@ class HtmlReportBuilder:
         if "limitations" in enabled_sections:
             content["limitations"] = "<p>Limitations and known risks are documented in the experiment card.</p>"
 
-        fig_html = self._render_figures(embed_images)
+        fig_html = self._render_figures(embed_images, base_dir)
         if fig_html:
             content["figures"] = fig_html
         return content
@@ -111,7 +119,7 @@ class HtmlReportBuilder:
             body_html += "<tr>" + "".join([f"<td>{row.get(h, '')}</td>" for h in headers]) + "</tr>"
         return f"<table class='metrics'><thead><tr>{header_html}</tr></thead><tbody>{body_html}</tbody></table>"
 
-    def _render_figures(self, embed_images: bool) -> str:
+    def _render_figures(self, embed_images: bool, base_dir: Path) -> str:
         if not self.bundle.figures:
             return ""
         cards = []
@@ -121,7 +129,8 @@ class HtmlReportBuilder:
             if embed_images:
                 src = _read_image_as_data_uri(fig_path)
             else:
-                src = "../" + str(fig_path.relative_to(self.bundle.run_dir)).replace("\\", "/")
+                rel = os.path.relpath(fig_path, base_dir)
+                src = str(rel).replace("\\", "/")
             cards.append(f"<div class='figure'><img src='{src}' alt='{fig_path.stem}'></div>")
         return "<div class='figures'>" + "".join(cards) + "</div>"
 

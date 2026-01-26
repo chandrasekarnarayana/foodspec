@@ -8,10 +8,11 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from sklearn.covariance import EmpiricalCovariance
+from sklearn.covariance import EmpiricalCovariance, EllipticEnvelope, MinCovDet
 from sklearn.decomposition import PCA
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
+from sklearn.svm import OneClassSVM
 
 from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
@@ -163,6 +164,8 @@ def detect_outliers(
     method: str = "robust_z",
     pca_components: int = 5,
     contamination: float = 0.1,
+    nu: float = 0.05,
+    gamma: str | float = "scale",
 ) -> OutlierResult:
     X = _ensure_2d(ds.x)
 
@@ -181,6 +184,14 @@ def detect_outliers(
         thr = np.percentile(dist, 95)
         labels = (dist > thr).astype(int)
         scores = dist
+    elif method == "mcd":
+        pca = PCA(n_components=min(pca_components, X.shape[1], X.shape[0] - 1))
+        Z = pca.fit_transform(X)
+        cov = MinCovDet(random_state=42).fit(Z)
+        dist = cov.mahalanobis(Z)
+        thr = np.percentile(dist, 95)
+        labels = (dist > thr).astype(int)
+        scores = dist
     elif method == "isolation_forest":
         clf = IsolationForest(contamination=contamination, random_state=42)
         preds = clf.fit_predict(X)
@@ -191,6 +202,18 @@ def detect_outliers(
         preds = lof.fit_predict(X)
         labels = (preds == -1).astype(int)
         scores = -lof.negative_outlier_factor_
+    elif method == "ocsvm":
+        clf = OneClassSVM(nu=nu, gamma=gamma)
+        preds = clf.fit_predict(X)
+        labels = (preds == -1).astype(int)
+        scores = -clf.score_samples(X)
+    elif method == "elliptic_envelope":
+        pca = PCA(n_components=min(pca_components, X.shape[1], X.shape[0] - 1))
+        Z = pca.fit_transform(X)
+        env = EllipticEnvelope(contamination=contamination, random_state=42).fit(Z)
+        preds = env.predict(Z)
+        labels = (preds == -1).astype(int)
+        scores = -env.decision_function(Z)
     else:
         raise ValueError(f"Unknown outlier method {method}")
 

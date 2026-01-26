@@ -5,7 +5,7 @@ import csv
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
@@ -25,13 +25,84 @@ def _load_csv(path: Path) -> List[Dict[str, Any]]:
         return list(reader)
 
 
-def _collect_figures(figures_dir: Path) -> List[Path]:
-    if not figures_dir.exists():
-        return []
+def _select_artifact_path(
+    artifacts: Dict[str, Any],
+    key: str,
+    candidates: Sequence[Path],
+) -> Path:
+    artifact_path = artifacts.get(key)
+    if artifact_path:
+        return Path(artifact_path)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
+
+def _load_trust_outputs(run_dir: Path, artifacts: Dict[str, Any]) -> Dict[str, Any]:
+    trust_payload: Dict[str, Any] = {}
+    trust_path = _select_artifact_path(
+        artifacts,
+        "trust_outputs",
+        [run_dir / "trust_outputs.json"],
+    )
+    if trust_path.exists():
+        trust_payload.update(_load_json(trust_path))
+
+    trust_dir = run_dir / "trust"
+    if trust_dir.exists():
+        for name in ("calibration", "conformal", "abstention", "coverage", "reliability", "readiness"):
+            path = trust_dir / f"{name}.json"
+            if path.exists():
+                data = _load_json(path)
+                if data:
+                    trust_payload[name] = data
+
+    drift_dir = run_dir / "drift"
+    if drift_dir.exists():
+        drift_data: Dict[str, Any] = {}
+        for name in ("batch_drift", "temporal_drift", "stage_differences", "replicate_similarity"):
+            path = drift_dir / f"{name}.json"
+            if path.exists():
+                data = _load_json(path)
+                if data:
+                    drift_data[name] = data
+        if drift_data:
+            trust_payload["drift"] = drift_data
+
+    qc_dir = run_dir / "qc"
+    qc_summary_path = qc_dir / "qc_summary.json"
+    if qc_summary_path.exists():
+        qc_data = _load_json(qc_summary_path)
+        if qc_data:
+            trust_payload["qc_summary"] = qc_data
+    qc_control_path = qc_dir / "control_charts.json"
+    if qc_control_path.exists():
+        qc_data = _load_json(qc_control_path)
+        if qc_data:
+            trust_payload["qc_control_charts"] = qc_data
+
+    return trust_payload
+
+
+def _collect_figures(run_dir: Path) -> List[Path]:
+    image_extensions = {".png", ".svg", ".pdf", ".jpg", ".jpeg"}
+    scan_dirs = [
+        run_dir / "figures",
+        run_dir / "plots" / "viz",
+        run_dir / "trust" / "plots",
+        run_dir / "drift" / "plots",
+        run_dir / "qc" / "plots",
+        run_dir / "plots",
+    ]
     results: List[Path] = []
-    for ext in ("*.png", "*.svg", "*.pdf"):
-        results.extend(sorted(figures_dir.rglob(ext)))
-    return results
+    for base_dir in scan_dirs:
+        if not base_dir.exists():
+            continue
+        for img_path in base_dir.rglob("*"):
+            if img_path.is_file() and img_path.suffix.lower() in image_extensions:
+                results.append(img_path)
+    return sorted(set(results))
 
 
 @dataclass
@@ -101,16 +172,27 @@ class RunBundle:
         run_summary = _load_json(run_dir / "run_summary.json")
 
         artifacts = run_summary.get("artifacts", {}) if isinstance(run_summary.get("artifacts"), dict) else {}
-        metrics_path = Path(artifacts.get("metrics", run_dir / "tables" / "metrics.csv"))
-        predictions_path = Path(artifacts.get("predictions", run_dir / "tables" / "predictions.csv"))
-        qc_path = Path(artifacts.get("qc_report", run_dir / "qc_report.json"))
-        trust_path = Path(artifacts.get("trust_outputs", run_dir / "trust_outputs.json"))
+        metrics_path = _select_artifact_path(
+            artifacts,
+            "metrics",
+            [run_dir / "tables" / "metrics.csv", run_dir / "metrics.csv"],
+        )
+        predictions_path = _select_artifact_path(
+            artifacts,
+            "predictions",
+            [run_dir / "tables" / "predictions.csv", run_dir / "predictions.csv"],
+        )
+        qc_path = _select_artifact_path(
+            artifacts,
+            "qc_report",
+            [run_dir / "qc_report.json", run_dir / "qc" / "qc_summary.json"],
+        )
 
         metrics = _load_csv(metrics_path)
         predictions = _load_csv(predictions_path)
         qc_report = _load_json(qc_path)
-        trust_outputs = _load_json(trust_path)
-        figures = _collect_figures(run_dir / "figures")
+        trust_outputs = _load_trust_outputs(run_dir, artifacts)
+        figures = _collect_figures(run_dir)
 
         return cls(
             run_dir=run_dir,

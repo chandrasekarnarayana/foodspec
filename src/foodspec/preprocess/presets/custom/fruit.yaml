@@ -1,0 +1,13 @@
+modality: raman
+description: "Fruit preset with conservative baseline and normalization"
+steps:
+  - op: baseline
+    method: als
+    lam: 5.0e5
+    p: 0.01
+  - op: smoothing
+    method: savgol
+    window_length: 7
+    polyorder: 3
+  - op: normalization
+    method: snv

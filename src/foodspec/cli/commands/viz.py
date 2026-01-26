@@ -36,6 +36,16 @@ PLOT_REGISTRY: Dict[str, callable] = {
     "conformal": viz_api.plot_conformal_set_sizes,
     "coverage_efficiency": viz_api.plot_coverage_efficiency,
     "abstention": viz_api.plot_abstention_distribution,
+    "xbar_r": viz_api.plot_xbar_r_chart,
+    "xbar_s": viz_api.plot_xbar_s_chart,
+    "individuals_mr": viz_api.plot_individuals_mr_chart,
+    "cusum": viz_api.plot_cusum_chart,
+    "ewma": viz_api.plot_ewma_chart,
+    "levey_jennings": viz_api.plot_levey_jennings_chart,
+    "probability_plot": viz_api.plot_probability_plot,
+    "dendrogram": viz_api.plot_dendrogram,
+    "pareto": viz_api.plot_pareto_chart,
+    "runs": viz_api.plot_runs_analysis,
 }
 
 

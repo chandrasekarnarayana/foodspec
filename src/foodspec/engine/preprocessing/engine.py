@@ -63,6 +63,31 @@ def _shift_array(sig: np.ndarray, shift: int) -> np.ndarray:
     return np.roll(sig, shift)
 
 
+def _piecewise_align(ref: np.ndarray, row: np.ndarray, segment_size: int, max_shift: int) -> tuple[np.ndarray, list[int]]:
+    n = row.shape[0]
+    aligned = row.copy()
+    shifts: list[int] = []
+    for start in range(0, n, segment_size):
+        end = min(n, start + segment_size)
+        ref_seg = ref[start:end]
+        row_seg = row[start:end]
+        shift = _xcorr_shift(ref_seg, row_seg, max_shift=max_shift)
+        aligned[start:end] = _shift_array(row_seg, shift)
+        shifts.append(shift)
+    return aligned, shifts
+
+
+def _linear_warp(ref: np.ndarray, row: np.ndarray) -> tuple[np.ndarray, int]:
+    ref_peak = int(np.argmax(ref))
+    row_peak = int(np.argmax(row))
+    if row_peak == 0:
+        return row.copy(), 0
+    scale = ref_peak / row_peak
+    idx = np.arange(row.shape[0], dtype=float)
+    src = idx / scale
+    warped = np.interp(idx, src, row, left=row[0], right=row[-1])
+    return warped, int(ref_peak - row_peak)
+
 # ----------------------------- Step base -----------------------------
 
 
@@ -184,6 +209,13 @@ class SmoothingStep(Step):
         elif method == "gaussian":
             sigma = params.get("sigma", 1.0)
             X_s = gaussian_filter1d(X, sigma=sigma, axis=1)
+        elif method == "wavelet":
+            from foodspec.preprocess.smoothing import WaveletDenoiser
+
+            wavelet = params.get("wavelet", "db4")
+            level = params.get("level")
+            mode = params.get("mode", "soft")
+            X_s = WaveletDenoiser(wavelet=wavelet, level=level, mode=mode).fit_transform(X)
         else:
             X_s = X
         return _clone_ds(ds, X_s)
@@ -275,6 +307,7 @@ class AlignmentStep(Step):
         method = self.config.get("method", "cow")
         max_shift = int(self.config.get("max_shift", 10))
         ref_strategy = self.config.get("reference", "median")
+        segment_size = int(self.config.get("segment_size", 64))
 
         X = _ensure_2d(ds.x)
         if ref_strategy == "first":
@@ -287,14 +320,23 @@ class AlignmentStep(Step):
         for i, row in enumerate(X):
             if method == "none":
                 shift = 0
+                aligned[i] = row
             elif method == "peak":
                 ref_peak = int(np.argmax(ref))
                 row_peak = int(np.argmax(row))
                 shift = int(np.clip(ref_peak - row_peak, -max_shift, max_shift))
+                aligned[i] = _shift_array(row, shift)
+            elif method == "linear_warp":
+                warped, shift = _linear_warp(ref, row)
+                aligned[i] = warped
+            elif method == "piecewise":
+                aligned_row, seg_shifts = _piecewise_align(ref, row, segment_size=segment_size, max_shift=max_shift)
+                aligned[i] = aligned_row
+                shift = int(np.median(seg_shifts)) if seg_shifts else 0
             else:  # default to cow-lite via cross-correlation shift
                 shift = _xcorr_shift(ref, row, max_shift=max_shift)
+                aligned[i] = _shift_array(row, shift)
             shifts.append(shift)
-            aligned[i] = _shift_array(row, shift)
 
         # Stash shifts for downstream metrics
         self.config["_last_shifts"] = shifts

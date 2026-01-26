@@ -264,6 +264,7 @@
       </div>
       <nav class="sidebar-nav">
         <li><a href="#summary">Summary</a></li>
+        {% if card %}<li><a href="#card">Experiment Card</a></li>{% endif %}
         {% if 'metrics' in enabled_sections %}<li><a href="#metrics">Metrics</a></li>{% endif %}
         {% if 'multivariate' in enabled_sections and multivariate %}<li><a href="#multivariate">Multivariate</a></li>{% endif %}
         {% if 'qc' in enabled_sections %}<li><a href="#qc">QC Results</a></li>{% endif %}
@@ -297,6 +298,43 @@
           </div>
         </div>
       </header>
+
+      {% if card %}
+      <section id="card">
+        <h2>Experiment Card</h2>
+        <div class="info-box">
+          <p><strong>Run ID:</strong> {{ card.run_id }}</p>
+          <p><strong>Task:</strong> {{ card.task }} | <strong>Modality:</strong> {{ card.modality }}</p>
+          <p><strong>Model:</strong> {{ card.model }} | <strong>Validation:</strong> {{ card.validation_scheme }}</p>
+        </div>
+        <h3 style="margin: 1rem 0 0.5rem;">Performance Snapshot</h3>
+        <ul>
+          {% if card.macro_f1 is not none %}<li>Macro F1: {{ "%.3f"|format(card.macro_f1) }}</li>{% endif %}
+          {% if card.auroc is not none %}<li>AUROC: {{ "%.3f"|format(card.auroc) }}</li>{% endif %}
+          {% if card.ece is not none %}<li>ECE: {{ "%.4f"|format(card.ece) }}</li>{% endif %}
+          {% if card.coverage is not none %}<li>Coverage: {{ "%.1f"|format(card.coverage * 100) }}%</li>{% endif %}
+          {% if card.abstain_rate is not none %}<li>Abstention: {{ "%.1f"|format(card.abstain_rate * 100) }}%</li>{% endif %}
+          {% if card.mean_set_size is not none %}<li>Mean Set Size: {{ "%.2f"|format(card.mean_set_size) }}</li>{% endif %}
+          {% if card.drift_score is not none %}<li>Drift Score: {{ "%.3f"|format(card.drift_score) }}</li>{% endif %}
+          {% if card.qc_pass_rate is not none %}<li>QC Pass Rate: {{ "%.1f"|format(card.qc_pass_rate * 100) }}%</li>{% endif %}
+        </ul>
+        <h3 style="margin: 1rem 0 0.5rem;">Confidence & Readiness</h3>
+        <p><strong>Confidence:</strong> {{ card.confidence_level | upper }} - {{ card.confidence_reasoning }}</p>
+        <p><strong>Readiness:</strong> {{ card.deployment_readiness | upper }} - {{ card.readiness_reasoning }}</p>
+        {% if card.key_risks %}
+        <h3 style="margin: 1rem 0 0.5rem;">Key Risks</h3>
+        <ul>
+          {% for risk in card.key_risks %}
+          <li>{{ risk }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% if card.auto_summary %}
+        <h3 style="margin: 1rem 0 0.5rem;">Auto Summary</h3>
+        <p>{{ card.auto_summary }}</p>
+        {% endif %}
+      </section>
+      {% endif %}
 
       <!-- Metrics Section -->
       {% if 'metrics' in enabled_sections and metrics %}
@@ -544,10 +582,10 @@
             {{ category }}
           </h3>
           <div class="figure-grid">
-            {% for img_path in image_paths %}
+            {% for fig in image_paths %}
             <div class="figure-item">
-              <img src="{{ img_path.name }}" alt="{{ category }}" loading="lazy" />
-              <div class="figure-caption">{{ img_path.stem }}</div>
+              <img src="{{ fig.path }}" alt="{{ category }}" loading="lazy" />
+              <div class="figure-caption">{{ fig.name }}</div>
             </div>
             {% endfor %}
           </div>

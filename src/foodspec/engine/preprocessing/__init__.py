@@ -16,6 +16,11 @@ from .engine import (
 )
 from .normalization import normalize_reference, normalize_vector
 from .smoothing import smooth_savgol
+from .harmonization import (
+    apply_direct_standardization,
+    apply_piecewise_direct_standardization,
+    apply_subspace_alignment,
+)
 
 __all__ = [
     "baseline_als",
@@ -24,6 +29,9 @@ __all__ = [
     "normalize_reference",
     "normalize_vector",
     "smooth_savgol",
+    "apply_direct_standardization",
+    "apply_piecewise_direct_standardization",
+    "apply_subspace_alignment",
     "AlignmentStep",
     "AutoPreprocess",
     "AutoPreprocessResult",

@@ -79,6 +79,13 @@ from foodspec.trust.coverage import (
 )
 from foodspec.trust.dataset_cards import DatasetCard, write_dataset_card
 from foodspec.trust.model_cards import ModelCard, write_model_card
+from foodspec.trust.decision_policy import (
+    DecisionPolicy,
+    OperatingPoint,
+    PolicyType,
+    choose_operating_point,
+    save_operating_point,
+)
 
 __all__ = [
     "MondrianConformalClassifier",
@@ -124,4 +131,9 @@ __all__ = [
     "DatasetCard",
     "write_model_card",
     "write_dataset_card",
+    "DecisionPolicy",
+    "OperatingPoint",
+    "PolicyType",
+    "choose_operating_point",
+    "save_operating_point",
 ]

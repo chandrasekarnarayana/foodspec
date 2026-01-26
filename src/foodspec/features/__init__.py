@@ -1,9 +1,15 @@
+from foodspec.features.alignment import (
+    CrossCorrelationAligner,
+    DynamicTimeWarpingAligner,
+    align_spectra,
+)
 from foodspec.features.bands import extract_band_features, integrate_bands
 from foodspec.features.confidence import add_confidence, decision_from_confidence
 from foodspec.features.fingerprint import (
     correlation_similarity_matrix,
     cosine_similarity_matrix,
 )
+from foodspec.features.unmixing import NNLSUnmixer, unmix_spectrum
 from foodspec.features.interpretation import (
     DEFAULT_CHEMICAL_LIBRARY,
     ChemicalMeaning,
@@ -36,6 +42,13 @@ from foodspec.features.selection import compute_minimal_panel, feature_importanc
 from foodspec.features.specs import FeatureEngine, FeatureSpec
 
 __all__ = [
+    # alignment & unmixing
+    "CrossCorrelationAligner",
+    "DynamicTimeWarpingAligner",
+    "align_spectra",
+    "NNLSUnmixer",
+    "unmix_spectrum",
+    # bands
     "integrate_bands",
     "extract_band_features",
     "compute_ratios",

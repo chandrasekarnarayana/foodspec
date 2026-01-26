@@ -1,0 +1,35 @@
+version: "2.0.0"
+name: "minimal_test_protocol"
+description: "Minimal test protocol for Phase 1 orchestrator testing"
+
+task:
+  type: "classification"
+  name: "multiclass_classification"
+
+expected_columns:
+  label_col: "label"
+  feature_cols: ["wavenumber_1", "wavenumber_2", "wavenumber_3", "wavenumber_4", "wavenumber_5"]
+
+preprocessing:
+  enabled: true
+  steps:
+    - name: "normalize"
+      params: {}
+
+features:
+  enabled: true
+  preset: "hybrid"
+
+modeling:
+  enabled: true
+  algorithm: "LogisticRegression"
+  validation_scheme: "random"
+  cv_folds: 3
+  random_seed: 42
+
+trust:
+  enabled: false
+
+reporting:
+  enabled: true
+  format: "html"
