@@ -18,6 +18,7 @@ from foodspec.logging_utils import get_logger, log_run_metadata
 from foodspec.repro.experiment import ExperimentConfig, ExperimentEngine
 from foodspec.workflow.config import WorkflowConfig
 from foodspec.workflow.phase1_orchestrator import run_workflow
+from foodspec.workflow.phase3_orchestrator import run_workflow_phase3
 
 logger = get_logger(__name__)
 
