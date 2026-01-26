@@ -10,7 +10,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.features.fingerprint import (
     correlation_similarity_matrix,
     cosine_similarity_matrix,

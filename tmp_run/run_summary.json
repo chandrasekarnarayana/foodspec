@@ -1,0 +1,4 @@
+{
+  "status": "fail",
+  "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'DataFrame'"
+}

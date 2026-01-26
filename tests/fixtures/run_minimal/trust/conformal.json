@@ -1,0 +1,13 @@
+{
+  "coverage_rate": 0.92,
+  "mean_set_size": 1.15,
+  "efficiency": 0.62,
+  "n_samples": 50,
+  "alpha": 0.1,
+  "method": "full_conformal",
+  "set_size_distribution": {
+    "1": 46,
+    "2": 4,
+    "3": 0
+  }
+}

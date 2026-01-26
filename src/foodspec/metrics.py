@@ -16,6 +16,8 @@ __all__ = [
     "compute_between_within_ratio",
     "compute_between_within_stats",
     "bootstrap_metric_ci",
+    "anova_oneway_features",
+    "manova_test",
 ]
 
 
@@ -277,3 +279,56 @@ def bootstrap_metric_ci(
     hi = float(np.quantile(dist, 1 - alpha / 2))
     observed = float(metric_fn(y_true, y_pred))
     return {"metric": observed, "ci_low": lo, "ci_high": hi, "samples": dist}
+
+
+def anova_oneway_features(X: np.ndarray, labels: np.ndarray) -> Dict[str, np.ndarray]:
+    """One-way ANOVA per feature (assumes independent samples and normality).
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Feature matrix (n_samples, n_features).
+    labels : np.ndarray
+        Group labels (n_samples,).
+
+    Returns
+    -------
+    dict
+        ``{"f_stat": np.ndarray, "p_value": np.ndarray}`` for each feature.
+    """
+    try:
+        from scipy.stats import f_oneway
+    except Exception as exc:  # pragma: no cover
+        raise ImportError("scipy is required for ANOVA") from exc
+
+    X = np.asarray(X, dtype=float)
+    labels = np.asarray(labels)
+    unique = np.unique(labels)
+    f_stats = []
+    p_values = []
+    for col in range(X.shape[1]):
+        groups = [X[labels == g, col] for g in unique]
+        stat, p = f_oneway(*groups)
+        f_stats.append(stat)
+        p_values.append(p)
+    return {"f_stat": np.asarray(f_stats), "p_value": np.asarray(p_values)}
+
+
+def manova_test(X: np.ndarray, labels: np.ndarray) -> str:
+    """MANOVA summary (assumes multivariate normality and equal covariance).
+
+    Returns the statsmodels summary string for reporting.
+    """
+    try:
+        from statsmodels.multivariate.manova import MANOVA
+    except Exception as exc:  # pragma: no cover
+        raise ImportError("statsmodels is required for MANOVA") from exc
+
+    import pandas as pd
+
+    X = np.asarray(X, dtype=float)
+    labels = np.asarray(labels)
+    df = pd.DataFrame(X, columns=[f"f{i}" for i in range(X.shape[1])])
+    df["group"] = labels
+    formula = " + ".join([f"f{i}" for i in range(X.shape[1])]) + " ~ group"
+    return str(MANOVA.from_formula(formula, data=df).mv_test())

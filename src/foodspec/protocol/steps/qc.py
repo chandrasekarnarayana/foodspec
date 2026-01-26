@@ -38,7 +38,7 @@ class QCStep(Step):
         ValueError
             If critical QC errors are detected.
         """
-        from foodspec.validation import validate_dataset
+        from foodspec.modeling.validation.quality import validate_dataset
 
         df = ctx.get("data")
         required = self.cfg.get("required_columns", [])

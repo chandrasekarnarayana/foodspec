@@ -1,0 +1,25 @@
+# Oil authentication-specific preset (Raman)
+# Optimized for edible oil authentication using Raman spectroscopy
+modality: raman
+description: "Optimized for edible oil authentication: aggressive despiking, polynomial fluorescence, SNV normalization"
+steps:
+  - op: despike
+    window: 5
+    threshold: 4.5
+  - op: fluorescence_removal
+    method: poly
+    poly_order: 3
+  - op: baseline
+    method: als
+    lam: 5.0e5
+    p: 0.001
+  - op: smoothing
+    method: savgol
+    window_length: 11
+    polyorder: 3
+  - op: normalization
+    method: snv
+  - op: derivative
+    order: 1
+    window_length: 9
+    polyorder: 2

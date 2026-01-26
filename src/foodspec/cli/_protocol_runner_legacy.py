@@ -27,7 +27,7 @@ from typing import List
 
 import pandas as pd
 
-from foodspec.core.spectral_dataset import HyperspectralDataset, SpectralDataset
+from foodspec.data_objects.spectral_dataset import HyperspectralDataset, SpectralDataset
 from foodspec.logging_utils import setup_logging
 from foodspec.protocol import ProtocolRunner, load_protocol, validate_protocol
 

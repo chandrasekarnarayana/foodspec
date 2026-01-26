@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from foodspec.apps.oils import run_oil_authentication_workflow
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 __all__ = ["DairyAnalysisResult", "run_dairy_authentication_workflow"]
 

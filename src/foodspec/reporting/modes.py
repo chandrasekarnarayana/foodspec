@@ -48,6 +48,7 @@ _MODE_CONFIGS: Dict[ReportMode, ModeConfig] = {
             "dataset",
             "methods",
             "metrics",
+            "multivariate",
             "uncertainty",
             "limitations",
         ],
@@ -70,7 +71,9 @@ _MODE_CONFIGS: Dict[ReportMode, ModeConfig] = {
             "methods",
             "qc",
             "metrics",
+            "multivariate",
             "uncertainty",
+            "readiness",
         ],
         required_artifacts=["manifest", "metrics", "qc", "protocol_snapshot", "data_fingerprint"],
         default_plots=[

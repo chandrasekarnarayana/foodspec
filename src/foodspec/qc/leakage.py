@@ -34,7 +34,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 
 def detect_batch_label_correlation(

@@ -11,8 +11,9 @@ import os
 from pathlib import Path
 from typing import Any
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.io import csv_import
+from foodspec.io.validators import validate_spectrum_schema
 from foodspec.io.text_formats import read_csv_folder, read_jcamp
 from foodspec.io.vendor_formats import read_opus, read_spc
 
@@ -70,7 +71,9 @@ def _to_spectrum_set_from_df(df) -> FoodSpectrumSet:
     wavenumbers = df.iloc[:, 0].to_numpy(dtype=float)
     spectra = df.iloc[:, 1:].to_numpy(dtype=float).T  # samples x wn
     metadata = csv_import.pd.DataFrame({"sample_id": df.columns[1:]})
-    return FoodSpectrumSet(x=spectra, wavenumbers=wavenumbers, metadata=metadata, modality="raman")
+    fs = FoodSpectrumSet(x=spectra, wavenumbers=wavenumbers, metadata=metadata, modality="raman")
+    validate_spectrum_schema(fs)
+    return fs
 
 
 def read_spectra(path: str | os.PathLike, format: str | None = None, **kwargs: Any) -> FoodSpectrumSet:
@@ -92,15 +95,22 @@ def read_spectra(path: str | os.PathLike, format: str | None = None, **kwargs: A
     fmt = format or detect_format(path)
     if fmt == "csv":
         # delegate to existing CSV import utility
-        return csv_import.load_csv_spectra(path, format="wide")
+        fs = csv_import.load_csv_spectra(path, format="wide")
+        validate_spectrum_schema(fs)
+        return fs
     if fmt == "folder_csv":
         df = read_csv_folder(path, **kwargs)
         return _to_spectrum_set_from_df(df)
     if fmt == "jcamp":
         fs = read_jcamp(path, **kwargs)
+        validate_spectrum_schema(fs)
         return fs
     if fmt == "spc":
-        return read_spc(path, **kwargs)
+        fs = read_spc(path, **kwargs)
+        validate_spectrum_schema(fs)
+        return fs
     if fmt == "opus":
-        return read_opus(path, **kwargs)
+        fs = read_opus(path, **kwargs)
+        validate_spectrum_schema(fs)
+        return fs
     raise ValueError(f"Unsupported or unknown format for path: {path}")

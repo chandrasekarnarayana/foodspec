@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from foodspec.preprocess.engine import PreprocessPipeline, Step
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.engine.preprocessing.engine import PreprocessPipeline, Step
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 
 def run_preprocessing_pipeline(ds: FoodSpectrumSet, steps: Sequence[Step]) -> FoodSpectrumSet:
@@ -23,4 +23,3 @@ def run_preprocessing_pipeline(ds: FoodSpectrumSet, steps: Sequence[Step]) -> Fo
 
 
 __all__ = ["run_preprocessing_pipeline"]
-

@@ -10,8 +10,10 @@ from .hsi_roi import HSIRoiStep
 from .hsi_segment import HSISegmentStep
 from .output import OutputStep
 from .preprocess import PreprocessStep
+from .multivariate import MultivariateAnalysisStep
 from .qc import QCStep
 from .rq_analysis import RQAnalysisStep
+from .model_fit_predict import ModelFitPredictStep
 
 __all__ = [
     "Step",
@@ -22,6 +24,8 @@ __all__ = [
     "HSISegmentStep",
     "HSIRoiStep",
     "QCStep",
+    "ModelFitPredictStep",
+    "MultivariateAnalysisStep",
 ]
 
 # Step registry for protocol engine
@@ -33,4 +37,6 @@ STEP_REGISTRY = {
     HSISegmentStep.name: HSISegmentStep,
     HSIRoiStep.name: HSIRoiStep,
     QCStep.name: QCStep,
+    ModelFitPredictStep.name: ModelFitPredictStep,
+    MultivariateAnalysisStep.name: MultivariateAnalysisStep,
 }

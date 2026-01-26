@@ -1,0 +1,16 @@
+{
+  "expected_calibration_error": 0.042,
+  "max_calibration_error": 0.089,
+  "brier_score": 0.056,
+  "log_loss": 0.187,
+  "metrics_before": {
+    "ece": 0.087,
+    "max_error": 0.156
+  },
+  "metrics_after": {
+    "ece": 0.042,
+    "max_error": 0.089
+  },
+  "method": "temperature_scaling",
+  "n_samples": 50
+}

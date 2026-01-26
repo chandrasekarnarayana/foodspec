@@ -57,23 +57,44 @@ class RunManifest:
         loaded = RunManifest.load(Path("/tmp/run/manifest.json"))
     """
 
-    protocol_hash: str
-    protocol_snapshot: Mapping[str, Any]
-    python_version: str
-    platform: str
-    dependencies: Dict[str, str]
-    seed: Optional[int]
-    data_fingerprint: str
-    start_time: str
-    end_time: str
-    duration_seconds: float
-    artifacts: Dict[str, str]
+    protocol_hash: str = ""
+    protocol_snapshot: Mapping[str, Any] = field(default_factory=dict)
+    python_version: str = ""
+    platform: str = ""
+    dependencies: Dict[str, str] = field(default_factory=dict)
+    seed: Optional[int] = None
+    data_fingerprint: str = ""
+    start_time: str = ""
+    end_time: str = ""
+    duration_seconds: float = 0.0
+    artifacts: Dict[str, str] = field(default_factory=dict)
     warnings: List[str] = field(default_factory=list)
     cache_hits: List[str] = field(default_factory=list)
     cache_misses: List[str] = field(default_factory=list)
     hyperparameters_per_fold: List[Dict[str, Any]] = field(default_factory=list)
     validation_spec: Dict[str, Any] = field(default_factory=dict)
     trust_config: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def metadata(self) -> Dict[str, Any]:
+        """Compatibility shim: return manifest metadata as dict."""
+        return {
+            "timestamp": self.start_time,
+            "foodspec_version": self.dependencies.get("foodspec", "unknown"),
+            "python_version": self.python_version,
+            "platform": self.platform,
+            "protocol_hash": self.protocol_hash,
+            "data_fingerprint": self.data_fingerprint,
+            "seed": self.seed,
+        }
+
+    @property
+    def checksums(self) -> Dict[str, str]:
+        """Compatibility shim: return checksums dict."""
+        return {
+            "protocol": self.protocol_hash,
+            "data": self.data_fingerprint,
+        }
 
     # Construction helpers
     @classmethod

@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 
 def _ensure_2d(x: np.ndarray) -> np.ndarray:
@@ -256,6 +256,7 @@ class QCReport:
     outliers: OutlierResult
     drift: DriftResult
     recommendations: str
+    policy: Optional[Dict[str, Any]] = None
 
 
 def generate_qc_report(
@@ -264,6 +265,7 @@ def generate_qc_report(
     batch_col: Optional[str] = None,
     time_col: Optional[str] = None,
     outlier_method: str = "robust_z",
+    policy: Optional[Any] = None,
 ) -> QCReport:
     health = compute_health_scores(ds, reference_grid=reference_grid, batch_col=batch_col)
     outliers = detect_outliers(ds, method=outlier_method)
@@ -277,7 +279,13 @@ def generate_qc_report(
     if outliers.labels.mean() > 0.1:
         rec = "exclude"
 
-    return QCReport(health=health, outliers=outliers, drift=drift, recommendations=rec)
+    policy_result = None
+    if policy is not None:
+        policy_result = policy.evaluate_spectral(health, outliers)
+        if not policy_result.get("passed", True):
+            rec = "review"
+
+    return QCReport(health=health, outliers=outliers, drift=drift, recommendations=rec, policy=policy_result)
 
 
 __all__ = [

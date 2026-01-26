@@ -90,6 +90,24 @@ class TrustEvaluator:
         self._calibrator: Optional[Any] = None
         self._conformal_fitted = False
         self._calibrator_fitted = False
+        self._label_to_index: Optional[Dict[Any, int]] = None
+        self._index_to_label: Optional[Dict[int, Any]] = None
+
+    def _encode_labels(self, labels: np.ndarray) -> np.ndarray:
+        """Map labels to the model's class indices for conformal/abstention."""
+        if not hasattr(self.model, "classes_"):
+            raise ValueError("Model must expose classes_ for trust evaluation")
+        if self._label_to_index is None:
+            classes = list(self.model.classes_)
+            self._label_to_index = {cls: idx for idx, cls in enumerate(classes)}
+            self._index_to_label = {idx: cls for idx, cls in enumerate(classes)}
+
+        try:
+            return np.array([self._label_to_index[label] for label in labels])
+        except KeyError as exc:  # pragma: no cover - defensive
+            raise ValueError(
+                f"Unknown label {exc.args[0]} not present in model.classes_"
+            ) from exc
     
     def fit_conformal(
         self,
@@ -105,15 +123,10 @@ class TrustEvaluator:
             y_cal: Calibration labels
             bins_cal: Bin indices for Mondrian conditioning (optional)
         """
-        self._conformal = MondrianConformalClassifier(
-            self.model,
-            target_coverage=self.target_coverage,
-        )
-        # Model already fitted, skip fit step
-        self._conformal._fitted = True
-        self._conformal._n_classes = len(np.unique(y_cal))
-        
-        self._conformal.calibrate(X_cal, y_cal, bins=bins_cal)
+        alpha = 1.0 - float(self.target_coverage)
+        y_cal_enc = self._encode_labels(y_cal)
+        self._conformal = MondrianConformalClassifier(alpha=alpha)
+        self._conformal.fit(y_cal_enc, self.model.predict_proba(X_cal), meta_cal=bins_cal)
         self._conformal_fitted = True
     
     def fit_calibration(
@@ -137,7 +150,8 @@ class TrustEvaluator:
         else:
             raise ValueError(f"Unknown calibration_method: {self.calibration_method}")
         
-        self._calibrator.fit(y_cal, proba_cal)
+        y_cal_enc = self._encode_labels(y_cal)
+        self._calibrator.fit(y_cal_enc, proba_cal)
         self._calibrator_fitted = True
     
     def evaluate(
@@ -169,6 +183,7 @@ class TrustEvaluator:
             raise RuntimeError("Conformal prediction not fitted. Call fit_conformal().")
         
         proba_test = self.model.predict_proba(X_test)
+        y_test_enc = self._encode_labels(y_test)
         
         # Apply calibration if fitted
         if self._calibrator_fitted and self._calibrator is not None:
@@ -178,20 +193,21 @@ class TrustEvaluator:
         
         # Conformal prediction
         cp_result = self._conformal.predict_sets(
-            X_test,
-            bins=bins_test,
-            y_true=y_test,
+            proba_test_cal,
+            meta_test=bins_test,
+            y_true=y_test_enc,
         )
         
         # Calibration error
-        ece = expected_calibration_error(y_test, proba_test_cal)
+        ece = expected_calibration_error(y_test_enc, proba_test_cal)
         
         # Abstention
         abstain_result = evaluate_abstention(
             proba_test_cal,
-            y_test,
+            y_test_enc,
             threshold=self.abstention_threshold,
             prediction_sets=cp_result.prediction_sets,
+            max_set_size=proba_test_cal.shape[1],
         )
         
         # Group-aware metrics
@@ -199,7 +215,7 @@ class TrustEvaluator:
         if batch_ids is not None:
             group_metrics = self._compute_group_metrics(
                 cp_result,
-                y_test,
+                y_test_enc,
                 proba_test_cal,
                 batch_ids,
             )
@@ -207,7 +223,7 @@ class TrustEvaluator:
             batch_ids = df_test[group_col].values
             group_metrics = self._compute_group_metrics(
                 cp_result,
-                y_test,
+                y_test_enc,
                 proba_test_cal,
                 batch_ids,
             )
@@ -235,7 +251,7 @@ class TrustEvaluator:
             isotonic_applied=isinstance(self._calibrator, IsotonicCalibrator),
             abstention_rate=abstain_result.abstention_rate,
             accuracy_non_abstained=abstain_result.accuracy_non_abstained,
-            accuracy_abstained=abstain_result.accuracy_abstained,
+            accuracy_abstained=None,
             coverage_under_abstention=abstain_result.coverage or 0.0,
             efficiency_gain=efficiency_gain,
             group_metrics=group_metrics,

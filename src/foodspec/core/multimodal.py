@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet, Modality
+from foodspec.data_objects.spectra_set import FoodSpectrumSet, Modality
 
 
 @dataclass

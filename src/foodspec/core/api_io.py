@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional, Union
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.io.ingest import DEFAULT_IO_REGISTRY
 
 

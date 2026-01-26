@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.ensemble import IsolationForest
 from sklearn.svm import OneClassSVM
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 __all__ = ["QCResult", "train_qc_model", "apply_qc_model", "run_qc_workflow"]
 

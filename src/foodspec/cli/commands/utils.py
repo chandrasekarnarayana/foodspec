@@ -3,7 +3,6 @@ from __future__ import annotations
 
 
 import importlib.util
-import json
 import sys
 from pathlib import Path
 from typing import Optional
@@ -11,17 +10,17 @@ from typing import Optional
 import typer
 
 from foodspec import __version__
-from foodspec.logging_utils import get_logger, setup_logging
+from foodspec.logging_utils import get_logger
 from foodspec.report.methods import MethodsConfig, generate_methods_text
 from foodspec.reporting import write_markdown_report
-from foodspec.reporting import (
-    ReportMode,
-    ReportContext,
-    ReportBuilder,
-    build_experiment_card,
-)
+from foodspec.reporting.api import build_report_from_run
 from foodspec.reporting.pdf import PDFExporter
-from foodspec.utils.reproducibility import write_reproducibility_snapshot
+from foodspec.utils.run_artifacts import (
+    get_logger as get_run_logger,
+    init_run_dir,
+    write_manifest,
+    write_run_summary,
+)
 
 logger = get_logger(__name__)
 
@@ -54,51 +53,57 @@ def report(
     run_dir: Optional[Path] = typer.Option(None, "--run-dir", "-r", help="Run directory with outputs."),
     format: str = typer.Option("html", "--format", help="html or pdf"),
     title: str = typer.Option("FoodSpec Report", help="Report title for HTML output."),
-    dataset: Optional[str] = typer.Option(None, help="Dataset name."),
-    sample_size: Optional[int] = typer.Option(None, help="Number of samples."),
-    target: Optional[str] = typer.Option(None, help="Target variable description."),
-    modality: str = typer.Option("raman", help="Modality: raman|ftir|nir"),
+    metrics: Optional[str] = typer.Option("accuracy", help="Comma-separated metrics."),
+    dataset: Optional[str] = typer.Option(None, help="Dataset name for methods report."),
+    sample_size: Optional[int] = typer.Option(None, help="Sample size for methods report."),
+    target: Optional[str] = typer.Option(None, help="Target variable for methods report."),
+    modality: str = typer.Option("raman", help="Modality for methods report."),
     instruments: Optional[str] = typer.Option(None, help="Comma-separated instruments."),
     preprocessing: Optional[str] = typer.Option(None, help="Comma-separated preprocessing steps."),
-    models: Optional[str] = typer.Option(None, help="Comma-separated models."),
-    metrics: Optional[str] = typer.Option("accuracy", help="Comma-separated metrics."),
+    models: Optional[str] = typer.Option(None, help="Comma-separated model names."),
     out_dir: str = typer.Option("report_methods", help="Output directory for methods.md."),
     style: str = typer.Option("journal", help="Style: journal|concise|bullet"),
 ):
     """Generate a report from a run directory or a methods.md document."""
     if run_dir is not None:
         run_path = Path(run_dir).resolve()
-        if not run_path.exists():
-            typer.echo(f"❌ Run directory not found: {run_path}", err=True)
-            raise typer.Exit(1)
-        logs_dir = run_path / "logs"
-        logs_dir.mkdir(parents=True, exist_ok=True)
-        setup_logging(run_dir=logs_dir)
-        write_reproducibility_snapshot(run_path)
-        html_path = run_path / "report.html"
-        html_path.write_text(
-            f"<html><body><h1>{title}</h1>"
-            f"<p>Run directory: {run_path}</p>"
-            "<p>See run_summary.json and tables for details.</p>"
-            "</body></html>"
-        )
-        if format == "pdf":
-            exporter = PDFExporter()
-            pdf_path = run_path / "report.pdf"
-            exporter.export(html_path, pdf_path)
-        summary_path = run_path / "run_summary.json"
-        payload = {"report_format": format, "run_dir": str(run_path)}
-        if summary_path.exists():
-            try:
-                data = json.loads(summary_path.read_text())
-            except Exception:
-                data = {}
-            data.update(payload)
-        else:
-            data = payload
-        summary_path.write_text(json.dumps(data, indent=2))
-        typer.echo("Report generated.")
-        return
+        exists = run_path.exists()
+        run_path = init_run_dir(run_path)
+        get_run_logger(run_path)
+        write_manifest(run_path, {"command": "report", "inputs": [run_path], "format": format})
+        if not exists:
+            msg = f"Run directory not found: {run_path}"
+            write_run_summary(run_path, {"status": "fail", "error": msg})
+            typer.echo(f"ERROR: {msg}", err=True)
+            raise typer.Exit(2)
+        try:
+            html_path = run_path / "report.html"
+            html_path.write_text(
+                f"<html><body><h1>{title}</h1>"
+                f"<p>Run directory: {run_path}</p>"
+                "<p>See run_summary.json and tables for details.</p>"
+                "</body></html>"
+            )
+            if format == "pdf":
+                exporter = PDFExporter()
+                pdf_path = run_path / "report.pdf"
+                exporter.export(html_path, pdf_path)
+            write_run_summary(run_path, {"status": "success", "report_format": format, "run_dir": str(run_path)})
+            write_manifest(
+                run_path,
+                {
+                    "command": "report",
+                    "inputs": [run_path],
+                    "format": format,
+                    "artifacts": {"report": str(html_path), "run_summary": "run_summary.json"},
+                },
+            )
+            typer.echo("Report generated.")
+            return
+        except Exception as exc:
+            write_run_summary(run_path, {"status": "fail", "error": str(exc)})
+            typer.echo(f"Runtime error: {exc}", err=True)
+            raise typer.Exit(code=4)
 
     if dataset is None or sample_size is None or target is None:
         raise typer.BadParameter("dataset, sample_size, and target are required for methods report.")
@@ -113,10 +118,26 @@ def report(
         metrics=[s.strip() for s in (metrics or "").split(",") if s.strip()],
     )
     text = generate_methods_text(cfg, style=style)  # type: ignore[arg-type]
-    out_path = Path(out_dir)
-    out_path.mkdir(parents=True, exist_ok=True)
-    write_markdown_report(out_path / "methods.md", title="Methods", sections={"Methods": text})
-    print(f"Wrote methods.md to {out_path}")
+    out_path = init_run_dir(Path(out_dir))
+    get_run_logger(out_path)
+    write_manifest(out_path, {"command": "report", "inputs": [], "mode": "methods"})
+    try:
+        write_markdown_report(out_path / "methods.md", title="Methods", sections={"Methods": text})
+        write_run_summary(out_path, {"status": "success", "methods_path": str(out_path / "methods.md")})
+        write_manifest(
+            out_path,
+            {
+                "command": "report",
+                "inputs": [],
+                "mode": "methods",
+                "artifacts": {"methods": str(out_path / "methods.md"), "run_summary": "run_summary.json"},
+            },
+        )
+        print(f"Wrote methods.md to {out_path}")
+    except Exception as exc:
+        write_run_summary(out_path, {"status": "fail", "error": str(exc)})
+        typer.echo(f"Runtime error: {exc}", err=True)
+        raise typer.Exit(code=4)
 
 @utils_app.command("report-run")
 def report_run(
@@ -152,35 +173,23 @@ def report_run(
         foodspec report-run --run-dir ./run/ --mode regulatory --format all
     """
     run_path = Path(run_dir).resolve()
-    if not run_path.exists():
-        typer.echo(f"❌ Run directory not found: {run_path}", err=True)
-        raise typer.Exit(1)
-
     output_path = Path(out_dir or run_dir).resolve()
-    output_path.mkdir(parents=True, exist_ok=True)
-
+    run_dir_path = init_run_dir(output_path)
+    get_run_logger(run_dir_path)
+    write_manifest(run_dir_path, {"command": "report-run", "inputs": [run_path]})
+    if not run_path.exists():
+        msg = f"Run directory not found: {run_path}"
+        write_run_summary(run_dir_path, {"status": "fail", "error": msg})
+        typer.echo(f"ERROR: {msg}", err=True)
+        raise typer.Exit(2)
     try:
-        # Validate mode
         mode_lower = mode.lower()
-        if mode_lower == "research":
-            report_mode = ReportMode.RESEARCH
-        elif mode_lower == "regulatory":
-            report_mode = ReportMode.REGULATORY
-        elif mode_lower == "monitoring":
-            report_mode = ReportMode.MONITORING
-        else:
-            typer.echo(
-                f"❌ Invalid mode '{mode}'. Choose: research|regulatory|monitoring",
-                err=True,
-            )
-            raise typer.Exit(1)
+        if mode_lower not in {"research", "regulatory", "monitoring"}:
+            msg = f"Invalid mode '{mode}'. Choose: research|regulatory|monitoring"
+            write_run_summary(run_dir_path, {"status": "fail", "error": msg})
+            typer.echo(f"ERROR: {msg}", err=True)
+            raise typer.Exit(2)
 
-        # Load context
-        typer.echo(f"📂 Loading artifacts from {run_path}...")
-        context = ReportContext.load(run_path)
-        typer.echo(f"✓ Loaded: {', '.join(context.available_artifacts())}")
-
-        # Generate outputs
         output_format_lower = output_format.lower()
         formats = []
         if output_format_lower in ("all", "html"):
@@ -189,50 +198,49 @@ def report_run(
             formats.append("json")
         if output_format_lower in ("all", "markdown"):
             formats.append("markdown")
+        want_pdf = output_format_lower in {"all", "pdf"}
 
-        if not formats:
-            typer.echo(
-                f"❌ Invalid format '{output_format}'. Choose: html|json|markdown|all",
-                err=True,
-            )
-            raise typer.Exit(1)
+        if not formats and not want_pdf:
+            msg = f"Invalid format '{output_format}'. Choose: html|json|markdown|all"
+            write_run_summary(run_dir_path, {"status": "fail", "error": msg})
+            typer.echo(f"ERROR: {msg}", err=True)
+            raise typer.Exit(2)
 
-        # HTML Report
-        if "html" in formats:
-            typer.echo("📄 Generating HTML report...")
-            html_path = output_path / "report.html"
-            ReportBuilder(context).build_html(html_path, mode=report_mode, title=title)
-            typer.echo(f"✓ HTML report: {html_path}")
+        artifacts = build_report_from_run(
+            run_path,
+            out_dir=run_dir_path,
+            mode=mode_lower,
+            pdf=want_pdf,
+            title=title,
+        )
+        artifacts["run_summary"] = "run_summary.json"
 
-        # Experiment Card (JSON + Markdown)
-        typer.echo("🎯 Building experiment card...")
-        card = build_experiment_card(context, mode=report_mode)
-
-        if "json" in formats:
-            json_path = output_path / "card.json"
-            card.to_json(json_path)
-            typer.echo(f"✓ JSON card: {json_path}")
-
-        if "markdown" in formats:
-            md_path = output_path / "card.md"
-            card.to_markdown(md_path)
-            typer.echo(f"✓ Markdown card: {md_path}")
+        write_run_summary(
+            run_dir_path,
+            {
+                "status": "success",
+                "report_mode": mode_lower,
+                "report_formats": formats,
+                "artifacts": artifacts,
+            },
+        )
+        write_manifest(
+            run_dir_path,
+            {
+                "command": "report-run",
+                "inputs": [run_path],
+                "mode": mode_lower,
+                "format": output_format_lower,
+                "artifacts": artifacts,
+            },
+        )
 
         # Summary
-        typer.echo("\n✅ Report generation complete!")
-        typer.echo(f"\nCard Summary:")
-        typer.echo(f"  Confidence: {card.confidence_level.value}")
-        typer.echo(f"  Deployment: {card.deployment_readiness.value}")
-        if card.key_risks:
-            typer.echo(f"  Risks: {len(card.key_risks)}")
-            for risk in card.key_risks[:3]:
-                typer.echo(f"    - {risk}")
-            if len(card.key_risks) > 3:
-                typer.echo(f"    ... and {len(card.key_risks) - 3} more")
-        else:
-            typer.echo(f"  Risks: None")
+        typer.echo("Report generation complete.")
+        typer.echo(f"Artifacts: {', '.join(sorted(artifacts.keys()))}")
 
     except Exception as e:
-        typer.echo(f"❌ Error: {str(e)}", err=True)
+        write_run_summary(run_dir_path, {"status": "fail", "error": str(e)})
+        typer.echo(f"ERROR: {str(e)}", err=True)
         logger.exception("Report generation failed")
-        raise typer.Exit(1)
+        raise typer.Exit(4)

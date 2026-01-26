@@ -9,7 +9,7 @@ from typing import Optional, Sequence
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 __all__ = ["load_folder", "load_from_metadata_table"]
 
@@ -61,6 +61,9 @@ def load_folder(
         sample_ids.append(file.stem)
 
     common_axis, stacked = _stack_spectra_on_common_axis(w_axes, spectra)
+
+    # Trim stacked spectra to match common axis length
+    stacked = stacked[:, :len(common_axis)]
 
     metadata = pd.DataFrame({"sample_id": sample_ids})
     if metadata_csv is not None:
@@ -124,6 +127,9 @@ def load_from_metadata_table(
         sample_ids.append(file_path.stem)
 
     common_axis, stacked = _stack_spectra_on_common_axis(w_axes, spectra)
+
+    # Trim stacked spectra to match common axis length
+    stacked = stacked[:, :len(common_axis)]
 
     metadata = table.drop(columns=["file_path"]).copy()
     if "sample_id" not in metadata.columns:

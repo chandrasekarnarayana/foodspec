@@ -1,0 +1,32 @@
+
+name: test
+version: 0.0.1
+expected_columns:
+  label_col: label
+  group_col: stage
+steps:
+  - type: preprocess
+    params:
+      baseline_method: none
+      normalization: none
+  - type: rq_analysis
+    params:
+      model: logreg
+      validation:
+        scheme: loso
+        folds: 2
+features:
+  type: peaks
+  peaks:
+    - name: peak_1000
+      center: 1000.0
+      window: 2.0
+    - name: peak_1001
+      center: 1001.0
+      window: 2.0
+    - name: peak_1002
+      center: 1002.0
+      window: 2.0
+task:
+  type: classification
+  target: label

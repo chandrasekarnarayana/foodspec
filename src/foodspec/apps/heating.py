@@ -11,14 +11,14 @@ from scipy import stats
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.features.peaks import PeakFeatureExtractor
 from foodspec.features.ratios import RatioFeatureGenerator
 from foodspec.preprocess.baseline import ALSBaseline
 from foodspec.preprocess.cropping import RangeCropper
 from foodspec.preprocess.normalization import VectorNormalizer
 from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-from foodspec.validation import validate_spectrum_set
+from foodspec.modeling.validation.quality import validate_spectrum_set
 
 __all__ = [
     "HeatingAnalysisResult",

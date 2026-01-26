@@ -46,7 +46,7 @@ from typing import Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from foodspec.core.spectral_dataset import SpectralDataset
+from foodspec.data_objects.spectral_dataset import SpectralDataset
 
 
 @dataclass

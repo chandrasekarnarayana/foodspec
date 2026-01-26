@@ -16,8 +16,8 @@ from typing import Any, Dict, List, Union
 import numpy as np
 import pandas as pd
 
-from foodspec.core.spectral_dataset import HyperspectralDataset, SpectralDataset
-from foodspec.output_bundle import save_figures, save_tables
+from foodspec.data_objects.spectral_dataset import HyperspectralDataset, SpectralDataset
+from foodspec.output_bundle import save_figures, save_qc_artifacts, save_tables
 
 from .config import ProtocolConfig, ProtocolRunResult
 from .steps import STEP_REGISTRY
@@ -37,6 +37,35 @@ class ProtocolRunner:
         """
         self.config = config
         self._cancel = False
+
+    # Execution stage stubs for ExecutionEngine API compatibility
+    def _run_data_load(self):
+        """Load input data (stub)."""
+        pass
+
+    def _run_preprocess(self):
+        """Preprocessing stage (stub)."""
+        pass
+
+    def _run_qc(self):
+        """Quality control stage (stub)."""
+        pass
+
+    def _run_features(self):
+        """Feature extraction stage (stub)."""
+        pass
+
+    def _run_model(self):
+        """Model training/prediction stage (stub)."""
+        pass
+
+    def _run_evaluate(self):
+        """Model evaluation stage (stub)."""
+        pass
+
+    def _run_trust(self):
+        """Trust quantification stage (stub)."""
+        pass
 
     @classmethod
     def from_file(cls, path: Union[str, Path]) -> "ProtocolRunner":
@@ -143,6 +172,7 @@ class ProtocolRunner:
             },
             "tables": {},
             "figures": {},
+            "qc_artifacts": {},
             "report": "",
             "summary": "",
             "run_dir": None,
@@ -153,6 +183,7 @@ class ProtocolRunner:
             "cancel": False,
             "model_path": None,
             "registry_path": None,
+            "config": self.config,
         }
         start = time.time()
         # Reproducibility
@@ -204,6 +235,7 @@ class ProtocolRunner:
             metadata=ctx["metadata"],
             tables=ctx["tables"],
             figures=ctx["figures"],
+            qc_artifacts=ctx.get("qc_artifacts", {}),
             report=ctx["report"],
             summary=ctx["summary"],
         )
@@ -228,3 +260,5 @@ class ProtocolRunner:
         (out_dir / "metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
         save_tables(out_dir, result.tables)
         save_figures(out_dir, result.figures)
+        if getattr(result, "qc_artifacts", None):
+            save_qc_artifacts(out_dir, result.qc_artifacts)

@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-01-26T07:31:04Z",
+  "foodspec_version": "1.0.0",
+  "python_version": "3.12.9",
+  "platform": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+  "git_commit": "548e461f13026ac87ea528b0b71b2d90540174bc",
+  "command": "run-e2e",
+  "csv": "tests/fixtures/tiny_oil_fixture.csv",
+  "protocol": "tmp_proto.yaml",
+  "model": "logreg",
+  "scheme": "",
+  "features": "peaks",
+  "mode": "research",
+  "seed": 1
+}

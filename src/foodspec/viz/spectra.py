@@ -7,7 +7,7 @@ from typing import Optional, Sequence
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 __all__ = ["plot_spectra", "plot_mean_spectrum"]
 

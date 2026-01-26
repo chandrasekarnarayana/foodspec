@@ -1,0 +1,21 @@
+# Raman spectroscopy preprocessing preset
+# Specialized for Raman data: despike cosmic rays, remove fluorescence, smooth
+modality: raman
+description: "Raman preset: cosmic ray removal, fluorescence baseline removal, smoothing, SNV"
+steps:
+  - op: despike
+    window: 5
+    threshold: 5.0
+  - op: fluorescence_removal
+    method: poly
+    poly_order: 2
+  - op: smoothing
+    method: savgol
+    window_length: 9
+    polyorder: 3
+  - op: baseline
+    method: als
+    lam: 1.0e5
+    p: 0.01
+  - op: normalization
+    method: snv

@@ -28,6 +28,13 @@ from .uncertainty import (
     plot_abstention_distribution,
     get_uncertainty_statistics,
 )
+from .comprehensive import (
+    plot_raw_vs_processed_overlay,
+    plot_pca_umap,
+    plot_coverage_efficiency_curve,
+    plot_conformal_set_sizes,
+    plot_abstention_distribution as plot_abstention_by_group,
+)
 from .compare import (
     RunSummary,
     scan_runs,

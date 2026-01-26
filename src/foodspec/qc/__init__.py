@@ -26,13 +26,26 @@ from foodspec.qc.engine import (
 )
 from foodspec.qc.leakage import detect_batch_label_correlation, detect_replicate_leakage
 from foodspec.qc.novelty import novelty_score_single, novelty_scores
+from foodspec.qc.policy import QCPolicy
 from foodspec.qc.prediction_qc import PredictionQCResult, evaluate_prediction_qc
+from foodspec.qc.multivariate import (
+    MultivariateQCPolicy,
+    batch_drift,
+    centroid_shift,
+    compute_pca_outlier_scores,
+    hotelling_t2,
+    outlier_flags,
+    score_outliers,
+    summarize_scores,
+)
 from foodspec.qc.readiness import compute_readiness_score
 from foodspec.qc.replicates import assess_variability_sources, compute_replicate_consistency
+from foodspec.qc.regression_diagnostics import summarize_regression_diagnostics
 
 __all__ = [
     # Existing QC engine
     "QCReport",
+    "QCPolicy",
     "DriftResult",
     "HealthResult",
     "OutlierResult",
@@ -60,4 +73,14 @@ __all__ = [
     # Prediction QC
     "PredictionQCResult",
     "evaluate_prediction_qc",
+    "summarize_regression_diagnostics",
+    # Multivariate QC
+    "score_outliers",
+    "centroid_shift",
+    "summarize_scores",
+    "compute_pca_outlier_scores",
+    "hotelling_t2",
+    "outlier_flags",
+    "batch_drift",
+    "MultivariateQCPolicy",
 ]

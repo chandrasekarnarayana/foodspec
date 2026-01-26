@@ -73,7 +73,7 @@ class RQAnalysisStep(Step):
         # Optional validation metrics
         validation_metrics = None
         try:
-            from foodspec.validation import nested_cv
+            from foodspec.modeling.validation.strategies import nested_cv
 
             df = ctx["data"]
             feature_cols = [p.column for p in peaks] + [r.name for r in ratios]

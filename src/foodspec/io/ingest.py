@@ -19,7 +19,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.io.core import detect_format, read_spectra
 from foodspec.io.text_formats import read_jcamp
 from foodspec.io.vendor_formats import read_opus, read_spc

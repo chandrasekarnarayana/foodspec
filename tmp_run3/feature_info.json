@@ -1,0 +1,70 @@
+{
+  "features": [
+    {
+      "name": "peak_1000",
+      "ftype": "peak",
+      "assignment": "unassigned",
+      "description": "height for peak peak_1000 near 1000 cm^-1.",
+      "params": {
+        "center": 1000.0,
+        "window": 2.0,
+        "metric": "height"
+      }
+    },
+    {
+      "name": "peak_1000_area",
+      "ftype": "peak",
+      "assignment": "unassigned",
+      "description": "area for peak peak_1000 near 1000 cm^-1.",
+      "params": {
+        "center": 1000.0,
+        "window": 2.0,
+        "metric": "area"
+      }
+    },
+    {
+      "name": "peak_1001",
+      "ftype": "peak",
+      "assignment": "unassigned",
+      "description": "height for peak peak_1001 near 1001 cm^-1.",
+      "params": {
+        "center": 1001.0,
+        "window": 2.0,
+        "metric": "height"
+      }
+    },
+    {
+      "name": "peak_1001_area",
+      "ftype": "peak",
+      "assignment": "unassigned",
+      "description": "area for peak peak_1001 near 1001 cm^-1.",
+      "params": {
+        "center": 1001.0,
+        "window": 2.0,
+        "metric": "area"
+      }
+    },
+    {
+      "name": "peak_1002",
+      "ftype": "peak",
+      "assignment": "unassigned",
+      "description": "height for peak peak_1002 near 1002 cm^-1.",
+      "params": {
+        "center": 1002.0,
+        "window": 2.0,
+        "metric": "height"
+      }
+    },
+    {
+      "name": "peak_1002_area",
+      "ftype": "peak",
+      "assignment": "unassigned",
+      "description": "area for peak peak_1002 near 1002 cm^-1.",
+      "params": {
+        "center": 1002.0,
+        "window": 2.0,
+        "metric": "area"
+      }
+    }
+  ]
+}

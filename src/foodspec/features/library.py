@@ -13,7 +13,7 @@ from typing import Dict, List, Literal, Optional
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.stats.distances import compute_distances
 
 __all__ = ["LibraryIndex", "similarity_search"]
@@ -113,7 +113,7 @@ def overlay_plot(query_x: np.ndarray, match_x: np.ndarray, wavenumbers: np.ndarr
     Returns:
         Tuple of (fig, ax) matplotlib objects.
     """
-    from foodspec.core.dataset import FoodSpectrumSet
+    from foodspec.data_objects.spectra_set import FoodSpectrumSet
     from foodspec.viz.spectra import plot_spectra
 
     X = np.vstack([query_x, match_x])

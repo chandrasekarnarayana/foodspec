@@ -16,7 +16,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC, OneClassSVM
 
-from foodspec.chemometrics.validation import compute_vip_scores
+from foodspec.modeling.validation.metrics import compute_vip_scores
 
 __all__ = [
     "make_pls_regression",

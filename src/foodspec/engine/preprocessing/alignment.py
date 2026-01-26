@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from foodspec.core.spectral_dataset import harmonize_datasets
+from foodspec.data_objects.spectral_dataset import harmonize_datasets
 
 
 def align_spectra(reference_wavenumbers: np.ndarray, target_wavenumbers: np.ndarray, target_spectra: np.ndarray):
@@ -17,4 +17,3 @@ def align_spectra(reference_wavenumbers: np.ndarray, target_wavenumbers: np.ndar
 
 
 __all__ = ["align_spectra"]
-

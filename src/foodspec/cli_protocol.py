@@ -41,7 +41,7 @@ warnings.warn(
 
 import sys
 
-from foodspec.cli.protocol import main as _main
+from foodspec.cli._protocol_runner_legacy import main as _main
 
 
 def main() -> None:

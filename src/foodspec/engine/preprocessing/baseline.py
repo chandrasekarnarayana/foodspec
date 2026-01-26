@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from foodspec.core.spectral_dataset import (
+from foodspec.data_objects.spectral_dataset import (
     baseline_als as _baseline_als,
     baseline_polynomial as _baseline_polynomial,
     baseline_rubberband as _baseline_rubberband,

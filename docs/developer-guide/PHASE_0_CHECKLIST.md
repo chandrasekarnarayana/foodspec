@@ -125,7 +125,7 @@
   - [x] Merge strategies comparison
   - [x] Conflict resolution
 
-- [x] **INDEX.md** (New, Central Hub)
+- [x] **index.md** (New, Central Hub)
   - [x] Getting started section (first time contributor)
   - [x] Core documentation table
   - [x] Backward compatibility section
@@ -236,7 +236,7 @@ All documents properly linked:
 - [x] PUBLIC_API_INVENTORY.md references COMPATIBILITY_PLAN.md
 - [x] BACKWARD_COMPAT_EXAMPLES.md references COMPATIBILITY_PLAN.md
 - [x] GIT_WORKFLOW.md references PHASE_0_SUMMARY.md
-- [x] INDEX.md links all documents
+- [x] index.md links all documents
 - [x] PHASE_0_SUMMARY.md links all resources
 - [x] Circular references avoid (prevents dead ends)
 
@@ -310,7 +310,7 @@ All files in correct locations:
 
 ```
 docs/developer-guide/
-├── INDEX.md                        ✅ Central hub
+├── index.md                        ✅ Central hub
 ├── QUICK_REFERENCE.md              ✅ Quick reference card
 ├── ENGINEERING_RULES.md            ✅ 7 rules detailed
 ├── COMPATIBILITY_PLAN.md           ✅ Backward compat strategy
@@ -415,7 +415,7 @@ CONTRIBUTING.md                    ✅ Updated with rules
 - [x] GIT_WORKFLOW.md — Safe refactoring
 - [x] BACKWARD_COMPAT_EXAMPLES.md — 8 patterns
 - [x] PUBLIC_API_INVENTORY.md — API tracking
-- [x] INDEX.md — Central hub
+- [x] index.md — Central hub
 - [x] PHASE_0_SUMMARY.md — Overview
 
 ---
@@ -482,7 +482,7 @@ CONTRIBUTING.md                    ✅ Updated with rules
 → See [GIT_WORKFLOW.md](./GIT_WORKFLOW.md)
 
 ### Need Navigation?
-→ See [INDEX.md](./INDEX.md)
+→ See [index.md](./index.md)
 
 ---
 

@@ -95,8 +95,13 @@ class RatioEngine:
         """
         out = df.copy()
         for r in self.ratio_defs:
-            # TODO: Replace placeholder with actual ratio computation and safeguards
-            out[r.name] = pd.NA
+            if r.numerator not in out.columns or r.denominator not in out.columns:
+                out[r.name] = pd.NA
+                continue
+            num = out[r.numerator].astype(float).to_numpy()
+            den = out[r.denominator].astype(float).to_numpy()
+            ratio = np.divide(num, den, out=np.full_like(num, np.nan, dtype=float), where=den != 0)
+            out[r.name] = ratio
         return out
 
     def validate(self) -> Dict[str, Any]:

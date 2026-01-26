@@ -8,6 +8,14 @@ from typing import Optional
 from foodspec.utils.hints import suggest_fixes
 
 
+class FoodSpecValidationError(ValueError):
+    """Raised when schema or validation checks fail."""
+
+
+class FoodSpecQCError(RuntimeError):
+    """Raised when QC policy requires a hard failure."""
+
+
 @dataclass
 class FriendlyError:
     code: str

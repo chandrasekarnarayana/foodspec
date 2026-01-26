@@ -44,7 +44,11 @@ class PluginManager:
         eps = entry_points()
         group = eps.select(group="foodspec.plugins") if hasattr(eps, "select") else eps.get("foodspec.plugins", [])
         for ep in group:
-            mod = ep.load()
+            try:
+                mod = ep.load()
+            except (ModuleNotFoundError, ImportError, AttributeError):
+                # Skip plugins with missing modules (e.g., test fixtures)
+                continue
             try:
                 payload = mod.get_plugins()
             except Exception:

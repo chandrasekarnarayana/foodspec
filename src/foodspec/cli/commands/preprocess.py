@@ -8,7 +8,7 @@ import numpy as np
 import typer
 from sklearn.pipeline import Pipeline
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.io import load_folder
 from foodspec.io.exporters import to_hdf5
 from foodspec.logging_utils import get_logger

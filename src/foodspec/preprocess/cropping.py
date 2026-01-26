@@ -7,7 +7,7 @@ from typing import Tuple
 import numpy as np
 from sklearn.base import BaseEstimator
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 __all__ = ["RangeCropper", "crop_spectrum_set"]
 
@@ -72,7 +72,7 @@ def crop_spectrum_set(spectra: FoodSpectrumSet, min_wn: float, max_wn: float) ->
 
     Examples:
         >>> from foodspec.preprocess import crop_spectrum_set
-        >>> from foodspec.core.dataset import FoodSpectrumSet
+        >>> from foodspec.data_objects.spectra_set import FoodSpectrumSet
         >>> import numpy as np
         >>> import pandas as pd
         >>> spectra = FoodSpectrumSet(

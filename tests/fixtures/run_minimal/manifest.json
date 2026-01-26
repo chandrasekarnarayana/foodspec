@@ -1,0 +1,53 @@
+{
+  "run_id": "test_run_001",
+  "timestamp": "2025-01-26T10:30:00Z",
+  "seed": 42,
+  "protocol": "test_protocol",
+  "protocol_hash": "abc1234567890def",
+  "data_fingerprint": "xyz9876543210abc",
+  "python_version": "3.11.0",
+  "platform": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+  "start_time": "2025-01-26T10:30:00Z",
+  "end_time": "2025-01-26T10:35:00Z",
+  "duration_seconds": 300,
+  "protocol_snapshot": {
+    "name": "TestProtocol",
+    "version": "1.0",
+    "task": {
+      "name": "classification",
+      "objective": "multi-class"
+    },
+    "modality": "raman",
+    "model": {
+      "name": "lightgbm",
+      "params": {
+        "num_leaves": 31,
+        "learning_rate": 0.05
+      }
+    },
+    "validation": {
+      "scheme": "stratified_kfold",
+      "n_splits": 5
+    },
+    "steps": [
+      {
+        "type": "preprocess",
+        "params": {
+          "baseline_method": "als",
+          "smoothing": true
+        }
+      },
+      {
+        "type": "train",
+        "params": {
+          "model_type": "lightgbm"
+        }
+      }
+    ]
+  },
+  "artifacts": {
+    "metrics_csv": "metrics.csv",
+    "predictions_csv": "predictions.csv",
+    "qc_report": "qc_report.json"
+  }
+}

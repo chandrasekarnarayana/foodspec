@@ -207,12 +207,17 @@ nav:
       - Protocols & YAML: user-guide/protocols_and_yaml.md
       - Protocol Profiles: user-guide/protocol_profiles.md
       - CLI Reference: user-guide/cli.md
+      - End-to-End CLI (run-e2e): user-guide/run_e2e.md
       - CLI Help: user-guide/cli_help.md
       - Automation: user-guide/automation.md
+      - Validation: user-guide/validation.md
     - I/O & Integration:
       - Vendor I/O: user-guide/vendor_io.md
       - Vendor Formats: user-guide/vendor_formats.md
+      - Feature Engineering: user-guide/features.md
       - Visualization: user-guide/visualization.md
+      - Visualizations Library: user-guide/visualizations.md
+      - Reporting: user-guide/reporting.md
     - Advanced Features:
       - Registry & Plugins: user-guide/registry_and_plugins.md
       - Model Registry: user-guide/model_registry.md

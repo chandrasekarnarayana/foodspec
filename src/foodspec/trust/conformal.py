@@ -31,7 +31,7 @@ def _to_bin_key(x: object) -> str:
 def _mondrian_quantile(scores: np.ndarray, target_coverage: float) -> float:
     """Compute quantile threshold for target coverage.
     
-    Formula: threshold = quantile(1 - target_coverage + 1/n)
+    Formula: threshold = quantile(ceil((n + 1) * target_coverage) / n)
     where n = number of scores.
     
     This ensures coverage ≥ target_coverage with finite samples.
@@ -42,7 +42,7 @@ def _mondrian_quantile(scores: np.ndarray, target_coverage: float) -> float:
         raise ValueError("scores cannot be empty")
     
     # Quantile level: ensures coverage guarantee
-    quantile_level = min(1.0, np.ceil((n + 1) * (1.0 - target_coverage)) / n)
+    quantile_level = min(1.0, np.ceil((n + 1) * target_coverage) / n)
     threshold = float(np.quantile(scores, quantile_level, method='lower'))
     
     return threshold
@@ -461,5 +461,9 @@ class MondrianConformalClassifier:
                     })
         
         return pd.DataFrame(rows)
-    
-__all__ = ["MondrianConformalClassifier", "ConformalPredictionResult"]
+
+
+class ConformalPredictor(MondrianConformalClassifier):
+    """Backward-compatible alias for MondrianConformalClassifier."""
+
+__all__ = ["MondrianConformalClassifier", "ConformalPredictionResult", "ConformalPredictor"]

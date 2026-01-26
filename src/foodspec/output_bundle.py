@@ -267,6 +267,49 @@ def save_figures(run_dir: Path, figures: Dict[str, object]):
             fig.savefig(target_path, dpi=200)
 
 
+def save_qc_artifacts(run_dir: Path, qc_artifacts: Dict[str, object]):
+    """Persist QC artifacts under qc/ (tables, plots, summary)."""
+
+    qc_dir = run_dir / "qc"
+    qc_dir.mkdir(parents=True, exist_ok=True)
+    plots_dir = qc_dir / "plots"
+    plots_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        import pandas as pd
+    except Exception:
+        pd = None
+
+    outliers = qc_artifacts.get("multivariate_outliers")
+    if outliers is not None:
+        if hasattr(outliers, "to_csv"):
+            outliers.to_csv(qc_dir / "multivariate_outliers.csv", index=False)
+        elif pd is not None:
+            pd.DataFrame(outliers).to_csv(qc_dir / "multivariate_outliers.csv", index=False)
+
+    drift = qc_artifacts.get("multivariate_drift")
+    if drift is not None:
+        if hasattr(drift, "to_csv"):
+            drift.to_csv(qc_dir / "multivariate_drift.csv", index=False)
+        elif pd is not None:
+            pd.DataFrame(drift).to_csv(qc_dir / "multivariate_drift.csv", index=False)
+
+    summary = qc_artifacts.get("qc_summary")
+    if summary:
+        (qc_dir / "qc_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    qc_figs = qc_artifacts.get("qc_figures", {}) or {}
+    if qc_figs:
+        for name, fig in qc_figs.items():
+            try:
+                import matplotlib.pyplot as plt  # noqa: F401
+            except Exception:
+                continue
+            target = plots_dir / f"{name}.png"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            fig.savefig(target, dpi=200, bbox_inches="tight")
+
+
 def save_metadata(run_dir: Path, meta: Dict):
     """Save run metadata as JSON for machine-readable provenance.
 

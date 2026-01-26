@@ -1,0 +1,61 @@
+{
+  "status": "success",
+  "scheme": "loso",
+  "model": "logreg",
+  "features": "peaks",
+  "label_col": "label",
+  "group_col": "stage",
+  "metrics": {
+    "accuracy": 0.7,
+    "precision_macro": 0.6832298136645963,
+    "recall_macro": 0.7000000000000001,
+    "f1_macro": 0.6839945280437756,
+    "roc_auc_ovr": 0.7866666666666667,
+    "ece": 0.2968930335060761
+  },
+  "metrics_ci": {
+    "accuracy": {
+      "mean": 0.7043333333333334,
+      "ci_low": 0.5995833333333334,
+      "ci_high": 0.8166666666666667
+    },
+    "f1_macro": {
+      "mean": 0.6849800763850632,
+      "ci_low": 0.575843736080578,
+      "ci_high": 0.798626554523732
+    },
+    "precision_macro": {
+      "mean": 0.6900254691145521,
+      "ci_low": 0.5647929117665959,
+      "ci_high": 0.8102961744138214
+    },
+    "recall_macro": {
+      "mean": 0.7060833055112539,
+      "ci_low": 0.6113408517297079,
+      "ci_high": 0.8011325621809493
+    },
+    "roc_auc_ovr": {
+      "mean": 0.7911269527038742,
+      "ci_low": 0.722127757294555,
+      "ci_high": 0.8640049245613143
+    },
+    "ece": {
+      "mean": 0.307391569474509,
+      "ci_low": 0.19774284906928344,
+      "ci_high": 0.41416759180800927
+    }
+  },
+  "trust": {},
+  "artifacts": {
+    "metrics": "tmp_run3/metrics.csv",
+    "metrics_per_fold": "tmp_run3/metrics_per_fold.csv",
+    "predictions": "tmp_run3/predictions.csv",
+    "features": "tmp_run3/features.csv",
+    "feature_info": "tmp_run3/feature_info.json",
+    "trust": null,
+    "report": null,
+    "report_pdf": null,
+    "viz_confusion": null
+  },
+  "seed": 1
+}

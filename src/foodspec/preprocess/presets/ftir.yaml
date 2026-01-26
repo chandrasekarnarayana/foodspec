@@ -1,0 +1,17 @@
+# FTIR/IR spectroscopy preprocessing preset
+# Specialized for FTIR data: atmospheric correction, MSC scatter correction
+modality: ftir
+description: "FTIR preset: atmospheric correction, MSC, baseline, smoothing"
+steps:
+  - op: atmospheric_correction
+    co2_window: 50
+    water_window: 100
+  - op: msc
+  - op: baseline
+    method: rubberband
+  - op: smoothing
+    method: savgol
+    window_length: 7
+    polyorder: 3
+  - op: normalization
+    method: area

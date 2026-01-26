@@ -312,8 +312,8 @@ verify_archive_integrity(zip_path, expected_files=None) -> bool
 ## Next Steps
 
 - 📖 Read [full documentation](./export.md)
-- 🔬 Run [demo script](../examples/export_demo.py)
-- ✅ Check [test examples](../tests/reporting/test_export.py)
+- 🔬 Run [demo script](../../examples/new-features/export_demo.py)
+- ✅ Check [test examples](../../tests/reporting/test_export.py)
 - 🚀 Use in your workflows
 
 ---

@@ -48,7 +48,7 @@ from scipy import sparse
 from scipy.signal import savgol_filter
 from scipy.sparse.linalg import spsolve
 
-from foodspec.core.spectral_dataset import (  # reuse same config
+from foodspec.data_objects.spectral_dataset import (  # reuse same config
     PreprocessingConfig,
     baseline_polynomial,
     baseline_rubberband,

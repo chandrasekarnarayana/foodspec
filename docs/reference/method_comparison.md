@@ -29,7 +29,7 @@ FoodSpec supports 142+ methods across preprocessing, chemometrics, validation, a
 
 ## Comparison Axes (Summary)
 
-Full definitions in [Method Comparison Axes](../_internal/METHOD_COMPARISON_AXES.md).
+Full definitions are summarized below in the Comparison Axes section.
 
 | Axis | Low (●) | Medium (◐) | High (○) |
 |------|---------|-----------|----------|
@@ -383,11 +383,11 @@ Before choosing a method, answer these questions:
 
 ### Full Method Inventory
 
-See [Method Inventory](../_internal/METHOD_INVENTORY.md) (internal) for all 142 methods with API links.
+See the API reference pages for available method entries and links.
 
 ### Comparison Axes Definitions
 
-See [Method Comparison Axes](../_internal/METHOD_COMPARISON_AXES.md) (internal) for detailed axis definitions with food spectroscopy examples.
+Axis definitions are captured inline in this document to avoid internal-only links.
 
 ---
 

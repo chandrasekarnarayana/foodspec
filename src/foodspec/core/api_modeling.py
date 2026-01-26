@@ -10,7 +10,7 @@ from typing import Literal, Optional, Union
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.features.specs import FeatureEngine, FeatureSpec
 
 
@@ -129,7 +129,7 @@ class FoodSpecModelingMixin:
             Self (for chaining).
         """
         from foodspec.chemometrics.models import make_classifier
-        from foodspec.chemometrics.validation import compute_classification_metrics
+        from foodspec.modeling.validation.metrics import compute_classification_metrics
 
         # Extract features and labels
         X, y = self.data.to_X_y(target_col=label_column)

@@ -39,6 +39,14 @@ class ProtocolConfig:
     required_metadata: List[str] = field(default_factory=list)
     inputs: List[Dict[str, Any]] = field(default_factory=list)
     validation_strategy: str = "standard"  # standard | batch_aware | group_stratified
+    qc: Dict[str, Any] = field(default_factory=dict)
+    # Outcome typing for modeling
+    outcome_type: str = "classification"  # classification | regression | count | survival
+    target_column: Optional[str] = None
+    event_column: Optional[str] = None      # survival
+    time_column: Optional[str] = None       # survival
+    exposure_columns: List[str] = field(default_factory=list)  # for 2SLS / offsets
+    instrument_columns: List[str] = field(default_factory=list)
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "ProtocolConfig":
@@ -56,6 +64,13 @@ class ProtocolConfig:
             required_metadata=d.get("required_metadata", []),
             inputs=d.get("inputs", []),
             validation_strategy=d.get("validation_strategy", "standard"),
+            qc=d.get("qc", {}),
+            outcome_type=d.get("outcome_type", d.get("task", {}).get("outcome_type", "classification")),
+            target_column=d.get("target_column", d.get("task", {}).get("target_column")),
+            event_column=d.get("event_column", d.get("task", {}).get("event_column")),
+            time_column=d.get("time_column", d.get("task", {}).get("time_column")),
+            exposure_columns=d.get("exposure_columns", d.get("task", {}).get("exposure_columns", [])),
+            instrument_columns=d.get("instrument_columns", d.get("task", {}).get("instrument_columns", [])),
         )
 
     @staticmethod
@@ -71,6 +86,30 @@ class ProtocolConfig:
             payload = json.loads(text)
         return ProtocolConfig.from_dict(payload)
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert protocol config to dictionary."""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "when_to_use": self.when_to_use,
+            "version": self.version,
+            "min_foodspec_version": self.min_foodspec_version,
+            "seed": self.seed,
+            "steps": self.steps,
+            "expected_columns": self.expected_columns,
+            "report_templates": self.report_templates,
+            "required_metadata": self.required_metadata,
+            "inputs": self.inputs,
+            "validation_strategy": self.validation_strategy,
+            "qc": self.qc,
+            "outcome_type": self.outcome_type,
+            "target_column": self.target_column,
+            "event_column": self.event_column,
+            "time_column": self.time_column,
+            "exposure_columns": self.exposure_columns,
+            "instrument_columns": self.instrument_columns,
+        }
+
 
 @dataclass
 class ProtocolRunResult:
@@ -81,5 +120,6 @@ class ProtocolRunResult:
     metadata: Dict[str, Any]
     tables: Dict[str, Any]  # Dict[str, pd.DataFrame]
     figures: Dict[str, Any]
-    report: str
-    summary: str
+    report: str = ""
+    summary: str = ""
+    qc_artifacts: Dict[str, Any] = field(default_factory=dict)

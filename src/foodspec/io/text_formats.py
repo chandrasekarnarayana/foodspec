@@ -12,7 +12,7 @@ from typing import Literal, Optional
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.io.csv_import import load_csv_spectra
 
 

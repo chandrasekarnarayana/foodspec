@@ -26,6 +26,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from foodspec.reporting.schema import RunBundle
+
 
 class DossierBuilder:
     """Build scientific dossier from analysis run.
@@ -557,3 +559,116 @@ class DossierBuilder:
         index_path = self.out_dir / "dossier_index.html"
         index_path.write_text("".join(html_lines), encoding="utf-8")
         return index_path
+
+
+class ScientificDossierBuilder:
+    """Build a scientific dossier aligned with the reporting subsystem."""
+
+    def build(
+        self,
+        bundle: RunBundle,
+        out_dir: str | Path,
+        mode: str = "research",
+        *,
+        include_zip: bool = True,
+    ) -> Path:
+        out_dir = Path(out_dir)
+        dossier_dir = out_dir / "dossier"
+        appendices_dir = dossier_dir / "appendices"
+        repro_dir = dossier_dir / "reproducibility"
+        dossier_dir.mkdir(parents=True, exist_ok=True)
+        appendices_dir.mkdir(parents=True, exist_ok=True)
+        repro_dir.mkdir(parents=True, exist_ok=True)
+
+        dossier_path = dossier_dir / "dossier.md"
+        dossier_path.write_text(self._render_dossier(bundle, mode), encoding="utf-8")
+
+        qc_path = appendices_dir / "qc.md"
+        qc_path.write_text(self._render_qc(bundle), encoding="utf-8")
+
+        uncertainty_path = appendices_dir / "uncertainty.md"
+        uncertainty_path.write_text(self._render_uncertainty(bundle), encoding="utf-8")
+
+        repro_path = appendices_dir / "reproducibility.md"
+        repro_path.write_text(self._render_reproducibility(bundle), encoding="utf-8")
+
+        for name in ("manifest.json", "run_summary.json"):
+            src = bundle.run_dir / name
+            if src.exists():
+                (repro_dir / name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+
+        archive_path = dossier_dir / "dossier.zip"
+        if include_zip:
+            self._write_zip(dossier_dir, archive_path)
+
+        return dossier_path
+
+    def _render_dossier(self, bundle: RunBundle, mode: str) -> str:
+        return "\n".join(
+            [
+                "# Scientific Dossier",
+                "",
+                f"Mode: {mode}",
+                "",
+                "## Methods",
+                "",
+                f"Protocol: {bundle.manifest.get('protocol_path', 'unknown')}",
+                f"Seed: {bundle.seed}",
+                "",
+                "## Results",
+                "",
+                f"Summary: {bundle.run_summary.get('summary', 'N/A')}",
+                "",
+                "## QC Summary",
+                "",
+                f"{bundle.qc_report}",
+                "",
+                "## Uncertainty Summary",
+                "",
+                f"{bundle.trust_outputs}",
+            ]
+        )
+
+    def _render_qc(self, bundle: RunBundle) -> str:
+        return "\n".join(
+            [
+                "# QC Appendix",
+                "",
+                "```json",
+                f"{bundle.qc_report}",
+                "```",
+            ]
+        )
+
+    def _render_uncertainty(self, bundle: RunBundle) -> str:
+        return "\n".join(
+            [
+                "# Uncertainty Appendix",
+                "",
+                "```json",
+                f"{bundle.trust_outputs}",
+                "```",
+            ]
+        )
+
+    def _render_reproducibility(self, bundle: RunBundle) -> str:
+        return "\n".join(
+            [
+                "# Reproducibility Appendix",
+                "",
+                "```json",
+                f"{bundle.manifest}",
+                "```",
+            ]
+        )
+
+    def _write_zip(self, dossier_dir: Path, archive_path: Path) -> None:
+        import zipfile
+
+        with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for path in sorted(dossier_dir.rglob("*")):
+                if path.is_file() and path != archive_path:
+                    zf.write(path, path.relative_to(dossier_dir))
+
+
+__all__ = ["DossierBuilder", "ScientificDossierBuilder"]

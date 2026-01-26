@@ -1,0 +1,24 @@
+# Chip/snack food matrix analysis preset (FTIR)
+# Optimized for complex food matrices using FTIR spectroscopy
+modality: ftir
+description: "Optimized for complex food matrices: EMSC, aggressive baseline, derivative"
+steps:
+  - op: atmospheric_correction
+    co2_window: 50
+    water_window: 100
+  - op: emsc
+    order: 2
+  - op: baseline
+    method: als
+    lam: 1.0e6
+    p: 0.001
+  - op: smoothing
+    method: savgol
+    window_length: 9
+    polyorder: 3
+  - op: normalization
+    method: area
+  - op: derivative
+    order: 2
+    window_length: 11
+    polyorder: 3

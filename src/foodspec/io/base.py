@@ -11,7 +11,7 @@ from typing import Protocol
 
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 
 class SpectraLoader(Protocol):

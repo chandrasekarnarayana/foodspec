@@ -17,7 +17,7 @@ from foodspec.core.api_io import FoodSpecIOMixin
 from foodspec.core.api_modeling import FoodSpecModelingMixin
 from foodspec.core.api_preprocess import FoodSpecPreprocessMixin
 from foodspec.core.api_workflows import FoodSpecWorkflowsMixin
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.core.output_bundle import OutputBundle
 from foodspec.core.run_record import RunRecord, _capture_environment, _hash_data
 

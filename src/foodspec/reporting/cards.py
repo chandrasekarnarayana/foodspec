@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Optional
 
 from foodspec.reporting.base import ReportContext
 from foodspec.reporting.modes import ReportMode
+from foodspec.reporting.schema import RunBundle
 
 
 class ConfidenceLevel(str, Enum):
@@ -98,12 +99,17 @@ class ExperimentCard:
     ece: Optional[float] = None
     coverage: Optional[float] = None
     abstain_rate: Optional[float] = None
+    mean_set_size: Optional[float] = None
+    drift_score: Optional[float] = None
+    qc_pass_rate: Optional[float] = None
     auto_summary: str = ""
     key_risks: List[str] = field(default_factory=list)
     confidence_level: ConfidenceLevel = ConfidenceLevel.LOW
     confidence_reasoning: str = ""
     deployment_readiness: DeploymentReadiness = DeploymentReadiness.NOT_READY
     readiness_reasoning: str = ""
+    regulatory_readiness_score: Optional[float] = None
+    regulatory_readiness_notes: List[str] = field(default_factory=list)
     metrics_dict: Dict[str, Any] = field(default_factory=dict)
 
     def to_json(self, out_path: Path) -> Path:
@@ -169,6 +175,12 @@ class ExperimentCard:
             metrics_items.append(f"- **Coverage**: {self.coverage:.1%}")
         if self.abstain_rate is not None:
             metrics_items.append(f"- **Abstention Rate**: {self.abstain_rate:.1%}")
+        if self.mean_set_size is not None:
+            metrics_items.append(f"- **Mean Set Size**: {self.mean_set_size:.2f}")
+        if self.drift_score is not None:
+            metrics_items.append(f"- **Drift Score**: {self.drift_score:.3f}")
+        if self.qc_pass_rate is not None:
+            metrics_items.append(f"- **QC Pass Rate**: {self.qc_pass_rate:.1%}")
 
         if metrics_items:
             lines.extend(metrics_items)
@@ -202,6 +214,13 @@ class ExperimentCard:
             f"*{self.readiness_reasoning}*",
             "",
         ])
+        if self.regulatory_readiness_score is not None:
+            lines.append(f"**Regulatory Readiness Score**: {self.regulatory_readiness_score:.1f}/100  ")
+            if self.regulatory_readiness_notes:
+                lines.append("**Readiness Notes**:")
+                for note in self.regulatory_readiness_notes:
+                    lines.append(f"- {note}")
+                lines.append("")
 
         out_path.write_text("\n".join(lines))
         return out_path
@@ -218,8 +237,8 @@ def _extract_metrics(context: ReportContext) -> Dict[str, float]:
     Returns
     -------
     dict
-        Dict with macro_f1, auroc, ece, coverage, abstain_rate keys.
-        Missing metrics are None.
+        Dict with macro_f1, auroc, ece, coverage, abstain_rate, mean_set_size,
+        drift_score, qc_pass_rate keys. Missing metrics are None.
     """
     metrics = {
         "macro_f1": None,
@@ -227,6 +246,9 @@ def _extract_metrics(context: ReportContext) -> Dict[str, float]:
         "ece": None,
         "coverage": None,
         "abstain_rate": None,
+        "mean_set_size": None,
+        "drift_score": None,
+        "qc_pass_rate": None,
     }
 
     # Extract from metrics table (first row or average)
@@ -240,10 +262,67 @@ def _extract_metrics(context: ReportContext) -> Dict[str, float]:
     if context.trust_outputs:
         trust = context.trust_outputs
         metrics["ece"] = metrics["ece"] or _get_float(trust, ["ece", "expected_calibration_error"])
+        calibration = trust.get("calibration") if isinstance(trust, dict) else {}
+        if isinstance(calibration, dict):
+            metrics_after = calibration.get("metrics_after", {})
+            metrics["ece"] = metrics["ece"] or _get_float(metrics_after, ["ece"])
+
         metrics["coverage"] = _get_float(trust, ["coverage", "coverage_rate"])
+        conformal = trust.get("conformal") if isinstance(trust, dict) else {}
+        if isinstance(conformal, dict):
+            metrics["coverage"] = metrics["coverage"] or _get_float(conformal, ["coverage", "coverage_rate"])
+            metrics["mean_set_size"] = _get_float(conformal, ["mean_set_size", "avg_set_size"])
+
         metrics["abstain_rate"] = _get_float(trust, ["abstain_rate", "abstention_rate"])
+        abstention = trust.get("abstention") if isinstance(trust, dict) else {}
+        if isinstance(abstention, dict):
+            metrics["abstain_rate"] = metrics["abstain_rate"] or _get_float(
+                abstention, ["abstain_rate", "abstention_rate"]
+            )
+        
+        # Extract drift score
+        drift = trust.get("drift") if isinstance(trust, dict) else {}
+        if isinstance(drift, dict):
+            # Try batch drift first
+            batch_drift = drift.get("batch_drift", {})
+            if isinstance(batch_drift, dict):
+                metrics["drift_score"] = _get_float(batch_drift, ["mean_drift", "avg_drift", "drift_score"])
+            # Fall back to temporal drift
+            if metrics["drift_score"] is None:
+                temporal_drift = drift.get("temporal_drift", {})
+                if isinstance(temporal_drift, dict):
+                    metrics["drift_score"] = _get_float(temporal_drift, ["mean_drift", "avg_drift", "drift_score"])
+        
+        # Extract QC pass rate
+        qc_summary = trust.get("qc_summary") if isinstance(trust, dict) else {}
+        if isinstance(qc_summary, dict):
+            metrics["qc_pass_rate"] = _get_float(qc_summary, ["pass_rate", "qc_pass_rate"])
+
+    # Also check QC from context.qc
+    if context.qc and not metrics["qc_pass_rate"]:
+        # Count pass/fail in QC table
+        total = len(context.qc)
+        passed = sum(1 for row in context.qc if row.get("status") == "pass")
+        if total > 0:
+            metrics["qc_pass_rate"] = passed / total
 
     return metrics
+
+
+def _extract_readiness(context: ReportContext) -> tuple[Optional[float], List[str]]:
+    """Extract regulatory readiness score and notes from trust outputs."""
+    if not isinstance(context.trust_outputs, dict):
+        return None, []
+    readiness = context.trust_outputs.get("readiness")
+    if not isinstance(readiness, dict):
+        return None, []
+    score = None
+    try:
+        score = float(readiness.get("score")) if readiness.get("score") is not None else None
+    except (TypeError, ValueError):
+        score = None
+    notes = [str(n) for n in readiness.get("notes", [])] if readiness.get("notes") else []
+    return score, notes
 
 
 def _get_float(data: Any, keys: List[str]) -> Optional[float]:
@@ -486,6 +565,20 @@ def _identify_risks(
     if len(context.qc) == 0:
         risks.append("No QC data available for validation")
 
+    # Multivariate QC
+    mv_qc = {}
+    if isinstance(context.trust_outputs, dict):
+        mv_qc = (context.trust_outputs.get("qc_summary") or {}).get("multivariate", {})
+    outlier_info = mv_qc.get("outliers") if isinstance(mv_qc, dict) else None
+    if outlier_info and isinstance(outlier_info, dict):
+        n_flagged = outlier_info.get("n_flagged")
+        if n_flagged is not None and n_flagged > 0:
+            risks.append(f"Multivariate outliers flagged: {int(n_flagged)} samples")
+    drift_info = mv_qc.get("drift") if isinstance(mv_qc, dict) else None
+    if drift_info and isinstance(drift_info, list):
+        if any(d.get("status") == "fail" for d in drift_info if isinstance(d, dict)):
+            risks.append("Batch drift detected in latent space")
+
     return risks
 
 
@@ -530,6 +623,7 @@ def build_experiment_card(
     deployment_readiness, readiness_reasoning = _assess_deployment_readiness(
         confidence_level, context, mode
     )
+    readiness_score, readiness_notes = _extract_readiness(context)
 
     # Generate summary
     auto_summary = _generate_auto_summary(context, metrics, confidence_level)
@@ -549,11 +643,96 @@ def build_experiment_card(
         ece=metrics["ece"],
         coverage=metrics["coverage"],
         abstain_rate=metrics["abstain_rate"],
+        mean_set_size=metrics["mean_set_size"],
+        drift_score=metrics["drift_score"],
+        qc_pass_rate=metrics["qc_pass_rate"],
         auto_summary=auto_summary,
         key_risks=key_risks,
         confidence_level=confidence_level,
         confidence_reasoning=confidence_reasoning,
         deployment_readiness=deployment_readiness,
         readiness_reasoning=readiness_reasoning,
+        regulatory_readiness_score=readiness_score,
+        regulatory_readiness_notes=readiness_notes,
         metrics_dict=metrics,
+    )
+
+
+def build_experiment_card_from_bundle(
+    bundle: RunBundle,
+    mode: ReportMode = ReportMode.RESEARCH,
+) -> ExperimentCard:
+    """Build an ExperimentCard from a RunBundle."""
+    context = _bundle_to_context(bundle)
+    metrics = _extract_metrics(context)
+    confidence_level, confidence_reasoning = _assess_confidence(metrics, context, mode)
+    deployment_readiness, readiness_reasoning = _assess_deployment_readiness(
+        confidence_level,
+        context,
+        mode,
+    )
+    readiness_score, readiness_notes = _extract_readiness(context)
+    auto_summary = _generate_auto_summary(context, metrics, confidence_level)
+    key_risks = _identify_risks(metrics, context)
+
+    manifest = context.manifest
+    protocol = manifest.protocol_snapshot
+    return ExperimentCard(
+        run_id=bundle.run_id,
+        timestamp=str(bundle.manifest.get("timestamp") or ""),
+        task=protocol.get("task", {}).get("name", "unknown"),
+        modality=protocol.get("modality", "unknown"),
+        model=protocol.get("model", {}).get("name", "unknown"),
+        validation_scheme=protocol.get("validation", {}).get("scheme", "unknown"),
+        macro_f1=metrics["macro_f1"],
+        auroc=metrics["auroc"],
+        ece=metrics["ece"],
+        coverage=metrics["coverage"],
+        abstain_rate=metrics["abstain_rate"],
+        mean_set_size=metrics["mean_set_size"],
+        drift_score=metrics["drift_score"],
+        qc_pass_rate=metrics["qc_pass_rate"],
+        auto_summary=auto_summary,
+        key_risks=key_risks,
+        confidence_level=confidence_level,
+        confidence_reasoning=confidence_reasoning,
+        deployment_readiness=deployment_readiness,
+        readiness_reasoning=readiness_reasoning,
+        regulatory_readiness_score=readiness_score,
+        regulatory_readiness_notes=readiness_notes,
+        metrics_dict=metrics,
+    )
+
+
+def _bundle_to_context(bundle: RunBundle) -> ReportContext:
+    """Convert RunBundle to ReportContext for existing heuristics."""
+    from foodspec.core.manifest import RunManifest
+
+    manifest_path = bundle.run_dir / "manifest.json"
+    if manifest_path.exists():
+        try:
+            manifest = RunManifest.load(manifest_path)
+        except Exception:
+            manifest = RunManifest.build(
+                protocol_snapshot=bundle.manifest.get("protocol_snapshot", {}),
+                data_path=None,
+                seed=bundle.seed or 0,
+                artifacts=bundle.artifacts,
+            )
+    else:
+        manifest = RunManifest.build(
+            protocol_snapshot=bundle.manifest.get("protocol_snapshot", {}),
+            data_path=None,
+            seed=bundle.seed or 0,
+            artifacts=bundle.artifacts,
+        )
+    return ReportContext(
+        run_dir=bundle.run_dir,
+        manifest=manifest,
+        protocol_snapshot=bundle.manifest.get("protocol_snapshot", {}),
+        metrics=bundle.metrics,
+        predictions=bundle.predictions,
+        qc=[bundle.qc_report] if bundle.qc_report else [],
+        trust_outputs=bundle.trust_outputs,
+        figures={},
     )

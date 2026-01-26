@@ -39,7 +39,7 @@ from scipy.stats import t as t_dist
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Index Extraction

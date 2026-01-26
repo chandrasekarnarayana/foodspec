@@ -15,8 +15,11 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
-from foodspec.validation import validate_public_evoo_sunflower, validate_spectrum_set
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
+from foodspec.modeling.validation.quality import (
+    validate_public_evoo_sunflower,
+    validate_spectrum_set,
+)
 
 __all__ = [
     "load_public_mendeley_oils",

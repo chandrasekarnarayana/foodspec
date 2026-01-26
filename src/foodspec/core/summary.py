@@ -29,7 +29,7 @@ from typing import Any, Dict, Optional
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 
 def compute_samples_per_class(

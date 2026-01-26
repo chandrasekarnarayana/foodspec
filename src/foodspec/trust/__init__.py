@@ -23,7 +23,7 @@ Quantifying model uncertainty:
     print(result.coverage, abstain.abstain_rate)
 """
 
-from foodspec.trust.conformal import ConformalPredictionResult, MondrianConformalClassifier
+from foodspec.trust.conformal import ConformalPredictionResult, MondrianConformalClassifier, ConformalPredictor
 from foodspec.trust.abstain import (
     AbstentionResult,
     evaluate_abstention,
@@ -36,6 +36,24 @@ from foodspec.trust.calibration import (
     TemperatureScaler,
     IsotonicCalibrator,
     PlattCalibrator,
+)
+from foodspec.trust.metrics import (
+    compute_calibration_metrics as compute_trust_calibration_metrics,
+    negative_log_likelihood,
+    risk_coverage_curve,
+    bootstrap_ci,
+    bootstrap_coverage_efficiency,
+)
+from foodspec.trust.abstention import (
+    apply_abstention_rules,
+    filter_importance_by_acceptance,
+)
+from foodspec.trust.readiness import RegulatoryReadiness, compute_readiness_score
+from foodspec.trust.schema import (
+    CalibrationArtifact,
+    ConformalArtifact,
+    AbstentionArtifact,
+    ReadinessArtifact,
 )
 try:
     from foodspec.trust.evaluator import TrustEvaluator, TrustEvaluationResult
@@ -59,10 +77,13 @@ from foodspec.trust.coverage import (
     coverage_comparison,
     summarize_coverage,
 )
+from foodspec.trust.dataset_cards import DatasetCard, write_dataset_card
+from foodspec.trust.model_cards import ModelCard, write_model_card
 
 __all__ = [
     "MondrianConformalClassifier",
     "ConformalPredictionResult",
+    "ConformalPredictor",
     "AbstentionResult",
     "evaluate_abstention",
     "MaxProbAbstainer",
@@ -72,6 +93,19 @@ __all__ = [
     "TemperatureScaler",
     "IsotonicCalibrator",
     "PlattCalibrator",
+    "compute_trust_calibration_metrics",
+    "negative_log_likelihood",
+    "risk_coverage_curve",
+    "bootstrap_ci",
+    "bootstrap_coverage_efficiency",
+    "apply_abstention_rules",
+    "filter_importance_by_acceptance",
+    "RegulatoryReadiness",
+    "compute_readiness_score",
+    "CalibrationArtifact",
+    "ConformalArtifact",
+    "AbstentionArtifact",
+    "ReadinessArtifact",
     "TrustEvaluator",
     "TrustEvaluationResult",
     "brier_score",
@@ -86,4 +120,8 @@ __all__ = [
     "check_coverage_guarantees",
     "coverage_comparison",
     "summarize_coverage",
+    "ModelCard",
+    "DatasetCard",
+    "write_model_card",
+    "write_dataset_card",
 ]

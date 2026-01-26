@@ -19,8 +19,9 @@ from typing import Iterable, Optional
 import numpy as np
 import pandas as pd
 
-from foodspec.core.dataset import FoodSpectrumSet
-from foodspec.validation import validate_spectrum_set
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
+from foodspec.io.validators import validate_spectrum_schema
+from foodspec.modeling.validation.quality import validate_spectrum_set
 
 __all__ = ["load_csv_spectra"]
 
@@ -115,4 +116,5 @@ def load_csv_spectra(
         modality=modality,
     )
     validate_spectrum_set(ds)
+    validate_spectrum_schema(ds)
     return ds

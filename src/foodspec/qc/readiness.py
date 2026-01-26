@@ -39,7 +39,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.core.summary import (
     compute_metadata_completeness,
     compute_samples_per_class,

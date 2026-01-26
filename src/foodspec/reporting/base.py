@@ -24,6 +24,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from foodspec.core.artifacts import ArtifactRegistry
 from foodspec.core.manifest import RunManifest
+from foodspec.report.sections.multivariate import build_multivariate_section
 from foodspec.reporting.modes import ReportMode, get_mode_config, validate_artifacts
 
 # Jinja2 template loader
@@ -59,6 +60,7 @@ class ReportContext:
         qc: Optional[List[Dict[str, Any]]] = None,
         trust_outputs: Optional[Dict[str, Any]] = None,
         figures: Optional[Dict[str, List[Path]]] = None,
+        multivariate: Optional[Dict[str, List[Dict[str, Any]]]] = None,
     ) -> None:
         """Initialize report context.
 
@@ -89,6 +91,7 @@ class ReportContext:
         self.qc = qc or []
         self.trust_outputs = trust_outputs or {}
         self.figures = figures or {}
+        self.multivariate = multivariate or {}
 
     @classmethod
     def load(cls, run_dir: Path) -> ReportContext:
@@ -127,13 +130,12 @@ class ReportContext:
         predictions = cls._load_csv(artifacts.predictions_path)
         qc = cls._load_csv(artifacts.qc_path)
 
-        # Load trust outputs if present
-        trust_outputs = {}
-        if artifacts.root.joinpath("trust_outputs.json").exists():
-            trust_outputs = json.loads(artifacts.root.joinpath("trust_outputs.json").read_text())
+        # Load trust outputs if present (multiple possible locations)
+        trust_outputs = cls._load_trust_outputs(run_dir)
 
         # Collect figures
         figures = collect_figures(run_dir)
+        multivariate = cls._load_multivariate_tables(run_dir)
 
         return cls(
             run_dir=run_dir,
@@ -144,7 +146,77 @@ class ReportContext:
             qc=qc,
             trust_outputs=trust_outputs,
             figures=figures,
+            multivariate=multivariate,
         )
+
+    @staticmethod
+    def _load_trust_outputs(run_dir: Path) -> Dict[str, Any]:
+        """Load trust outputs from various locations in run directory.
+        
+        Scans for:
+        - trust_outputs.json (legacy)
+        - trust/calibration.json
+        - trust/conformal.json
+        - trust/abstention.json
+        - trust/coverage.json
+        - trust/reliability.json
+        - drift/batch_drift.json
+        - drift/temporal_drift.json
+        - drift/stage_differences.json
+        - qc/qc_summary.json
+        
+        Returns consolidated dict with all available trust/drift/qc outputs.
+        """
+        trust_data: Dict[str, Any] = {}
+        
+        # Legacy location
+        legacy_path = run_dir / "trust_outputs.json"
+        if legacy_path.exists():
+            try:
+                trust_data = json.loads(legacy_path.read_text())
+            except (json.JSONDecodeError, OSError):
+                pass
+        
+        # Trust subdirectory
+        trust_dir = run_dir / "trust"
+        if trust_dir.exists():
+            for trust_file in ["calibration.json", "conformal.json", "abstention.json", 
+                              "coverage.json", "reliability.json", "readiness.json"]:
+                file_path = trust_dir / trust_file
+                if file_path.exists():
+                    try:
+                        key = trust_file.replace(".json", "")
+                        trust_data[key] = json.loads(file_path.read_text())
+                    except (json.JSONDecodeError, OSError):
+                        pass
+        
+        # Drift subdirectory
+        drift_dir = run_dir / "drift"
+        if drift_dir.exists():
+            drift_data = {}
+            for drift_file in ["batch_drift.json", "temporal_drift.json", 
+                             "stage_differences.json", "replicate_similarity.json"]:
+                file_path = drift_dir / drift_file
+                if file_path.exists():
+                    try:
+                        key = drift_file.replace(".json", "")
+                        drift_data[key] = json.loads(file_path.read_text())
+                    except (json.JSONDecodeError, OSError):
+                        pass
+            if drift_data:
+                trust_data["drift"] = drift_data
+        
+        # QC subdirectory
+        qc_dir = run_dir / "qc"
+        if qc_dir.exists():
+            qc_summary_path = qc_dir / "qc_summary.json"
+            if qc_summary_path.exists():
+                try:
+                    trust_data["qc_summary"] = json.loads(qc_summary_path.read_text())
+                except (json.JSONDecodeError, OSError):
+                    pass
+        
+        return trust_data
 
     @staticmethod
     def _load_csv(path: Path) -> List[Dict[str, Any]]:
@@ -156,6 +228,24 @@ class ReportContext:
             reader = csv.DictReader(f)
             rows = list(reader)
         return rows
+
+    @classmethod
+    def _load_multivariate_tables(cls, run_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
+        """Load optional multivariate tables emitted by the protocol."""
+        names = [
+            "multivariate_scores",
+            "multivariate_loadings",
+            "multivariate_summary",
+            "multivariate_qc",
+            "multivariate_group_shift",
+        ]
+        tables: Dict[str, List[Dict[str, Any]]] = {}
+        for name in names:
+            path = run_dir / "tables" / f"{name}.csv"
+            rows = cls._load_csv(path)
+            if rows:
+                tables[name] = rows
+        return tables
 
     @property
     def available_artifacts(self) -> List[str]:
@@ -175,6 +265,8 @@ class ReportContext:
             artifacts.append("trust_outputs")
         if self.figures:
             artifacts.extend(self.figures.keys())
+        if self.multivariate:
+            artifacts.append("multivariate")
         return artifacts
 
     def to_dict(self) -> Dict[str, Any]:
@@ -202,6 +294,7 @@ class ReportContext:
             "qc": self.qc,
             "trust_outputs": self.trust_outputs,
             "figures": self.figures,
+            "multivariate": self.multivariate,
             "available_artifacts": self.available_artifacts,
         }
 
@@ -313,6 +406,9 @@ class ReportBuilder:
             "enabled_sections": mode_config.enabled_sections,
         })
 
+        mv_section = build_multivariate_section(self.context)
+        context_dict["multivariate_section"] = mv_section
+
         # Render template
         template = self.env.get_template("base.html")
         html_content = template.render(context_dict)
@@ -325,9 +421,16 @@ class ReportBuilder:
 
 
 def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
-    """Index all figures under artifacts/viz folder.
+    """Index all figures under multiple artifact folders.
 
-    Recursively scans the viz directory and groups figures by subdirectory
+    Scans multiple directories for figures:
+    - plots/viz/*
+    - figures/*
+    - trust/plots/*
+    - drift/plots/*
+    - qc/plots/*
+    
+    Recursively scans each directory and groups figures by subdirectory
     (e.g., drift, interpretability, uncertainty, pipeline).
 
     Parameters
@@ -339,7 +442,7 @@ def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
     -------
     dict of str to list of Path
         Mapping from category (subdirectory name) to list of image paths.
-        Empty dict if viz directory doesn't exist.
+        Empty dict if no figures found.
 
     Examples
     --------
@@ -349,26 +452,42 @@ def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
         print(figures["drift"])  # [Path(...), Path(...)]
     """
     figures: Dict[str, List[Path]] = {}
-    viz_dir = run_dir / "plots" / "viz"
-
-    if not viz_dir.exists():
-        return figures
-
-    # Recursively find all image files
     image_extensions = {".png", ".jpg", ".jpeg", ".svg", ".gif"}
+    
+    # Directories to scan for figures
+    scan_dirs = [
+        run_dir / "plots" / "viz",
+        run_dir / "figures",
+        run_dir / "trust" / "plots",
+        run_dir / "drift" / "plots",
+        run_dir / "qc" / "plots",
+        run_dir / "plots",  # Catch-all for any plots/ directory
+    ]
 
-    for category_dir in viz_dir.iterdir():
-        if not category_dir.is_dir():
+    for base_dir in scan_dirs:
+        if not base_dir.exists():
             continue
 
-        category_name = category_dir.name
-        image_paths = []
-
-        for img_path in category_dir.rglob("*"):
-            if img_path.suffix.lower() in image_extensions and img_path.is_file():
-                image_paths.append(img_path)
-
-        if image_paths:
-            figures[category_name] = sorted(image_paths)
+        # If base_dir is the figures/ or plots/ root, scan directly
+        if base_dir.name in {"figures", "plots"}:
+            for img_path in base_dir.rglob("*"):
+                if img_path.suffix.lower() in image_extensions and img_path.is_file():
+                    # Get category from parent directory or use "general"
+                    if img_path.parent == base_dir:
+                        category = "general"
+                    else:
+                        category = img_path.parent.name
+                    figures.setdefault(category, []).append(img_path)
+        else:
+            # For categorized dirs (viz, trust/plots, etc), use parent as category
+            for img_path in base_dir.rglob("*"):
+                if img_path.suffix.lower() in image_extensions and img_path.is_file():
+                    # Category from direct parent of base_dir
+                    category = base_dir.parent.name if base_dir.parent != run_dir else base_dir.name
+                    figures.setdefault(category, []).append(img_path)
+    
+    # Sort figure lists
+    for category in figures:
+        figures[category] = sorted(set(figures[category]))  # Remove duplicates
 
     return figures

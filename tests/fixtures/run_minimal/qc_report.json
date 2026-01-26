@@ -1,0 +1,18 @@
+{
+  "status": "pass",
+  "pass_rate": 0.95,
+  "checks_passed": 9,
+  "checks_total": 10,
+  "issues": [
+    {
+      "check": "missing_values",
+      "status": "pass",
+      "details": "No missing values detected"
+    },
+    {
+      "check": "class_balance",
+      "status": "pass",
+      "details": "All classes have sufficient samples (min: 8)"
+    }
+  ]
+}

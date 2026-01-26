@@ -1,0 +1,9 @@
+{
+  "batch_ids": ["batch_001", "batch_002", "batch_003"],
+  "drift_scores": [0.087, 0.156, 0.043],
+  "mean_drift": 0.095,
+  "max_drift": 0.156,
+  "min_drift": 0.043,
+  "method": "wasserstein",
+  "reference_batch": "batch_001"
+}

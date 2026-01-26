@@ -7,13 +7,32 @@ from typing import Iterable, Sequence, Tuple
 import numpy as np
 import pandas as pd
 
-__all__ = ["integrate_bands", "compute_band_features"]
+from foodspec.features.schema import BandSpec, FeatureInfo, normalize_assignment
+
+__all__ = ["integrate_bands", "compute_band_features", "extract_band_features"]
+
+
+def _apply_baseline_matrix(sub_x: np.ndarray, rule: str) -> np.ndarray:
+    rule = (rule or "none").lower()
+    if rule in {"none", "off"}:
+        return sub_x
+    if rule == "linear":
+        start = sub_x[:, :1]
+        end = sub_x[:, -1:]
+        t = np.linspace(0.0, 1.0, sub_x.shape[1])[None, :]
+        baseline = start + (end - start) * t
+        return sub_x - baseline
+    if rule == "min":
+        return sub_x - np.nanmin(sub_x, axis=1, keepdims=True)
+    if rule == "median":
+        return sub_x - np.nanmedian(sub_x, axis=1, keepdims=True)
+    raise ValueError(f"Unsupported baseline rule: {rule}")
 
 
 def compute_band_features(
     X: np.ndarray,
     wavenumbers: np.ndarray,
-    bands: Sequence[Tuple[str, float, float]],
+    bands: Sequence[Tuple[str, float, float]] | Sequence[BandSpec],
     metrics: Iterable[str] = ("integral",),
 ) -> pd.DataFrame:
     """Compute band-level features (integral/mean/max/slope).
@@ -21,7 +40,7 @@ def compute_band_features(
     Args:
         X: 2D array of spectra (samples × wavenumbers).
         wavenumbers: 1D array of wavenumber values matching X columns.
-        bands: Sequence of (label, min_wn, max_wn) tuples defining bands.
+        bands: Sequence of (label, min_wn, max_wn) tuples or BandSpec objects defining bands.
         metrics: Feature types to compute per band ("integral", "mean", "max", "slope").
 
     Returns:
@@ -42,7 +61,15 @@ def compute_band_features(
     metrics = list(metrics)
     single_integral = len(metrics) == 1 and metrics[0] == "integral"
     data = {}
-    for label, min_wn, max_wn in bands:
+    for item in bands:
+        baseline = "none"
+        if isinstance(item, BandSpec):
+            label = item.name
+            min_wn = item.start
+            max_wn = item.end
+            baseline = item.baseline
+        else:
+            label, min_wn, max_wn = item
         if min_wn >= max_wn:
             raise ValueError(f"Band {label} has invalid range.")
         mask = (wavenumbers >= min_wn) & (wavenumbers <= max_wn)
@@ -53,6 +80,8 @@ def compute_band_features(
             continue
         sub_x = X[:, mask]
         sub_w = wavenumbers[mask]
+        if baseline and str(baseline).lower() not in {"none", "off"}:
+            sub_x = _apply_baseline_matrix(sub_x, str(baseline))
         if "integral" in metrics:
             col_name = label if single_integral else f"{label}_integral"
             data[col_name] = np.trapezoid(sub_x, x=sub_w, axis=1)
@@ -64,6 +93,35 @@ def compute_band_features(
             data[f"{label}_slope"] = (sub_x[:, -1] - sub_x[:, 0]) / (sub_w[-1] - sub_w[0] + 1e-12)
 
     return pd.DataFrame(data)
+
+
+def extract_band_features(
+    X: np.ndarray,
+    wavenumbers: np.ndarray,
+    bands: Sequence[BandSpec],
+    *,
+    metrics: Iterable[str] = ("integral",),
+) -> tuple[pd.DataFrame, list[FeatureInfo]]:
+    """Extract band features and return feature descriptors."""
+
+    df = compute_band_features(X, wavenumbers, bands, metrics=metrics)
+    info: list[FeatureInfo] = []
+    metrics = tuple(metrics)
+    single_integral = len(metrics) == 1 and metrics[0] == "integral"
+    for band in bands:
+        for metric in metrics:
+            col = band.name if (metric == "integral" and single_integral) else f"{band.name}_{metric}"
+            description = f"{metric} for band {band.name} ({band.start:.0f}-{band.end:.0f} cm^-1)."
+            info.append(
+                FeatureInfo(
+                    name=col,
+                    ftype="band",
+                    assignment=normalize_assignment(band.assignment),
+                    description=description,
+                    params={"start": band.start, "end": band.end, "metric": metric},
+                )
+            )
+    return df, info
 
 
 def integrate_bands(

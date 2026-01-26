@@ -265,6 +265,7 @@
       <nav class="sidebar-nav">
         <li><a href="#summary">Summary</a></li>
         {% if 'metrics' in enabled_sections %}<li><a href="#metrics">Metrics</a></li>{% endif %}
+        {% if 'multivariate' in enabled_sections and multivariate %}<li><a href="#multivariate">Multivariate</a></li>{% endif %}
         {% if 'qc' in enabled_sections %}<li><a href="#qc">QC Results</a></li>{% endif %}
         {% if 'predictions' in enabled_sections %}<li><a href="#predictions">Predictions</a></li>{% endif %}
         {% if 'uncertainty' in enabled_sections %}<li><a href="#uncertainty">Uncertainty</a></li>{% endif %}
@@ -322,10 +323,159 @@
       </section>
       {% endif %}
 
+      <!-- Multivariate Section -->
+      {% if 'multivariate' in enabled_sections and (multivariate_section.methods or multivariate) %}
+      <section id="multivariate">
+        <h2>Multivariate Analysis</h2>
+
+        {% if multivariate_section.methods %}
+          {% for method in multivariate_section.methods %}
+            <h3 style="margin: 1rem 0 0.5rem;">{{ method.name|upper }}</h3>
+            {% if method.summary %}
+            <table>
+              <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+              <tbody>
+                {% for key, value in method.summary.items() %}
+                <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+
+            {% if method.head %}
+            <p style="font-weight:600; margin: 0.5rem 0;">Scores preview</p>
+            <table>
+              <thead><tr>{% for key in method.head[0].keys() %}<th>{{ key }}</th>{% endfor %}</tr></thead>
+              <tbody>
+              {% for row in method.head %}
+                <tr>{% for value in row.values() %}<td>{{ value }}</td>{% endfor %}</tr>
+              {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+
+            {% if method.figures %}
+            <div class="figure-grid">
+              {% for fig in method.figures %}
+              <div class="figure-item">
+                <img src="{{ fig }}" alt="{{ method.name }}" loading="lazy" />
+                <div class="figure-caption">{{ fig.name }}</div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        {% set mv_summary = multivariate.get('multivariate_summary') %}
+        {% if mv_summary %}
+        <table>
+          <thead>
+            <tr>
+              {% for key in mv_summary[0].keys() %}<th>{{ key }}</th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in mv_summary %}
+            <tr>
+              {% for value in row.values() %}<td>{{ value }}</td>{% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+        {% set mv_qc = multivariate.get('multivariate_qc') %}
+        {% if mv_qc %}
+        <h3 style="margin: 1rem 0 0.5rem;">QC Flags</h3>
+        <table>
+          <thead>
+            <tr>
+              {% for key in mv_qc[0].keys() %}<th>{{ key }}</th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in mv_qc %}
+            <tr>
+              {% for value in row.values() %}<td>{{ value }}</td>{% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+        {% set mv_shift = multivariate.get('multivariate_group_shift') %}
+        {% if mv_shift %}
+        <h3 style="margin: 1rem 0 0.5rem;">Group Shift</h3>
+        <table>
+          <thead>
+            <tr>
+              {% for key in mv_shift[0].keys() %}<th>{{ key }}</th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in mv_shift %}
+            <tr>
+              {% for value in row.values() %}<td>{{ value }}</td>{% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+        {% if not mv_summary and not mv_qc and not mv_shift %}
+        <p class="empty-state">No multivariate artifacts available.</p>
+        {% endif %}
+      </section>
+      {% endif %}
+
       <!-- QC Section -->
-      {% if 'qc' in enabled_sections and qc %}
+      {% set qc_summary = trust_outputs.get('qc_summary') if trust_outputs else {} %}
+      {% if 'qc' in enabled_sections and (qc or qc_summary) %}
       <section id="qc">
         <h2>QC Results</h2>
+        {% if qc_summary and qc_summary.get('multivariate') %}
+        {% set mv = qc_summary.get('multivariate') %}
+        <div class="info-box">
+          <p><strong>Multivariate QC:</strong> {{ mv.status | upper }}</p>
+          <p><strong>Outliers:</strong> {{ mv.outliers.n_flagged }} flagged</p>
+        </div>
+        {% if multivariate and multivariate.get('multivariate_qc') %}
+        <h3 style="margin: 1rem 0 0.5rem;">Top Outliers</h3>
+        <table>
+          <thead>
+            <tr>
+              {% for key in multivariate['multivariate_qc'][0].keys() %}<th>{{ key }}</th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in multivariate['multivariate_qc'][:10] %}
+            <tr>
+              {% for value in row.values() %}<td>{{ value }}</td>{% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if multivariate and multivariate.get('multivariate_group_shift') %}
+        <h3 style="margin: 1rem 0 0.5rem;">Drift Summary</h3>
+        <table>
+          <thead>
+            <tr>
+              {% for key in multivariate['multivariate_group_shift'][0].keys() %}<th>{{ key }}</th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in multivariate['multivariate_group_shift'] %}
+            <tr>
+              {% for value in row.values() %}<td>{{ value }}</td>{% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% endif %}
+
         {% if qc %}
         <table>
           <thead>

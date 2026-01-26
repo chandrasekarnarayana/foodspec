@@ -35,7 +35,7 @@ from scipy.sparse.linalg import spsolve
 from sklearn.covariance import MinCovDet
 from sklearn.preprocessing import RobustScaler
 
-from foodspec.core.dataset import FoodSpectrumSet
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Background Subtraction

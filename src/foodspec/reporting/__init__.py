@@ -15,7 +15,12 @@ from foodspec.reporting.cards import (
     DeploymentReadiness,
     ExperimentCard,
     build_experiment_card,
+    build_experiment_card_from_bundle,
 )
+from foodspec.reporting.compare import compare_runs
+from foodspec.reporting.dossier import DossierBuilder, ScientificDossierBuilder
+from foodspec.reporting.figures import FigureExporter, FigureStyle, radar_plot
+from foodspec.reporting.html import HtmlReportBuilder
 from foodspec.reporting.modes import (
     ModeConfig,
     ReportMode,
@@ -23,6 +28,7 @@ from foodspec.reporting.modes import (
     list_modes,
     validate_artifacts,
 )
+from foodspec.reporting.schema import RunBundle
 
 # === BACKWARD COMPATIBILITY: IMPORT FROM DEPRECATED reporting.py ===
 # These functions are used by CLI commands and other modules.
@@ -205,6 +211,15 @@ __all__ = [
     "ConfidenceLevel",
     "DeploymentReadiness",
     "build_experiment_card",
+    "build_experiment_card_from_bundle",
+    "RunBundle",
+    "HtmlReportBuilder",
+    "FigureExporter",
+    "FigureStyle",
+    "radar_plot",
+    "compare_runs",
+    "DossierBuilder",
+    "ScientificDossierBuilder",
     # Backward-compatible utilities
     "create_run_dir",
     "create_report_folder",
@@ -220,4 +235,3 @@ __all__ = [
     "export_run_metadata",
     "export_model_and_metrics",
 ]
-

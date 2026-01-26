@@ -1,7 +1,7 @@
 """Raman loader wrappers."""
 from __future__ import annotations
 
-from foodspec.io.loaders import load_folder
+from foodspec.io.loaders.folder import load_folder
 
 
 def load_raman_folder(*args, **kwargs):
@@ -11,4 +11,3 @@ def load_raman_folder(*args, **kwargs):
 
 
 __all__ = ["load_raman_folder"]
-

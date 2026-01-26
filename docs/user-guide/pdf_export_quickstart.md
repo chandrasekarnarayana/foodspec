@@ -162,8 +162,8 @@ export_pdf(
 ## Next Steps
 
 - 📖 Read [full documentation](./pdf_export.md)
-- 🔬 Run [demo script](../examples/pdf_export_demo.py)
-- ✅ Check [test examples](../tests/reporting/test_pdf.py)
+- 🔬 Run [demo script](../../examples/new-features/pdf_export_demo.py)
+- ✅ Check [test examples](../../tests/reporting/test_pdf.py)
 
 ---
 
