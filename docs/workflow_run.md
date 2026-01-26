@@ -1,23 +1,72 @@
-# Workflow Run (Phase 3)
+# Workflow Run (Phase 1/2/3)
 
-Phase 3 is the **canonical workflow entry point** for FoodSpec. It provides deterministic, auditable execution with strict regulatory compliance modes.
+The FoodSpec workflow system provides three orchestration phases with increasing regulatory rigor. Phase 3 is the **canonical entry point** for production workflows with strict regulatory compliance modes.
+
+## Phase Overview
+
+| Phase | QC | Trust | Reporting | Use Case |
+|-------|-----|-------|-----------|----------|
+| **Phase 1** | Advisory | Optional | Optional | Development, rapid prototyping |
+| **Phase 2** | Enforced | Optional | Optional | QC validation, data quality checks |
+| **Phase 3** | Enforced | Mandatory* | Mandatory* | Regulatory submissions, production |
+
+*In strict regulatory mode
 
 ## Quick Start
 
 ```bash
-# Minimal research workflow
-foodspec workflow-run \
-  --protocol examples/protocols/minimal_phase3.yaml \
-  --input data.csv \
-  --output-dir ./results
-
-# Strict regulatory workflow
-foodspec workflow-run \
-  --protocol examples/protocols/minimal_phase3.yaml \
+# Phase 1: Minimal workflow (development)
+python -m foodspec.cli.main workflow-run-strict \
+  tests/fixtures/minimal_protocol_phase3.yaml \
   --input data.csv \
   --output-dir ./results \
-  --mode regulatory \
-  --strict
+  --phase 1
+
+# Phase 2: QC enforcement
+python -m foodspec.cli.main workflow-run-strict \
+  tests/fixtures/minimal_protocol_phase3.yaml \
+  --input data.csv \
+  --output-dir ./results \
+  --phase 2
+
+# Phase 3: Full pipeline (default)
+python -m foodspec.cli.main workflow-run-strict \
+  tests/fixtures/minimal_protocol_phase3.yaml \
+  --input data.csv \
+  --output-dir ./results \
+  --phase 3 \
+  --allow-placeholder-trust  # Required for development until real trust implemented
+```
+
+## Placeholder Trust Governance (Phase 3)
+
+**CRITICAL**: The trust stack is currently a **placeholder implementation**. It is NOT production-ready for regulatory submissions.
+
+### Default Behavior (Strict Regulatory Mode)
+- Placeholder trust is **REJECTED** by default
+- Exit code: **6** (TrustError)
+- Error message: "Placeholder trust stack not allowed in strict regulatory mode"
+
+### Development Mode
+- Use `--allow-placeholder-trust` flag to accept placeholder for development/testing
+- Logs warning: "⚠️ Placeholder trust stack being used in strict regulatory mode"
+- trust_stack.json includes: `"implementation": "placeholder"`, `"capabilities": []`
+
+### Example Commands
+
+```bash
+# REJECTED (exit 6) - default behavior
+python -m foodspec.cli.main workflow-run-strict \
+  protocol.yaml \
+  --input data.csv \
+  --phase 3
+
+# ACCEPTED (exit 0) - development only
+python -m foodspec.cli.main workflow-run-strict \
+  protocol.yaml \
+  --input data.csv \
+  --phase 3 \
+  --allow-placeholder-trust
 ```
 
 ## Workflow Modes
@@ -31,21 +80,21 @@ foodspec workflow-run \
 - **Use case**: Developing new methods, testing hypotheses
 
 ```bash
-foodspec workflow-run --protocol proto.yaml --input data.csv --output-dir out
+python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv --output-dir out --mode research
 ```
 
 ### Regulatory Mode
 - **Intent**: Pre-submission, validation workflows
 - **QC**: Enforced (must pass or workflow fails)
-- **Trust**: Mandatory (if non-placeholder, required)
+- **Trust**: Mandatory (placeholder rejected unless --allow-placeholder-trust)
 - **Reporting**: Mandatory
 - **Modeling**: Required
 - **Model approval**: Must be in approved registry
-- **Exit Code**: 0 on success, specific codes on failure
+- **Exit Code**: 0 on success, specific codes on failure (see below)
 - **Use case**: Before regulatory submission
 
 ```bash
-foodspec workflow-run --protocol proto.yaml --input data.csv --output-dir out --mode regulatory
+python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv --output-dir out --mode regulatory --phase 3 --allow-placeholder-trust
 ```
 
 ### Strict Regulatory Mode
@@ -65,20 +114,43 @@ foodspec workflow-run --protocol proto.yaml --input data.csv --output-dir out --
 
 ## Exit Codes
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| 0 | SUCCESS | All stages passed, artifact contract satisfied |
-| 4 | ProtocolError | Protocol invalid or model not approved |
-| 5 | ModelingError | Modeling fit/predict failed |
-| 6 | TrustError | Trust stack failed or skipped in strict mode |
-| 7 | QCError | QC gates failed in enforce mode |
-| 8 | ReportingError | Report generation failed or skipped in strict mode |
-| 9 | ArtifactError | Artifact contract incomplete (e.g., missing files) |
+| Code | Meaning | What Failed | What To Do Next |
+|------|---------|-------------|-----------------|
+| **0** | SUCCESS | ✅ All stages passed | Artifact contract satisfied, proceed with review |
+| **2** | ConfigError | Invalid configuration | Check WorkflowConfig parameters and protocol YAML |
+| **4** | ProtocolError | Protocol/model invalid | Use approved model from registry or fix protocol syntax |
+| **5** | ModelingError | Model fit/predict failed | Check data format, labels, feature matrix shape |
+| **6** | TrustError | **Placeholder trust rejected** | Use `--allow-placeholder-trust` for development OR implement real trust stack |
+| **7** | QCError | QC gates failed | Fix data quality issues (missing values, class imbalance, etc.) |
+| **8** | ReportingError | Report generation failed | Check report template and data availability |
+| **9** | ArtifactError | Required artifacts missing | Check artifact contract validation, may be internal error |
+
+### Exit Code 6: Trust Error (Placeholder Governance)
+
+**Most Common Cause**: Strict regulatory mode rejects placeholder trust by default.
+
+```bash
+# Problem: Exit 6 with "Placeholder trust stack not allowed"
+python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv --phase 3
+# Exit code: 6
+
+# Solution 1: Development/Testing (allow placeholder)
+python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv --phase 3 --allow-placeholder-trust
+# Exit code: 0 (with warning log)
+
+# Solution 2: Production (implement real trust)
+# Implement calibration, conformal prediction, abstention mechanisms
+# Then update _run_trust_stack_real() to return "implementation": "real"
+```
 
 ### Interpreting Exit Codes in Strict Regulatory
 
 - **Exit 0**: Artifact contract v3 fully satisfied. All required files present. Audit trail complete.
-- **Exit 4**: Model not in approved registry. Retry with approved model.
+- **Exit 4**: Model not in approved registry. Retry with approved model from `src/foodspec/workflow/model_registry.py`.
+- **Exit 6**: Trust implementation issue. Either allow placeholder (dev) or implement real trust (production).
+- **Exit 7**: Data quality issue. Review QC report at `{run_dir}/artifacts/qc_results.json`.
+- **Exit 8**: Reporting infrastructure issue. Check logs at `{run_dir}/logs/run.log`.
+- **Exit 9**: Artifact contract violation. Check `{run_dir}/error.json` for details.
 - **Exit 7**: QC gates failed. Review data quality in `artifacts/qc_results.json`.
 - **Exit 6/8**: Trust or reporting forced but failed/skipped. Use research mode to debug.
 
@@ -191,21 +263,89 @@ foodspec workflow-run \
   --enable-modeling              # Force modeling (default: config-driven)
   --enable-trust                 # Force trust stack (default: config-driven)
   --enable-reporting             # Force reporting (default: config-driven)
+  --phase {1,2,3}                # Workflow phase (1=minimal, 2=QC, 3=full, default=3)
+  --allow-placeholder-trust      # Allow placeholder trust in strict mode (dev only)
 ```
+
+## Contract Digest Lock (Drift Prevention)
+
+The artifact contract (`src/foodspec/workflow/contracts/contract_v3.json`) defines which artifacts are required for successful workflow completion. To prevent unintentional changes, the contract digest is locked in tests.
+
+### Current Contract v3 Digest
+```
+61f345763075100e57f0ea0cbb9e098aabae15549aad43933a230ce1c4a9154f
+```
+
+### What is the Digest?
+- SHA256 hash of all required artifact paths across contract sections
+- Computed from sorted, deduplicated artifact keys
+- Includes: required_always, required_qc, required_trust, required_reporting, required_modeling, etc.
+- Does NOT include artifact descriptions (only keys)
+
+### Test Protection
+The test `test_contract_v3_digest_lock` in `tests/test_workflow_phase3_e2e_real.py` verifies:
+```python
+EXPECTED_DIGEST = "61f345763075100e57f0ea0cbb9e098aabae15549aad43933a230ce1c4a9154f"
+assert current_digest == EXPECTED_DIGEST
+```
+
+### When to Update the Digest
+
+**If test fails with "Contract digest mismatch":**
+
+1. **Check if contract_v3.json was intentionally modified**
+   - Did you add/remove required artifacts?
+   - Did you change artifact paths?
+
+2. **If intentional:**
+   - Run: `python -c "from foodspec.workflow.artifact_contract import ArtifactContract; print(ArtifactContract.compute_digest(ArtifactContract._load_contract('v3')))"`
+   - Copy new digest to test's `EXPECTED_DIGEST`
+   - Commit with clear message explaining contract change
+
+3. **If unintentional:**
+   - Revert `contract_v3.json` to previous state
+   - Re-run tests to verify digest matches
+
+### Why This Matters
+- Prevents accidental artifact requirement changes
+- Ensures regulatory workflows have stable expectations
+- Requires explicit developer acknowledgment for contract modifications
 
 ## Examples
 
-### Example 1: Quick Research Run
+### Example 1: Quick Research Run (Phase 1)
 ```bash
-foodspec workflow-run \
-  --protocol examples/protocols/minimal_phase3.yaml \
-  --input examples/data/small_dataset.csv \
+python -m foodspec.cli.main workflow-run-strict \
+  tests/fixtures/minimal_protocol_phase3.yaml \
+  --input data.csv \
   --output-dir ./research_run \
+  --phase 1 \
   --seed 42
 ```
-**Expected**: exit 0, advisory QC, optional trust/reporting
+**Expected**: exit 0, advisory QC, minimal artifacts
 
-### Example 2: Regulatory Pre-Check
+### Example 2: QC Validation (Phase 2)
+```bash
+python -m foodspec.cli.main workflow-run-strict \
+  tests/fixtures/minimal_protocol_phase3.yaml \
+  --input data.csv \
+  --output-dir ./qc_check \
+  --phase 2
+```
+**Expected**: exit 0 if QC passes, exit 7 if QC fails
+
+### Example 3: Full Pipeline Development (Phase 3 + Placeholder)
+```bash
+python -m foodspec.cli.main workflow-run-strict \
+  tests/fixtures/minimal_protocol_phase3.yaml \
+  --input data.csv \
+  --output-dir ./dev_run \
+  --phase 3 \
+  --allow-placeholder-trust
+```
+**Expected**: exit 0, all artifacts created, warning about placeholder trust
+
+### Example 4: Regulatory Pre-Check
 ```bash
 foodspec workflow-run \
   --protocol examples/protocols/minimal_phase3.yaml \
