@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 RQ Engine Utility Functions
 ===========================
@@ -7,6 +5,7 @@ RQ Engine Utility Functions
 Helper functions for ratio analysis and statistics.
 """
 
+from __future__ import annotations
 
 from typing import Dict, List
 

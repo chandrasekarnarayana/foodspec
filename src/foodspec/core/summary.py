@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Dataset summary metrics for food spectroscopy.
 
@@ -23,6 +21,7 @@ Provides at-a-glance quality indicators for spectral datasets:
     >>> print(summary["overall_quality_score"])
 """
 
+from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Optional

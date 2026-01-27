@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Ratio-Quality (RQ) Engine - Main Engine Class
 ==============================================
@@ -7,6 +5,7 @@ Ratio-Quality (RQ) Engine - Main Engine Class
 Core engine for ratio analysis.
 """
 
+from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 

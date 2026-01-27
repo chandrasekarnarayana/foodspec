@@ -8,11 +8,11 @@ from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
 def synthetic_heating_dataset():
     """Generate a deterministic synthetic Raman spectrum dataset for heating quality demos.
-    
+
     Creates 20 synthetic spectra over a heating time course (0-30 time units) with two
     peaks that change in intensity to simulate a heating experiment. Fixed random seed
     ensures reproducibility.
-    
+
     Returns
     -------
     FoodSpectrumSet

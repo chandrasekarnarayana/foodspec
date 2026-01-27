@@ -247,7 +247,8 @@ class Experiment:
         # Initialize run directory
         try:
             run_dir = init_run_dir(outdir)
-            run_logger = get_logger(run_dir) if verbose else None
+            if verbose:
+                get_logger(run_dir)
         except Exception as e:
             return RunResult(
                 run_id="error",

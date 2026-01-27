@@ -124,7 +124,7 @@ class ArtifactSnapshot:
 class RunManifest:
     """
     Comprehensive run manifest.
-    
+
     Contains all metadata needed for reproducibility and provenance.
     """
 

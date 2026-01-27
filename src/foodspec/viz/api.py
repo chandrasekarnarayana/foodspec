@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Consistent plotting API for FoodSpec visualizations."""
+
+from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
@@ -1111,7 +1111,7 @@ def plot_ewma_chart(
         values = _rng(seed).normal(size=50)
     lam = float(payload.get("lam", 0.2))
     l_val = float(payload.get("l", 3.0))
-    result = qc_stats.ewma_chart(values, lam=lam, l=l_val)
+    result = qc_stats.ewma_chart(values, lam=lam, l_limit=l_val)
     fig = qc_viz.plot_ewma(result["ewma"], result["lcl"], result["ucl"], title="EWMA")
     base = _figure_base(outdir, name or "ewma_chart")
     if base is not None:

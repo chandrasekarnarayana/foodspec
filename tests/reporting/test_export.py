@@ -1,9 +1,7 @@
 """Tests for reproducibility pack and archive export functionality."""
 
-import hashlib
 import json
 import zipfile
-from pathlib import Path
 
 import pytest
 

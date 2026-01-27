@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Design of experiments helpers (factorial, fractional, response surface, D-optimal).
 """
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Sequence

@@ -33,7 +33,7 @@ class ArtifactType(str, Enum):
 class Artifact:
     """
     Single artifact in registry.
-    
+
     Represents one output file/object.
     """
 
@@ -70,7 +70,7 @@ class Artifact:
 class ArtifactRegistry:
     """
     Central registry for all run artifacts.
-    
+
     Tracks:
     - All output files
     - File types and purposes
@@ -97,7 +97,7 @@ class ArtifactRegistry:
     ) -> Artifact:
         """
         Register an artifact.
-        
+
         Args:
             name: Unique name
             artifact_type: Type of artifact
@@ -105,7 +105,7 @@ class ArtifactRegistry:
             description: Human description
             source_node: Which DAG node produced this
             metadata: Extra metadata
-            
+
         Returns:
             Registered Artifact
         """
@@ -208,12 +208,12 @@ class ArtifactRegistry:
     def validate(self) -> bool:
         """
         Validate registry consistency.
-        
+
         Checks:
         - All artifact paths exist
         - No duplicate names
         - Size metadata valid
-        
+
         Returns:
             True if valid
         """
@@ -239,7 +239,7 @@ class ArtifactRegistry:
     def export_manifest(self, out_path: Path) -> Path:
         """
         Export artifact manifest for provenance tracking.
-        
+
         Manifest lists all artifacts with their provenance.
         """
         manifest = {

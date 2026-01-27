@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 
 """
 CLI to run a FoodSpec protocol and produce a run bundle.
@@ -18,6 +17,7 @@ Overrides:
         --seed 42 --cv-folds 3 --normalization-mode vector --baseline-method rubberband
 """
 
+from __future__ import annotations
 
 import argparse
 import glob

@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_auc_score as sklearn_roc_auc
 
 from foodspec.modeling.diagnostics import (
     PerClassRocMetrics,

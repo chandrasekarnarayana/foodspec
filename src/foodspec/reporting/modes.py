@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Reporting modes and their configurations.
 
@@ -13,6 +11,7 @@ Modes:
   - MONITORING: Emphasizes drift detection and baseline comparison
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum

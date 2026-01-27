@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Deprecated shim for protocol engine.
 
@@ -7,6 +5,7 @@ Use foodspec.protocol instead. This module is retained for backward
 compatibility and will be removed in a future release.
 """
 
+from __future__ import annotations
 
 import warnings
 

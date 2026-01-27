@@ -179,7 +179,7 @@ def classification_metrics_bundle(
     cm_counts = confusion_matrix(y_true, y_pred, labels=labels)
     cm_norm = confusion_matrix(y_true, y_pred, labels=labels, normalize="true")
     confusion = {
-        "labels": [str(l) for l in labels],
+        "labels": [str(label) for label in labels],
         "counts": cm_counts.tolist(),
         "normalized": cm_norm.tolist(),
     }

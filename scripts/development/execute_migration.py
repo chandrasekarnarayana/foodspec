@@ -219,7 +219,7 @@ def deprecated(
     alternative: str | None = None
 ) -> Callable:
     """Decorator to mark functions/classes as deprecated.
-    
+
     Parameters
     ----------
     reason : str
@@ -228,7 +228,7 @@ def deprecated(
         Version when feature will be removed
     alternative : str, optional
         Suggested alternative to use
-    
+
     Examples
     --------
     >>> @deprecated("Use new_function instead", alternative="new_function")
@@ -242,10 +242,10 @@ def deprecated(
             if alternative:
                 msg += f" Use {alternative} instead."
             msg += f" Will be removed in v{version}."
-            
+
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             return func(*args, **kwargs)
-        
+
         # Add deprecation marker to docstring
         if wrapper.__doc__:
             wrapper.__doc__ = (
@@ -254,7 +254,7 @@ def deprecated(
                 f"    Will be removed in v{version}.\\n\\n"
                 f"{wrapper.__doc__}"
             )
-        
+
         return wrapper
     return decorator
 
@@ -265,7 +265,7 @@ def warn_deprecated_import(
     version: str = "2.0.0"
 ):
     """Issue warning for deprecated module import.
-    
+
     Parameters
     ----------
     old_module : str
@@ -675,7 +675,7 @@ git tag -a v1.1.0-rc1 -m "v1.1.0-rc1: Deprecation warnings"
 
 Review Files:
 - docs/migration/v1-to-v2.md - Migration guide
-- src/foodspec/utils/deprecation.py - Deprecation utilities  
+- src/foodspec/utils/deprecation.py - Deprecation utilities
 - CHANGELOG.md - Version history
 - BRANCH_MIGRATION_PLAN.md - Full migration plan
 

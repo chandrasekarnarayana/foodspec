@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Reliability and calibration evaluation utilities.
 
@@ -7,6 +5,7 @@ Provides metrics for assessing whether predicted probabilities are well-calibrat
 (i.e., predicted confidence matches empirical accuracy).
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Literal, Tuple
@@ -153,7 +152,6 @@ def reliability_curve_data(
     if y_true.shape[0] != proba.shape[0]:
         raise ValueError("y_true and proba must have same number of samples")
 
-    n_samples = y_true.shape[0]
     n_classes = proba.shape[1]
 
     # Validate labels

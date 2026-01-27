@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-"""
-Environment check utility for FoodSpec.
+"""Environment check utility for FoodSpec.
 Reports presence of key dependencies and optional extras (GUI/Web).
 """
 
+from __future__ import annotations
 
 import importlib
 import sys

@@ -29,7 +29,6 @@ from foodspec.reporting.cards import (
 )
 from foodspec.reporting.modes import ReportMode
 
-
 # Fixtures
 
 def _make_test_manifest(tmp_path: Path) -> RunManifest:
@@ -482,7 +481,7 @@ class TestDeploymentReadiness:
         _write_csv(artifacts.metrics_path, metrics)
 
         context = ReportContext.load(tmp_path)
-        card = build_experiment_card(context, mode=ReportMode.REGULATORY)
+        build_experiment_card(context, mode=ReportMode.REGULATORY)
 
         # If hashes are present (which they should be from build()),
         # deployment should be based on confidence

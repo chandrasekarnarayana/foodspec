@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Trust and uncertainty metrics for calibration and abstention."""
+
+from __future__ import annotations
 
 from typing import Iterable, List, Tuple
 

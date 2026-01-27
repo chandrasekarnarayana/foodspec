@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 
 from foodspec.core.dataset import FoodSpectrumSet
-from foodspec.qc.engine import compute_health_scores
 from foodspec.qc.dataset_qc import check_class_balance
+from foodspec.qc.engine import compute_health_scores
 
 
 def test_qc_health_scores():

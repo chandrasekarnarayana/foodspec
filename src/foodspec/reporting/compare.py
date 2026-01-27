@@ -79,7 +79,6 @@ def compare_runs(
     metrics_labels = [r["run_id"] for r in rows] if rows else ["baseline"]
     metrics_values = [r["score"] for r in rows] if rows else [0.0]
     fig = radar_plot(metrics_labels, metrics_values, title="Run Comparison", seed=seed)
-    radar_path = compare_dir / "radar"
     exporter = FigureExporter(style=style, size_preset="single")
     outputs = exporter.export(fig, compare_dir, "radar")
     png_path = next((p for p in outputs if p.suffix == ".png"), compare_dir / "radar.png")

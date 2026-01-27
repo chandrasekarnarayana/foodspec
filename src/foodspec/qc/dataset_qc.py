@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Class balance diagnostics for preventing silent bias in food spectroscopy ML.
 
@@ -22,6 +20,7 @@ leads to high-accuracy classifiers that always predict the majority class.
     >>>     print(f"⚠️ Imbalance ratio: {balance['imbalance_ratio']:.1f}:1")
 """
 
+from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Optional

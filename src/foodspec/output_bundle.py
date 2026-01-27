@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 output_bundle - DEPRECATED
 
@@ -17,7 +15,13 @@ Migration Guide:
 See: docs/migration/v1-to-v2.md
 """
 
+from __future__ import annotations
+
+import json
 import warnings
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List
 
 warnings.warn(
     "foodspec.output_bundle is deprecated and will be removed in v2.0.0. "
@@ -29,12 +33,6 @@ warnings.warn(
 
 # Original module content continues below...
 # ==============================================
-
-
-import json
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List
 
 
 def create_run_folder(base_dir: Path) -> Path:

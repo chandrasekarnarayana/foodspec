@@ -45,7 +45,7 @@ class TestROCIntegration:
     def test_roc_computed_by_default(self, binary_classification_data):
         """Test that ROC diagnostics are computed by default."""
         X, y = binary_classification_data
-        
+
         result = fit_predict(
             X,
             y,
@@ -56,7 +56,7 @@ class TestROCIntegration:
             allow_random_cv=True,
             outcome_type=OutcomeType.CLASSIFICATION,
         )
-        
+
         assert result.roc_diagnostics is not None
         assert result.roc_diagnostics.per_class is not None
         assert len(result.roc_diagnostics.per_class) > 0
@@ -68,7 +68,7 @@ class TestROCIntegration:
     def test_roc_can_be_disabled(self, binary_classification_data):
         """Test that ROC computation can be disabled."""
         X, y = binary_classification_data
-        
+
         result = fit_predict(
             X,
             y,
@@ -80,14 +80,14 @@ class TestROCIntegration:
             outcome_type=OutcomeType.CLASSIFICATION,
             compute_roc=False,
         )
-        
+
         assert result.roc_diagnostics is None
         assert result.roc_artifacts == {}
 
     def test_roc_artifacts_saved(self, binary_classification_data):
         """Test that ROC artifacts are saved to disk."""
         X, y = binary_classification_data
-        
+
         with tempfile.TemporaryDirectory() as tmpdir:
             result = fit_predict(
                 X,
@@ -101,14 +101,14 @@ class TestROCIntegration:
                 compute_roc=True,
                 roc_output_dir=tmpdir,
             )
-            
+
             # Check artifacts were saved
             assert len(result.roc_artifacts) > 0
-            
+
             output_path = Path(tmpdir)
             assert (output_path / "tables" / "roc_summary.csv").exists()
             assert (output_path / "json" / "roc_diagnostics.json").exists()
-            
+
             # Verify artifact paths are recorded with expected keys
             assert "roc_summary" in result.roc_artifacts
             assert "roc_diagnostics_json" in result.roc_artifacts
@@ -116,7 +116,7 @@ class TestROCIntegration:
     def test_roc_multiclass(self, multiclass_classification_data):
         """Test ROC computation for multiclass classification."""
         X, y = multiclass_classification_data
-        
+
         result = fit_predict(
             X,
             y,
@@ -128,7 +128,7 @@ class TestROCIntegration:
             outcome_type=OutcomeType.CLASSIFICATION,
             compute_roc=True,
         )
-        
+
         assert result.roc_diagnostics is not None
         # Multiclass should have per-class AUCs
         assert len(result.roc_diagnostics.per_class) >= 1
@@ -139,7 +139,7 @@ class TestROCIntegration:
     def test_roc_respects_seed(self, binary_classification_data):
         """Test that ROC computation is reproducible with same seed."""
         X, y = binary_classification_data
-        
+
         result1 = fit_predict(
             X,
             y,
@@ -152,7 +152,7 @@ class TestROCIntegration:
             compute_roc=True,
             roc_n_bootstrap=100,
         )
-        
+
         result2 = fit_predict(
             X,
             y,
@@ -165,7 +165,7 @@ class TestROCIntegration:
             compute_roc=True,
             roc_n_bootstrap=100,
         )
-        
+
         # ROC AUC should be identical (or very close) with same seed
         assert result1.roc_diagnostics is not None
         assert result2.roc_diagnostics is not None
@@ -179,7 +179,7 @@ class TestROCIntegration:
         """Test that ROC is skipped for regression tasks."""
         X = np.random.randn(100, 20)
         y = np.random.randn(100)
-        
+
         result = fit_predict(
             X,
             y,
@@ -191,7 +191,7 @@ class TestROCIntegration:
             outcome_type=OutcomeType.REGRESSION,
             compute_roc=True,  # Should be ignored for regression
         )
-        
+
         # ROC should not be computed for regression
         assert result.roc_diagnostics is None
         assert result.roc_artifacts == {}
@@ -199,7 +199,7 @@ class TestROCIntegration:
     def test_roc_bootstrap_parameter(self, binary_classification_data):
         """Test that ROC bootstrap parameter is respected."""
         X, y = binary_classification_data
-        
+
         result = fit_predict(
             X,
             y,
@@ -212,7 +212,7 @@ class TestROCIntegration:
             compute_roc=True,
             roc_n_bootstrap=500,
         )
-        
+
         assert result.roc_diagnostics is not None
         # Bootstrap CIs should be available
         for class_key, metrics in result.roc_diagnostics.per_class.items():
@@ -222,7 +222,7 @@ class TestROCIntegration:
     def test_roc_results_consistency(self, binary_classification_data):
         """Test consistency of ROC results across calls."""
         X, y = binary_classification_data
-        
+
         # Run with ROC enabled
         result_with_roc = fit_predict(
             X,
@@ -235,7 +235,7 @@ class TestROCIntegration:
             outcome_type=OutcomeType.CLASSIFICATION,
             compute_roc=True,
         )
-        
+
         # Run without ROC
         result_without_roc = fit_predict(
             X,
@@ -248,7 +248,7 @@ class TestROCIntegration:
             outcome_type=OutcomeType.CLASSIFICATION,
             compute_roc=False,
         )
-        
+
         # Classification metrics should be identical
         assert np.array_equal(result_with_roc.y_true, result_without_roc.y_true)
         assert np.array_equal(result_with_roc.y_pred, result_without_roc.y_pred)

@@ -67,7 +67,7 @@ class AcquisitionFunction:
 
 class BayesianOptimizer:
     """Bayesian Optimization for intelligent sample selection.
-    
+
     Parameters
     ----------
     acquisition : {'ei', 'ucb', 'pi'}, default='ei'
@@ -107,14 +107,14 @@ class BayesianOptimizer:
     ) -> np.ndarray:
         """
         Suggest next samples to measure.
-        
+
         Parameters
         ----------
         X_candidates : ndarray of shape (n_candidates, n_features)
             Pool of candidate samples.
         n_suggestions : int, default=1
             Number of samples to suggest.
-        
+
         Returns
         -------
         X_suggested : ndarray of shape (n_suggestions, n_features)
@@ -158,11 +158,11 @@ class BayesianOptimizer:
 
 class ActiveDesign:
     """Active learning design for spectral experiments.
-    
+
     Example
     -------
     >>> from foodspec.doe import ActiveDesign
-    >>> 
+    >>>
     >>> design = ActiveDesign(acquisition='ei')
     >>> X_next = design.suggest(X_candidates, n_suggestions=5)
     >>> # Measure X_next...

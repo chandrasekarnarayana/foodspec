@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Provenance and pipeline visualization helpers."""
+
+from __future__ import annotations
 
 from typing import Any, Dict, List, Mapping
 

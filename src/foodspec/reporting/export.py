@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Reproducibility and archive export system.
 
 Build reproducibility packs and create stable, shareable archives
@@ -7,13 +5,13 @@ of analysis runs for publication and distribution.
 
 Usage:
     from foodspec.reporting.export import build_reproducibility_pack, export_archive
-    
+
     # Build reproducibility pack
     pack_dir = build_reproducibility_pack(
         run_dir="path/to/run",
         out_dir="path/to/pack"
     )
-    
+
     # Export stable archive
     archive_path = export_archive(
         out_zip_path="analysis_run.zip",
@@ -22,6 +20,7 @@ Usage:
     )
 """
 
+from __future__ import annotations
 
 import json
 import shutil
@@ -35,7 +34,7 @@ from typing import Sequence
 
 class ReproducibilityPackBuilder:
     """Build reproducibility packs for analysis runs.
-    
+
     A reproducibility pack contains:
     - Protocol snapshot (expanded YAML/JSON)
     - Manifest with execution metadata
@@ -51,19 +50,19 @@ class ReproducibilityPackBuilder:
 
     def build(self, run_dir: str | Path, out_dir: str | Path) -> Path:
         """Build reproducibility pack.
-        
+
         Parameters
         ----------
         run_dir : str | Path
             Root directory of analysis run
         out_dir : str | Path
             Output directory for reproducibility pack
-            
+
         Returns
         -------
         Path
             Path to reproducibility pack directory
-            
+
         Raises
         ------
         FileNotFoundError
@@ -230,7 +229,7 @@ class ReproducibilityPackBuilder:
 
 class ArchiveExporter:
     """Create stable, shareable archives of analysis runs.
-    
+
     Archives maintain deterministic file ordering for reproducibility
     and support selective inclusion of components.
     """
@@ -247,7 +246,7 @@ class ArchiveExporter:
         include: Sequence[str] | None = None,
     ) -> Path:
         """Export analysis run to stable archive.
-        
+
         Parameters
         ----------
         out_zip_path : str | Path
@@ -257,12 +256,12 @@ class ArchiveExporter:
         include : Sequence[str], optional
             Components to include: "dossier", "figures", "tables", "bundle"
             If None, includes all available components
-            
+
         Returns
         -------
         Path
             Path to created zip file
-            
+
         Raises
         ------
         FileNotFoundError
@@ -350,26 +349,26 @@ def build_reproducibility_pack(
     run_dir: str | Path, out_dir: str | Path
 ) -> Path:
     """Build reproducibility pack from analysis run.
-    
+
     Creates a self-contained pack with:
     - Protocol snapshot (JSON and readable text)
     - Execution manifest
     - Environment freeze (pip list)
     - Data tables (metrics, predictions, QC)
     - Plots index
-    
+
     Parameters
     ----------
     run_dir : str | Path
         Analysis run directory
     out_dir : str | Path
         Output directory for pack
-        
+
     Returns
     -------
     Path
         Path to reproducibility pack directory
-        
+
     Examples
     --------
     >>> pack_dir = build_reproducibility_pack("run_001", "reproducibility_packs")
@@ -384,10 +383,10 @@ def export_archive(
     include: Sequence[str] | None = None,
 ) -> Path:
     """Export analysis run to stable archive.
-    
+
     Creates a zip file with deterministic file ordering for stable,
     reproducible archives.
-    
+
     Parameters
     ----------
     out_zip_path : str | Path
@@ -401,12 +400,12 @@ def export_archive(
         - "tables" : Data tables (metrics, predictions, QC)
         - "bundle" : Complete output bundle
         Defaults to all components if not specified.
-        
+
     Returns
     -------
     Path
         Path to created zip archive
-        
+
     Examples
     --------
     >>> archive_path = export_archive(
@@ -421,14 +420,14 @@ def export_archive(
 
 def get_archive_file_list(zip_path: str | Path) -> list[str]:
     """Get deterministically sorted file list from archive.
-    
+
     Useful for verifying archive contents and order.
-    
+
     Parameters
     ----------
     zip_path : str | Path
         Path to zip archive
-        
+
     Returns
     -------
     list[str]
@@ -446,14 +445,14 @@ def verify_archive_integrity(
     zip_path: str | Path, expected_files: Sequence[str] | None = None
 ) -> bool:
     """Verify archive integrity and optionally check for expected files.
-    
+
     Parameters
     ----------
     zip_path : str | Path
         Path to zip archive
     expected_files : Sequence[str], optional
         List of files expected to be in archive
-        
+
     Returns
     -------
     bool
@@ -488,7 +487,7 @@ class PaperFigureExporter:
 
     def __init__(self, preset: str = "joss"):
         """Initialize exporter with a figure preset.
-        
+
         Parameters
         ----------
         preset : str
@@ -508,7 +507,7 @@ class PaperFigureExporter:
         dpi_png: int = 300,
     ) -> dict:
         """Export a matplotlib figure in multiple formats.
-        
+
         Parameters
         ----------
         fig : matplotlib.figure.Figure
@@ -521,7 +520,7 @@ class PaperFigureExporter:
             Formats to export (default: png, svg)
         dpi_png : int, optional
             DPI for PNG export (default: 300)
-            
+
         Returns
         -------
         dict of str to Path
@@ -558,7 +557,7 @@ class PaperFigureExporter:
         create_readme: bool = True,
     ) -> Path:
         """Create a bundle of paper-ready figures.
-        
+
         Parameters
         ----------
         figures : dict of str to matplotlib.figure.Figure
@@ -569,7 +568,7 @@ class PaperFigureExporter:
             Formats to export (default: png, svg)
         create_readme : bool, optional
             Create README.md with figure descriptions (default: True)
-            
+
         Returns
         -------
         Path
@@ -639,10 +638,10 @@ def export_paper_figures(
     formats: tuple = ("png", "svg"),
 ) -> Path:
     """Export all figures from a run directory in paper-ready formats.
-    
+
     Scans the run directory for all generated figures and exports them
     in the specified preset style with high-resolution PNG and vector SVG.
-    
+
     Parameters
     ----------
     run_dir : Path or str
@@ -653,7 +652,7 @@ def export_paper_figures(
         Publication preset (default: joss)
     formats : tuple of str, optional
         Export formats (default: png, svg)
-        
+
     Returns
     -------
     Path
@@ -663,8 +662,6 @@ def export_paper_figures(
 
     run_dir = Path(run_dir)
     out_dir = Path(out_dir or run_dir / "figures_export")
-
-    exporter = PaperFigureExporter(preset)
 
     # Collect all figures from run
     figures_dict = collect_figures(run_dir)

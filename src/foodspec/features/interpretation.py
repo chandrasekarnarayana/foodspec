@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Bridge from spectral features to chemical meaning.
 
 Provides a small curated library of wavenumber-to-chemical meaning entries and
@@ -7,6 +5,7 @@ helpers that generate short textual explanations for FeatureSpec objects
 (e.g., "Increase near 1745 cm^-1 suggests C=O stretch").
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Sequence

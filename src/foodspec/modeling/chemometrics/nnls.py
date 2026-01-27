@@ -178,8 +178,6 @@ class ConstrainedLasso(BaseEstimator, RegressorMixin):
 
         # Coordinate descent
         coef = np.zeros(n_features)
-        XtX = X.T @ X
-        Xty = X.T @ y
 
         for iteration in range(self.max_iter):
             coef_old = coef.copy()

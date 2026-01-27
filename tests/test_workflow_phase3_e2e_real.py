@@ -12,13 +12,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 import pandas as pd
+import pytest
 
 from foodspec.workflow.config import WorkflowConfig
+from foodspec.workflow.errors import EXIT_SUCCESS
 from foodspec.workflow.phase1_orchestrator import run_workflow
 from foodspec.workflow.phase3_orchestrator import run_workflow_phase3
-from foodspec.workflow.errors import EXIT_SUCCESS
 
 
 @pytest.fixture
@@ -76,14 +76,14 @@ class TestPhase3EndToEnd:
         exit_code = run_workflow_phase3(cfg, strict_regulatory=True)
 
         assert exit_code == EXIT_SUCCESS
-        
+
         # Check artifacts (PART C - restored)
         run_dir = cfg.output_dir
         assert (run_dir / "manifest.json").exists(), "Missing manifest.json"
         assert (run_dir / "success.json").exists(), "Missing success.json"
         assert (run_dir / "logs" / "run.log").exists(), "Missing run.log"
         assert (run_dir / "report" / "index.html").exists(), "Missing report"
-        
+
         # Check that manifest has resolved model
         manifest_data = json.loads((run_dir / "manifest.json").read_text())
         assert "resolved" in manifest_data["artifacts"]
@@ -109,11 +109,11 @@ class TestPhase3EndToEnd:
         exit_code = run_workflow_phase3(cfg, strict_regulatory=True)
 
         assert exit_code == EXIT_SUCCESS
-        
+
         # Verify QC artifacts present (PART C - restored)
         run_dir = cfg.output_dir
         assert (run_dir / "artifacts" / "qc_results.json").exists(), "Missing qc_results.json"
-        
+
         # Check QC results structure
         qc_data = json.loads((run_dir / "artifacts" / "qc_results.json").read_text())
         assert qc_data["passed"] is True
@@ -139,21 +139,18 @@ class TestPhase3EndToEnd:
 
         assert exit_code != EXIT_SUCCESS
         assert exit_code == 7, f"Expected exit code 7 (QC failure), got {exit_code}"  # Specific exit code for QC failure
-        
+
         # Verify error was recorded (PART C - restored)
         run_dir = cfg.output_dir
         assert (run_dir / "error.json").exists(), "Missing error.json"
-        
+
         error_data = json.loads((run_dir / "error.json").read_text())
         assert "QC" in error_data.get("message", ""), "Error message should mention QC"
         assert error_data.get("exit_code") == 7, "Exit code in error.json should be 7"
 
-    def test_phase3_regulatory_strict_mandatory_trust(self, good_csv, tmp_path):
-        """Test that Phase 3 regulatory strict forces trust stack enabled."""
-
     def test_phase3_placeholder_trust_rejected_in_strict_mode(self, good_csv, tmp_path):
         """Task A: Test that placeholder trust is rejected in strict regulatory mode by default.
-        
+
         Task A: Explicit placeholder governance
         - Strict regulatory mode REJECTS placeholder trust by default (allow_placeholder_trust=False)
         - Should raise TrustError with exit code 6
@@ -179,11 +176,11 @@ class TestPhase3EndToEnd:
 
         assert exit_code != EXIT_SUCCESS
         assert exit_code == 6, f"Task A: Expected exit 6 (TrustError), got {exit_code}"
-        
+
         # Verify error was recorded with trust-specific message
         run_dir = cfg.output_dir
         assert (run_dir / "error.json").exists(), "Missing error.json"
-        
+
         error_data = json.loads((run_dir / "error.json").read_text())
         assert "Placeholder" in error_data.get("message", ""), (
             "Task A: Error should mention placeholder trust rejection"
@@ -192,7 +189,7 @@ class TestPhase3EndToEnd:
 
     def test_phase3_placeholder_trust_allowed_with_flag(self, good_csv, tmp_path):
         """Task A: Test that placeholder trust is accepted with --allow-placeholder-trust flag.
-        
+
         Task A: For development/testing, --allow-placeholder-trust allows placeholder
         - Runs successfully (exit 0)
         - Logs warning about placeholder in strict mode
@@ -219,12 +216,12 @@ class TestPhase3EndToEnd:
         assert exit_code == EXIT_SUCCESS, (
             f"Task A: With --allow-placeholder-trust, should succeed. Got exit {exit_code}"
         )
-        
+
         # Verify trust_stack.json has "implementation": "placeholder"
         run_dir = cfg.output_dir
         trust_path = run_dir / "artifacts" / "trust_stack.json"
         assert trust_path.exists(), "Missing trust_stack.json"
-        
+
         trust_data = json.loads(trust_path.read_text())
         assert trust_data.get("implementation") == "placeholder", (
             "Task A: trust_stack.json should mark 'implementation': 'placeholder'"
@@ -278,7 +275,7 @@ class TestPhase3EndToEnd:
 
         # Should succeed (reporting is forced on)
         assert exit_code == EXIT_SUCCESS
-        
+
         # Verify report was created
         run_dir = cfg.output_dir
         assert (run_dir / "report" / "index.html").exists()
@@ -344,9 +341,9 @@ class TestPhase3EndToEnd:
         exit_code = run_workflow_phase3(cfg, strict_regulatory=True)
 
         assert exit_code == EXIT_SUCCESS
-        
+
         run_dir = cfg.output_dir
-        
+
         # Phase 3 strict regulatory must have all these artifacts (PART C - restored)
         assert (run_dir / "manifest.json").exists(), "Missing manifest.json"
         assert (run_dir / "success.json").exists(), "Missing success.json"
@@ -493,21 +490,21 @@ class TestPhase3ModelingIntegration:
         exit_code = run_workflow_phase3(cfg, strict_regulatory=False)
 
         assert exit_code == EXIT_SUCCESS
-        
+
         # Check manifest contains modeling results (PART C - restored)
         manifest_path = cfg.output_dir / "manifest.json"
         assert manifest_path.exists(), "Missing manifest.json"
-        
+
         manifest_data = json.loads(manifest_path.read_text())
         assert "artifacts" in manifest_data
         modeling = manifest_data["artifacts"].get("modeling", {})
         assert modeling.get("status") == "success", "Modeling should succeed"
         assert "metrics" in modeling, "Modeling should produce metrics"
-        
+
         # Check metrics file exists
         metrics_path = cfg.output_dir / "artifacts" / "metrics.json"
         assert metrics_path.exists(), "Missing metrics.json"
-        
+
         metrics_data = json.loads(metrics_path.read_text())
         assert "accuracy" in metrics_data, "Metrics should include accuracy"
 
@@ -550,21 +547,21 @@ class TestTaskDContractDigestLock:
 
     def test_contract_v3_digest_lock(self):
         """Test that contract_v3.json digest is locked and detectable.
-        
+
         Task D: Lock digest against drift.
         - Compute current digest
         - Assert it matches expected value
         - If changed, test fails and requires intentional update
         """
         from foodspec.workflow.artifact_contract import ArtifactContract
-        
+
         # Load contract v3
         contract_dict = ArtifactContract._load_contract(version="v3")
         current_digest = ArtifactContract.compute_digest(contract_dict)
-        
+
         # Task D: Expected digest (locked after Task B completed - success.json removed)
         EXPECTED_DIGEST = "61f345763075100e57f0ea0cbb9e098aabae15549aad43933a230ce1c4a9154f"
-        
+
         # If this assertion fails:
         # 1. Check if contract_v3.json was intentionally changed
         # 2. If yes, update EXPECTED_DIGEST with new value from test output
@@ -578,14 +575,14 @@ class TestTaskDContractDigestLock:
 
     def test_contract_v3_has_implementation_fields(self):
         """Test that contract validates new Task A implementation fields.
-        
+
         Task A/D: Trust stack must return implementation + capabilities.
         """
         from foodspec.workflow.artifact_contract import ArtifactContract
-        
+
         # Load contract v3
         contract_dict = ArtifactContract._load_contract(version="v3")
-        
+
         # Contract should validate artifacts (not prescribe trust fields)
         # But trust_stack.json is in required_trust
         assert "required_trust" in contract_dict
@@ -603,19 +600,20 @@ class TestPhase3CLIIntegration:
     def test_phase3_cli_command_exists(self):
         """Test that Phase 3 CLI command is registered."""
         from foodspec.cli.commands.workflow import workflow_app
-        
+
         # Check that run-strict command exists
         commands = [cmd.name for cmd in workflow_app.registered_commands]
         assert "run-strict" in commands, "Phase 3 'run-strict' command not registered"
 
     def test_phase3_cli_allow_placeholder_trust_flag_exists(self):
         """Test that --allow-placeholder-trust flag is available (Task A).
-        
+
         Task A: CLI should support --allow-placeholder-trust for development.
         """
-        from foodspec.cli.commands.workflow import run_phase3_workflow
         import inspect
-        
+
+        from foodspec.cli.commands.workflow import run_phase3_workflow
+
         # Check that run_phase3_workflow has allow_placeholder_trust parameter
         sig = inspect.signature(run_phase3_workflow)
         params = sig.parameters
@@ -625,12 +623,13 @@ class TestPhase3CLIIntegration:
 
     def test_phase3_cli_phase_selection_flag_exists(self):
         """Test that --phase flag is available (Task C).
-        
+
         Task C: CLI should support --phase {1,2,3} for phase selection.
         """
-        from foodspec.cli.commands.workflow import run_phase3_workflow
         import inspect
-        
+
+        from foodspec.cli.commands.workflow import run_phase3_workflow
+
         # Check that run_phase3_workflow has phase parameter
         sig = inspect.signature(run_phase3_workflow)
         params = sig.parameters

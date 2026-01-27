@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 RQ Engine Data Types
 ====================
@@ -7,6 +5,7 @@ RQ Engine Data Types
 Dataclass definitions for the Ratio-Quality (RQ) engine.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple

@@ -24,12 +24,12 @@ References:
 Example:
     >>> from foodspec.simulation import SpectraSimulator, NoiseModel
     >>> import numpy as np
-    >>> 
+    >>>
     >>> # Create simulator with realistic noise
     >>> sim = SpectraSimulator(n_wavelengths=200, random_state=42)
     >>> sim.add_noise_model(NoiseModel('gaussian', std=0.01))
     >>> sim.add_noise_model(NoiseModel('poisson', scale=0.005))
-    >>> 
+    >>>
     >>> # Generate synthetic dataset
     >>> X, y, metadata = sim.generate_mixture_dataset(
     ...     n_samples=100, n_components=3
@@ -49,21 +49,21 @@ from scipy import signal
 class NoiseModel:
     """
     Noise model configuration.
-    
+
     Parameters
     ----------
     noise_type : {'gaussian', 'poisson', 'multiplicative', 'mixed'}
         Type of noise to apply.
-    
+
     std : float, optional
         Standard deviation (for Gaussian noise).
-    
+
     scale : float, optional
         Scaling factor (for Poisson or multiplicative noise).
-    
+
     snr_db : float, optional
         Target signal-to-noise ratio in dB.
-    
+
     Example
     -------
     >>> noise = NoiseModel('gaussian', std=0.01)
@@ -80,24 +80,24 @@ class NoiseModel:
 class InstrumentModel:
     """
     Instrument response configuration.
-    
+
     Parameters
     ----------
     resolution : float, default=1.0
         Spectral resolution (FWHM in wavelength units).
-    
+
     baseline_drift : float, default=0.0
         Linear baseline drift coefficient.
-    
+
     baseline_curve : float, default=0.0
         Quadratic baseline curvature.
-    
+
     wavelength_shift : float, default=0.0
         Systematic wavelength shift.
-    
+
     intensity_scale : float, default=1.0
         Overall intensity scaling factor.
-    
+
     Example
     -------
     >>> instrument = InstrumentModel(
@@ -117,29 +117,29 @@ class InstrumentModel:
 class SpectraSimulator:
     """
     Realistic spectral simulator with noise, instrument response, and domain shifts.
-    
+
     Parameters
     ----------
     n_wavelengths : int, default=200
         Number of wavelength points.
-    
+
     wavelength_range : tuple, optional
         (start, end) wavelength range in nm. If None, uses indices.
-    
+
     random_state : int, optional
         Random seed for reproducibility.
-    
+
     Attributes
     ----------
     wavelengths : ndarray
         Wavelength array.
-    
+
     noise_models : list
         Active noise models.
-    
+
     instrument_model : InstrumentModel
         Instrument response configuration.
-    
+
     Example
     -------
     >>> sim = SpectraSimulator(n_wavelengths=200, wavelength_range=(400, 2500))
@@ -181,21 +181,21 @@ class SpectraSimulator:
     ) -> np.ndarray:
         """
         Generate a pure component spectrum with Gaussian peaks.
-        
+
         Parameters
         ----------
         peak_positions : list of float
             Peak positions (in wavelength units or indices).
-        
+
         peak_intensities : list of float, optional
             Peak intensities. If None, random intensities in [0.5, 1.0].
-        
+
         peak_widths : list of float, optional
             Peak widths (FWHM). If None, random widths in [2, 5].
-        
+
         baseline : float, default=0.0
             Baseline offset.
-        
+
         Returns
         -------
         spectrum : ndarray of shape (n_wavelengths,)
@@ -230,35 +230,35 @@ class SpectraSimulator:
     ) -> Tuple[np.ndarray, np.ndarray, Dict]:
         """
         Generate synthetic mixture dataset.
-        
+
         Parameters
         ----------
         n_samples : int
             Number of samples to generate.
-        
+
         n_components : int, default=3
             Number of pure components.
-        
+
         concentration_range : tuple, default=(0.0, 1.0)
             Range for concentration values.
-        
+
         normalize_concentrations : bool, default=True
             Whether to normalize concentrations to sum to 1.
-        
+
         apply_noise : bool, default=True
             Whether to apply noise models.
-        
+
         apply_instrument : bool, default=True
             Whether to apply instrument response.
-        
+
         Returns
         -------
         X : ndarray of shape (n_samples, n_wavelengths)
             Mixture spectra.
-        
+
         y : ndarray of shape (n_samples, n_components)
             True concentrations.
-        
+
         metadata : dict
             Generation metadata (pure_spectra, noise_levels, etc.).
         """
@@ -382,28 +382,28 @@ class SpectraSimulator:
 class DomainShiftGenerator:
     """
     Generate domain shifts for transfer learning evaluation.
-    
+
     Simulates realistic domain shifts between training and test data:
     - Temperature variations
     - Concentration range shifts
     - Instrument-to-instrument transfer
     - Time-dependent drift
-    
+
     Parameters
     ----------
     shift_type : {'temperature', 'concentration', 'instrument', 'time'}
         Type of domain shift to generate.
-    
+
     magnitude : float, default=1.0
         Magnitude of the shift (interpretation depends on shift_type).
-    
+
     random_state : int, optional
         Random seed.
-    
+
     Example
     -------
     >>> from foodspec.simulation import DomainShiftGenerator
-    >>> 
+    >>>
     >>> # Generate temperature-shifted spectra
     >>> shift_gen = DomainShiftGenerator('temperature', magnitude=10.0)
     >>> X_shifted = shift_gen.apply_shift(X_original, wavelengths)
@@ -427,15 +427,15 @@ class DomainShiftGenerator:
     ) -> np.ndarray:
         """
         Apply domain shift to spectra.
-        
+
         Parameters
         ----------
         X : ndarray of shape (n_samples, n_features)
             Original spectra.
-        
+
         wavelengths : ndarray, optional
             Wavelength array (required for some shift types).
-        
+
         Returns
         -------
         X_shifted : ndarray
@@ -459,7 +459,7 @@ class DomainShiftGenerator:
     ) -> np.ndarray:
         """
         Temperature shift (peak position shift + intensity change).
-        
+
         Temperature affects molecular vibrations, causing peak shifts.
         """
         if wavelengths is None:
@@ -483,7 +483,7 @@ class DomainShiftGenerator:
     def _apply_concentration_shift(self, X: np.ndarray) -> np.ndarray:
         """
         Concentration range shift (scaling).
-        
+
         Test samples have systematically different concentration ranges.
         """
         # Scale intensities
@@ -493,7 +493,7 @@ class DomainShiftGenerator:
     def _apply_instrument_shift(self, X: np.ndarray) -> np.ndarray:
         """
         Instrument-to-instrument transfer (baseline + scale).
-        
+
         Different instruments have systematic biases.
         """
         # Additive baseline shift
@@ -509,7 +509,7 @@ class DomainShiftGenerator:
     def _apply_time_drift(self, X: np.ndarray) -> np.ndarray:
         """
         Time-dependent drift (gradual baseline change).
-        
+
         Simulates instrument aging or environmental drift.
         """
         n_samples, n_features = X.shape

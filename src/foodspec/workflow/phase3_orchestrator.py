@@ -914,6 +914,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                 if y_proba_cal is not None and y_true_cal.size:
                     y_proba_cal = np.asarray(y_proba_cal, dtype=float)
                     from sklearn.model_selection import StratifiedShuffleSplit
+
                     from foodspec.trust.calibration import IsotonicCalibrator
                     from foodspec.trust.reliability import expected_calibration_error
 

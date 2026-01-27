@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Data ingestion and standardization registry for FoodSpec (Phase 2).
 
 Provides registry-driven loaders, I/O quality metrics, and validation checks:
@@ -12,6 +10,7 @@ Provides registry-driven loaders, I/O quality metrics, and validation checks:
 - Validation: monotonic axis, uniform spacing metric, axis overlap
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path

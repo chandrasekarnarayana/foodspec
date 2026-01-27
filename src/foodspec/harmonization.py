@@ -1,46 +1,12 @@
+"""Advanced harmonization utilities.
+
+Deprecated shim:
+    Use foodspec.core.harmonize_datasets instead. This module will be removed in v2.0.0.
+"""
+
 from __future__ import annotations
 
-"""
-Advanced harmonization utilities:
-- Instrument-specific calibration curves for wavenumber drift correction.
-- Intensity normalization using metadata (e.g., laser power).
-- Diagnostics (pre/post alignment metrics).
-"""
-
-"""
-harmonization - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.core.harmonize_datasets instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.harmonization import ...
-    New: from foodspec.core.harmonize_datasets import ...
-
-See: docs/migration/v1-to-v2.md
-"""
-
 import warnings
-
-warnings.warn(
-    "foodspec.harmonization is deprecated and will be removed in v2.0.0. "
-    "Use foodspec.core.harmonize_datasets instead. "
-    "See docs/migration/v1-to-v2.md for migration guide.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
-
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
@@ -48,6 +14,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from foodspec.data_objects.spectral_dataset import SpectralDataset
+
+warnings.warn(
+    "foodspec.harmonization is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.core.harmonize_datasets instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 @dataclass

@@ -309,7 +309,7 @@ def plot_set_size_distribution(
         data_by_label = [set_sizes[labels == label] for label in unique_labels]
 
         if show_violin:
-            parts = ax2.violinplot(
+            ax2.violinplot(
                 data_by_label,
                 positions=range(len(unique_labels)),
                 showmeans=True,
@@ -567,8 +567,8 @@ def plot_abstention_distribution(
         x_pos = np.arange(len(unique_facets))
         cmap = plt.colormaps[colormap]
 
-        bars1 = ax.bar(x_pos, predict_rates, label="Predicted", color=cmap(0), edgecolor="black")
-        bars2 = ax.bar(
+        ax.bar(x_pos, predict_rates, label="Predicted", color=cmap(0), edgecolor="black")
+        ax.bar(
             x_pos,
             abstain_rates,
             bottom=predict_rates,

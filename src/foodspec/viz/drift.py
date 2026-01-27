@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """Drift and stability visualization helpers."""
 
-from typing import Iterable
+from __future__ import annotations
+
+from typing import Iterable, Mapping
 
 import matplotlib.pyplot as plt
 import numpy as np

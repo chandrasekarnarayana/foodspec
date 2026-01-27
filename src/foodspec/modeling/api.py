@@ -141,7 +141,7 @@ def _remap_bundle(bundle: Dict[str, Any], class_labels: Sequence[Any]) -> Dict[s
     mapped = dict(bundle)
     confusion = dict(bundle.get("confusion_matrix", {}))
     if "labels" in confusion:
-        confusion["labels"] = [label_map.get(str(l), str(l)) for l in confusion["labels"]]
+        confusion["labels"] = [label_map.get(str(lbl), str(lbl)) for lbl in confusion["labels"]]
         mapped["confusion_matrix"] = confusion
     per_class = bundle.get("per_class")
     if isinstance(per_class, dict):

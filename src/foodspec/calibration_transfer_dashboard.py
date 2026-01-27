@@ -1,11 +1,9 @@
-from __future__ import annotations
-
-"""
-Simple HTML dashboard generator for calibration transfer success metrics.
+"""Simple HTML dashboard generator for calibration transfer success metrics.
 
 Generates a standalone HTML report summarizing pre/post metrics and improvement ratios.
 """
 
+from __future__ import annotations
 
 from typing import Any, Dict
 

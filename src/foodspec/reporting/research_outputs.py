@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 @dataclass
 class DatasetCard:
     """Model card for datasets (inspired by Datasheets for Datasets).
-    
+
     References:
         Gebru et al. (2021). Datasheets for Datasets. Commun. ACM, 64(12).
     """
@@ -148,11 +148,11 @@ class ReproducibilityPackage:
 
 class MethodsSectionGenerator:
     """Auto-generate methods sections for papers.
-    
+
     Example
     -------
     >>> from foodspec.reporting import MethodsSectionGenerator
-    >>> 
+    >>>
     >>> gen = MethodsSectionGenerator()
     >>> methods_text = gen.generate(
     ...     dataset_info={'n_samples': 100, 'n_features': 200},
@@ -210,27 +210,27 @@ class MethodsSectionGenerator:
 
 class ResearchOutputGenerator:
     """Complete research output generation system.
-    
+
     Example
     -------
     >>> from foodspec.reporting import ResearchOutputGenerator
-    >>> 
+    >>>
     >>> gen = ResearchOutputGenerator()
-    >>> 
+    >>>
     >>> # Create dataset card
     >>> dataset_card = gen.create_dataset_card(
     ...     X=X_train, y=y_train,
     ...     name='OliveOil_NIR',
     ...     description='NIR spectra of olive oil samples',
     ... )
-    >>> 
+    >>>
     >>> # Generate methods
     >>> methods = gen.generate_methods(
     ...     preprocessing_pipeline=pipeline,
     ...     model=model,
     ...     validation_results=cv_results,
     ... )
-    >>> 
+    >>>
     >>> # Create reproducibility package
     >>> package = gen.create_repro_package(
     ...     title='Olive Oil Classification',

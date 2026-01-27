@@ -20,7 +20,6 @@ from sklearn.model_selection import train_test_split
 from foodspec.modeling import (
     compute_roc_diagnostics,
     compute_roc_for_result,
-    FitPredictResult,
     fit_predict,
 )
 
@@ -52,7 +51,7 @@ def demo_binary_roc():
 
     # Access metrics
     metrics = result.per_class[1]
-    print(f"\n📊 Binary ROC Results:")
+    print("\n📊 Binary ROC Results:")
     print(f"   AUC: {metrics.auc:.4f}")
     print(f"   95% CI: [{metrics.ci_lower:.4f}, {metrics.ci_upper:.4f}]")
     print(f"   Positives: {metrics.n_positives}, Negatives: {metrics.n_negatives}")
@@ -60,7 +59,7 @@ def demo_binary_roc():
     # Optimal threshold
     if "youden" in result.optimal_thresholds:
         youden = result.optimal_thresholds["youden"]
-        print(f"\n🎯 Youden's J Optimal Threshold:")
+        print("\n🎯 Youden's J Optimal Threshold:")
         print(f"   Threshold: {youden.threshold:.4f}")
         print(f"   Sensitivity: {youden.sensitivity:.4f}")
         print(f"   Specificity: {youden.specificity:.4f}")
@@ -93,8 +92,8 @@ def demo_multiclass_roc():
     print("\nComputing multiclass ROC diagnostics...")
     result = compute_roc_diagnostics(y_test, y_proba, n_bootstrap=500, random_seed=42)
 
-    print(f"\n📊 Multiclass ROC Results:")
-    print(f"   Per-class AUCs:")
+    print("\n📊 Multiclass ROC Results:")
+    print("   Per-class AUCs:")
     for class_label, metrics in result.per_class.items():
         print(f"      Class {class_label}: {metrics.auc:.4f} (CI: [{metrics.ci_lower:.4f}, {metrics.ci_upper:.4f}])")
 
@@ -102,10 +101,10 @@ def demo_multiclass_roc():
     print(f"   Micro-average AUC: {result.micro.auc:.4f}")
 
     # Explain the difference
-    print(f"\n💡 Metric Interpretation:")
-    print(f"   • Per-class: Binary ROC for each class vs. rest")
-    print(f"   • Macro: Simple average across classes (equal weight)")
-    print(f"   • Micro: Aggregated TP/FP across classes (sample-weighted)")
+    print("\n💡 Metric Interpretation:")
+    print("   • Per-class: Binary ROC for each class vs. rest")
+    print("   • Macro: Simple average across classes (equal weight)")
+    print("   • Micro: Aggregated TP/FP across classes (sample-weighted)")
 
 
 def demo_with_fitpredict():
@@ -142,7 +141,7 @@ def demo_with_fitpredict():
     roc_diag = compute_roc_for_result(result, n_bootstrap=500, random_seed=42)
 
     metrics = roc_diag["roc_result"].per_class[1]
-    print(f"\n📊 ROC Diagnostics:")
+    print("\n📊 ROC Diagnostics:")
     print(f"   AUC: {metrics.auc:.4f}")
     print(f"   95% CI: [{metrics.ci_lower:.4f}, {metrics.ci_upper:.4f}]")
     print(f"   Metadata: {roc_diag['metadata']}")
@@ -184,7 +183,7 @@ def demo_edge_cases():
     metrics = result.per_class[1]
     print(f"   AUC: {metrics.auc:.4f}")
     print(f"   Positives: {metrics.n_positives}, Negatives: {metrics.n_negatives}")
-    print(f"   Note: AUC is robust to class imbalance")
+    print("   Note: AUC is robust to class imbalance")
 
 
 def demo_reproducibility():
@@ -204,7 +203,7 @@ def demo_reproducibility():
     metrics1 = result1.per_class[1]
     metrics2 = result2.per_class[1]
 
-    print(f"\n✓ Results are Identical:")
+    print("\n✓ Results are Identical:")
     print(f"   Run 1: AUC={metrics1.auc:.6f}, CI=[{metrics1.ci_lower:.6f}, {metrics1.ci_upper:.6f}]")
     print(f"   Run 2: AUC={metrics2.auc:.6f}, CI=[{metrics2.ci_lower:.6f}, {metrics2.ci_upper:.6f}]")
     print(f"   Exact match: {metrics1.auc == metrics2.auc and metrics1.ci_lower == metrics2.ci_lower}")
@@ -214,7 +213,7 @@ def demo_reproducibility():
     result3 = compute_roc_diagnostics(y_true, y_proba, n_bootstrap=100, random_seed=123)
     metrics3 = result3.per_class[1]
 
-    print(f"\n⚠️ Different seed produces different CI:")
+    print("\n⚠️ Different seed produces different CI:")
     print(f"   Seed 42: CI=[{metrics1.ci_lower:.6f}, {metrics1.ci_upper:.6f}]")
     print(f"   Seed 123: CI=[{metrics3.ci_lower:.6f}, {metrics3.ci_upper:.6f}]")
 

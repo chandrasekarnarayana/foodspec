@@ -5,14 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from foodspec.reporting import (
-    ReportMode,
-    ReportContext,
-    ReportBuilder,
-    build_experiment_card,
-    ConfidenceLevel,
-)
 from foodspec.core.manifest import RunManifest
+from foodspec.reporting import (
+    ConfidenceLevel,
+    ReportBuilder,
+    ReportContext,
+    ReportMode,
+    build_experiment_card,
+)
 
 pytestmark = pytest.mark.no_cover
 

@@ -287,7 +287,7 @@ def main() -> None:
     print("=" * 70)
     print(f"\nOriginal run: {run_dir} ({len(list(run_dir.rglob('*')))} files)")
     print(f"Reproducibility pack: {pack_dir} ({len(pack_files)} items)")
-    print(f"\nArchives created:")
+    print("\nArchives created:")
     print(f"  1. Full archive: {archive_full.name}")
     print(f"     Size: {archive_full.stat().st_size / 1024:.1f} KB")
     print(f"  2. Minimal archive: {archive_minimal.name}")
@@ -295,7 +295,7 @@ def main() -> None:
     print(f"  3. Data archive: {archive_data.name}")
     print(f"     Size: {archive_data.stat().st_size / 1024:.1f} KB")
 
-    print(f"\n✓ All archives are shareable and reproducible!")
+    print("\n✓ All archives are shareable and reproducible!")
     print(f"✓ Located in: {output_dir}")
 
 

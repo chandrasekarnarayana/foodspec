@@ -1,47 +1,16 @@
-from __future__ import annotations
-
-"""
-Spectral library search utilities.
+"""Spectral library search utilities.
 
 Provides similarity metrics (cosine, Pearson, Euclidean, SID, SAM) and
 search over a library to return top-k matches with confidence and an
 optional overlay plot.
+
+Deprecated shim:
+    Use foodspec.workflows.library_search instead. This module will be removed in v2.0.0.
 """
 
-"""
-library_search - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.workflows.library_search instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.library_search import ...
-    New: from foodspec.workflows.library_search import ...
-
-See: docs/migration/v1-to-v2.md
-"""
+from __future__ import annotations
 
 import warnings
-
-warnings.warn(
-    "foodspec.library_search is deprecated and will be removed in v2.0.0. "
-    "Use foodspec.workflows.library_search instead. "
-    "See docs/migration/v1-to-v2.md for migration guide.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
-
 from dataclasses import dataclass
 from typing import List, Tuple
 
@@ -50,6 +19,14 @@ import numpy as np
 from scipy.spatial.distance import cosine as dist_cosine
 from scipy.spatial.distance import euclidean as dist_euclidean
 from scipy.stats import pearsonr
+
+warnings.warn(
+    "foodspec.library_search is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.workflows.library_search instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 @dataclass

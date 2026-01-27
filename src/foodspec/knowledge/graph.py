@@ -33,25 +33,25 @@ class MetadataOntology:
 
 class SpectralKnowledgeGraph:
     """Knowledge graph for spectroscopy.
-    
+
     Stores relationships between:
     - Compounds and their characteristic peaks
     - Peaks and their chemical assignments
     - Samples and their metadata
-    
+
     Parameters
     ----------
     name : str, default='SpectralKG'
         Name of the knowledge graph.
-    
+
     Example
     -------
     >>> from foodspec.knowledge import SpectralKnowledgeGraph, CompoundPeakLink
-    >>> 
+    >>>
     >>> kg = SpectralKnowledgeGraph('FoodSpecKG')
     >>> kg.add_compound('glucose', peaks=[1030, 1080, 1150])
     >>> kg.add_link(CompoundPeakLink('glucose', 1080, assignment='C-O stretch'))
-    >>> 
+    >>>
     >>> # Query
     >>> compounds = kg.query_by_peak(1080, tolerance=5)
     """

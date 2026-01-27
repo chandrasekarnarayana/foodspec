@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Preprocessing engine with Step abstraction and AutoPreprocess (Phase 3).
 
 Features:
@@ -14,6 +12,7 @@ Notes:
 - Hashes are short SHA256 digests of configuration
 """
 
+from __future__ import annotations
 
 import hashlib
 import json

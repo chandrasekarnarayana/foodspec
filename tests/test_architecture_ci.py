@@ -249,14 +249,16 @@ class TestImportIntegration:
     def test_protocol_to_orchestrator_chain(self):
         """Test full import chain: Protocol → Registry → Orchestrator."""
         try:
+            from foodspec.core.artifacts import ArtifactRegistry
+            from foodspec.core.orchestrator import ExecutionEngine
             from foodspec.core.protocol import ProtocolV2
             from foodspec.core.registry import ComponentRegistry
-            from foodspec.core.orchestrator import ExecutionEngine
-            from foodspec.core.artifacts import ArtifactRegistry
 
             # Should be able to construct without error
             registry = ComponentRegistry()
             assert registry is not None
+            assert ExecutionEngine is not None
+            assert ProtocolV2 is not None
 
             artifacts_test_dir = "/tmp/test_artifacts"
             artifacts = ArtifactRegistry(artifacts_test_dir)
@@ -268,9 +270,9 @@ class TestImportIntegration:
     def test_evaluation_to_trust_chain(self):
         """Test evaluation → validation → trust chain."""
         try:
-            from foodspec.validation.evaluation import evaluate_model_cv
             from foodspec.trust.conformal import ConformalPredictor
             from foodspec.trust.evaluator import TrustEvaluator
+            from foodspec.validation.evaluation import evaluate_model_cv
 
             # Just verify imports
             assert evaluate_model_cv is not None
@@ -282,9 +284,9 @@ class TestImportIntegration:
     def test_preprocess_to_features_chain(self):
         """Test preprocessing → features chain."""
         try:
-            from foodspec.preprocess.recipes import PreprocessingRecipe
-            from foodspec.features.peaks import detect_peaks
             from foodspec.features.chemometrics import compute_vip
+            from foodspec.features.peaks import detect_peaks
+            from foodspec.preprocess.recipes import PreprocessingRecipe
 
             # Just verify imports
             assert PreprocessingRecipe is not None
@@ -300,6 +302,7 @@ class TestArtifactCreation:
     def test_artifact_registry_paths(self):
         """ArtifactRegistry creates standard paths."""
         from tempfile import TemporaryDirectory
+
         from foodspec.core.artifacts import ArtifactRegistry
 
         with TemporaryDirectory() as tmpdir:
@@ -322,9 +325,10 @@ class TestArtifactCreation:
 
     def test_save_load_roundtrip(self):
         """Artifacts can be saved and loaded."""
-        from tempfile import TemporaryDirectory
-        from foodspec.core.artifacts import ArtifactRegistry
         import json
+        from tempfile import TemporaryDirectory
+
+        from foodspec.core.artifacts import ArtifactRegistry
 
         with TemporaryDirectory() as tmpdir:
             registry = ArtifactRegistry(tmpdir)
@@ -365,9 +369,7 @@ class TestRegressionPrevention:
         """Core modules should not have circular dependencies."""
         try:
             # Import in different orders to detect circularity
-            from foodspec.core import protocol
-            from foodspec.core import registry
-            from foodspec.core import orchestrator
+            from foodspec.core import orchestrator, protocol, registry
 
             # Should all be importable without deadlock/error
             assert protocol is not None

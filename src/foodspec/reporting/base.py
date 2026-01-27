@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 FoodSpec Report Context and Builder.
 
@@ -15,6 +13,7 @@ Load a run and build an HTML report::
     html_path = builder.build_html(Path("/tmp/run/report.html"), mode=ReportMode.RESEARCH)
 """
 
+from __future__ import annotations
 
 import csv
 import json
@@ -159,7 +158,7 @@ class ReportContext:
     @staticmethod
     def _load_trust_outputs(run_dir: Path) -> Dict[str, Any]:
         """Load trust outputs from various locations in run directory.
-        
+
         Scans for:
         - trust_outputs.json (legacy)
         - trust/calibration.json
@@ -171,7 +170,7 @@ class ReportContext:
         - drift/temporal_drift.json
         - drift/stage_differences.json
         - qc/qc_summary.json
-        
+
         Returns consolidated dict with all available trust/drift/qc outputs.
         """
         trust_data: Dict[str, Any] = {}
@@ -505,7 +504,7 @@ def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
     - trust/plots/*
     - drift/plots/*
     - qc/plots/*
-    
+
     Recursively scans each directory and groups figures by subdirectory
     (e.g., drift, interpretability, uncertainty, pipeline).
 

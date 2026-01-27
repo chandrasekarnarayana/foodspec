@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Control chart plotting helpers."""
+
+from __future__ import annotations
 
 from typing import Dict, Iterable, Optional
 

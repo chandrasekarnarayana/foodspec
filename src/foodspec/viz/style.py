@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Shared plotting styles for FoodSpec visualizations."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, Iterable

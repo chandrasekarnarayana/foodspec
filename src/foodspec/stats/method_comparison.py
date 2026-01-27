@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 """
 Bland–Altman analysis for method comparison.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Tuple
@@ -55,10 +54,10 @@ def passing_bablok(
     m = slopes_sorted.size
     z = stats.norm.ppf(1 - alpha / 2)
     k = int(np.floor((m - z * np.sqrt(m * (m - 1) / 2)) / 2))
-    l = int(np.ceil((m + z * np.sqrt(m * (m - 1) / 2)) / 2))
+    upper_idx = int(np.ceil((m + z * np.sqrt(m * (m - 1) / 2)) / 2))
     k = max(0, min(m - 1, k))
-    l = max(0, min(m - 1, l))
-    slope_ci = (float(slopes_sorted[k]), float(slopes_sorted[l]))
+    upper_idx = max(0, min(m - 1, upper_idx))
+    slope_ci = (float(slopes_sorted[k]), float(slopes_sorted[upper_idx]))
     intercept_ci = (float(np.median(y - slope_ci[1] * x)), float(np.median(y - slope_ci[0] * x)))
     return PassingBablokResult(
         slope=slope,

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 FoodSpec Experiment Cards system.
 
@@ -16,6 +14,7 @@ Build and export an experiment card::
     card.to_markdown(Path("/run/dir/card.md"))
 """
 
+from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
@@ -452,8 +451,6 @@ def _assess_deployment_readiness(
     tuple of (DeploymentReadiness, str)
         Readiness status and reasoning.
     """
-    reasons = []
-
     # Check regulatory requirements
     if mode == ReportMode.REGULATORY:
         if not context.manifest.protocol_hash or not context.manifest.data_fingerprint:

@@ -34,34 +34,32 @@ python -m foodspec.cli.main workflow-run-strict \
   tests/fixtures/minimal_protocol_phase3.yaml \
   --input data.csv \
   --output-dir ./results \
-  --phase 3 \
-  --allow-placeholder-trust  # Required for development until real trust implemented
+  --phase 3
 ```
 
-## Placeholder Trust Governance (Phase 3)
+## Trust Stack Governance (Phase 3)
 
-**CRITICAL**: The trust stack is currently a **placeholder implementation**. It is NOT production-ready for regulatory submissions.
+**NOTE**: The trust stack now runs a real calibration + conformal + abstention pipeline. Placeholder output is only used as a **development fallback** when `--allow-placeholder-trust` is set and trust evaluation fails.
 
 ### Default Behavior (Strict Regulatory Mode)
-- Placeholder trust is **REJECTED** by default
-- Exit code: **6** (TrustError)
-- Error message: "Placeholder trust stack not allowed in strict regulatory mode"
+- Trust stack is **required** and must succeed
+- Exit code: **6** (TrustError) on trust failures
 
 ### Development Mode
-- Use `--allow-placeholder-trust` flag to accept placeholder for development/testing
-- Logs warning: "⚠️ Placeholder trust stack being used in strict regulatory mode"
+- Use `--allow-placeholder-trust` to allow a placeholder **fallback** if trust evaluation fails during development/testing
+- Logs warning when fallback is used
 - trust_stack.json includes: `"implementation": "placeholder"`, `"capabilities": []`
 
 ### Example Commands
 
 ```bash
-# REJECTED (exit 6) - default behavior
+# Default behavior (trust required)
 python -m foodspec.cli.main workflow-run-strict \
   protocol.yaml \
   --input data.csv \
   --phase 3
 
-# ACCEPTED (exit 0) - development only
+# Development fallback (placeholder allowed only if trust evaluation fails)
 python -m foodspec.cli.main workflow-run-strict \
   protocol.yaml \
   --input data.csv \
@@ -74,7 +72,7 @@ python -m foodspec.cli.main workflow-run-strict \
 ### Research Mode (default)
 - **Intent**: Development, exploration, fast iteration
 - **QC**: Advisory (informational, non-blocking)
-- **Trust**: Optional (if enabled, can return placeholder)
+- **Trust**: Optional (if enabled, runs real trust stack)
 - **Reporting**: Optional
 - **Exit Code**: 0 on success, non-zero on error
 - **Use case**: Developing new methods, testing hypotheses
@@ -86,7 +84,7 @@ python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv -
 ### Regulatory Mode
 - **Intent**: Pre-submission, validation workflows
 - **QC**: Enforced (must pass or workflow fails)
-- **Trust**: Mandatory (placeholder rejected unless --allow-placeholder-trust)
+- **Trust**: Mandatory
 - **Reporting**: Mandatory
 - **Modeling**: Required
 - **Model approval**: Must be in approved registry
@@ -100,7 +98,7 @@ python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv -
 ### Strict Regulatory Mode
 - **Intent**: Production submission, strict audit trail
 - **QC**: Enforced (must pass)
-- **Trust**: Mandatory, **must not be skipped** (returns success even if placeholder)
+- **Trust**: Mandatory, **must not be skipped**
 - **Reporting**: Mandatory, **must not be skipped**
 - **Modeling**: Mandatory
 - **Model approval**: Checked, must be approved
@@ -120,27 +118,26 @@ foodspec workflow-run --protocol proto.yaml --input data.csv --output-dir out --
 | **2** | ConfigError | Invalid configuration | Check WorkflowConfig parameters and protocol YAML |
 | **4** | ProtocolError | Protocol/model invalid | Use approved model from registry or fix protocol syntax |
 | **5** | ModelingError | Model fit/predict failed | Check data format, labels, feature matrix shape |
-| **6** | TrustError | **Placeholder trust rejected** | Use `--allow-placeholder-trust` for development OR implement real trust stack |
+| **6** | TrustError | Trust stack failed | Check trust configuration or use `--allow-placeholder-trust` for dev fallback |
 | **7** | QCError | QC gates failed | Fix data quality issues (missing values, class imbalance, etc.) |
 | **8** | ReportingError | Report generation failed | Check report template and data availability |
 | **9** | ArtifactError | Required artifacts missing | Check artifact contract validation, may be internal error |
 
-### Exit Code 6: Trust Error (Placeholder Governance)
+### Exit Code 6: Trust Error
 
-**Most Common Cause**: Strict regulatory mode rejects placeholder trust by default.
+**Most Common Cause**: Trust evaluation failed (calibration/conformal/abstention).
 
 ```bash
-# Problem: Exit 6 with "Placeholder trust stack not allowed"
+# Problem: Exit 6 with trust stack failure
 python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv --phase 3
 # Exit code: 6
 
-# Solution 1: Development/Testing (allow placeholder)
+# Solution 1: Development/Testing (allow placeholder fallback)
 python -m foodspec.cli.main workflow-run-strict protocol.yaml --input data.csv --phase 3 --allow-placeholder-trust
 # Exit code: 0 (with warning log)
 
-# Solution 2: Production (implement real trust)
-# Implement calibration, conformal prediction, abstention mechanisms
-# Then update _run_trust_stack_real() to return "implementation": "real"
+# Solution 2: Production
+# Fix trust configuration/data so real trust evaluation succeeds
 ```
 
 ### Interpreting Exit Codes in Strict Regulatory
@@ -418,4 +415,3 @@ cat output_dir/logs/run.log | grep ERROR
 - [Model Registry](../src/foodspec/workflow/model_registry.py) - Approved models, aliases
 - [QC System](concepts/qc_system.md) - Gate details, thresholds
 - [Trust & Uncertainty](concepts/trust_uncertainty.md) - Trust stack architecture
-

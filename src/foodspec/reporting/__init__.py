@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Automated experiment reporting and analysis infrastructure.
 
@@ -8,6 +6,8 @@ with confidence/deployment readiness assessment, and multi-modal risk scoring.
 
 Also includes backward-compatible reporting utilities for CLI commands.
 """
+
+from __future__ import annotations
 
 # === NEW REPORTING INFRASTRUCTURE ===
 # === BACKWARD COMPATIBILITY: IMPORT FROM DEPRECATED reporting.py ===

@@ -4,15 +4,14 @@ import numpy as np
 import pytest
 
 from foodspec.preprocess import (
-    PreprocessPipeline,
-    load_preset_yaml,
-    build_pipeline_from_recipe,
-    load_recipe,
     PreprocessCache,
     PreprocessManifest,
+    build_pipeline_from_recipe,
+    compute_cache_key,
     compute_data_hash,
     compute_recipe_hash,
-    compute_cache_key,
+    load_preset_yaml,
+    load_recipe,
 )
 from foodspec.preprocess.spectroscopy_operators import (
     DespikeOperator,
@@ -35,10 +34,10 @@ class TestFullRamanPipeline:
         """Test building pipeline from raman preset."""
         preset = load_preset_yaml("raman")
         pipeline = build_pipeline_from_recipe(preset)
-        
+
         # Run pipeline
         result, metrics = pipeline.transform(synthetic_raman_data)
-        
+
         assert result.x.shape == synthetic_raman_data.x.shape
         assert np.all(np.isfinite(result.x))
 
@@ -48,7 +47,7 @@ class TestFullRamanPipeline:
         despike = DespikeOperator(window=5, threshold=5.0)
         despiked = despike.transform(synthetic_raman_data)
         assert despiked.x.shape == synthetic_raman_data.x.shape
-        
+
         # Fluorescence removal
         fluor = FluorescenceRemovalOperator(method="poly", poly_order=2)
         corrected = fluor.transform(synthetic_raman_data)
@@ -68,10 +67,10 @@ class TestFullFTIRPipeline:
         """Test building pipeline from ftir preset."""
         preset = load_preset_yaml("ftir")
         pipeline = build_pipeline_from_recipe(preset)
-        
+
         # Run pipeline
         result, metrics = pipeline.transform(synthetic_ftir_data)
-        
+
         assert result.x.shape == synthetic_ftir_data.x.shape
         assert np.all(np.isfinite(result.x))
 
@@ -99,7 +98,7 @@ class TestRecipeLoading:
             ]
         }
         pipeline = load_recipe(preset="default", cli_overrides=cli_overrides)
-        
+
         # Find baseline step and check parameter
         baseline_step = next((s for s in pipeline.steps if s.name == "baseline"), None)
         assert baseline_step is not None
@@ -116,7 +115,7 @@ class TestRecipeLoading:
                 ],
             }
         }
-        
+
         from foodspec.preprocess.loaders import load_recipe
         pipeline = load_recipe(protocol_config=protocol_config)
         assert len(pipeline.steps) == 2
@@ -148,11 +147,11 @@ class TestCachingSystem:
     def test_cache_put_get(self, temp_cache_dir, synthetic_raman_data):
         """Test caching put/get operations."""
         cache = PreprocessCache(temp_cache_dir)
-        
+
         # Put data
         cache_key = "test_key_123"
         cache.put(cache_key, synthetic_raman_data.x, synthetic_raman_data.wavenumbers)
-        
+
         # Get data
         result = cache.get(cache_key)
         assert result is not None
@@ -176,14 +175,14 @@ class TestManifestGeneration:
             cache_key="abc123",
             seed=42,
         )
-        
+
         # Record operators
         manifest.record_operator("despike", 12.3, spikes_removed=5)
         manifest.record_operator("baseline", 45.6)
-        
+
         # Add warning
         manifest.add_warning("Sample 10 had NaN values")
-        
+
         # Finalize
         manifest.finalize(
             n_samples_input=100,
@@ -191,7 +190,7 @@ class TestManifestGeneration:
             n_features=512,
             rejected_spectra=2,
         )
-        
+
         manifest_dict = manifest.to_dict()
         assert manifest_dict["run_id"] == "test_run_001"
         assert len(manifest_dict["operators_applied"]) == 2
@@ -206,11 +205,11 @@ class TestManifestGeneration:
             cache_key="xyz789",
         )
         manifest.finalize(50, 50, 256)
-        
+
         # Save
         manifest_path = temp_cache_dir / "manifest.json"
         manifest.save(manifest_path)
-        
+
         # Load
         loaded = PreprocessManifest.load(manifest_path)
         assert loaded.run_id == "test_run_002"
@@ -225,11 +224,11 @@ class TestReproducibility:
         np.random.seed(42)
         pipeline1 = load_recipe(preset="raman")
         result1, _ = pipeline1.transform(synthetic_raman_data)
-        
+
         np.random.seed(42)
         pipeline2 = load_recipe(preset="raman")
         result2, _ = pipeline2.transform(synthetic_raman_data)
-        
+
         np.testing.assert_array_almost_equal(result1.x, result2.x)
 
 

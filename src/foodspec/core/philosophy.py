@@ -160,7 +160,7 @@ DESIGN_PRINCIPLES = DesignPrinciples()
 def enforce_task_first(config: Dict[str, Any]) -> None:
     """
     Enforce: Task must be one of TASK_FIRST types.
-    
+
     Raises:
         PhilosophyError: If task not in TASK_FIRST
     """
@@ -296,7 +296,7 @@ def validate_all_principles(
 ) -> None:
     """
     Run all philosophy enforcement checks.
-    
+
     Raises:
         PhilosophyError: If any principle violated
     """

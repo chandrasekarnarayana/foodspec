@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
 from foodspec.report.sections.multivariate import build_multivariate_section
 
@@ -24,7 +23,7 @@ def _make_run_dir(tmp_path: Path) -> Path:
     })
     scores.to_csv(run_dir / "multivariate" / "pca" / "scores.csv", index=False)
     loadings.to_csv(run_dir / "multivariate" / "pca" / "loadings.csv", index=False)
-        (run_dir / "multivariate" / "pca" / "summary.json").write_text("{\"explained_variance\": [0.7, 0.2]}")
+    (run_dir / "multivariate" / "pca" / "summary.json").write_text("{\"explained_variance\": [0.7, 0.2]}")
     (run_dir / "qc").mkdir(parents=True, exist_ok=True)
     (run_dir / "qc" / "qc_summary.json").write_text("{\"multivariate\": {\"outliers\": {\"n_flagged\": 1}}}")
     return run_dir

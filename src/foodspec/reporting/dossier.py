@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Scientific dossier generator for structured submission packs.
 
 The dossier is a comprehensive, automatically generated document set that
@@ -8,7 +6,7 @@ reproducibility information - suitable for publication submission.
 
 Usage:
     from foodspec.reporting.dossier import DossierBuilder
-    
+
     builder = DossierBuilder()
     builder.build(
         run_dir="path/to/run",
@@ -20,7 +18,9 @@ Usage:
     # dossier_index.html
 """
 
+from __future__ import annotations
 
+import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
@@ -31,7 +31,7 @@ from foodspec.reporting.schema import RunBundle
 
 class DossierBuilder:
     """Build scientific dossier from analysis run.
-    
+
     A dossier is a structured submission package containing:
     - Methods: Derived from protocol snapshot + manifest
     - Results: Metrics, fold stability, key plots
@@ -55,7 +55,7 @@ class DossierBuilder:
         mode: str = "regulatory",
     ) -> Path:
         """Build complete scientific dossier.
-        
+
         Parameters
         ----------
         run_dir : str | Path
@@ -64,12 +64,12 @@ class DossierBuilder:
             Output directory for dossier files
         mode : str
             Report mode: "research", "regulatory", "monitoring"
-            
+
         Returns
         -------
         Path
             Path to generated dossier index HTML
-            
+
         Raises
         ------
         FileNotFoundError
@@ -679,13 +679,10 @@ __all__ = ["DossierBuilder", "ScientificDossierBuilder", "RegulatoryDossierGener
 # ============================================================================
 
 
-import hashlib
-
-
 class RegulatoryDossierGenerator:
     """
     Generate regulatory-compliant dossiers with version locking and audit trails.
-    
+
     Features:
     - Version control with SHA256 fingerprints
     - Full audit trail of all decisions

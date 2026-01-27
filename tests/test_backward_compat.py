@@ -13,7 +13,6 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
 
 # Track all public APIs that must remain stable (from PUBLIC_API_INVENTORY.md)
@@ -170,7 +169,6 @@ class TestDeprecationWarnings:
     def test_spectral_dataset_deprecation_warning(self):
         """Test that importing from foodspec.spectral_dataset emits DeprecationWarning."""
         # Use importlib.reload to ensure fresh import and capture warnings
-        import importlib
         import sys
 
         # Remove module if already imported
@@ -197,7 +195,6 @@ class TestDeprecationWarnings:
 
     def test_heating_trajectory_deprecation_warning(self):
         """Test that importing from foodspec.heating_trajectory emits DeprecationWarning."""
-        import importlib
         import sys
 
         if "foodspec.heating_trajectory" in sys.modules:
@@ -217,7 +214,6 @@ class TestDeprecationWarnings:
 
     def test_calibration_transfer_deprecation_warning(self):
         """Test that importing from foodspec.calibration_transfer emits DeprecationWarning."""
-        import importlib
         import sys
 
         if "foodspec.calibration_transfer" in sys.modules:
@@ -237,7 +233,6 @@ class TestDeprecationWarnings:
 
     def test_cli_deprecation_warning(self):
         """Test that importing from foodspec.cli emits DeprecationWarning."""
-        import importlib
         import sys
 
         if "foodspec.cli" in sys.modules:
@@ -261,7 +256,6 @@ class TestBackwardCompatFunctionality:
     def test_baseline_als_same_results(self):
         """Test that old and new imports of baseline_als produce same results."""
         # Generate test data
-        wavenumbers = np.array([400, 500, 600, 700, 800, 900, 1000])
         spectrum = np.array([100, 150, 200, 180, 120, 90, 80], dtype=float)
 
         # Import from new location

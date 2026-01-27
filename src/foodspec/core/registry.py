@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Canonical registry module for foodspec.core.
 
@@ -7,6 +5,7 @@ This module provides the public API for component registration and lookup.
 It re-exports or provides default implementations for a clean, canonical location.
 """
 
+from __future__ import annotations
 
 # Try to import from foodspec.registry if ComponentRegistry exists there
 try:

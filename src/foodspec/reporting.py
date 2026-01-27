@@ -1,47 +1,27 @@
-"""Reporting utilities for CLI workflows."""
+"""Reporting utilities for CLI workflows.
+
+Deprecated shim:
+    Use foodspec.reporting instead. This module will be removed in v2.0.0.
+"""
+
 from __future__ import annotations
 
-"""
-reporting - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.reporting instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.reporting import ...
-    New: from foodspec.reporting import ...
-
-See: docs/migration/v1-to-v2.md
-"""
-
+import json
+import pathlib
 import warnings
+from datetime import datetime, timezone
+from typing import Any, Dict
+
+import joblib
+import pandas as pd
 
 warnings.warn(
     "foodspec.reporting is deprecated and will be removed in v2.0.0. "
     "Use foodspec.reporting instead. "
     "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
-
-import json
-import pathlib
-from datetime import datetime, timezone
-from typing import Any, Dict
-
-import joblib
-import pandas as pd
 
 __all__ = [
     "create_run_dir",

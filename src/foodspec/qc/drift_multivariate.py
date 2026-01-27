@@ -39,7 +39,7 @@ class MMDDriftDetector:
         Notes
         -----
         MMD^2 = mean distance between kernel feature means of two distributions.
-        
+
         References
         ----------
         Gretton et al. (2012). A kernel two-sample test.
@@ -124,8 +124,6 @@ class MMDDriftDetector:
 
         if X_test.shape[1] != self.n_features_:
             raise ValueError(f"X_test has {X_test.shape[1]} features, expected {self.n_features_}")
-
-        n_test = X_test.shape[0]
 
         # Kernel matrix: reference vs reference
         K_ref_ref = self._compute_kernel_matrix(self.reference_data_, self.reference_data_)

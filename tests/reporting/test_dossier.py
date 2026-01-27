@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-from foodspec.core.manifest import RunManifest
 from foodspec.reporting.dossier import DossierBuilder
 
 

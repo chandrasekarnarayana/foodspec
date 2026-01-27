@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Preprocessing pipeline for RQ analysis.
 
@@ -7,40 +5,9 @@ Detects raw spectra vs precomputed peak tables, applies baseline/smoothing/norma
 and extracts peak intensities for downstream RatioQualityEngine.
 """
 
-"""
-preprocessing_pipeline - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.preprocess.PreprocessingEngine instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.preprocessing_pipeline import ...
-    New: from foodspec.preprocess.PreprocessingEngine import ...
-
-See: docs/migration/v1-to-v2.md
-"""
+from __future__ import annotations
 
 import warnings
-
-warnings.warn(
-    "foodspec.preprocessing_pipeline is deprecated and will be removed in v2.0.0. "
-    "Use foodspec.preprocess.PreprocessingEngine instead. "
-    "See docs/migration/v1-to-v2.md for migration guide.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
-
 from typing import Iterable, List
 
 import numpy as np
@@ -57,6 +24,31 @@ from foodspec.data_objects.spectral_dataset import (  # reuse same config
 from foodspec.features.rq import PeakDefinition
 from foodspec.preprocess.spikes import correct_cosmic_rays
 
+# preprocessing_pipeline - DEPRECATED
+#
+# .. deprecated:: 1.1.0
+#     This module is deprecated and will be removed in v2.0.0.
+#     Use foodspec.preprocess.PreprocessingEngine instead.
+#
+# This module is maintained for backward compatibility only.
+# All new code should use the modern API.
+#
+# Migration Guide:
+#     Old: from foodspec.preprocessing_pipeline import ...
+#     New: from foodspec.preprocess.PreprocessingEngine import ...
+#
+# See: docs/migration/v1-to-v2.md
+
+warnings.warn(
+    "foodspec.preprocessing_pipeline is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.preprocess.PreprocessingEngine instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+# Original module content continues below...
+# ==============================================
 
 def detect_input_mode(df: pd.DataFrame) -> str:
     """

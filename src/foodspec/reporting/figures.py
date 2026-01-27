@@ -4,9 +4,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, List, Tuple
+from typing import TYPE_CHECKING, Iterable, List, Tuple
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
 
 
 class FigureStyle(str, Enum):
@@ -83,7 +86,7 @@ def radar_plot(
     *,
     title: str,
     seed: int = 0,
-) -> "matplotlib.figure.Figure":
+) -> Figure:
     """Create a deterministic radar plot."""
     import matplotlib.pyplot as plt
 

@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Time series forecasting utilities for drift and stability monitoring.
 """
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Optional, Tuple

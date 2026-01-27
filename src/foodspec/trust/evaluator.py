@@ -70,7 +70,7 @@ class TrustEvaluator:
     ):
         """
         Initialize trust evaluator.
-        
+
         Args:
             model: Fitted classifier with predict_proba()
             artifact_registry: ArtifactRegistry instance for saving artifacts
@@ -117,7 +117,7 @@ class TrustEvaluator:
     ) -> None:
         """
         Fit conformal prediction on calibration data (disjoint from training).
-        
+
         Args:
             X_cal: Calibration features
             y_cal: Calibration labels
@@ -136,7 +136,7 @@ class TrustEvaluator:
     ) -> None:
         """
         Fit probability calibrator on calibration set.
-        
+
         Args:
             y_cal: Calibration labels
             proba_cal: Calibration predicted probabilities
@@ -166,7 +166,7 @@ class TrustEvaluator:
     ) -> TrustEvaluationResult:
         """
         Comprehensive trust evaluation on test set.
-        
+
         Args:
             X_test: Test features
             y_test: Test labels
@@ -175,7 +175,7 @@ class TrustEvaluator:
             group_col: Column name in df_test for grouping
             df_test: DataFrame with metadata (required if group_col specified)
             model_name: Model identifier
-        
+
         Returns:
             TrustEvaluationResult with all metrics
         """
@@ -309,14 +309,14 @@ class TrustEvaluator:
     ) -> Dict[str, str]:
         """
         Save all trust artifacts to registry and disk.
-        
+
         Args:
             result: TrustEvaluationResult object
             prediction_sets: Conformal prediction sets for each test sample
             set_sizes: Size of each prediction set
             abstention_mask: Boolean mask of abstained samples
             output_dir: Optional output directory for serialization
-        
+
         Returns:
             Dictionary mapping artifact names to their registry keys
         """

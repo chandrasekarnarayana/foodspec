@@ -1,8 +1,8 @@
-\"\"\"Generate a simple dataset flow diagram for docs/assets/dataset_flow.png.
+"""Generate a simple dataset flow diagram for docs/assets/dataset_flow.png.
 
 This script draws a schematic of the ingestion pipeline:
 raw files -> read_spectra -> FoodSpectrumSet -> create_library -> HDF5 -> workflows.
-\"\"\"
+"""
 
 from pathlib import Path
 

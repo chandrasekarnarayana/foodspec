@@ -1,51 +1,18 @@
-from __future__ import annotations
-
-"""
-Deprecated shim for Ratio-Quality (RQ) engine.
+"""Deprecated shim for Ratio-Quality (RQ) engine.
 
 Use foodspec.features.rq instead. This module will be removed in a future release.
 """
 
-"""
-rq - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.features.rq instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.rq import ...
-    New: from foodspec.features.rq import ...
-
-See: docs/migration/v1-to-v2.md
-"""
-
-import warnings
-
-warnings.warn(
-    "foodspec.rq is deprecated and will be removed in v2.0.0. "
-    "Use foodspec.features.rq instead. "
-    "See docs/migration/v1-to-v2.md for migration guide.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
+from __future__ import annotations
 
 import warnings
 
 from foodspec.features.rq import *  # noqa: F401,F403
 
-warnings.warn(  # noqa: E402
-    "foodspec.rq is deprecated; use foodspec.features.rq instead.",
+warnings.warn(
+    "foodspec.rq is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.features.rq instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2,
 )

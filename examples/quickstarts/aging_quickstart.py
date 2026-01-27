@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from foodspec.core.time import TimeSpectrumSet
 from foodspec.workflows.aging import compute_degradation_trajectories

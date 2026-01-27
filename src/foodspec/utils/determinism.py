@@ -14,16 +14,13 @@ import platform
 import random
 import sys
 from dataclasses import dataclass
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import numpy as np
 
-try:
-    import sklearn
-    SKLEARN_AVAILABLE = True
-except ImportError:
-    SKLEARN_AVAILABLE = False
+SKLEARN_AVAILABLE = find_spec("sklearn") is not None
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +35,12 @@ _GLOBAL_SEED: Optional[int] = None
 def set_global_seed(seed: int) -> None:
     """
     Set global seed for all RNG systems.
-    
+
     Affects:
     - Python's random module
     - NumPy
     - scikit-learn
-    
+
     Args:
         seed: Integer seed value
     """
@@ -76,7 +73,7 @@ def get_global_seed() -> Optional[int]:
 def capture_environment() -> Dict[str, Any]:
     """
     Capture execution environment details.
-    
+
     Returns:
         Dict with:
         - os_name, os_version
@@ -127,7 +124,7 @@ FOODSPEC_PACKAGES = [
 def capture_versions() -> Dict[str, Any]:
     """
     Capture version information for all installed packages.
-    
+
     Returns:
         Dict with:
         - critical_packages: {name: version}
@@ -169,12 +166,12 @@ def capture_versions() -> Dict[str, Any]:
 def fingerprint_csv(csv_path: Path) -> str:
     """
     Compute deterministic fingerprint of CSV file.
-    
+
     Uses SHA256 hash of file contents.
-    
+
     Args:
         csv_path: Path to CSV file
-        
+
     Returns:
         Hex digest of SHA256
     """
@@ -192,12 +189,12 @@ def fingerprint_csv(csv_path: Path) -> str:
 def fingerprint_protocol(protocol_dict: Dict[str, Any]) -> str:
     """
     Compute deterministic fingerprint of protocol config.
-    
+
     Uses SHA256 hash of JSON representation.
-    
+
     Args:
         protocol_dict: Protocol configuration dict
-        
+
     Returns:
         Hex digest of SHA256
     """
@@ -250,12 +247,12 @@ def generate_reproducibility_report(
 ) -> ReproducibilityReport:
     """
     Generate comprehensive reproducibility report.
-    
+
     Args:
         seed: Random seed (optional)
         csv_path: Path to data CSV (optional)
         protocol_dict: Protocol config dict (optional)
-        
+
     Returns:
         ReproducibilityReport object
     """

@@ -1,10 +1,9 @@
-from __future__ import annotations
-
 """High-level plotting helpers for common FoodSpec visualizations.
 
 All functions return a Matplotlib Axes for further customization.
 """
 
+from __future__ import annotations
 
 from typing import Optional, Sequence, Tuple
 

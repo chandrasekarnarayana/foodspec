@@ -28,7 +28,7 @@ def plot_raw_vs_processed_overlay(
     dpi: int = 300,
 ) -> plt.Figure:
     """Plot overlay of raw vs processed spectra for visual QC.
-    
+
     Parameters
     ----------
     wavenumbers : np.ndarray
@@ -45,7 +45,7 @@ def plot_raw_vs_processed_overlay(
         Path to save figure
     dpi : int, optional
         Resolution for saved figure
-        
+
     Returns
     -------
     matplotlib.figure.Figure
@@ -89,7 +89,7 @@ def plot_pca_umap(
     dpi: int = 300,
 ) -> plt.Figure:
     """Plot 2D embedding (PCA or UMAP) with optional class coloring.
-    
+
     Parameters
     ----------
     X_embedded : np.ndarray
@@ -104,7 +104,7 @@ def plot_pca_umap(
         Path to save figure
     dpi : int, optional
         Resolution for saved figure
-        
+
     Returns
     -------
     matplotlib.figure.Figure
@@ -150,7 +150,7 @@ def plot_coverage_efficiency_curve(
     dpi: int = 300,
 ) -> plt.Figure:
     """Plot coverage vs efficiency trade-off for conformal prediction.
-    
+
     Parameters
     ----------
     alpha_values : np.ndarray
@@ -167,7 +167,7 @@ def plot_coverage_efficiency_curve(
         Path to save figure
     dpi : int, optional
         Resolution for saved figure
-        
+
     Returns
     -------
     matplotlib.figure.Figure
@@ -212,7 +212,7 @@ def plot_conformal_set_sizes(
     dpi: int = 300,
 ) -> plt.Figure:
     """Plot distribution of conformal prediction set sizes.
-    
+
     Parameters
     ----------
     set_sizes : np.ndarray
@@ -225,7 +225,7 @@ def plot_conformal_set_sizes(
         Path to save figure
     dpi : int, optional
         Resolution for saved figure
-        
+
     Returns
     -------
     matplotlib.figure.Figure
@@ -282,7 +282,7 @@ def plot_abstention_distribution(
     dpi: int = 300,
 ) -> plt.Figure:
     """Plot abstention distribution by class and/or batch.
-    
+
     Parameters
     ----------
     abstain_flags : np.ndarray
@@ -297,7 +297,7 @@ def plot_abstention_distribution(
         Path to save figure
     dpi : int, optional
         Resolution for saved figure
-        
+
     Returns
     -------
     matplotlib.figure.Figure

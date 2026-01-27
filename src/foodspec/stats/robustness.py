@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 """
 Robustness utilities: bootstrap and permutation checks for model metrics.
 """
 
+from __future__ import annotations
 
 from typing import Callable, Optional
 

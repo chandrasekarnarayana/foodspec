@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Optional deep learning models for spectral classification.
 
 Provides a minimal 1D CNN classifier with a scikit-learn-like API. This module
@@ -7,6 +5,7 @@ relies on TensorFlow/Keras or PyTorch; it is only intended for advanced users
 and examples. Dependencies are optional and must be installed separately.
 """
 
+from __future__ import annotations
 
 import importlib.util
 from typing import Optional

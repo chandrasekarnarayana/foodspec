@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Protocol configuration dataclasses.
 
@@ -12,6 +10,7 @@ Provides ProtocolConfig for defining protocol specifications including:
 Part of the protocol execution framework.
 """
 
+from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field

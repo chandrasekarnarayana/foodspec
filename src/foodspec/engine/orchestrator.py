@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 class ExecutionEngine:
     """
     Central execution orchestrator for FoodSpec.
-    
+
     Manages:
     1. Philosophy validation
     2. Reproducibility (seeding, environment capture)
@@ -53,14 +53,14 @@ class ExecutionEngine:
     4. Artifact tracking
     5. Manifest generation
     6. Error handling and recovery
-    
+
     Every run must go through this engine.
     """
 
     def __init__(self, run_id: Optional[str] = None):
         """
         Initialize execution engine.
-        
+
         Args:
             run_id: Unique run identifier (generated if None)
         """
@@ -84,14 +84,14 @@ class ExecutionEngine:
     ) -> str:
         """
         Step 1: Validate and fingerprint protocol.
-        
+
         Args:
             protocol: ProtocolConfig object
             protocol_dict: Protocol as dict (for hashing)
-            
+
         Returns:
             Protocol hash
-            
+
         Raises:
             PhilosophyError: If protocol invalid
         """
@@ -128,10 +128,10 @@ class ExecutionEngine:
     def validate_data(self, csv_path: Path) -> Dict[str, Any]:
         """
         Step 2: Validate and fingerprint data.
-        
+
         Args:
             csv_path: Path to input CSV
-            
+
         Returns:
             Data fingerprint dict
         """
@@ -185,7 +185,7 @@ class ExecutionEngine:
     def setup_reproducibility(self, seed: Optional[int] = None) -> None:
         """
         Step 3: Setup reproducibility infrastructure.
-        
+
         Args:
             seed: Random seed (generated if None)
         """
@@ -227,7 +227,7 @@ class ExecutionEngine:
     def setup_pipeline(self) -> PipelineDAG:
         """
         Step 4: Setup pipeline DAG.
-        
+
         Returns:
             Configured PipelineDAG
         """
@@ -249,7 +249,7 @@ class ExecutionEngine:
     ) -> None:
         """
         Register a stage function in pipeline.
-        
+
         Args:
             stage_name: Name of stage (e.g., "preprocess", "qc", "model")
             func: Callable that implements stage
@@ -270,7 +270,7 @@ class ExecutionEngine:
     def execute_pipeline(self) -> Dict[str, Any]:
         """
         Steps 5-9: Execute pipeline DAG.
-        
+
         Returns:
             Execution results
         """
@@ -310,7 +310,7 @@ class ExecutionEngine:
     ) -> None:
         """
         Step 10: Register an artifact.
-        
+
         Args:
             name: Unique artifact name
             artifact_type: Type of artifact
@@ -353,10 +353,10 @@ class ExecutionEngine:
     def generate_manifest(self, out_dir: Path) -> Path:
         """
         Step 11: Generate run manifest.
-        
+
         Args:
             out_dir: Directory to save manifest
-            
+
         Returns:
             Path to manifest JSON
         """
@@ -388,13 +388,13 @@ class ExecutionEngine:
     ) -> None:
         """
         Step 12: Enforce all design principles.
-        
+
         Args:
             protocol: ProtocolConfig object
             protocol_dict: Protocol as dict
             qc_results: QC check results
             trust_outputs: Trust stack outputs
-            
+
         Raises:
             PhilosophyError: If any principle violated
         """
@@ -434,7 +434,7 @@ class ExecutionEngine:
     ) -> Path:
         """
         Execute complete FoodSpec run with all 12 steps.
-        
+
         Args:
             protocol: ProtocolConfig object
             protocol_dict: Protocol as dict
@@ -442,10 +442,10 @@ class ExecutionEngine:
             out_dir: Output directory
             seed: Random seed (optional)
             skip_philosophy: Skip philosophy enforcement (not recommended)
-            
+
         Returns:
             Path to output directory
-            
+
         Raises:
             Various exceptions if any step fails
         """

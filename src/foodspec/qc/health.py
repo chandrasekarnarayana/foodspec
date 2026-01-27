@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """QC: Spectrum health scoring utilities.
 
 Provides a lightweight scaffolding for computing per-spectrum health
@@ -15,6 +13,7 @@ Notes
 This is a scaffold only. Algorithms and thresholds are TODO.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional

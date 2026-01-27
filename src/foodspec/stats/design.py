@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Study design helpers.
 
@@ -7,6 +5,7 @@ Summarize group sizes and flag undersampled designs that may affect tests like
 ANOVA/MANOVA. Keep utilities lightweight and metadata-driven.
 """
 
+from __future__ import annotations
 
 import pandas as pd
 

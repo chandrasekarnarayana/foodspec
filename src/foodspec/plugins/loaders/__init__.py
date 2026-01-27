@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Registry for vendor loader plugins.
 
@@ -7,6 +5,7 @@ Plugins can register callables that ingest a vendor-specific path and return eit
 an IngestResult, a FoodSpectrumSet, or a SpectralDataset-like object.
 """
 
+from __future__ import annotations
 
 from pathlib import Path
 from typing import Callable, Dict, Optional

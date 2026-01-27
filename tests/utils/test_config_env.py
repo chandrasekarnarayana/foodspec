@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-from foodspec.config import load_config
 from foodspec.check_env import check_env
+from foodspec.config import load_config
 
 
 def test_load_config_json(tmp_path):

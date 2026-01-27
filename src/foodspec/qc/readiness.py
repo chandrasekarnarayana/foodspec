@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Dataset readiness score for ML deployment gatekeeping.
 
@@ -34,6 +32,7 @@ dimensions. Used in industry to gate model training: score < 70 → fix data fir
     >>>     print(f"Blockers: {readiness['failed_criteria']}")
 """
 
+from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, Optional

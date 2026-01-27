@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 FoodSpec v2 Definition of Done:
 - Deterministic outputs: seed is explicit; CV splits reproducible.
@@ -17,6 +15,7 @@ FoodSpec v2 Definition of Done:
 ArtifactRegistry manages standard run artifacts under a run directory.
 """
 
+from __future__ import annotations
 
 import csv
 import json
@@ -296,7 +295,7 @@ class ArtifactRegistry:
 
     def write_trust_calibration_metrics(self, metrics: Mapping[str, Any]) -> None:
         """Write calibration metrics (ECE, MCE) to CSV.
-        
+
         Parameters
         ----------
         metrics : Mapping[str, Any]
@@ -307,7 +306,7 @@ class ArtifactRegistry:
 
     def write_trust_coverage(self, coverage_df: Any) -> None:
         """Write conformal coverage table.
-        
+
         Parameters
         ----------
         coverage_df : pd.DataFrame
@@ -317,7 +316,7 @@ class ArtifactRegistry:
 
     def write_trust_conformal_sets(self, conformal_df: Any) -> None:
         """Write conformal prediction sets.
-        
+
         Parameters
         ----------
         conformal_df : pd.DataFrame
@@ -327,7 +326,7 @@ class ArtifactRegistry:
 
     def write_trust_abstention_summary(self, abstention_summary: Mapping[str, Any]) -> None:
         """Write abstention rule summary.
-        
+
         Parameters
         ----------
         abstention_summary : Mapping[str, Any]
@@ -338,7 +337,7 @@ class ArtifactRegistry:
 
     def write_trust_coefficients(self, coef_df: Any) -> None:
         """Write model coefficients from interpretability analysis.
-        
+
         Parameters
         ----------
         coef_df : pd.DataFrame
@@ -348,7 +347,7 @@ class ArtifactRegistry:
 
     def write_trust_permutation_importance(self, importance_df: Any) -> None:
         """Write permutation importance analysis.
-        
+
         Parameters
         ----------
         importance_df : pd.DataFrame
@@ -358,7 +357,7 @@ class ArtifactRegistry:
 
     def write_trust_marker_panel_explanations(self, explanations_df: Any) -> None:
         """Write marker panel explanations aligned with interpretability.
-        
+
         Parameters
         ----------
         explanations_df : pd.DataFrame

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Registry for feature index plugins.
 
@@ -8,6 +6,7 @@ feature sets. The registry stores them by name for lookup inside workflows
 or reporting helpers.
 """
 
+from __future__ import annotations
 
 from typing import Dict, Optional
 

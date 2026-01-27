@@ -61,7 +61,7 @@ def evaluate_command(
         bundle = classification_metrics_bundle(y_true_enc, y_pred_enc, y_proba)
         label_map = {str(i): str(lbl) for i, lbl in enumerate(encoder.classes_)}
         confusion = bundle["confusion_matrix"]
-        confusion["labels"] = [label_map.get(str(l), str(l)) for l in confusion.get("labels", [])]
+        confusion["labels"] = [label_map.get(str(lbl), str(lbl)) for lbl in confusion.get("labels", [])]
         per_class = {label_map.get(str(k), str(k)): v for k, v in bundle["per_class"].items()}
         bundle["confusion_matrix"] = confusion
         bundle["per_class"] = per_class

@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import json
+from pathlib import Path
 
 from foodspec.compliance import check_cfr_part11, check_iso_17025
 

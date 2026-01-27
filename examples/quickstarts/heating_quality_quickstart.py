@@ -6,8 +6,6 @@ Run with: python examples/heating_quality_quickstart.py
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 
 from foodspec.apps.heating import run_heating_quality_workflow
 from foodspec.demo import synthetic_heating_dataset

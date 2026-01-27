@@ -7,13 +7,14 @@ Showcases:
 - Integration with feature selection workflows
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Ensure src is in path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import numpy as np
+
 from foodspec.viz.coefficients import (
     get_coefficient_statistics,
     plot_coefficients_heatmap,
@@ -94,7 +95,7 @@ def demo_coefficients_statistics():
 
     print(f"Global Mean Coefficient: {stats['global']['mean']:.4f}")
     print(f"Global Std Deviation: {stats['global']['std']:.4f}")
-    print(f"\nTop 3 Most Important Features:")
+    print("\nTop 3 Most Important Features:")
     for ranking in stats["rankings"]["by_mean_magnitude"][:3]:
         print(
             f"  {ranking['rank']:2d}. {ranking['feature']:20s} "
@@ -328,9 +329,9 @@ def main():
         demo_integrated_workflow()
 
         print("\n" + "=" * 70)
-        print(f"✓ All demonstrations completed successfully!")
+        print("✓ All demonstrations completed successfully!")
         print(f"✓ Output directory: {output_dir.absolute()}")
-        print(f"✓ Generated 10 visualizations")
+        print("✓ Generated 10 visualizations")
         print("=" * 70 + "\n")
 
     except Exception as e:

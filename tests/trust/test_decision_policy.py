@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 
+from foodspec.modeling.diagnostics.roc import compute_roc_diagnostics
 from foodspec.trust.decision_policy import (
     DecisionPolicy,
     OperatingPoint,
@@ -17,7 +18,6 @@ from foodspec.trust.decision_policy import (
     choose_operating_point,
     save_operating_point,
 )
-from foodspec.modeling.diagnostics.roc import compute_roc_diagnostics
 
 
 class TestDecisionPolicy:
@@ -341,10 +341,10 @@ class TestPolicyTypeEnum:
 
     def test_all_policy_types_available(self):
         """Test that all policy types are defined."""
-        expected = ["youden", "cost_sensitive", "target_sensitivity", 
+        expected = ["youden", "cost_sensitive", "target_sensitivity",
                     "target_specificity", "abstention_aware"]
         actual = [p.value for p in PolicyType]
-        
+
         for policy in expected:
             assert policy in actual
 

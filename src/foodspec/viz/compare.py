@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Multi-run comparison utilities for analysis tracking and benchmarking.
 
 Compare multiple analysis runs to identify best models, track performance
@@ -7,17 +5,18 @@ over time, and monitor metric trends.
 
 Usage:
     from foodspec.viz.compare import scan_runs, load_run_summary, compare_runs
-    
+
     # Scan for runs
     runs = scan_runs("analysis_runs/")
-    
+
     # Load summaries
     summaries = [load_run_summary(run) for run in runs]
-    
+
     # Generate comparison dashboard
     compare_runs(summaries, output_dir="comparison_output")
 """
 
+from __future__ import annotations
 
 import json
 import warnings
@@ -32,7 +31,7 @@ import pandas as pd
 
 class RunSummary:
     """Summary of an analysis run.
-    
+
     Attributes
     ----------
     run_id : str
@@ -98,19 +97,19 @@ class RunSummary:
 
 def scan_runs(root_dir: str | Path, pattern: str = "*/manifest.json") -> list[Path]:
     """Scan for run directories containing manifest.json.
-    
+
     Parameters
     ----------
     root_dir : str | Path
         Root directory to scan
     pattern : str, default "*/manifest.json"
         Glob pattern to match run directories
-        
+
     Returns
     -------
     list[Path]
         List of run directories (parent directories of manifest files)
-        
+
     Examples
     --------
     >>> runs = scan_runs("analysis_runs/")
@@ -131,27 +130,27 @@ def scan_runs(root_dir: str | Path, pattern: str = "*/manifest.json") -> list[Pa
 
 def load_run_summary(run_dir: str | Path) -> RunSummary:
     """Load run summary from directory.
-    
+
     Extracts key metrics, trust metrics, QC flags, model name,
     validation scheme, and timestamp from run artifacts.
-    
+
     Parameters
     ----------
     run_dir : str | Path
         Path to run directory
-        
+
     Returns
     -------
     RunSummary
         Run summary object
-        
+
     Raises
     ------
     FileNotFoundError
         If manifest.json not found
     ValueError
         If manifest is malformed
-        
+
     Examples
     --------
     >>> summary = load_run_summary("run_001")
@@ -220,7 +219,7 @@ def create_leaderboard(
     ascending: tuple[bool, ...] = (False, False),
 ) -> pd.DataFrame:
     """Create leaderboard table from run summaries.
-    
+
     Parameters
     ----------
     summaries : Sequence[RunSummary]
@@ -229,12 +228,12 @@ def create_leaderboard(
         Metrics to sort by (in order of priority)
     ascending : tuple[bool, ...], default (False, False)
         Sort direction for each metric
-        
+
     Returns
     -------
     pd.DataFrame
         Leaderboard table sorted by specified metrics
-        
+
     Examples
     --------
     >>> leaderboard = create_leaderboard(summaries)
@@ -287,7 +286,7 @@ def create_radar_plot(
     output_path: str | Path | None = None,
 ) -> Path | None:
     """Create radar plot comparing top N runs.
-    
+
     Parameters
     ----------
     summaries : Sequence[RunSummary]
@@ -298,12 +297,12 @@ def create_radar_plot(
         Number of top runs to include
     output_path : str | Path, optional
         Output file path (default: radar.png)
-        
+
     Returns
     -------
     Path or None
         Path to saved plot, or None if not saved
-        
+
     Examples
     --------
     >>> create_radar_plot(summaries, top_n=3, output_path="radar.png")
@@ -379,7 +378,7 @@ def compute_baseline_deltas(
     metrics: Sequence[str] | None = None,
 ) -> pd.DataFrame:
     """Compute deltas from baseline run.
-    
+
     Parameters
     ----------
     summaries : Sequence[RunSummary]
@@ -388,12 +387,12 @@ def compute_baseline_deltas(
         Run ID to use as baseline
     metrics : Sequence[str], optional
         Metrics to compute deltas for (default: all numeric metrics)
-        
+
     Returns
     -------
     pd.DataFrame
         DataFrame with delta columns for each metric
-        
+
     Examples
     --------
     >>> deltas = compute_baseline_deltas(summaries, baseline_id="run_001")
@@ -443,7 +442,7 @@ def create_monitoring_plot(
     output_path: str | Path | None = None,
 ) -> Path | None:
     """Create monitoring plot showing metric trends over time.
-    
+
     Parameters
     ----------
     summaries : Sequence[RunSummary]
@@ -452,12 +451,12 @@ def create_monitoring_plot(
         Metrics to plot
     output_path : str | Path, optional
         Output file path
-        
+
     Returns
     -------
     Path or None
         Path to saved plot, or None if not saved
-        
+
     Examples
     --------
     >>> create_monitoring_plot(summaries, output_path="monitoring.png")
@@ -524,7 +523,7 @@ def create_comparison_dashboard(
     baseline_id: str | None = None,
 ) -> Path:
     """Create HTML comparison dashboard.
-    
+
     Parameters
     ----------
     summaries : Sequence[RunSummary]
@@ -533,12 +532,12 @@ def create_comparison_dashboard(
         Output HTML file path
     baseline_id : str, optional
         Baseline run ID for delta computation
-        
+
     Returns
     -------
     Path
         Path to created HTML file
-        
+
     Examples
     --------
     >>> create_comparison_dashboard(
@@ -595,12 +594,12 @@ def create_comparison_dashboard(
 </head>
 <body>
     <h1>🥗 FoodSpec Multi-Run Comparison</h1>
-    
+
     <div class="summary">
         <strong>Total Runs:</strong> {total_runs}<br>
         <strong>Date Generated:</strong> {date}
     </div>
-    
+
     <h2>Leaderboard</h2>
     {leaderboard_html}
 </body>
@@ -631,14 +630,14 @@ def compare_runs(
     top_n: int = 5,
 ) -> dict[str, Path]:
     """Compare runs and generate all outputs.
-    
+
     Generates:
     - comparison_dashboard.html: Interactive dashboard
     - comparison.csv: Leaderboard table
     - radar.png: Radar plot of top N runs
     - monitoring.png: Metric trends over time
     - baseline_deltas.csv: Deltas from baseline (if specified)
-    
+
     Parameters
     ----------
     summaries : Sequence[RunSummary]
@@ -649,12 +648,12 @@ def compare_runs(
         Baseline run ID for delta computation
     top_n : int, default 5
         Number of top runs for radar plot
-        
+
     Returns
     -------
     dict[str, Path]
         Dictionary mapping output type to file path
-        
+
     Examples
     --------
     >>> outputs = compare_runs(

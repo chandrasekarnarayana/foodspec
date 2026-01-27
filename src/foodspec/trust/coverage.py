@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Coverage analysis utilities for conformal prediction.
 
@@ -15,6 +13,7 @@ Key Functions:
     check_coverage_guarantees - Verify coverage ≥ target
 """
 
+from __future__ import annotations
 
 from typing import Dict, Optional
 
@@ -29,14 +28,14 @@ def coverage_by_group(
 ) -> pd.DataFrame:
     """
     Compute coverage metrics grouped by a column.
-    
+
     Aggregates per-sample coverage data into group-level statistics:
     - coverage: empirical coverage in group
     - n_samples: number of samples
     - avg_set_size: mean prediction set size
     - min_set_size: minimum set size
     - max_set_size: maximum set size
-    
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -49,7 +48,7 @@ def coverage_by_group(
         Column name to group by (typically 'bin' for Mondrian conditioning).
     sort_by : str, optional
         Column to sort results by. If None, sorts by group_col alphabetically.
-    
+
     Returns
     -------
     grouped_df : pd.DataFrame
@@ -61,7 +60,7 @@ def coverage_by_group(
         - min_set_size: minimum set size
         - max_set_size: maximum set size
         - threshold_mean: mean threshold used
-        
+
     Raises
     ------
     ValueError
@@ -125,7 +124,7 @@ def format_coverage_table(
 ) -> str:
     """
     Format coverage table as human-readable string.
-    
+
     Parameters
     ----------
     grouped_df : pd.DataFrame
@@ -134,7 +133,7 @@ def format_coverage_table(
         Decimal places for floating-point columns.
     include_min_max : bool, default False
         If True, include min/max set size columns.
-    
+
     Returns
     -------
     formatted_str : str
@@ -172,7 +171,7 @@ def to_markdown(
 ) -> str:
     """
     Export coverage table as Markdown.
-    
+
     Parameters
     ----------
     grouped_df : pd.DataFrame
@@ -183,7 +182,7 @@ def to_markdown(
         Include min/max set size.
     caption : str, optional
         Table caption.
-    
+
     Returns
     -------
     markdown_str : str
@@ -238,7 +237,7 @@ def to_latex(
 ) -> str:
     """
     Export coverage table as LaTeX.
-    
+
     Parameters
     ----------
     grouped_df : pd.DataFrame
@@ -251,7 +250,7 @@ def to_latex(
         Table caption.
     label : str, optional
         LaTeX label for cross-referencing.
-    
+
     Returns
     -------
     latex_str : str
@@ -322,7 +321,7 @@ def check_coverage_guarantees(
 ) -> Dict[str, bool | float]:
     """
     Check if coverage ≥ target in each group (within tolerance).
-    
+
     Parameters
     ----------
     grouped_df : pd.DataFrame
@@ -331,7 +330,7 @@ def check_coverage_guarantees(
         Target coverage level (e.g., 0.9 for 90%).
     tolerance : float, default 0.05
         Tolerance (typically 0.05 for statistical fluctuation).
-    
+
     Returns
     -------
     results : dict
@@ -394,14 +393,14 @@ def coverage_comparison(
 ) -> pd.DataFrame:
     """
     Compare coverage tables from two methods.
-    
+
     Parameters
     ----------
     df1, df2 : pd.DataFrame
         Output from coverage_by_group() for each method.
     name1, name2 : str
         Names for the two methods.
-    
+
     Returns
     -------
     comparison_df : pd.DataFrame
@@ -443,14 +442,14 @@ def summarize_coverage(
 ) -> str:
     """
     Generate a human-readable summary of coverage analysis.
-    
+
     Parameters
     ----------
     grouped_df : pd.DataFrame
         Output from coverage_by_group().
     alpha : float, default 0.1
         Significance level (for computing target_coverage = 1 - alpha).
-    
+
     Returns
     -------
     summary_str : str

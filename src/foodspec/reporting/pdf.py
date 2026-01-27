@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """PDF export functionality with graceful dependency handling.
 
 Supports PDF generation from HTML with optional WeasyPrint support.
@@ -7,7 +5,7 @@ Falls back to HTML-only mode if WeasyPrint is not installed.
 
 Usage:
     from foodspec.reporting.pdf import export_pdf, is_pdf_capable
-    
+
     # Check if PDF export is available
     if is_pdf_capable():
         pdf_path = export_pdf("report.html", "report.pdf")
@@ -15,6 +13,7 @@ Usage:
         print("PDF export not available - HTML export generated instead")
 """
 
+from __future__ import annotations
 
 import warnings
 from pathlib import Path
@@ -39,14 +38,14 @@ class PDFExportWarning(UserWarning):
 
 def is_pdf_capable() -> bool:
     """Check if PDF export is available.
-    
+
     Returns True if WeasyPrint is installed, False otherwise.
-    
+
     Returns
     -------
     bool
         True if PDF export is available
-        
+
     Examples
     --------
     >>> if is_pdf_capable():
@@ -59,12 +58,12 @@ def is_pdf_capable() -> bool:
 
 def get_pdf_capability_status() -> dict[str, bool | str]:
     """Get detailed PDF capability status.
-    
+
     Returns
     -------
     dict
         Dictionary with 'available' (bool) and 'error' (str or None) keys
-        
+
     Examples
     --------
     >>> status = get_pdf_capability_status()
@@ -82,10 +81,10 @@ def export_pdf(
     warn_on_fallback: bool = True,
 ) -> Path:
     """Export HTML to PDF with graceful fallback.
-    
+
     Attempts to generate PDF using WeasyPrint. If WeasyPrint is not
     installed, falls back to copying the HTML file with a warning.
-    
+
     Parameters
     ----------
     html_path : str | Path
@@ -94,35 +93,35 @@ def export_pdf(
         Output PDF file path
     warn_on_fallback : bool, default True
         Whether to warn if falling back to HTML-only mode
-        
+
     Returns
     -------
     Path
         Path to output file (PDF if successful, HTML copy if fallback)
-        
+
     Raises
     ------
     FileNotFoundError
         If HTML file doesn't exist
     IOError
         If file operations fail
-        
+
     Notes
     -----
     When WeasyPrint is available:
     - Converts HTML to PDF with styling support
     - Generates true PDF file
-    
+
     When WeasyPrint is not available:
     - Copies HTML file to PDF path (with .html or .pdf extension)
     - Issues PDFExportWarning
     - Still returns valid path
-    
+
     Examples
     --------
     >>> output_path = export_pdf("report.html", "report.pdf")
     >>> print(f"Exported to: {output_path}")
-    
+
     >>> # Check capability before exporting
     >>> if is_pdf_capable():
     ...     export_pdf("report.html", "report.pdf")
@@ -168,14 +167,14 @@ def export_pdf(
 
 def _fallback_html_export(html_path: Path, pdf_path: Path) -> Path:
     """Fallback: copy HTML file when PDF export unavailable.
-    
+
     Parameters
     ----------
     html_path : Path
         Source HTML file
     pdf_path : Path
         Destination path
-        
+
     Returns
     -------
     Path
@@ -196,22 +195,22 @@ def get_pdf_export_message(
     mode: Literal["brief", "detailed"] = "brief",
 ) -> str:
     """Get informative message about PDF export capability.
-    
+
     Parameters
     ----------
     mode : {'brief', 'detailed'}, default 'brief'
         Message detail level
-        
+
     Returns
     -------
     str
         Informative message about PDF export status
-        
+
     Examples
     --------
     >>> print(get_pdf_export_message())
     PDF export available
-    
+
     >>> print(get_pdf_export_message("detailed"))
     PDF export not available. Install weasyprint: pip install weasyprint
     """
@@ -234,18 +233,18 @@ def get_pdf_export_message(
 
 class PDFExporter:
     """Batch PDF exporter with capability tracking.
-    
+
     Handles multiple PDF exports with consistent error handling
     and capability checking.
-    
+
     Examples
     --------
     >>> exporter = PDFExporter(warn_on_fallback=True)
-    >>> 
+    >>>
     >>> # Check capability
     >>> if exporter.is_capable():
     ...     print("PDF export available")
-    >>> 
+    >>>
     >>> # Export with consistent handling
     >>> for html_file in html_files:
     ...     pdf_path = exporter.export(html_file, f"{html_file.stem}.pdf")
@@ -253,7 +252,7 @@ class PDFExporter:
 
     def __init__(self, warn_on_fallback: bool = True) -> None:
         """Initialize exporter.
-        
+
         Parameters
         ----------
         warn_on_fallback : bool, default True
@@ -265,7 +264,7 @@ class PDFExporter:
 
     def is_capable(self) -> bool:
         """Check if PDF export is available.
-        
+
         Returns
         -------
         bool
@@ -279,14 +278,14 @@ class PDFExporter:
         pdf_path: str | Path,
     ) -> Path:
         """Export HTML to PDF.
-        
+
         Parameters
         ----------
         html_path : str | Path
             Path to HTML file
         pdf_path : str | Path
             Output PDF path
-            
+
         Returns
         -------
         Path
@@ -304,7 +303,7 @@ class PDFExporter:
 
     def get_stats(self) -> dict[str, int]:
         """Get export statistics.
-        
+
         Returns
         -------
         dict

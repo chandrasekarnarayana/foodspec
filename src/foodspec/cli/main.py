@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Command-line interface for foodspec.
 
 This module assembles CLI commands organized into logical groups:
@@ -11,21 +9,20 @@ This module assembles CLI commands organized into logical groups:
 - Utilities (about, report)
 """
 
+from __future__ import annotations
 
+import glob
+import json
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as pkg_version
 from pathlib import Path
 from typing import List, Optional, Union
 
 import matplotlib
+import pandas as pd
 import typer
 
 matplotlib.use("Agg")
-
-import glob
-import json
-
-import pandas as pd
 
 from foodspec.cli.commands.analysis import analysis_app
 from foodspec.cli.commands.data import data_app

@@ -8,29 +8,24 @@ Tests for:
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-import pytest
 import pandas as pd
 
+from foodspec.workflow.artifact_contract import ArtifactContract
 from foodspec.workflow.config import WorkflowConfig
 from foodspec.workflow.qc_gates import (
     DataIntegrityGate,
-    GateResult,
     ModelReliabilityGate,
     SpectralQualityGate,
 )
 from foodspec.workflow.regulatory import (
-    APPROVED_MODELS,
     check_override_governance,
     enforce_model_approved,
     enforce_reporting,
     enforce_trust_stack,
     get_regulatory_restrictions,
 )
-from foodspec.workflow.artifact_contract import ArtifactContract
-
 
 # ============================================================================
 # QC GATE TESTS
@@ -152,7 +147,7 @@ class TestSpectralQualityGate:
         # Normal range: ~450-475, outlier: 5000
         data_normal = [[100.0 + i, 200.0 + i, 150.0 + i] for i in range(9)]
         data_outlier = [[2000.0, 2000.0, 1000.0]]  # Extreme outlier to ensure z > 3
-        
+
         df = pd.DataFrame(
             data_normal + data_outlier,
             columns=["wavenumber_1", "wavenumber_2", "wavenumber_3"],

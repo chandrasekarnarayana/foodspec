@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 """Text-based format readers.
 
 Includes CSV/TXT helpers and a minimal JCAMP-DX parser for converting
 text-based spectral formats into `FoodSpectrumSet`.
 """
 
+from __future__ import annotations
 
 from pathlib import Path
 from typing import Literal, Optional

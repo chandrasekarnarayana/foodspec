@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Vendor format support matrix and comprehensive block type testing.
 
@@ -7,6 +5,7 @@ Documents which OPUS and SPC block types are supported, known limitations,
 and provides validation utilities.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Set

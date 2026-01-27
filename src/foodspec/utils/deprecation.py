@@ -15,7 +15,7 @@ def deprecated(
     alternative: str | None = None
 ) -> Callable:
     """Decorator to mark functions/classes as deprecated.
-    
+
     Parameters
     ----------
     reason : str
@@ -24,7 +24,7 @@ def deprecated(
         Version when feature will be removed
     alternative : str, optional
         Suggested alternative to use
-    
+
     Examples
     --------
     >>> @deprecated("Use new_function instead", alternative="new_function")
@@ -61,7 +61,7 @@ def warn_deprecated_import(
     version: str = "2.0.0"
 ):
     """Issue warning for deprecated module import.
-    
+
     Parameters
     ----------
     old_module : str

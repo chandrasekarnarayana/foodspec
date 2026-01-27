@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Variable Importance in Projection (VIP) for PLS models.
 
 This module implements VIP scores for PLS regression and PLS-DA models,
@@ -15,6 +13,7 @@ selection methods in partial least squares regression. Chemometrics and Intellig
 Laboratory Systems, 118, 62-69.
 """
 
+from __future__ import annotations
 
 from typing import Union
 

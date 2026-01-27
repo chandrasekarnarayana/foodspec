@@ -1,8 +1,8 @@
-\"\"\"Generate NNLS overlay/residual figures for docs/assets.
+"""Generate NNLS overlay/residual figures for docs/assets.
 
 Uses a simple synthetic demo: two reference spectra mixed at known fractions,
 then solved with nnls_mixture. Saves overlay and residual plots.
-\"\"\"
+"""
 
 from pathlib import Path
 

@@ -43,7 +43,7 @@ class CUSUMChart:
         CUSUM is optimal for detecting small shifts (0.5-2 sigma).
         - h=4.77 gives ARL₀ ≈ 500 (false alarm every ~500 points)
         - k=0.5 detects 1-sigma shift efficiently
-        
+
         References
         ----------
         Page, E. S. (1954). Continuous inspection schemes.
@@ -286,7 +286,7 @@ class CapabilityIndices:
         -----
         Cp/Cpk: Used for rational subgroups (subgroup strategy known)
         Pp/Ppk: Used for individual measurements
-        
+
         Cpk = min((USL - mean) / (3*sigma), (mean - LSL) / (3*sigma))
 
         Cpm = (USL - LSL) / (6 * sqrt(sigma^2 + (mean - target)^2))

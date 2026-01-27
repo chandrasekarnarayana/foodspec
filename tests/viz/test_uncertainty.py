@@ -460,15 +460,15 @@ class TestUncertaintyIntegration:
         batch_labels = np.random.randint(0, 3, n_samples)
 
         # Test all visualizations
-        fig1 = plot_confidence_map(confidences, class_predictions=class_predictions)
-        fig2 = plot_set_size_distribution(set_sizes, batch_labels=batch_labels)
+        plot_confidence_map(confidences, class_predictions=class_predictions)
+        plot_set_size_distribution(set_sizes, batch_labels=batch_labels)
 
         alphas = np.linspace(0.05, 0.3, 5)
         coverages = 1 - alphas
         avg_sizes = alphas * 5 + 1
-        fig3 = plot_coverage_efficiency(alphas, coverages, avg_sizes)
+        plot_coverage_efficiency(alphas, coverages, avg_sizes)
 
-        fig4 = plot_abstention_distribution(
+        plot_abstention_distribution(
             abstain_flags, class_labels=class_predictions
         )
 

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Protocol execution runner.
 
@@ -7,6 +5,7 @@ Orchestrates protocol execution across multiple steps with support for
 multi-dataset inputs, HSI processing, and comprehensive result tracking.
 """
 
+from __future__ import annotations
 
 import json
 import random

@@ -6,8 +6,8 @@ import pandas as pd
 from foodspec.stats.hypothesis_tests import (
     check_group_sequential,
     group_sequential_boundaries,
-    run_anderson_darling,
     run_ancova,
+    run_anderson_darling,
     run_bartlett,
     run_levene,
     run_noninferiority,

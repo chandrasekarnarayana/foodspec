@@ -25,11 +25,11 @@ References:
 Example:
     >>> from foodspec.hybrid.physics_loss import PhysicsInformedLoss, BeerLambertLoss
     >>> import torch
-    >>> 
+    >>>
     >>> # Create physics-informed loss
     >>> physics_loss = PhysicsInformedLoss()
     >>> physics_loss.add_constraint(BeerLambertLoss(weight=0.1))
-    >>> 
+    >>>
     >>> # Training loop
     >>> for X_batch, y_batch in dataloader:
     ...     y_pred = model(X_batch)
@@ -50,15 +50,15 @@ import numpy as np
 class PhysicsConstraint(ABC):
     """
     Abstract base class for physics-based constraints.
-    
+
     Subclasses implement specific physical laws or priors that can be
     enforced during neural network training.
-    
+
     Parameters
     ----------
     weight : float, default=1.0
         Weight for this constraint in total loss.
-    
+
     name : str, optional
         Name of the constraint for logging.
     """
@@ -76,18 +76,18 @@ class PhysicsConstraint(ABC):
     ) -> float:
         """
         Compute physics-based loss.
-        
+
         Parameters
         ----------
         X : array-like
             Input data (e.g., wavelengths, conditions).
-        
+
         y_pred : array-like
             Model predictions (e.g., spectra, concentrations).
-        
+
         model : optional
             Neural network model (for extracting intermediate activations).
-        
+
         Returns
         -------
         loss : float
@@ -99,31 +99,31 @@ class PhysicsConstraint(ABC):
 class BeerLambertLoss(PhysicsConstraint):
     """
     Enforce Beer-Lambert law: A = ε * c * l.
-    
+
     For mixtures: A_mixture = Σ_i (ε_i * c_i * l)
-    
+
     This constraint ensures that predicted absorbance is linear in
     concentration when path length and molar absorptivity are known.
-    
+
     Parameters
     ----------
     reference_spectra : ndarray of shape (n_components, n_wavelengths), optional
         Known pure component spectra (ε_i * l).
-    
+
     concentration_index : int or slice, optional
         Index/slice of model output corresponding to concentrations.
-    
+
     spectra_index : int or slice, optional
         Index/slice of model output corresponding to spectra.
-    
+
     weight : float, default=1.0
         Constraint weight.
-    
+
     Example
     -------
     >>> # Model predicts concentrations, reconstruct spectrum
     >>> bl_loss = BeerLambertLoss(reference_spectra=pure_spectra, weight=0.1)
-    >>> 
+    >>>
     >>> # In training loop:
     >>> c_pred = model(X)  # Predicted concentrations
     >>> spectrum_pred = c_pred @ pure_spectra  # Reconstruct
@@ -152,7 +152,7 @@ class BeerLambertLoss(PhysicsConstraint):
     ) -> float:
         """
         Compute Beer-Lambert violation.
-        
+
         If reference_spectra provided: Check if y_pred matches linear mixture.
         If not: Check if predicted spectra are linear in concentrations.
         """
@@ -185,23 +185,23 @@ class BeerLambertLoss(PhysicsConstraint):
 class SmoothnessLoss(PhysicsConstraint):
     """
     Enforce spectral smoothness via derivative penalty.
-    
+
     Physical motivation: Real spectra are smooth (no sharp discontinuities)
     due to underlying molecular transitions and instrumental broadening.
-    
+
     Loss = ||d²y/dx²||²  (penalize large second derivatives)
-    
+
     Parameters
     ----------
     order : int, default=2
         Derivative order (1 for first derivative, 2 for second).
-    
+
     weight : float, default=1.0
         Constraint weight.
-    
+
     axis : int, default=1
         Axis along which to compute derivatives (1 for wavelength axis).
-    
+
     Example
     -------
     >>> smooth_loss = SmoothnessLoss(order=2, weight=0.01)
@@ -239,25 +239,25 @@ class SmoothnessLoss(PhysicsConstraint):
 class PeakConstraintLoss(PhysicsConstraint):
     """
     Enforce peak shape constraints (Gaussian, Lorentzian, or Voigt).
-    
+
     Physical motivation: Spectral peaks follow characteristic lineshapes
     determined by Doppler broadening (Gaussian), collision broadening
     (Lorentzian), or combination (Voigt).
-    
+
     Parameters
     ----------
     peak_positions : list of int
         Expected peak positions (wavelength indices).
-    
+
     peak_type : {'gaussian', 'lorentzian', 'voigt'}, default='gaussian'
         Expected peak lineshape.
-    
+
     width_range : tuple of float, default=(1.0, 10.0)
         Allowed peak width range (in units of wavelength indices).
-    
+
     weight : float, default=1.0
         Constraint weight.
-    
+
     Example
     -------
     >>> # Known peaks at wavelengths 50, 100, 150
@@ -285,7 +285,7 @@ class PeakConstraintLoss(PhysicsConstraint):
     ) -> float:
         """
         Compute peak shape violation.
-        
+
         Fit expected peak shapes at given positions and penalize deviations.
         """
         loss = 0.0
@@ -353,20 +353,20 @@ class PeakConstraintLoss(PhysicsConstraint):
 class EnergyConservationLoss(PhysicsConstraint):
     """
     Enforce energy conservation in spectral transformations.
-    
+
     Physical motivation: Total energy (integral of spectrum) should be
     conserved in certain transformations (e.g., fluorescence, scattering).
-    
+
     Loss = |∫y_pred dx - ∫y_true dx|
-    
+
     Parameters
     ----------
     weight : float, default=1.0
         Constraint weight.
-    
+
     axis : int, default=1
         Axis to integrate over.
-    
+
     Example
     -------
     >>> energy_loss = EnergyConservationLoss(weight=0.1)
@@ -402,20 +402,20 @@ class EnergyConservationLoss(PhysicsConstraint):
 class SparsityLoss(PhysicsConstraint):
     """
     Enforce sparsity in spectral features or coefficients.
-    
+
     Physical motivation: Many spectroscopy problems have sparse solutions
     (few active components, few non-zero peaks).
-    
+
     Loss = ||y||_1  (L1 penalty)
-    
+
     Parameters
     ----------
     weight : float, default=1.0
         Constraint weight.
-    
+
     threshold : float, default=0.0
         Values below threshold are not penalized.
-    
+
     Example
     -------
     >>> sparsity_loss = SparsityLoss(weight=0.01, threshold=0.05)
@@ -445,30 +445,30 @@ class SparsityLoss(PhysicsConstraint):
 class PhysicsInformedLoss:
     """
     Composite physics-informed loss function.
-    
+
     Combines multiple physics constraints with data-driven loss.
-    
+
     Parameters
     ----------
     constraints : list of PhysicsConstraint, optional
         List of physics constraints to enforce.
-    
+
     Attributes
     ----------
     constraints : list
         Active physics constraints.
-    
+
     Example
     -------
     >>> from foodspec.hybrid.physics_loss import (
     ...     PhysicsInformedLoss, BeerLambertLoss, SmoothnessLoss
     ... )
-    >>> 
+    >>>
     >>> # Create composite loss
     >>> physics_loss = PhysicsInformedLoss()
     >>> physics_loss.add_constraint(BeerLambertLoss(weight=0.1))
     >>> physics_loss.add_constraint(SmoothnessLoss(order=2, weight=0.01))
-    >>> 
+    >>>
     >>> # Use in training
     >>> total_loss = data_loss + physics_loss(X, y_pred, model)
     """
@@ -489,21 +489,21 @@ class PhysicsInformedLoss:
     ) -> float:
         """
         Compute total physics-informed loss.
-        
+
         Parameters
         ----------
         X : ndarray
             Input data.
-        
+
         y_pred : ndarray
             Model predictions.
-        
+
         y_true : ndarray, optional
             Ground truth (for constraints requiring it).
-        
+
         model : optional
             Neural network model.
-        
+
         Returns
         -------
         total_loss : float
@@ -531,7 +531,7 @@ class PhysicsInformedLoss:
     ) -> dict[str, float]:
         """
         Get individual constraint losses for logging.
-        
+
         Returns
         -------
         losses : dict

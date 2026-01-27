@@ -40,7 +40,7 @@ class NodeType(str, Enum):
 class Node:
     """
     Single execution node in pipeline.
-    
+
     Represents one stage of the workflow.
     """
 
@@ -79,7 +79,7 @@ class Node:
 class PipelineDAG:
     """
     Directed Acyclic Graph for FoodSpec pipeline.
-    
+
     Manages:
     - Node registration
     - Dependency resolution
@@ -106,7 +106,7 @@ class PipelineDAG:
     ) -> Node:
         """
         Add node to DAG.
-        
+
         Args:
             name: Unique node name
             node_type: Type of operation
@@ -114,7 +114,7 @@ class PipelineDAG:
             inputs: List of input dependencies
             outputs: List of output artifact names
             params: Configuration parameters
-            
+
         Returns:
             Created Node object
         """
@@ -142,10 +142,10 @@ class PipelineDAG:
     def topological_sort(self) -> List[str]:
         """
         Compute topological ordering of nodes.
-        
+
         Returns:
             List of node names in execution order
-            
+
         Raises:
             ValueError: If cycle detected
         """
@@ -184,15 +184,15 @@ class PipelineDAG:
     def validate(self) -> bool:
         """
         Validate DAG consistency.
-        
+
         Checks:
         - All dependencies exist
         - No cycles
         - All nodes have names
-        
+
         Returns:
             True if valid
-            
+
         Raises:
             ValueError: If invalid
         """
@@ -222,10 +222,10 @@ class PipelineDAG:
     def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute all nodes in topological order.
-        
+
         Args:
             context: Shared execution context
-            
+
         Returns:
             Updated context with execution results
         """
@@ -291,7 +291,7 @@ class PipelineDAG:
     def to_svg(self, out_path: Path) -> Path:
         """
         Save DAG as SVG visualization.
-        
+
         Requires graphviz package.
         """
         try:
@@ -331,7 +331,7 @@ class PipelineDAG:
 def build_standard_pipeline() -> PipelineDAG:
     """
     Build standard FoodSpec pipeline DAG.
-    
+
     Returns:
         PipelineDAG with standard stages
     """

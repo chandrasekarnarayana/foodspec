@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Base abstractions for IO loaders.
 
@@ -7,6 +5,7 @@ Loaders are simple functions that accept a path and return a FoodSpectrumSet or
 an intermediate DataFrame that can be converted downstream.
 """
 
+from __future__ import annotations
 
 from typing import Protocol
 

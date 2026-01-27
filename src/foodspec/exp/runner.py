@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Experiment runner (scaffold).
 
 Defines `ExperimentSpec` and `ExperimentRunner` for YAML/JSON-based experiment
@@ -8,6 +6,7 @@ execution that wires protocols, inputs, and overrides into repeatable runs.
 This is a scaffold only: parsing, validation, and execution are stubs.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path

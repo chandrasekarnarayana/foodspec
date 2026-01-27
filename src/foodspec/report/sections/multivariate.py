@@ -1,10 +1,10 @@
-from __future__ import annotations
-
 """Multivariate reporting section builder.
 
 Detects multivariate artifacts under a run directory, renders publication-grade
 figures, and returns structured context for HTML/experiment cards.
 """
+
+from __future__ import annotations
 
 import json
 from dataclasses import dataclass

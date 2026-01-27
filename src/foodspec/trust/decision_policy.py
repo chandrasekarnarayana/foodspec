@@ -303,8 +303,6 @@ def _apply_cost_sensitive_policy(
 
     # Find threshold minimizing expected cost
     y_pred_proba_pos = y_proba[:, 1]
-    class_1_metrics = roc_result.per_class[1]
-    thresholds = class_1_metrics.thresholds
 
     # Grid search over thresholds
     best_cost = float("inf")
@@ -312,10 +310,8 @@ def _apply_cost_sensitive_policy(
 
     for thresh in np.unique(y_pred_proba_pos):
         y_pred = (y_pred_proba_pos >= thresh).astype(int)
-        tn = np.sum((y_pred == 0) & (y_true == 0))
         fp = np.sum((y_pred == 1) & (y_true == 0))
         fn = np.sum((y_pred == 0) & (y_true == 1))
-        tp = np.sum((y_pred == 1) & (y_true == 1))
 
         # Expected cost (unnormalized)
         cost = cost_fp * fp + cost_fn * fn
@@ -378,7 +374,6 @@ def _apply_target_sensitivity_policy(
         best_idx = np.argmax(tpr)
     else:
         # Among valid thresholds, choose one with maximum specificity (min FPR)
-        valid_thresholds = thresholds[valid_idx]
         valid_fpr = fpr[valid_idx]
         best_valid_idx = np.argmin(valid_fpr)
         best_idx = np.where(valid_idx)[0][best_valid_idx]
@@ -761,7 +756,6 @@ class CostSensitiveROC:
         y_pred_proba = np.asarray(y_pred_proba, dtype=np.float64).ravel()
 
         sorted_idx = np.argsort(y_pred_proba)[::-1]
-        y_sorted = y_true[sorted_idx]
         proba_sorted = y_pred_proba[sorted_idx]
 
         n_pos = np.sum(y_true)

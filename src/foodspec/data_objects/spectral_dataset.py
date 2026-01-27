@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 SpectralDataset: vendor-neutral representation and preprocessing for Raman/FTIR.
 
@@ -10,6 +8,7 @@ Goals:
 - Harmonization-ready save/load to HDF5.
 """
 
+from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field

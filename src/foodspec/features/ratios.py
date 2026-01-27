@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Feature: Ratio computation engine (scaffold).
 
 Defines `RatioEngine` to compute feature ratios from peak/intensity columns.
@@ -7,6 +5,7 @@ This is a scaffold with method signatures and docstrings; algorithms and
 robust handling are intentionally left TODO.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple

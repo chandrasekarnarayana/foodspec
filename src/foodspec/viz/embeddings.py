@@ -11,7 +11,7 @@ Functions:
 """
 
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -20,16 +20,19 @@ from scipy.stats import chi2
 
 from foodspec.viz.style import apply_style
 
+if TYPE_CHECKING:
+    from foodspec.reporting.schema import RunBundle
+
 
 def _validate_embedding(embedding: np.ndarray) -> None:
     """
     Validate embedding array dimensions and values.
-    
+
     Parameters
     ----------
     embedding : np.ndarray
         Embedding coordinates, shape (n_samples, n_dimensions) where n_dimensions in [2, 3]
-    
+
     Raises
     ------
     ValueError
@@ -57,14 +60,14 @@ def _validate_embedding(embedding: np.ndarray) -> None:
 def _validate_labels(labels: Optional[np.ndarray], expected_length: int) -> None:
     """
     Validate label array for embedding samples.
-    
+
     Parameters
     ----------
     labels : np.ndarray or None
         Labels for samples, shape (n_samples,)
     expected_length : int
         Expected number of labels
-    
+
     Raises
     ------
     ValueError
@@ -86,14 +89,14 @@ def _validate_labels(labels: Optional[np.ndarray], expected_length: int) -> None
 def _get_embedding_colors(labels: Optional[np.ndarray], colormap: str) -> Dict[Any, Tuple[float, float, float]]:
     """
     Generate color mapping for embedding labels.
-    
+
     Parameters
     ----------
     labels : np.ndarray or None
         Labels for samples
     colormap : str
         Matplotlib colormap name
-    
+
     Returns
     -------
     dict
@@ -123,14 +126,14 @@ def _fit_confidence_ellipse(
 ) -> Tuple[np.ndarray, np.ndarray, float]:
     """
     Fit confidence ellipse to 2D point cloud.
-    
+
     Parameters
     ----------
     points : np.ndarray
         2D points, shape (n_points, 2)
     confidence : float
         Confidence level (default 0.68 for 1-sigma)
-    
+
     Returns
     -------
     center : np.ndarray
@@ -173,7 +176,7 @@ def _extract_contour_region(
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Extract points within bounding region for contour calculation.
-    
+
     Parameters
     ----------
     points : np.ndarray
@@ -182,7 +185,7 @@ def _extract_contour_region(
         (xmin, xmax) bounds
     ylim : tuple
         (ymin, ymax) bounds
-    
+
     Returns
     -------
     xx : np.ndarray
@@ -218,10 +221,10 @@ def plot_embedding(
 ) -> plt.Figure:
     """
     Visualize dimensionality reduction embedding with multi-factor coloring.
-    
+
     Creates scatter plot of embedding coordinates with optional confidence ellipses,
     density contours, and multi-factor coloring (batch, stage, class).
-    
+
     Parameters
     ----------
     embedding : np.ndarray
@@ -260,17 +263,17 @@ def plot_embedding(
         Path to save PNG. Default: None (display only)
     dpi : int, optional
         DPI for saved PNG. Default: 300
-    
+
     Returns
     -------
     fig : matplotlib.figure.Figure
         Figure object containing the embedding visualization
-    
+
     Raises
     ------
     ValueError
         If embedding has invalid shape, non-finite values, or label length mismatches
-    
+
     Examples
     --------
     >>> import numpy as np
@@ -279,9 +282,9 @@ def plot_embedding(
     >>> classes = np.random.choice(['A', 'B', 'C'], 100)
     >>> fig = plot_embedding(embedding, class_labels=classes)
     >>> fig.savefig('embedding.png')
-    
+
     Basic example with class coloring:
-    
+
     >>> embedding = np.random.randn(100, 2)
     >>> classes = np.repeat(['Class1', 'Class2', 'Class3', 'Class4'], 25)
     >>> fig = plot_embedding(
@@ -290,9 +293,9 @@ def plot_embedding(
     ...     embedding_name="PCA",
     ...     show_ellipses=True
     ... )
-    
+
     Advanced example with batch and stage coloring:
-    
+
     >>> batches = np.repeat(['Batch1', 'Batch2'], 50)
     >>> stages = np.tile(['Raw', 'Processed'], 50)
     >>> fig = plot_embedding(
@@ -643,7 +646,7 @@ def plot_embedding_comparison(
 ) -> plt.Figure:
     """
     Compare multiple embeddings side-by-side with unified coloring.
-    
+
     Parameters
     ----------
     embeddings : dict
@@ -668,12 +671,12 @@ def plot_embedding_comparison(
         Path to save PNG. Default: None
     dpi : int, optional
         DPI for saved PNG. Default: 300
-    
+
     Returns
     -------
     fig : matplotlib.figure.Figure
         Figure object with side-by-side embedding plots
-    
+
     Raises
     ------
     ValueError
@@ -732,14 +735,14 @@ def get_embedding_statistics(
 ) -> Dict[str, Dict[str, float]]:
     """
     Extract per-group statistics from embedding.
-    
+
     Parameters
     ----------
     embedding : np.ndarray
         Embedding coordinates, shape (n_samples, 2 or 3)
     class_labels : np.ndarray, optional
         Class labels for samples. Default: None (global statistics only)
-    
+
     Returns
     -------
     dict
@@ -756,7 +759,7 @@ def get_embedding_statistics(
                 'separation': float (distance to nearest other class mean)
             }
         }
-    
+
     Examples
     --------
     >>> embedding = np.random.randn(100, 2)

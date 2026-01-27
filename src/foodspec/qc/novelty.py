@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 """Novelty scoring relative to a training manifold.
 
 Provides a simple distance-to-nearest-neighbor measure and percentile-based
 novelty score where higher values indicate more novelty.
 """
 
+from __future__ import annotations
 
 from typing import Literal, Tuple
 

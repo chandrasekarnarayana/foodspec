@@ -1,10 +1,11 @@
 """Test fixtures for preprocessing tests."""
 
+import tempfile
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
-from pathlib import Path
-import tempfile
 
 from foodspec.data_objects.spectra_set import FoodSpectrumSet
 
@@ -24,7 +25,7 @@ def synthetic_raman_data():
     for i in range(n_samples):
         # Add baseline (polynomial)
         baseline = 0.1 + 0.001 * wavenumbers + 1e-7 * wavenumbers**2
-        
+
         # Add peaks
         for peak_loc in [800, 1200, 1600, 2000, 2800]:
             peak_idx = np.argmin(np.abs(wavenumbers - peak_loc))
@@ -32,13 +33,13 @@ def synthetic_raman_data():
             peak_height = 0.5 + np.random.rand() * 0.5
             peak = peak_height * np.exp(-0.5 * ((np.arange(n_features) - peak_idx) / peak_width) ** 2)
             X[i] += peak
-        
+
         # Add baseline
         X[i] += baseline
-        
+
         # Add noise
         X[i] += 0.02 * np.random.randn(n_features)
-        
+
         # Add random spikes (cosmic rays)
         if i % 10 == 0:
             spike_idx = np.random.randint(0, n_features, size=2)
@@ -73,7 +74,7 @@ def synthetic_ftir_data():
     for i in range(n_samples):
         # Add baseline
         baseline = 0.2 + 0.0001 * wavenumbers
-        
+
         # Add characteristic FTIR peaks
         for peak_loc in [1000, 1500, 1700, 2900, 3300]:
             peak_idx = np.argmin(np.abs(wavenumbers - peak_loc))
@@ -81,10 +82,10 @@ def synthetic_ftir_data():
             peak_height = 0.6 + np.random.rand() * 0.4
             peak = peak_height * np.exp(-0.5 * ((np.arange(n_features) - peak_idx) / peak_width) ** 2)
             X[i] += peak
-        
+
         # Add baseline
         X[i] += baseline
-        
+
         # Add noise
         X[i] += 0.015 * np.random.randn(n_features)
 
@@ -129,18 +130,18 @@ def wide_csv_data(tmp_path):
     n_samples = 20
     n_features = 100
     wavenumbers = np.linspace(1000, 2000, n_features)
-    
+
     X = np.random.rand(n_samples, n_features)
-    
+
     # Create DataFrame
     df = pd.DataFrame(X, columns=[f"{wn:.1f}" for wn in wavenumbers])
     df.insert(0, "sample_id", [f"S{i}" for i in range(n_samples)])
     df.insert(1, "batch", [f"B{i//5}" for i in range(n_samples)])
-    
+
     # Save to CSV
     csv_path = tmp_path / "wide_data.csv"
     df.to_csv(csv_path, index=False)
-    
+
     return csv_path
 
 
@@ -150,7 +151,7 @@ def long_csv_data(tmp_path):
     n_samples = 20
     n_features = 100
     wavenumbers = np.linspace(1000, 2000, n_features)
-    
+
     rows = []
     for i in range(n_samples):
         for j, wn in enumerate(wavenumbers):
@@ -160,11 +161,11 @@ def long_csv_data(tmp_path):
                 "wavenumber": wn,
                 "intensity": np.random.rand(),
             })
-    
+
     df = pd.DataFrame(rows)
-    
+
     # Save to CSV
     csv_path = tmp_path / "long_data.csv"
     df.to_csv(csv_path, index=False)
-    
+
     return csv_path

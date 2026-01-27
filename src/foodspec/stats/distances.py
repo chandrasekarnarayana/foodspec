@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Spectral distance and similarity metrics.
 
 Implements Euclidean, cosine, Pearson, SID (spectral information divergence),
@@ -7,6 +5,7 @@ and SAM (spectral angle mapper), along with utilities for computing
 query-to-library distance matrices.
 """
 
+from __future__ import annotations
 
 from typing import Literal
 

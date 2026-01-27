@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Paper-ready figure presets for publication-quality matplotlib figures.
 
@@ -28,6 +26,7 @@ Use context manager for temporary preset::
     # Original styling restored
 """
 
+from __future__ import annotations
 
 import contextlib
 import copy

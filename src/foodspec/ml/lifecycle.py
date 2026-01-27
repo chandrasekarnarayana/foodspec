@@ -1,10 +1,9 @@
-from __future__ import annotations
-
 """Model lifecycle management: aging, sunset rules, and performance tracking.
 
 Tracks model performance over time and automates retirement decisions.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime

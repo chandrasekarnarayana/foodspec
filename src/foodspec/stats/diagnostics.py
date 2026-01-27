@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Miscellaneous metrics and diagnostics for model/QC reporting.
 """
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterable, Tuple

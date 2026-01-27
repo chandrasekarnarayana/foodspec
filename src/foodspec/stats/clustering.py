@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Clustering utilities for exploratory analysis and QC diagnostics.
 """
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, Optional

@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from foodspec.core.spectral_dataset import HyperspectralDataset, PreprocessingConfig
+from foodspec.core.spectral_dataset import HyperspectralDataset
 from foodspec.features.rq import PeakDefinition, RatioDefinition, RatioQualityEngine, RQConfig
 
 
@@ -74,11 +74,11 @@ def main():
     cfg = RQConfig(oil_col="oil_type", matrix_col="matrix", heating_col="heating_stage")
     res = RatioQualityEngine(peaks=peaks, ratios=ratios, config=cfg).run_all(peak_df)
 
-    print("\n5. RQ Report (first 20 lines):") 
+    print("\n5. RQ Report (first 20 lines):")
     print("\n".join(res.text_report.splitlines()[:20]))
 
     # Visualize label map
-    print(f"\n6. Generating segmentation map...")
+    print("\n6. Generating segmentation map...")
     fig, ax = plt.subplots(figsize=(6, 5))
     label_map = labels.reshape(y, x)
     im = ax.imshow(label_map, cmap="viridis", interpolation="nearest")
@@ -90,7 +90,7 @@ def main():
     print(f"   ✓ Saved: {out_dir / 'hsi_label_map.png'}")
 
     # Visualize ROI spectra
-    print(f"\n7. Generating ROI spectra plot...")
+    print("\n7. Generating ROI spectra plot...")
     fig, ax = plt.subplots(figsize=(8, 5))
     for idx, roi_ds in enumerate(roi_spectra):
         spectrum = roi_ds.spectra.squeeze()

@@ -6,7 +6,6 @@ Covers normalization, visualization, validation, and integration workflows.
 
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import matplotlib.pyplot as plt
 import numpy as np

@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Abstention rules and uncertainty-aware interpretability helpers."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Sequence

@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Control chart utilities for QC monitoring.
 """
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -191,8 +191,13 @@ def cusum_chart(values: np.ndarray, *, target: Optional[float] = None, k: float 
     return {"pos": np.asarray(pos), "neg": np.asarray(neg), "center": mean, "h": h, "signals": signals}
 
 
-def ewma_chart(values: np.ndarray, *, lam: float = 0.2, l: float = 3.0) -> Dict:
+def ewma_chart(values: np.ndarray, *, lam: float = 0.2, l_limit: float = 3.0, **kwargs) -> Dict:
     """EWMA chart for smoothing and shift detection."""
+    if "l" in kwargs:
+        l_limit = kwargs.pop("l")
+    if kwargs:
+        unexpected = ", ".join(sorted(kwargs))
+        raise TypeError(f"Unexpected keyword argument(s): {unexpected}")
     x = np.asarray(values, dtype=float)
     mean = float(np.mean(x))
     sigma = float(np.std(x, ddof=1))
@@ -205,7 +210,7 @@ def ewma_chart(values: np.ndarray, *, lam: float = 0.2, l: float = 3.0) -> Dict:
     limits = []
     for i in range(1, len(x) + 1):
         sigma_z = sigma * np.sqrt((lam / (2 - lam)) * (1 - (1 - lam) ** (2 * i)))
-        limits.append((mean - l * sigma_z, mean + l * sigma_z))
+        limits.append((mean - l_limit * sigma_z, mean + l_limit * sigma_z))
     lcl = np.asarray([lo for lo, _ in limits])
     ucl = np.asarray([hi for _, hi in limits])
     signals = [int(i) for i, val in enumerate(ewma) if val < lcl[i] or val > ucl[i]]

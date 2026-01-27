@@ -32,10 +32,10 @@ def expected_calibration_error(
 ) -> float:
     """
     Compute Expected Calibration Error (ECE).
-    
+
     ECE measures average difference between predicted confidence and actual accuracy
     across confidence bins. Lower is better (0 = perfect calibration).
-    
+
     Parameters
     ----------
     y_true : np.ndarray, shape (n_samples,)
@@ -44,7 +44,7 @@ def expected_calibration_error(
         Predicted class probabilities from classifier.
     n_bins : int, default=10
         Number of bins for confidence histogram.
-    
+
     Returns
     -------
     ece : float
@@ -81,17 +81,17 @@ def maximum_calibration_error(
 ) -> float:
     """
     Compute Maximum Calibration Error (MCE).
-    
+
     MCE is the worst-case calibration error - maximum difference between
     predicted confidence and actual accuracy over any confidence level.
-    
+
     Parameters
     ----------
     y_true : np.ndarray, shape (n_samples,)
         True binary labels {0, 1}.
     y_pred_proba : np.ndarray, shape (n_samples, 2)
         Predicted class probabilities.
-    
+
     Returns
     -------
     mce : float
@@ -123,23 +123,23 @@ def temperature_scale(
 ) -> np.ndarray:
     """
     Apply temperature scaling to calibrate probabilities.
-    
+
     Temperature scaling adjusts predicted probabilities by dividing logits by
     a temperature parameter T > 0. T=1 means no change, T>1 makes probabilities
     more uniform, T<1 makes sharper.
-    
+
     Parameters
     ----------
     y_pred_proba : np.ndarray, shape (n_samples, n_classes)
         Predicted class probabilities.
     temperature : float, default=1.0
         Temperature parameter (T > 0). Typically in [0.1, 5.0].
-    
+
     Returns
     -------
     scaled_proba : np.ndarray, shape (n_samples, n_classes)
         Temperature-scaled probabilities, properly normalized.
-    
+
     Raises
     ------
     ValueError
@@ -171,7 +171,7 @@ def find_optimal_temperature(
 ) -> float:
     """
     Find optimal temperature scaling parameter via ECE minimization.
-    
+
     Parameters
     ----------
     y_true : np.ndarray, shape (n_samples,)
@@ -182,7 +182,7 @@ def find_optimal_temperature(
         Initial temperature guess.
     max_iter : int, default=1000
         Maximum iterations for optimization.
-    
+
     Returns
     -------
     optimal_temperature : float
@@ -208,11 +208,11 @@ def find_optimal_temperature(
 class TemperatureScaler:
     """
     Temperature scaling post-hoc calibrator.
-    
+
     Calibrates predicted probabilities by finding optimal temperature T
     that minimizes NLL on calibration set. Simple, parameter-efficient
     post-hoc calibration without model retraining.
-    
+
     Attributes:
         temperature: Fitted temperature parameter
     """
@@ -224,7 +224,7 @@ class TemperatureScaler:
     def fit(self, y_true: np.ndarray, y_pred_proba: np.ndarray) -> None:
         """
         Fit temperature scaling on calibration set.
-        
+
         Parameters:
             y_true: True labels from calibration set
             y_pred_proba: Predicted probabilities from calibration set
@@ -235,10 +235,10 @@ class TemperatureScaler:
     def predict(self, y_pred_proba: np.ndarray) -> np.ndarray:
         """
         Apply temperature scaling to predicted probabilities.
-        
+
         Parameters:
             y_pred_proba: Predicted probabilities to calibrate
-            
+
         Returns:
             Calibrated probabilities
         """
@@ -250,32 +250,32 @@ class TemperatureScaler:
 class PlattCalibrator:
     """
     Platt scaling probability calibrator using logistic sigmoid.
-    
+
     Fits a logistic regression model to map predicted probabilities to true
     labels. Uses one-vs-rest strategy for multiclass problems. Simple,
     efficient, and works well for models that are near-calibrated.
-    
+
     References:
         Platt, J. (1999). "Probabilistic outputs for support vector machines
         and comparisons to regularized likelihood methods."
-    
+
     Examples
     --------
     >>> from foodspec.trust import PlattCalibrator
     >>> import numpy as np
-    >>> 
+    >>>
     >>> # Binary classification example
     >>> y_cal = np.array([0, 1, 0, 1, 1, 0])
     >>> proba_cal = np.array([
     ...     [0.9, 0.1], [0.2, 0.8], [0.8, 0.2],
     ...     [0.1, 0.9], [0.3, 0.7], [0.7, 0.3]
     ... ])
-    >>> 
+    >>>
     >>> calibrator = PlattCalibrator()
     >>> calibrator.fit(y_cal, proba_cal)
     >>> proba_test = np.array([[0.85, 0.15], [0.25, 0.75]])
     >>> proba_cal = calibrator.transform(proba_test)
-    
+
     Attributes
     ----------
     logistic_models_ : dict
@@ -293,31 +293,31 @@ class PlattCalibrator:
     def fit(self, y_true: np.ndarray, proba: np.ndarray) -> "PlattCalibrator":
         """
         Fit Platt scaling on calibration set.
-        
+
         ⚠️  WARNING: Data Leakage
         This calibrator must be fitted on a separate calibration set that was
         NOT used for training the original classifier. Using the training set
         for calibration will result in optimistic ECE estimates.
-        
+
         Best practice: Use a separate held-out calibration set:
             >>> X_train, X_cal, X_test = split_data(X, [0.6, 0.2, 0.2])
             >>> model.fit(X_train, y_train)
             >>> proba_cal = model.predict_proba(X_cal)
             >>> calibrator = PlattCalibrator()
             >>> calibrator.fit(y_cal, proba_cal)  # Only y_cal, proba_cal
-        
+
         Parameters
         ----------
         y_true : np.ndarray, shape (n_samples,)
             True class labels (0 to n_classes-1) from calibration set.
         proba : np.ndarray, shape (n_samples, n_classes)
             Predicted probabilities from calibration set.
-        
+
         Returns
         -------
         self : PlattCalibrator
             Fitted calibrator.
-        
+
         Raises
         ------
         ValueError
@@ -353,17 +353,17 @@ class PlattCalibrator:
     def transform(self, proba: np.ndarray) -> np.ndarray:
         """
         Apply Platt scaling to probabilities.
-        
+
         Parameters
         ----------
         proba : np.ndarray, shape (n_samples, n_classes)
             Predicted probabilities to calibrate.
-        
+
         Returns
         -------
         proba_cal : np.ndarray, shape (n_samples, n_classes)
             Calibrated probabilities (sum to ~1 per sample).
-        
+
         Raises
         ------
         RuntimeError
@@ -398,7 +398,7 @@ class PlattCalibrator:
     def save(self, filepath: str) -> None:
         """
         Save calibrator to disk using joblib.
-        
+
         Parameters
         ----------
         filepath : str
@@ -412,12 +412,12 @@ class PlattCalibrator:
     def load(filepath: str) -> "PlattCalibrator":
         """
         Load calibrator from disk.
-        
+
         Parameters
         ----------
         filepath : str
             Path to load the calibrator from.
-        
+
         Returns
         -------
         calibrator : PlattCalibrator
@@ -429,29 +429,29 @@ class PlattCalibrator:
 class IsotonicCalibrator:
     """
     Isotonic regression-based probability calibrator.
-    
+
     Fits isotonic regression models to learn monotonic mappings from predicted
     probabilities to true probabilities. Non-parametric approach handles complex
     miscalibration patterns. Uses one-vs-rest strategy for multiclass.
-    
+
     More flexible than Platt scaling but requires more calibration data.
-    
+
     Examples
     --------
     >>> from foodspec.trust import IsotonicCalibrator
     >>> import numpy as np
-    >>> 
+    >>>
     >>> y_cal = np.array([0, 1, 0, 1, 1, 0])
     >>> proba_cal = np.array([
     ...     [0.9, 0.1], [0.2, 0.8], [0.8, 0.2],
     ...     [0.1, 0.9], [0.3, 0.7], [0.7, 0.3]
     ... ])
-    >>> 
+    >>>
     >>> calibrator = IsotonicCalibrator()
     >>> calibrator.fit(y_cal, proba_cal)
     >>> proba_test = np.array([[0.85, 0.15], [0.25, 0.75]])
     >>> proba_cal = calibrator.transform(proba_test)
-    
+
     Attributes
     ----------
     isotonic_models_ : dict
@@ -469,23 +469,23 @@ class IsotonicCalibrator:
     def fit(self, y_true: np.ndarray, proba: np.ndarray) -> "IsotonicCalibrator":
         """
         Fit isotonic regression on calibration data.
-        
+
         ⚠️  WARNING: Data Leakage
         This calibrator must be fitted on a separate calibration set that was
         NOT used for training the original classifier.
-        
+
         Parameters
         ----------
         y_true : np.ndarray, shape (n_samples,)
             True class labels from calibration set.
         proba : np.ndarray, shape (n_samples, n_classes)
             Predicted probabilities from calibration set.
-        
+
         Returns
         -------
         self : IsotonicCalibrator
             Fitted calibrator.
-        
+
         Raises
         ------
         ValueError
@@ -520,17 +520,17 @@ class IsotonicCalibrator:
     def transform(self, proba: np.ndarray) -> np.ndarray:
         """
         Apply isotonic regression to calibrate probabilities.
-        
+
         Parameters
         ----------
         proba : np.ndarray, shape (n_samples, n_classes)
             Predicted probabilities to calibrate.
-        
+
         Returns
         -------
         proba_cal : np.ndarray, shape (n_samples, n_classes)
             Calibrated probabilities (sum to ~1 per sample).
-        
+
         Raises
         ------
         RuntimeError
@@ -563,7 +563,7 @@ class IsotonicCalibrator:
     def save(self, filepath: str) -> None:
         """
         Save calibrator to disk using joblib.
-        
+
         Parameters
         ----------
         filepath : str
@@ -577,12 +577,12 @@ class IsotonicCalibrator:
     def load(filepath: str) -> "IsotonicCalibrator":
         """
         Load calibrator from disk.
-        
+
         Parameters
         ----------
         filepath : str
             Path to load the calibrator from.
-        
+
         Returns
         -------
         calibrator : IsotonicCalibrator
@@ -599,11 +599,11 @@ def calibrate_probabilities(
 ) -> Tuple[np.ndarray, Dict]:
     """
     Calibrate predicted probabilities using specified method.
-    
+
     ⚠️  WARNING: Data Leakage
     All calibration methods must be trained on a separate calibration set.
     Do NOT use training data for calibration.
-    
+
     Parameters
     ----------
     y_pred_proba : np.ndarray, shape (n_samples, n_classes)
@@ -614,14 +614,14 @@ def calibrate_probabilities(
         Calibration method: 'temperature', 'isotonic', 'platt', or 'none'.
     **kwargs : dict
         Method-specific parameters (e.g., temperature value).
-    
+
     Returns
     -------
     calibrated_proba : np.ndarray
         Calibrated probabilities (same shape as input).
     metadata : dict
         Calibration details (method, parameters, metrics).
-    
+
     Raises
     ------
     ValueError

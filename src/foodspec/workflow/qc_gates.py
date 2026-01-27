@@ -2,7 +2,7 @@
 
 Provides 3 QC gates with real metrics and configurable thresholds:
 1. DataIntegrityGate - checks input data quality
-2. SpectralQualityGate - checks spectral data quality  
+2. SpectralQualityGate - checks spectral data quality
 3. ModelReliabilityGate - checks model performance
 
 Each gate produces a GateResult with pass/fail/warn/skip status and

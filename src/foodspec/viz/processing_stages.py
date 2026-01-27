@@ -3,7 +3,7 @@ Processing stages visualization module.
 
 Provides visualization tools for analyzing multi-stage spectral preprocessing:
     from foodspec.viz import plot_processing_stages
-    
+
     fig = plot_processing_stages(
         wavenumbers,
         stages_data,
@@ -24,17 +24,17 @@ from matplotlib.figure import Figure
 def _validate_wavenumbers(wavenumbers: np.ndarray) -> int:
     """
     Validate wavenumber array.
-    
+
     Parameters
     ----------
     wavenumbers : np.ndarray
         Wavenumber values (1D array)
-    
+
     Returns
     -------
     int
         Length of wavenumber array
-    
+
     Raises
     ------
     ValueError
@@ -61,19 +61,19 @@ def _validate_spectral_stages(
 ) -> int:
     """
     Validate spectral data for all stages.
-    
+
     Parameters
     ----------
     stages_data : Dict[str, np.ndarray]
         Dictionary mapping stage names to spectral arrays
     expected_length : int
         Expected length of each spectrum
-    
+
     Returns
     -------
     int
         Number of stages
-    
+
     Raises
     ------
     ValueError
@@ -109,14 +109,14 @@ def _get_stage_colors(
 ) -> List:
     """
     Generate colors for different stages.
-    
+
     Parameters
     ----------
     n_stages : int
         Number of stages
     colormap : str
         Matplotlib colormap name
-    
+
     Returns
     -------
     List
@@ -136,19 +136,19 @@ def _extract_zoom_regions(
 ) -> List[Tuple[int, int]]:
     """
     Convert wavenumber ranges to array indices.
-    
+
     Parameters
     ----------
     wavenumbers : np.ndarray
         Wavenumber array
     zoom_regions : Optional[List[Tuple[float, float]]]
         List of (min_wavenum, max_wavenum) tuples
-    
+
     Returns
     -------
     List[Tuple[int, int]]
         List of (start_idx, end_idx) tuples
-    
+
     Raises
     ------
     ValueError
@@ -193,11 +193,11 @@ def plot_processing_stages(
 ) -> Figure:
     """
     Visualize multi-stage spectral preprocessing with optional zoom windows.
-    
+
     Creates a main plot showing all preprocessing stages overlaid, with optional
     inset zoom windows highlighting specific wavenumber regions. Each stage is
     displayed with distinct coloring and optional preprocessing names.
-    
+
     Parameters
     ----------
     wavenumbers : np.ndarray
@@ -230,29 +230,29 @@ def plot_processing_stages(
         Path to save PNG. If None, not saved.
     dpi : int, default 300
         DPI for PNG export
-    
+
     Returns
     -------
     Figure
         Matplotlib Figure object
-    
+
     Raises
     ------
     ValueError
         If inputs are invalid (empty arrays, shape mismatch, etc.)
-    
+
     Examples
     --------
     >>> import numpy as np
     >>> from pathlib import Path
     >>> from foodspec.viz import plot_processing_stages
-    >>> 
+    >>>
     >>> # Generate sample spectral data
     >>> wavenumbers = np.linspace(400, 4000, 1000)
     >>> raw = np.sin(wavenumbers / 200) + np.random.normal(0, 0.1, 1000)
     >>> baseline_corrected = raw - np.mean(raw)
     >>> normalized = baseline_corrected / np.std(baseline_corrected)
-    >>> 
+    >>>
     >>> # Create visualization
     >>> fig = plot_processing_stages(
     ...     wavenumbers,
@@ -416,7 +416,7 @@ def plot_preprocessing_comparison(
 ) -> Figure:
     """
     Compare before and after a single preprocessing step.
-    
+
     Parameters
     ----------
     wavenumbers : np.ndarray
@@ -447,7 +447,7 @@ def plot_preprocessing_comparison(
         Save path for PNG
     dpi : int
         DPI for PNG
-    
+
     Returns
     -------
     Figure
@@ -530,14 +530,14 @@ def get_processing_statistics(
 ) -> Dict:
     """
     Extract statistics for each preprocessing stage.
-    
+
     Parameters
     ----------
     stages_data : Dict[str, np.ndarray]
         Dictionary of stage name to spectrum
     wavenumbers : Optional[np.ndarray]
         Wavenumber array (for region-specific statistics)
-    
+
     Returns
     -------
     Dict

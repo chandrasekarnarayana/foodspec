@@ -1,44 +1,10 @@
-from __future__ import annotations
-
-"""
-Simple loaders/savers for vendor-neutral spectra.
+"""Simple loaders/savers for vendor-neutral spectra.
 Includes stubs for vendor formats (OPUS, WiRE, ENVI) that can be upgraded later.
 """
 
-"""
-spectral_io - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.io instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.spectral_io import ...
-    New: from foodspec.io import ...
-
-See: docs/migration/v1-to-v2.md
-"""
+from __future__ import annotations
 
 import warnings
-
-warnings.warn(
-    "foodspec.spectral_io is deprecated and will be removed in v2.0.0. "
-    "Use foodspec.io instead. "
-    "See docs/migration/v1-to-v2.md for migration guide.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
-
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -46,6 +12,14 @@ import numpy as np
 import pandas as pd
 
 from foodspec.data_objects.spectral_dataset import SpectralDataset
+
+warnings.warn(
+    "foodspec.spectral_io is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.io instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 def load_any_spectra(path: Union[str, Path], format_hint: Optional[str] = None) -> SpectralDataset:

@@ -4,7 +4,6 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 import numpy as np
-from scipy import stats
 
 __all__ = ["GageRR", "MeasurementSystemAnalysis"]
 
@@ -34,7 +33,7 @@ class GageRR:
         Standard Gage R&R format:
         - Crossed design: Each operator (appraiser) measures each part
         - Multiple replicate measurements per part-operator combination
-        
+
         Assumes balanced design:
         n_parts × n_operators × n_replicates measurements
         """
@@ -139,7 +138,6 @@ class GageRR:
         var_interaction = (ms_interaction - ms_repeatability) / n_replicates if ms_interaction > ms_repeatability else 0
 
         # Total variation
-        total_ss = np.sum((measurements - grand_mean) ** 2)
         var_total = var_part + var_operator + var_repeatability + var_interaction
 
         # Reproducibility = Operator + Interaction
@@ -163,8 +161,6 @@ class GageRR:
         std_total = np.sqrt(var_total)
 
         # Calculate percentage of tolerance
-        t_value = stats.t.ppf(1 - (1 - self.confidence) / 2, df_repeatability) if df_repeatability > 0 else 2
-
         pct_repeatability = (6 * std_repeatability / tolerance) * 100 if tolerance > 0 else 0
         pct_reproducibility = (6 * std_reproducibility / tolerance) * 100 if tolerance > 0 else 0
         pct_gage_rr = (6 * std_gage_rr / tolerance) * 100 if tolerance > 0 else 0
@@ -302,7 +298,7 @@ Number of Distinct Categories (NDC): {r['ndc']:.1f}
 Acceptability:
   Gage R&R:                 {r['acceptability']['gage_rr']}
   NDC:                      {r['acceptability']['ndc']}
-  
+
 Recommendations:
 """
         if r['acceptability']['gage_rr'] == "Unacceptable":

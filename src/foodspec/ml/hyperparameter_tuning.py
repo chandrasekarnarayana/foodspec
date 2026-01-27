@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Automated hyperparameter tuning for ML models.
 
@@ -7,6 +5,7 @@ Provides grid search, Optuna-based Bayesian optimization, and domain-specific se
 for spectroscopy models.
 """
 
+from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
 

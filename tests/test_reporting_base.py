@@ -12,7 +12,6 @@ Tests verify:
 from __future__ import annotations
 
 import csv
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -23,7 +22,6 @@ from foodspec.core.manifest import RunManifest
 from foodspec.reporting.base import ReportBuilder, ReportContext, collect_figures
 from foodspec.reporting.modes import ReportMode
 
-
 # Fixtures
 
 def _make_test_manifest(tmp_path: Path) -> RunManifest:
@@ -31,7 +29,7 @@ def _make_test_manifest(tmp_path: Path) -> RunManifest:
     # Create a dummy data file for fingerprinting
     data_path = tmp_path / "data.csv"
     data_path.write_text("col1,col2\n1,2\n")
-    
+
     return RunManifest.build(
         protocol_snapshot={"version": "2.0.0", "task": {"name": "classification"}},
         data_path=data_path,
@@ -328,7 +326,7 @@ class TestReportBuilderHtmlGeneration:
         out_path = run_dir / "report.html"
 
         builder.build_html(out_path, mode=ReportMode.RESEARCH)
-        html = out_path.read_text()
+        out_path.read_text()
         # Research mode doesn't include qc, so it might not be in the HTML
         # (unless it's in template unconditionally)
 

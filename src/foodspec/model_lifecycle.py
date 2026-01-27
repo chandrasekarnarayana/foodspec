@@ -1,50 +1,19 @@
-from __future__ import annotations
-
-"""
-Model lifecycle utilities: train → freeze → predict.
+"""Model lifecycle utilities: train → freeze → predict.
 
 TrainablePipeline wraps preprocessing + feature construction (peaks/ratios) +
 an ML model (RF or LogisticRegression) and can produce a FrozenModel that
 embeds all transforms and metadata for reproducible prediction.
+
+Deprecated shim:
+    Use foodspec.ml.ModelLifecycle instead. This module will be removed in v2.0.0.
 """
 
-"""
-model_lifecycle - DEPRECATED
-
-.. deprecated:: 1.1.0
-    This module is deprecated and will be removed in v2.0.0.
-    Use foodspec.ml.ModelLifecycle instead.
-
-This module is maintained for backward compatibility only.
-All new code should use the modern API.
-
-Migration Guide:
-    Old: from foodspec.model_lifecycle import ...
-    New: from foodspec.ml.ModelLifecycle import ...
-
-See: docs/migration/v1-to-v2.md
-"""
-
-import warnings
-
-warnings.warn(
-    "foodspec.model_lifecycle is deprecated and will be removed in v2.0.0. "
-    "Use foodspec.ml.ModelLifecycle instead. "
-    "See docs/migration/v1-to-v2.md for migration guide.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Original module content continues below...
-# ==============================================
-
-
-
-
+from __future__ import annotations
 
 import json
 import os
 import pickle
+import warnings
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List
@@ -58,6 +27,14 @@ from sklearn.preprocessing import StandardScaler
 from foodspec.features.rq import PeakDefinition, RatioDefinition
 from foodspec.preprocessing_pipeline import PreprocessingConfig, detect_input_mode, run_full_preprocessing
 from foodspec.registry import FeatureModelRegistry
+
+warnings.warn(
+    "foodspec.model_lifecycle is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.ml.ModelLifecycle instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 def _compute_ratios(df: pd.DataFrame, ratios: List[RatioDefinition]) -> pd.DataFrame:

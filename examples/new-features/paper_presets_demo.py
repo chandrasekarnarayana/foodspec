@@ -9,15 +9,16 @@ The key features:
 - save_figure(): Save publication-ready figures with proper DPI and formatting
 """
 
-import matplotlib.pyplot as plt
 from pathlib import Path
+
+import matplotlib.pyplot as plt
 
 from foodspec.viz.paper import (
     FigurePreset,
     apply_figure_preset,
     figure_context,
-    save_figure,
     list_presets,
+    save_figure,
 )
 
 

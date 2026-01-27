@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Mondrian conformal prediction for multiclass classification with bin conditioning.
 
@@ -14,6 +12,7 @@ Key References:
     Lei et al. (2018): "Classification with honest confidence"
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -31,10 +30,10 @@ def _to_bin_key(x: object) -> str:
 
 def _mondrian_quantile(scores: np.ndarray, target_coverage: float) -> float:
     """Compute quantile threshold for target coverage.
-    
+
     Formula: threshold = quantile(ceil((n + 1) * target_coverage) / n)
     where n = number of scores.
-    
+
     This ensures coverage ≥ target_coverage with finite samples.
     """
     scores = np.asarray(scores, dtype=float)
@@ -52,7 +51,7 @@ def _mondrian_quantile(scores: np.ndarray, target_coverage: float) -> float:
 @dataclass
 class ConformalPredictionResult:
     """Conformal prediction results with coverage information.
-    
+
     Attributes
     ----------
     prediction_sets : list of list of int
@@ -84,14 +83,14 @@ class ConformalPredictionResult:
         bin_values: Optional[np.ndarray] = None,
     ) -> pd.DataFrame:
         """Convert results to DataFrame.
-        
+
         Parameters
         ----------
         y_true : ndarray, optional
             True labels (optional). If provided, adds 'covered' column.
         bin_values : ndarray, optional
             Bin identifiers (optional). If provided, adds 'bin' column.
-        
+
         Returns
         -------
         df : pd.DataFrame
@@ -117,12 +116,12 @@ class ConformalPredictionResult:
 
 class MondrianConformalClassifier:
     """Split-conformal predictor for multiclass classification.
-    
+
     Implements Mondrian conformal prediction for probability-based classifiers.
     Computes nonconformity scores as 1 - p_true on calibration data, then
     builds prediction sets (via conformal prediction) with optional per-bin
     conditioning for stratified coverage.
-    
+
     Parameters
     ----------
     alpha : float, default 0.1
@@ -134,33 +133,33 @@ class MondrianConformalClassifier:
     min_bin_size : int, default 20
         Minimum samples per bin to compute separate threshold. Falls back to
         global threshold if bin smaller than this.
-    
+
     Attributes
     ----------
     _thresholds : dict
         Global + per-bin nonconformity thresholds.
     _fitted : bool
         Whether calibration data has been processed.
-    
+
     Examples
     --------
     >>> import numpy as np
     >>> from foodspec.trust import MondrianConformalClassifier
-    >>> 
+    >>>
     >>> # Create synthetic multiclass data
     >>> np.random.seed(42)
     >>> y_cal = np.random.randint(0, 3, 100)
     >>> proba_cal = np.random.dirichlet([1, 1, 1], size=100)
-    >>> 
+    >>>
     >>> # Instantiate and fit
     >>> cp = MondrianConformalClassifier(alpha=0.1)
     >>> cp.fit(y_cal, proba_cal)
-    >>> 
+    >>>
     >>> # Generate prediction sets
     >>> proba_test = np.random.dirichlet([1, 1, 1], size=50)
     >>> result = cp.predict_sets(proba_test)
     >>> print(f"Average set size: {np.mean(result.set_sizes):.2f}")
-    
+
     >>> # With conditional coverage
     >>> meta_cal = np.array(['batch_A'] * 50 + ['batch_B'] * 50)
     >>> cp_cond = MondrianConformalClassifier(alpha=0.1, condition_key='batch')
@@ -197,15 +196,15 @@ class MondrianConformalClassifier:
     ) -> "MondrianConformalClassifier":
         """
         Fit conformal predictor on calibration data.
-        
+
         Computes nonconformity scores (1 - p_true) and optional per-bin thresholds.
-        
+
         ⚠️ IMPORTANT: Call this only on a separate calibration set that was NOT
         used for training the base classifier. Using training data will lead to
         overly optimistic coverage estimates (data leakage).
-        
+
         Best practice: Split data into [train (fit base model), cal (fit CP), test]
-        
+
         Parameters
         ----------
         y_true : np.ndarray, shape (n_samples,)
@@ -215,12 +214,12 @@ class MondrianConformalClassifier:
         meta_cal : np.ndarray, optional, shape (n_samples,)
             Metadata values for binning (e.g., batch IDs, stage names).
             If condition_key is set, used to compute per-bin thresholds.
-        
+
         Returns
         -------
         self : MondrianConformalClassifier
             Fitted classifier.
-        
+
         Raises
         ------
         ValueError
@@ -281,9 +280,9 @@ class MondrianConformalClassifier:
     ) -> ConformalPredictionResult:
         """
         Generate prediction sets for test samples.
-        
+
         Returns sets of class indices where predicted probability ≥ 1 - threshold.
-        
+
         Parameters
         ----------
         proba : np.ndarray, shape (n_samples, n_classes)
@@ -292,12 +291,12 @@ class MondrianConformalClassifier:
             Metadata for test samples (used for per-bin threshold lookup).
         y_true : np.ndarray, optional, shape (n_samples,)
             True labels (optional). If provided, computes empirical coverage.
-        
+
         Returns
         -------
         result : ConformalPredictionResult
             Prediction sets, set sizes, thresholds, and optional coverage metrics.
-        
+
         Raises
         ------
         RuntimeError
@@ -405,7 +404,7 @@ class MondrianConformalClassifier:
     ) -> pd.DataFrame:
         """
         Generate comprehensive coverage report.
-        
+
         Parameters
         ----------
         y_true : np.ndarray, shape (n_samples,)
@@ -414,7 +413,7 @@ class MondrianConformalClassifier:
             Predicted probabilities.
         meta_test : np.ndarray, optional
             Metadata for per-bin breakdown.
-        
+
         Returns
         -------
         df : pd.DataFrame

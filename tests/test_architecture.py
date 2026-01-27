@@ -13,7 +13,6 @@ Date: January 25, 2026
 """
 
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -46,8 +45,8 @@ class TestSingleSourceTree:
         rewrite_dir = repo_root / "foodspec_rewrite"
 
         assert not rewrite_dir.exists(), (
-            f"foodspec_rewrite/ directory still exists. "
-            f"Run refactor_executor.py --phase 1 --execute"
+            "foodspec_rewrite/ directory still exists. "
+            "Run refactor_executor.py --phase 1 --execute"
         )
 
     def test_single_pyproject_toml(self):
@@ -58,7 +57,7 @@ class TestSingleSourceTree:
         # Filter out .git, venv, nested projects
         matches = [
             m for m in matches
-            if ".git" not in m.parts 
+            if ".git" not in m.parts
             and "venv" not in m.parts
             and m.parent.name not in ["foodspec_rewrite"]
             and m.parent == repo_root  # Only root-level

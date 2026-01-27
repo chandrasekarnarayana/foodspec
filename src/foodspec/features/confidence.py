@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 """Distance-based confidence scoring for library matches.
 
 Maps distances to [0,1] confidence and assigns decisions
 ('known', 'borderline', 'unknown') using simple thresholding.
 """
 
+from __future__ import annotations
 
 from typing import Dict, Literal, Optional
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 
 """
 CLI for spectral library search.
@@ -11,6 +10,7 @@ Usage:
     foodspec-library-search --query query.csv --library lib.csv --label-col label --k 5 --metric cosine --overlay-out overlay.png
 """
 
+from __future__ import annotations
 
 import argparse
 from pathlib import Path
