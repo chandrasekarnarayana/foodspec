@@ -768,14 +768,27 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                 cols_to_drop.append(group_col)
             X = df_features.drop(columns=cols_to_drop)
 
-            modeling_result = _run_modeling_real(
-                X,
-                y,
-                model_name=resolved_model,  # Use resolved canonical name
-                scheme=resolved_scheme,      # Use resolved scheme
-                seed=cfg.seed,
-                groups=groups,
-            )
+            # Keep numeric features only; modeling expects float matrix
+            numeric_cols = X.select_dtypes(include=[np.number]).columns.tolist()
+            if not numeric_cols:
+                logger_ref.warning("No numeric feature columns found; skipping modeling")
+            else:
+                dropped = [c for c in X.columns if c not in numeric_cols]
+                if dropped:
+                    logger_ref.warning(
+                        f"Dropping non-numeric feature columns before modeling: {dropped}"
+                    )
+                X = X[numeric_cols]
+
+            if numeric_cols:
+                modeling_result = _run_modeling_real(
+                    X,
+                    y,
+                    model_name=resolved_model,  # Use resolved canonical name
+                    scheme=resolved_scheme,      # Use resolved scheme
+                    seed=cfg.seed,
+                    groups=groups,
+                )
             # Write modeling artifacts (PART B)
             if modeling_result.get("status") == "success":
                 # Write predictions

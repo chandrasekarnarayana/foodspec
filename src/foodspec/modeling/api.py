@@ -277,8 +277,15 @@ def _fit_with_grid(
         model.fit(X, y)
         return model, {}
     if groups is None:
+        _, counts = np.unique(y, return_counts=True)
+        min_class_count = int(counts.min()) if counts.size else 0
+        n_splits = min(inner_splits, min_class_count)
+        if n_splits < 2:
+            model = clone(estimator)
+            model.fit(X, y)
+            return model, {}
         cv = StratifiedKFold(
-            n_splits=min(inner_splits, len(np.unique(y))),
+            n_splits=n_splits,
             shuffle=True,
             random_state=seed,
         )

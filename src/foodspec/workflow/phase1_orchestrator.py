@@ -42,6 +42,7 @@ from .qc_gates import (
     GateResult,
     SpectralQualityGate,
 )
+from .model_registry import resolve_model_name
 from .regulatory import (
     enforce_model_approved,
     enforce_reporting,
@@ -317,10 +318,11 @@ def _run_modeling(
 
     try:
         if model_name is None:
-            model_name = "LogisticRegression"
+            model_name = "logreg"
         if scheme is None:
             scheme = "random"
 
+        model_name = resolve_model_name(model_name) or model_name
         logger.info(f"Model: {model_name} | Scheme: {scheme}")
 
         # Convert to numpy for fit_predict
@@ -333,6 +335,7 @@ def _run_modeling(
             model_name=model_name,
             scheme=scheme,
             seed=seed or 0,
+            allow_random_cv=True,  # Allow random CV for testing/research
         )
 
         logger.info(f"Modeling complete: accuracy={result.metrics.get('accuracy', 'N/A')}")
@@ -509,13 +512,23 @@ def run_workflow(cfg: WorkflowConfig) -> int:
             if label_col and label_col in X_features.columns:
                 y = X_features[label_col]
                 X = X_features.drop(columns=[label_col])
-                modeling_result = _run_modeling(
-                    X,
-                    y,
-                    model_name=cfg.model,
-                    scheme=cfg.scheme,
-                    seed=cfg.seed,
-                )
+                numeric_cols = X.select_dtypes(include=[np.number]).columns.tolist()
+                if not numeric_cols:
+                    logger_ref.warning("No numeric feature columns found; skipping modeling")
+                else:
+                    dropped = [c for c in X.columns if c not in numeric_cols]
+                    if dropped:
+                        logger_ref.warning(
+                            f"Dropping non-numeric feature columns before modeling: {dropped}"
+                        )
+                    X = X[numeric_cols]
+                    modeling_result = _run_modeling(
+                        X,
+                        y,
+                        model_name=cfg.model,
+                        scheme=cfg.scheme,
+                        seed=cfg.seed,
+                    )
 
         # Build manifest
         logger_ref.info("Building manifest...")
