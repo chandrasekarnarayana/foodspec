@@ -13,7 +13,6 @@ Date: January 25, 2026
 """
 
 import argparse
-import os
 import shutil
 import subprocess
 import sys
@@ -68,7 +67,7 @@ class ReorganizationExecutor:
         try:
             # Ensure destination directory exists
             dst.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Use git mv for tracked files
             result = subprocess.run(
                 ["git", "mv", str(src), str(dst)],
@@ -76,11 +75,11 @@ class ReorganizationExecutor:
                 capture_output=True,
                 text=True
             )
-            
+
             if result.returncode != 0:
                 # Fallback to regular move for untracked files
                 shutil.move(src, dst)
-            
+
             self.log_action("MOVE", f"{src} → {dst}")
         except Exception as e:
             self.log_action("MOVE", f"{src} → {dst}", success=False)
@@ -104,11 +103,11 @@ class ReorganizationExecutor:
                 capture_output=True,
                 text=True
             )
-            
+
             if result.returncode != 0:
                 # Fallback to regular removal for untracked
                 shutil.rmtree(path)
-            
+
             self.log_action("REMOVE DIR", str(path))
         except Exception as e:
             self.log_action("REMOVE DIR", str(path), success=False)
@@ -152,7 +151,7 @@ protocol_runs_test/
 """
 
         gitignore_path = self.repo_root / ".gitignore"
-        
+
         if self.dry_run:
             self.log_action("UPDATE", ".gitignore")
             return
@@ -209,7 +208,7 @@ protocol_runs_test/
     def step3_archive_phase_docs(self):
         """Step 3: Archive phase documents."""
         print(f"\n{BLUE}=== Step 3: Archive Phase Documents ==={RESET}")
-        
+
         # Create archive structure
         archive_root = self.repo_root / "_internal" / "phase-history"
         self.create_directory(archive_root / "phase-1-8")
@@ -296,7 +295,7 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
     def step4_archive_foodspec_rewrite_docs(self):
         """Step 4: Archive foodspec_rewrite/ documentation."""
         print(f"\n{BLUE}=== Step 4: Archive foodspec_rewrite/ Docs ==={RESET}")
-        
+
         rewrite_dir = self.repo_root / "foodspec_rewrite"
         if not rewrite_dir.exists():
             print(f"  {YELLOW}Info: foodspec_rewrite/ already removed{RESET}")
@@ -322,7 +321,7 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
     def step5_remove_foodspec_rewrite(self):
         """Step 5: Remove foodspec_rewrite/ directory."""
         print(f"\n{BLUE}=== Step 5: Remove foodspec_rewrite/ ==={RESET}")
-        
+
         rewrite_dir = self.repo_root / "foodspec_rewrite"
         if rewrite_dir.exists():
             self.remove_directory(rewrite_dir)
@@ -332,7 +331,7 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
     def step6_reorganize_examples(self):
         """Step 6: Reorganize examples/ directory."""
         print(f"\n{BLUE}=== Step 6: Reorganize examples/ ==={RESET}")
-        
+
         examples_dir = self.repo_root / "examples"
         if not examples_dir.exists():
             print(f"  {YELLOW}Warning: examples/ doesn't exist{RESET}")
@@ -409,7 +408,7 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
     def step7_reorganize_scripts(self):
         """Step 7: Reorganize scripts/ directory."""
         print(f"\n{BLUE}=== Step 7: Reorganize scripts/ ==={RESET}")
-        
+
         scripts_dir = self.repo_root / "scripts"
         if not scripts_dir.exists():
             print(f"  {YELLOW}Warning: scripts/ doesn't exist{RESET}")
@@ -475,27 +474,27 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
         """Generate summary of all actions."""
         print(f"\n{BLUE}=== Reorganization Summary ==={RESET}")
         print(f"\nTotal actions: {len(self.actions_log)}")
-        
+
         action_types = {}
         for action, _ in self.actions_log:
             action_types[action] = action_types.get(action, 0) + 1
-        
+
         for action, count in sorted(action_types.items()):
             print(f"  {action}: {count}")
 
         if self.dry_run:
             print(f"\n{YELLOW}⚠ DRY RUN: No changes were made{RESET}")
-            print(f"Run with --execute to apply changes")
+            print("Run with --execute to apply changes")
         else:
             print(f"\n{GREEN}✓ Changes applied successfully{RESET}")
-            print(f"Review changes and commit when ready")
+            print("Review changes and commit when ready")
 
     def execute(self):
         """Execute all reorganization steps."""
         print(f"{BLUE}{'=' * 60}{RESET}")
         print(f"{BLUE}FoodSpec Repository Reorganization{RESET}")
         print(f"{BLUE}{'=' * 60}{RESET}")
-        
+
         if self.dry_run:
             print(f"{YELLOW}Running in DRY RUN mode{RESET}")
         else:
@@ -533,7 +532,7 @@ Examples:
   python scripts/reorganize_structure.py --execute   # Apply changes
         """
     )
-    
+
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "--dry-run",

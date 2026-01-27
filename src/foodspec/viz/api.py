@@ -5,25 +5,25 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from foodspec._version import __version__
+from foodspec.qc import control_charts as qc_stats
 from foodspec.reporting.schema import RunBundle
-from foodspec.viz.save import save_figure
-from foodspec.viz.style import apply_style
+from foodspec.stats.clustering import hierarchical_cluster
+from foodspec.viz import control_charts as qc_viz
 from foodspec.viz import drift as drift_viz
 from foodspec.viz import interpretability as interp_viz
 from foodspec.viz import provenance as prov_viz
-from foodspec.viz import control_charts as qc_viz
-from foodspec.qc import control_charts as qc_stats
-from foodspec.stats.clustering import hierarchical_cluster
+from foodspec.viz.classification import plot_reliability_diagram as _plot_reliability_diagram
 from foodspec.viz.clustering import plot_dendrogram as _plot_dendrogram
 from foodspec.viz.distribution import plot_probability_plot as _plot_probability_plot
 from foodspec.viz.embeddings import plot_pca_scatter as _plot_pca_scatter
 from foodspec.viz.embeddings import plot_umap_scatter as _plot_umap_scatter
-from foodspec.viz.classification import plot_reliability_diagram as _plot_reliability_diagram
+from foodspec.viz.save import save_figure
+from foodspec.viz.style import apply_style
 
 
 def _rng(seed: int) -> np.random.Generator:

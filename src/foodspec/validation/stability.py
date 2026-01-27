@@ -1,10 +1,9 @@
 """Bootstrap stability and confidence interval analysis for models."""
 from __future__ import annotations
 
-from typing import Optional, Callable, Tuple
+from typing import Callable, Optional, Tuple
 
 import numpy as np
-from sklearn.utils import resample
 
 __all__ = ["BootstrapStability", "StabilityIndex"]
 

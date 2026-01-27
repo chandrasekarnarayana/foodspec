@@ -1,4 +1,20 @@
 # Data governance imports
+from foodspec.qc.control_charts import (
+    ControlChartGroup,
+    ControlChartResult,
+    c_chart,
+    capability_analysis,
+    cusum_chart,
+    ewma_chart,
+    individuals_mr_chart,
+    levey_jennings,
+    np_chart,
+    p_chart,
+    pareto_counts,
+    u_chart,
+    xbar_r_chart,
+    xbar_s_chart,
+)
 from foodspec.qc.dataset_qc import check_class_balance, diagnose_imbalance
 
 # Drift detection for production monitoring
@@ -25,9 +41,6 @@ from foodspec.qc.engine import (
     generate_qc_report,
 )
 from foodspec.qc.leakage import detect_batch_label_correlation, detect_replicate_leakage
-from foodspec.qc.novelty import novelty_score_single, novelty_scores
-from foodspec.qc.policy import QCPolicy
-from foodspec.qc.prediction_qc import PredictionQCResult, evaluate_prediction_qc
 from foodspec.qc.multivariate import (
     MultivariateQCPolicy,
     batch_drift,
@@ -38,25 +51,12 @@ from foodspec.qc.multivariate import (
     score_outliers,
     summarize_scores,
 )
+from foodspec.qc.novelty import novelty_score_single, novelty_scores
+from foodspec.qc.policy import QCPolicy
+from foodspec.qc.prediction_qc import PredictionQCResult, evaluate_prediction_qc
 from foodspec.qc.readiness import compute_readiness_score
-from foodspec.qc.replicates import assess_variability_sources, compute_replicate_consistency
 from foodspec.qc.regression_diagnostics import summarize_regression_diagnostics
-from foodspec.qc.control_charts import (
-    ControlChartGroup,
-    ControlChartResult,
-    capability_analysis,
-    c_chart,
-    cusum_chart,
-    ewma_chart,
-    individuals_mr_chart,
-    levey_jennings,
-    np_chart,
-    p_chart,
-    pareto_counts,
-    u_chart,
-    xbar_r_chart,
-    xbar_s_chart,
-)
+from foodspec.qc.replicates import assess_variability_sources, compute_replicate_consistency
 
 __all__ = [
     # Existing QC engine

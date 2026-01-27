@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-
 ReasonCode = Literal["MV_OUTLIER_T2", "MV_OUTLIER_OD", "MV_DRIFT_CENTROID"]
 
 

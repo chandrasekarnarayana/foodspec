@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 import logging
 import random
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -27,13 +27,9 @@ import pandas as pd
 
 from foodspec.core.manifest import RunManifest
 from foodspec.modeling.api import FitPredictResult, fit_predict
-from foodspec.protocol import ProtocolRunner, load_protocol
+from foodspec.protocol import load_protocol
 from foodspec.protocol.config import ProtocolConfig
-from foodspec.reporting.html import HtmlReportBuilder
-from foodspec.reporting.modes import ReportMode
-from foodspec.reporting.schema import RunBundle
 from foodspec.utils.run_artifacts import get_logger, init_run_dir, safe_json_dump
-
 
 logger = logging.getLogger(__name__)
 

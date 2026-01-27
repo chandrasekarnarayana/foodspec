@@ -10,10 +10,9 @@ This script implements Phase 1 of the migration plan:
 
 from __future__ import annotations
 
-import os
 import subprocess
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 
 class MigrationExecutor:
@@ -99,7 +98,7 @@ class MigrationExecutor:
     ) -> str:
         """Create deprecation warning template for a file."""
         module_name = filename.replace(".py", "")
-        
+
         template = f'''"""
 {module_name} - DEPRECATED
 
@@ -158,10 +157,10 @@ warnings.warn(
             # Find end of docstring
             delimiter = '"""' if content.startswith('"""') else "'''"
             end_idx = content.find(delimiter, 3) + 3
-            
+
             new_content = (
-                content[:end_idx] + "\n\n" + 
-                deprecation_header + "\n" + 
+                content[:end_idx] + "\n\n" +
+                deprecation_header + "\n" +
                 content[end_idx:]
             )
         else:
@@ -184,10 +183,10 @@ warnings.warn(
         for filename, info in self.deprecated_files.items():
             filepath = self.src_dir / filename
             print(f"\n📄 Processing: {filename}")
-            
+
             if self.add_deprecation_to_file(
-                filepath, 
-                info["replacement"], 
+                filepath,
+                info["replacement"],
                 info["new_location"]
             ):
                 success_count += 1
@@ -300,7 +299,7 @@ def warn_deprecated_import(
         docs_dir.mkdir(parents=True, exist_ok=True)
 
         guide_path = docs_dir / "v1-to-v2.md"
-        
+
         guide_content = '''# FoodSpec Migration Guide: v1.x → v2.0.0
 
 ## Overview
@@ -564,7 +563,7 @@ Better: Fix the deprecated usage.
         print("="*60)
 
         changelog_path = self.repo_root / "CHANGELOG.md"
-        
+
         new_entry = '''
 ## [1.1.0] - 2026-01-25
 
@@ -593,24 +592,24 @@ v1.1.0 → v1.2.0 → v1.3.0 → v1.4.0 → v2.0.0 (deprecated code removed)
         if changelog_path.exists():
             with open(changelog_path, 'r') as f:
                 content = f.read()
-            
+
             # Insert after title
             if "# Changelog" in content or "# CHANGELOG" in content:
                 lines = content.split('\n')
                 insert_idx = 2  # After title and blank line
                 lines.insert(insert_idx, new_entry)
-                
+
                 with open(changelog_path, 'w') as f:
                     f.write('\n'.join(lines))
-                
+
                 print(f"✅ Updated: {changelog_path}")
             else:
-                print(f"  ⚠️  Could not find changelog header")
+                print("  ⚠️  Could not find changelog header")
         else:
             # Create new changelog
             with open(changelog_path, 'w') as f:
                 f.write("# Changelog\n\n" + new_entry)
-            
+
             print(f"✅ Created: {changelog_path}")
 
     def run_tests(self):
@@ -626,7 +625,7 @@ v1.1.0 → v1.2.0 → v1.3.0 → v1.4.0 → v2.0.0 (deprecated code removed)
                 capture_output=True,
                 text=True
             )
-            
+
             if result.returncode == 0:
                 print("✅ All tests passed")
             else:
@@ -642,7 +641,7 @@ v1.1.0 → v1.2.0 → v1.3.0 → v1.4.0 → v2.0.0 (deprecated code removed)
         print("="*60)
 
         deprecated_count = len(self.deprecated_files)
-        
+
         print(f"""
 ✅ Phase 1 Week 1-2 Actions Completed:
 
@@ -686,14 +685,14 @@ Review Files:
 def main():
     """Execute Phase 1 migration."""
     repo_root = Path("/home/cs/FoodSpec")
-    
+
     print("="*60)
     print("FoodSpec Branch Migration Executor")
     print("Phase 1: Week 1-2 - Add Deprecation Warnings")
     print("="*60)
 
     executor = MigrationExecutor(repo_root)
-    
+
     try:
         # Phase 1 Week 1-2 actions
         executor.create_deprecation_helper()
@@ -702,9 +701,9 @@ def main():
         executor.update_changelog()
         executor.run_tests()
         executor.generate_summary()
-        
+
         print("\n✅ Phase 1 Week 1-2 execution complete!")
-        
+
     except Exception as e:
         print(f"\n❌ Error during execution: {e}")
         raise

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Enhanced artifact version compatibility checking and validation.
 
 This module provides comprehensive version compatibility checking for .foodspec

@@ -14,6 +14,7 @@ from typing import Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def plot_raw_vs_processed(
     X_raw: np.ndarray,
     X_processed: np.ndarray,

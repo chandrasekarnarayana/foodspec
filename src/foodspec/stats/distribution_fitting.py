@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Distribution fitting and probability diagnostics for QC metrics.
 """
@@ -8,7 +9,6 @@ from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
 from scipy import stats
-
 
 _DISTRIBUTIONS: Dict[str, object] = {
     "normal": stats.norm,

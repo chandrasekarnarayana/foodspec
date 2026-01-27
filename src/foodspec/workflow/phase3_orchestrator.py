@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import logging
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
@@ -22,44 +21,36 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from foodspec.protocol.config import ProtocolConfig
-from foodspec.protocol.runner import ProtocolRunner
 from foodspec.modeling.api import fit_predict
-from foodspec.features.hybrid import extract_features
-from foodspec.features.schema import parse_feature_config
+from foodspec.protocol.config import ProtocolConfig
 
+from .artifact_contract import ArtifactContract, write_success_json
 from .config import WorkflowConfig
-from .fingerprint import Manifest, compute_dataset_fingerprint
 from .errors import (
-    WorkflowError,
-    ValidationError,
-    ProtocolError,
+    EXIT_SUCCESS,
+    ArtifactError,
     ModelingError,
-    TrustError,
+    ProtocolError,
     QCError,
     ReportingError,
-    ArtifactError,
-    write_error_json,
+    TrustError,
+    ValidationError,
+    WorkflowError,
     classify_error_type,
-    EXIT_SUCCESS,
+    write_error_json,
 )
-from .artifact_contract import ArtifactContract, write_success_json
-from .qc_gates import (
-    DataIntegrityGate,
-    SpectralQualityGate,
-    ModelReliabilityGate,
-    GateResult,
-)
-from .regulatory import (
-    enforce_model_approved,
-    enforce_trust_stack,
-    enforce_reporting,
-)
+from .fingerprint import Manifest, compute_dataset_fingerprint
 from .model_registry import (
+    get_approved_display_name,
+    is_model_approved,
     resolve_model_name,
     resolve_scheme_name,
-    is_model_approved,
-    get_approved_display_name,
+)
+from .qc_gates import (
+    DataIntegrityGate,
+    GateResult,
+    ModelReliabilityGate,
+    SpectralQualityGate,
 )
 
 logger = logging.getLogger(__name__)
@@ -154,11 +145,11 @@ def _load_and_validate_protocol(protocol_path: Path) -> Tuple[ProtocolConfig, Di
 
     try:
         import yaml
-        
+
         # Load raw protocol dict to preserve all sections (including modeling, features, etc.)
         with open(protocol_path) as f:
             raw_protocol_dict = yaml.safe_load(f) or {}
-        
+
         protocol_cfg = ProtocolConfig.from_file(protocol_path)
         logger.info(f"Protocol loaded: version={protocol_cfg.version}")
         return protocol_cfg, {"status": "valid"}, raw_protocol_dict
@@ -243,9 +234,9 @@ def _run_qc_gates(
 
     if not all_passed:
         if enforce:
-            logger.error(f"QC gates failed with enforce=True")
+            logger.error("QC gates failed with enforce=True")
         else:
-            logger.warning(f"QC gates failed but enforce=False (advisory only)")
+            logger.warning("QC gates failed but enforce=False (advisory only)")
     else:
         logger.info("✅ All QC gates passed")
 
@@ -302,7 +293,7 @@ def _run_features_real(
         # Check if protocol has feature config
         feature_config = getattr(protocol_cfg, "features", {})
         if feature_config:
-            logger.info(f"Feature config found")
+            logger.info("Feature config found")
             # TODO: Wire actual feature extraction when available
             logger.info("Feature extraction: placeholder (real engine TBD)")
             return df, {"status": "skipped", "reason": "Real features TBD"}
@@ -414,7 +405,7 @@ def _run_trust_stack_real(
         # TODO: Wire actual trust stack when available
         # For now, return stub with explicit placeholder marking
         logger.info("Trust: placeholder implementation (real trust stack TBD)")
-        
+
         # Task A: Explicit placeholder governance
         trust_result = {
             "status": "success",
@@ -427,7 +418,7 @@ def _run_trust_stack_real(
             "abstention": {"status": "placeholder", "value": None},
             "ood": {"status": "placeholder", "value": None},
         }
-        
+
         # Task A: In strict regulatory mode, reject placeholder unless explicitly allowed
         if strict_regulatory and trust_result.get("implementation") == "placeholder":
             if not allow_placeholder:
@@ -447,7 +438,7 @@ def _run_trust_stack_real(
                     "(enabled via --allow-placeholder-trust for development only). "
                     "This is NOT suitable for real regulatory submissions."
                 )
-        
+
         return trust_result
     except TrustError:
         raise  # Re-raise TrustError as-is
@@ -504,7 +495,7 @@ def _run_reporting_real(
     try:
         report_dir = run_dir / "report"
         report_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create minimal HTML report
         html_content = f"""<!DOCTYPE html>
 <html>
@@ -544,16 +535,16 @@ def _run_reporting_real(
     </div>
 </body>
 </html>"""
-        
+
         report_path = report_dir / "index.html"
         report_path.write_text(html_content)
         logger.info(f"Report generated: {report_path}")
-        
+
         # Also write to artifacts/report.html for artifact contract
         artifacts_report_path = run_dir / "artifacts" / "report.html"
         artifacts_report_path.parent.mkdir(parents=True, exist_ok=True)
         artifacts_report_path.write_text(html_content)
-        
+
         return {
             "status": "success",
             "report_path": str(report_path),
@@ -619,19 +610,19 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
         # Load protocol
         protocol_cfg, proto_result, raw_protocol = _load_and_validate_protocol(cfg.protocol)
         logger_ref.info(f"Protocol validation: {proto_result}")
-        
+
         # Merge protocol config into WorkflowConfig if not explicitly set
         # This ensures protocol settings are used unless overridden via CLI
         if cfg.model is None and isinstance(raw_protocol, dict) and "modeling" in raw_protocol:
             modeling_cfg = raw_protocol["modeling"]
             if isinstance(modeling_cfg, dict) and "model" in modeling_cfg:
                 cfg.model = modeling_cfg["model"]
-        
+
         if cfg.scheme is None and isinstance(raw_protocol, dict) and "modeling" in raw_protocol:
             modeling_cfg = raw_protocol["modeling"]
             if isinstance(modeling_cfg, dict) and "scheme" in modeling_cfg:
                 cfg.scheme = modeling_cfg["scheme"]
-        
+
         # Resolve model and scheme names to canonical forms (PART A)
         resolved_model = None
         resolved_scheme = None
@@ -667,20 +658,20 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
         if cfg.mode == "regulatory" and strict_regulatory:
             # Regulatory mode in Phase 3 MUST enforce all requirements
             logger_ref.info("Regulatory strict mode: enforcing QC, trust, reporting, modeling")
-            
+
             # Force enable flags at runtime (Part B)
             cfg.enforce_qc = True
             cfg.enable_modeling = True
             cfg.enable_trust = True
             cfg.enable_reporting = True
-            
+
             # Enforce QC automatically in regulatory mode
             qc_passed, qc_results = _run_qc_gates(
                 df,
                 enforce=True,  # Always enforce in regulatory strict
                 label_col=label_col,
             )
-            
+
             if not qc_passed:
                 failed_gates = [name for name, res in qc_results.items() if res.status == "fail"]
                 raise QCError(
@@ -688,7 +679,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     stage="qc_gates",
                     hint="Regulatory mode requires passing QC gates.",
                 )
-            
+
             # Check model approval using resolved canonical name
             if resolved_model and not is_model_approved(resolved_model):
                 display_name = get_approved_display_name(resolved_model)
@@ -698,11 +689,11 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     hint=f"Model '{resolved_model}' is not in the approved registry. Use an approved model.",
                 )
             logger_ref.info(f"Model approval: {resolved_model} is approved")
-            
+
             # Trust MUST be enabled (already forced above)
             trust_enabled = True
             logger_ref.info("Regulatory mode: trust stack is mandatory (non-skippable)")
-            
+
             # Reporting MUST be enabled (already forced above)
             report_enabled = True
             logger_ref.info("Regulatory mode: reporting is mandatory (non-skippable)")
@@ -728,10 +719,10 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     enforce=False,
                     label_col=label_col,
                 )
-            
+
             trust_enabled = cfg.enable_trust
             report_enabled = cfg.enable_reporting
-        
+
         # Write QC results artifacts (PART B)
         qc_artifact_path = run_dir / "artifacts" / "qc_results.json"
         qc_artifact_path.parent.mkdir(parents=True, exist_ok=True)
@@ -743,7 +734,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
             json.dump(qc_artifact_data, f, indent=2)
 
         # ==== Real Pipeline Stages ====
-        
+
         # Preprocessing
         df_preproc, preproc_result = _run_preprocessing_real(df, protocol_cfg)
         logger_ref.info(f"Preprocessing: {preproc_result}")
@@ -766,17 +757,17 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
         modeling_result = {"status": "skipped"}
         if cfg.enable_modeling and len(df_features) > 1 and label_col and label_col in df_features.columns:
             y = df_features[label_col]
-            
+
             # Extract groups first, then exclude from features
             group_col = cfg.group_col or "group"
             groups = df_features[group_col].to_numpy() if group_col and group_col in df_features.columns else None
-            
+
             # Drop label and group columns from features
             cols_to_drop = [label_col]
             if group_col and group_col in df_features.columns:
                 cols_to_drop.append(group_col)
             X = df_features.drop(columns=cols_to_drop)
-            
+
             modeling_result = _run_modeling_real(
                 X,
                 y,
@@ -793,14 +784,14 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     pred_path = run_dir / "tables" / "predictions.csv"
                     pred_path.parent.mkdir(parents=True, exist_ok=True)
                     pred_df.to_csv(pred_path, index=False)
-                
+
                 # Write metrics
                 if "metrics" in modeling_result:
                     metrics_path = run_dir / "artifacts" / "metrics.json"
                     metrics_path.parent.mkdir(parents=True, exist_ok=True)
                     with open(metrics_path, "w") as f:
                         json.dump(modeling_result["metrics"], f, indent=2)
-            
+
             # ModelReliabilityGate on real results
             model_gate = ModelReliabilityGate()
             model_result = model_gate.run(modeling_result)
@@ -816,13 +807,13 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
             if predictions is not None and y_true is not None:
                 # Task A: Pass allow_placeholder_trust flag
                 trust_result = _run_trust_stack_real(
-                    predictions, 
+                    predictions,
                     y_true,
                     strict_regulatory=strict_regulatory,
                     allow_placeholder=cfg.allow_placeholder_trust,  # Task A
                 )
                 logger_ref.info(f"Trust stack: {trust_result.get('reason', trust_result.get('status'))}")
-                
+
                 # Write trust artifacts (PART B) - write even if skipped (placeholder)
                 trust_path = run_dir / "artifacts" / "trust_stack.json"
                 trust_path.parent.mkdir(parents=True, exist_ok=True)
@@ -858,7 +849,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                 "scheme": resolved_scheme,
             },
         }
-        
+
         # Set contract version and digest (Part A - contract versioning)
         manifest.artifact_contract_version = "v3"
         try:
@@ -867,7 +858,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
             logger_ref.info(f"Contract v3 digest: {manifest.artifact_contract_digest}")
         except Exception as e:
             logger_ref.warning(f"Could not compute contract digest: {e}")
-        
+
         manifest_path = run_dir / "manifest.json"
         manifest.save(manifest_path)
         logger_ref.info(f"Manifest saved: {manifest_path}")
@@ -886,7 +877,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                 strict_regulatory=strict_regulatory,  # Pass flag (Part B)
             )
             logger_ref.info(f"Reporting: {reporting_result.get('status')}")
-            
+
             # Part B: In strict regulatory mode, reporting cannot be skipped
             if strict_regulatory and reporting_result.get("status") == "skipped":
                 raise ReportingError(

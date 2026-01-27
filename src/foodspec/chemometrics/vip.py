@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Variable Importance in Projection (VIP) for PLS models.
 
 This module implements VIP scores for PLS regression and PLS-DA models,

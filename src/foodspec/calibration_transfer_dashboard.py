@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Simple HTML dashboard generator for calibration transfer success metrics.
 

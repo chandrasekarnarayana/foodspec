@@ -12,10 +12,8 @@ Main Functions:
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import CenteredNorm, TwoSlopeNorm
 
 
 def _normalize_coefficients(

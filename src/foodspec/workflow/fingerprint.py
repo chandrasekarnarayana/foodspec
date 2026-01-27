@@ -40,11 +40,11 @@ def _sha256_file(path: Path, max_mb: int = 200) -> Optional[str]:
     """
     if not path.exists():
         return None
-    
+
     size_mb = path.stat().st_size / (1024 * 1024)
     if size_mb > max_mb:
         return None
-    
+
     digest = hashlib.sha256()
     with path.open("rb") as f:
         while chunk := f.read(8192):
@@ -86,7 +86,7 @@ def compute_dataset_fingerprint(csv_path: Path) -> Dict[str, Any]:
         "path": str(csv_path),
         "size_bytes": csv_path.stat().st_size if csv_path.exists() else None,
     }
-    
+
     try:
         df = pd.read_csv(csv_path)
         fingerprint["rows"] = len(df)
@@ -97,7 +97,7 @@ def compute_dataset_fingerprint(csv_path: Path) -> Dict[str, Any]:
         }
     except Exception as e:
         fingerprint["read_error"] = str(e)
-    
+
     return fingerprint
 
 
@@ -144,31 +144,31 @@ class Manifest:
     # Fingerprints
     protocol_fingerprint: Dict[str, Any] = field(default_factory=dict)
     dataset_fingerprints: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # Environment
     foodspec_version: str = ""
     python_version: str = ""
     platform_info: str = ""
     git_commit: Optional[str] = None
-    
+
     # Execution parameters
     seed: Optional[int] = None
     mode: str = "research"
     cli_args: Dict[str, Any] = field(default_factory=dict)
     cli_overrides: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Timing
     start_time: str = ""
     end_time: str = ""
     duration_seconds: Optional[float] = None
-    
+
     # Artifacts
     artifacts: Dict[str, str] = field(default_factory=dict)
-    
+
     # Contract tracking (Phase 3)
     artifact_contract_version: str = "v3"
     artifact_contract_digest: str = ""
-    
+
     # Warnings and notes
     warnings: List[str] = field(default_factory=list)
     notes: List[str] = field(default_factory=list)
@@ -210,7 +210,7 @@ class Manifest:
             version = __version__
         except Exception:
             version = "unknown"
-        
+
         return cls(
             protocol_fingerprint=compute_protocol_fingerprint(protocol_path),
             dataset_fingerprints=[compute_dataset_fingerprint(p) for p in input_paths],
@@ -242,10 +242,10 @@ class Manifest:
             Output file path.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Convert dataclass to dict
         data = asdict(self)
-        
+
         with path.open("w") as f:
             json.dump(data, f, indent=2, default=str)
 

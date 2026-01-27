@@ -4,16 +4,19 @@ Implements intelligent sample selection strategies for spectroscopy experiments.
 """
 
 from __future__ import annotations
-from typing import Callable, Literal, Optional, Tuple
+
+from typing import Literal, Optional
+
 import numpy as np
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from scipy.stats import norm
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF
+from sklearn.gaussian_process.kernels import ConstantKernel as C
 
 
 class AcquisitionFunction:
     """Acquisition functions for Bayesian optimization."""
-    
+
     @staticmethod
     def expected_improvement(
         X: np.ndarray,
@@ -24,15 +27,15 @@ class AcquisitionFunction:
         """Expected Improvement (EI) acquisition function."""
         mu, sigma = gp.predict(X, return_std=True)
         sigma = sigma.reshape(-1, 1)
-        
+
         with np.errstate(divide='warn'):
             imp = mu - y_best - xi
             Z = imp / sigma
             ei = imp * norm.cdf(Z) + sigma * norm.pdf(Z)
             ei[sigma == 0.0] = 0.0
-        
+
         return ei.ravel()
-    
+
     @staticmethod
     def upper_confidence_bound(
         X: np.ndarray,
@@ -42,7 +45,7 @@ class AcquisitionFunction:
         """Upper Confidence Bound (UCB) acquisition function."""
         mu, sigma = gp.predict(X, return_std=True)
         return mu + kappa * sigma
-    
+
     @staticmethod
     def probability_of_improvement(
         X: np.ndarray,
@@ -53,12 +56,12 @@ class AcquisitionFunction:
         """Probability of Improvement (PI) acquisition function."""
         mu, sigma = gp.predict(X, return_std=True)
         sigma = sigma.reshape(-1, 1)
-        
+
         with np.errstate(divide='warn'):
             Z = (mu - y_best - xi) / sigma
             pi = norm.cdf(Z)
             pi[sigma == 0.0] = 0.0
-        
+
         return pi.ravel()
 
 
@@ -74,7 +77,7 @@ class BayesianOptimizer:
     random_state : int, optional
         Random seed.
     """
-    
+
     def __init__(
         self,
         acquisition: Literal['ei', 'ucb', 'pi'] = 'ei',
@@ -83,20 +86,20 @@ class BayesianOptimizer:
     ):
         self.acquisition = acquisition
         self.random_state = random_state
-        
+
         if kernel is None:
             kernel = C(1.0, (1e-3, 1e3)) * RBF(10, (1e-2, 1e2))
-        
+
         self.gp = GaussianProcessRegressor(
             kernel=kernel,
             n_restarts_optimizer=10,
             random_state=random_state,
             normalize_y=True,
         )
-        
+
         self.X_observed = []
         self.y_observed = []
-    
+
     def suggest(
         self,
         X_candidates: np.ndarray,
@@ -122,12 +125,12 @@ class BayesianOptimizer:
             rng = np.random.default_rng(self.random_state)
             indices = rng.choice(len(X_candidates), size=n_suggestions, replace=False)
             return X_candidates[indices]
-        
+
         # Fit GP on observed data
         X_obs = np.array(self.X_observed)
         y_obs = np.array(self.y_observed).reshape(-1, 1)
         self.gp.fit(X_obs, y_obs)
-        
+
         # Compute acquisition function
         if self.acquisition == 'ei':
             acq_values = AcquisitionFunction.expected_improvement(
@@ -141,12 +144,12 @@ class BayesianOptimizer:
             acq_values = AcquisitionFunction.probability_of_improvement(
                 X_candidates, self.gp, y_obs.max()
             )
-        
+
         # Select top suggestions
         top_indices = np.argsort(acq_values)[-n_suggestions:][::-1]
-        
+
         return X_candidates[top_indices]
-    
+
     def update(self, X_new: np.ndarray, y_new: np.ndarray):
         """Update with new observations."""
         self.X_observed.extend(X_new.tolist())
@@ -165,7 +168,7 @@ class ActiveDesign:
     >>> # Measure X_next...
     >>> design.update(X_next, y_measured)
     """
-    
+
     def __init__(
         self,
         acquisition: str = 'ei',
@@ -175,11 +178,11 @@ class ActiveDesign:
             acquisition=acquisition,
             random_state=random_state,
         )
-    
+
     def suggest(self, X_candidates: np.ndarray, n_suggestions: int = 1) -> np.ndarray:
         """Suggest next samples."""
         return self.optimizer.suggest(X_candidates, n_suggestions)
-    
+
     def update(self, X_new: np.ndarray, y_new: np.ndarray):
         """Update with observations."""
         self.optimizer.update(X_new, y_new)

@@ -6,59 +6,59 @@ evaluation pipeline and registry system.
 """
 
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
 from foodspec.core.artifacts import ArtifactRegistry
-from foodspec.trust.conformal import MondrianConformalClassifier, ConformalPredictionResult
-from foodspec.trust.abstain import evaluate_abstention, AbstentionResult
+from foodspec.trust.abstain import evaluate_abstention
 from foodspec.trust.calibration import (
-    TemperatureScaler,
     IsotonicCalibrator,
+    TemperatureScaler,
     expected_calibration_error,
 )
+from foodspec.trust.conformal import ConformalPredictionResult, MondrianConformalClassifier
 
 
 @dataclass
 class TrustEvaluationResult:
     """Aggregated trust and uncertainty evaluation results."""
-    
+
     timestamp: str
     model_name: str
-    
+
     # Conformal prediction metrics
     conformal_coverage: float
     conformal_set_size_mean: float
     conformal_set_size_median: float
     conformal_set_size_max: int
     per_bin_coverage: Dict[str, float]  # bin_id -> coverage
-    
+
     # Calibration metrics
     ece: float
     temperature_scale: Optional[float]
     isotonic_applied: bool
-    
+
     # Abstention metrics
     abstention_rate: float
     accuracy_non_abstained: Optional[float]
     accuracy_abstained: Optional[float]
-    
+
     # Coverage under abstention
     coverage_under_abstention: float
     efficiency_gain: Optional[float]  # coverage_u_a / coverage_baseline
-    
+
     # Group-aware metrics
     group_metrics: Dict[str, Dict[str, float]]  # group_id -> {metric -> value}
 
 
 class TrustEvaluator:
     """High-level evaluator for trust and uncertainty quantification."""
-    
+
     def __init__(
         self,
         model,
@@ -85,7 +85,7 @@ class TrustEvaluator:
         self.abstention_threshold = abstention_threshold
         self.calibration_method = calibration_method
         self.random_state = random_state
-        
+
         self._conformal: Optional[MondrianConformalClassifier] = None
         self._calibrator: Optional[Any] = None
         self._conformal_fitted = False
@@ -108,7 +108,7 @@ class TrustEvaluator:
             raise ValueError(
                 f"Unknown label {exc.args[0]} not present in model.classes_"
             ) from exc
-    
+
     def fit_conformal(
         self,
         X_cal: np.ndarray,
@@ -128,7 +128,7 @@ class TrustEvaluator:
         self._conformal = MondrianConformalClassifier(alpha=alpha)
         self._conformal.fit(y_cal_enc, self.model.predict_proba(X_cal), meta_cal=bins_cal)
         self._conformal_fitted = True
-    
+
     def fit_calibration(
         self,
         y_cal: np.ndarray,
@@ -149,11 +149,11 @@ class TrustEvaluator:
             return
         else:
             raise ValueError(f"Unknown calibration_method: {self.calibration_method}")
-        
+
         y_cal_enc = self._encode_labels(y_cal)
         self._calibrator.fit(y_cal_enc, proba_cal)
         self._calibrator_fitted = True
-    
+
     def evaluate(
         self,
         X_test: np.ndarray,
@@ -181,26 +181,26 @@ class TrustEvaluator:
         """
         if not self._conformal_fitted:
             raise RuntimeError("Conformal prediction not fitted. Call fit_conformal().")
-        
+
         proba_test = self.model.predict_proba(X_test)
         y_test_enc = self._encode_labels(y_test)
-        
+
         # Apply calibration if fitted
         if self._calibrator_fitted and self._calibrator is not None:
             proba_test_cal = self._calibrator.predict(proba_test)
         else:
             proba_test_cal = proba_test
-        
+
         # Conformal prediction
         cp_result = self._conformal.predict_sets(
             proba_test_cal,
             meta_test=bins_test,
             y_true=y_test_enc,
         )
-        
+
         # Calibration error
         ece = expected_calibration_error(y_test_enc, proba_test_cal)
-        
+
         # Abstention
         abstain_result = evaluate_abstention(
             proba_test_cal,
@@ -209,7 +209,7 @@ class TrustEvaluator:
             prediction_sets=cp_result.prediction_sets,
             max_set_size=proba_test_cal.shape[1],
         )
-        
+
         # Group-aware metrics
         group_metrics = {}
         if batch_ids is not None:
@@ -227,13 +227,13 @@ class TrustEvaluator:
                 proba_test_cal,
                 batch_ids,
             )
-        
+
         # Efficiency gain
         efficiency_gain = None
         if abstain_result.coverage is not None and cp_result.coverage is not None:
             if cp_result.coverage > 0:
                 efficiency_gain = abstain_result.coverage / cp_result.coverage
-        
+
         result = TrustEvaluationResult(
             timestamp=datetime.now().isoformat(),
             model_name=model_name,
@@ -256,9 +256,9 @@ class TrustEvaluator:
             efficiency_gain=efficiency_gain,
             group_metrics=group_metrics,
         )
-        
+
         return result
-    
+
     def _compute_group_metrics(
         self,
         cp_result: ConformalPredictionResult,
@@ -268,26 +268,26 @@ class TrustEvaluator:
     ) -> Dict[str, Dict[str, float]]:
         """Compute per-group coverage and abstention metrics."""
         group_metrics = {}
-        
+
         for group_id in np.unique(batch_ids):
             mask = batch_ids == group_id
             y_group = y_test[mask]
             proba_group = proba_test[mask]
             sets_group = [cp_result.prediction_sets[i] for i in np.where(mask)[0]]
-            
+
             # Per-group coverage
             coverage = np.mean([
                 int(y_group[i] in sets_group[i])
                 for i in range(len(y_group))
             ])
-            
+
             # Per-group abstention
             abstain_res = evaluate_abstention(
                 proba_group,
                 y_group,
                 threshold=self.abstention_threshold,
             )
-            
+
             group_metrics[str(group_id)] = {
                 "coverage": coverage,
                 "set_size_mean": float(np.mean([len(s) for s in sets_group])),
@@ -296,9 +296,9 @@ class TrustEvaluator:
                     abstain_res.accuracy_non_abstained or 0.0
                 ),
             }
-        
+
         return group_metrics
-    
+
     def save_artifacts(
         self,
         result: TrustEvaluationResult,
@@ -321,7 +321,7 @@ class TrustEvaluator:
             Dictionary mapping artifact names to their registry keys
         """
         artifacts = {}
-        
+
         # Save evaluation result
         result_dict = asdict(result)
         result_key = self.artifact_registry.register(
@@ -334,7 +334,7 @@ class TrustEvaluator:
             },
         )
         artifacts["evaluation_result"] = result_key
-        
+
         # Save prediction sets
         sets_df = pd.DataFrame({
             "sample_idx": range(len(prediction_sets)),
@@ -348,7 +348,7 @@ class TrustEvaluator:
             metadata={"model": result.model_name},
         )
         artifacts["prediction_sets"] = sets_key
-        
+
         # Save abstention summary
         abstain_df = pd.DataFrame({
             "sample_idx": range(len(abstention_mask)),
@@ -361,20 +361,20 @@ class TrustEvaluator:
             metadata={"model": result.model_name},
         )
         artifacts["abstention"] = abstain_key
-        
+
         # Save to disk if directory provided
         if output_dir:
             output_dir = Path(output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
-            
+
             with open(output_dir / "trust_eval.json", "w") as f:
                 json.dump(result_dict, f, indent=2, default=str)
-            
+
             sets_df.to_csv(output_dir / "prediction_sets.csv", index=False)
             abstain_df.to_csv(output_dir / "abstention.csv", index=False)
-        
+
         return artifacts
-    
+
     def report(self, result: TrustEvaluationResult) -> str:
         """Generate human-readable report."""
         lines = [
@@ -383,14 +383,14 @@ class TrustEvaluator:
             "=" * 70,
             f"\nModel: {result.model_name}",
             f"Timestamp: {result.timestamp}",
-            
+
             "\n--- CONFORMAL PREDICTION ---",
             f"Target Coverage: {self.target_coverage:.1%}",
             f"Achieved Coverage: {result.conformal_coverage:.1%}",
             f"Mean Set Size: {result.conformal_set_size_mean:.2f}",
             f"Median Set Size: {result.conformal_set_size_median:.2f}",
             f"Max Set Size: {result.conformal_set_size_max}",
-            
+
             "\n--- CALIBRATION ---",
             f"Calibration Method: {self.calibration_method}",
             f"ECE: {result.ece:.4f}",
@@ -399,7 +399,7 @@ class TrustEvaluator:
                 if result.temperature_scale else "N/A"
             ),
             f"Isotonic: {result.isotonic_applied}",
-            
+
             "\n--- ABSTENTION ---",
             f"Abstention Threshold: {self.abstention_threshold:.1%}",
             f"Abstention Rate: {result.abstention_rate:.1%}",
@@ -411,7 +411,7 @@ class TrustEvaluator:
                 f"Accuracy (abstained): {result.accuracy_abstained:.1%}"
                 if result.accuracy_abstained is not None else "N/A"
             ),
-            
+
             "\n--- COMBINED METRICS ---",
             f"Coverage under Abstention: {result.coverage_under_abstention:.1%}",
             (
@@ -419,13 +419,13 @@ class TrustEvaluator:
                 if result.efficiency_gain else "N/A"
             ),
         ]
-        
+
         # Add per-bin coverage if available
         if result.per_bin_coverage:
             lines.append("\n--- PER-BIN COVERAGE ---")
             for bin_id, cov in result.per_bin_coverage.items():
                 lines.append(f"  Bin {bin_id}: {cov:.1%}")
-        
+
         # Add group metrics if available
         if result.group_metrics:
             lines.append("\n--- GROUP-AWARE METRICS ---")
@@ -436,6 +436,6 @@ class TrustEvaluator:
                         lines.append(f"    {metric_name}: {value:.1%}")
                     else:
                         lines.append(f"    {metric_name}: {value:.4f}")
-        
+
         lines.append("\n" + "=" * 70)
         return "\n".join(lines)

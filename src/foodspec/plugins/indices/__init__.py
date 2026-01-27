@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Registry for feature index plugins.
 

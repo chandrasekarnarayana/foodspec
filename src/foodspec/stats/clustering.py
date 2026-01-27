@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Clustering utilities for exploratory analysis and QC diagnostics.
 """

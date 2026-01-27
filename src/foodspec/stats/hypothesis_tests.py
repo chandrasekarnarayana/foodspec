@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Hypothesis testing utilities for FoodSpec.
 

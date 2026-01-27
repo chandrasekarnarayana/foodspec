@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 import numpy as np
 import pandas as pd
 
-from foodspec.modeling.metrics_regression import residual_diagnostics, overdispersion_summary
+from foodspec.modeling.metrics_regression import overdispersion_summary, residual_diagnostics
 from foodspec.modeling.outcome import OutcomeType
 
 

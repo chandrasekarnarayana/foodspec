@@ -1,7 +1,6 @@
 """Utility commands: about, version, report generation."""
 from __future__ import annotations
 
-
 import importlib.util
 import sys
 from pathlib import Path
@@ -17,6 +16,8 @@ from foodspec.reporting.api import build_report_from_run
 from foodspec.reporting.pdf import PDFExporter
 from foodspec.utils.run_artifacts import (
     get_logger as get_run_logger,
+)
+from foodspec.utils.run_artifacts import (
     init_run_dir,
     write_manifest,
     write_run_summary,

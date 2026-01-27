@@ -1,7 +1,6 @@
 """Core data model for spectral datasets."""
 from __future__ import annotations
 
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, Literal, Optional, Sequence, Union

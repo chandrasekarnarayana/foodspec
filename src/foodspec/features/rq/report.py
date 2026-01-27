@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Text report generation for Ratio-Quality (RQ) analysis.
 

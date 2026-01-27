@@ -1,7 +1,6 @@
 """Heating degradation analysis (stub)."""
 from __future__ import annotations
 
-
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
@@ -14,11 +13,11 @@ from sklearn.pipeline import Pipeline
 from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.features.peaks import PeakFeatureExtractor
 from foodspec.features.ratios import RatioFeatureGenerator
+from foodspec.modeling.validation.quality import validate_spectrum_set
 from foodspec.preprocess.baseline import ALSBaseline
 from foodspec.preprocess.cropping import RangeCropper
 from foodspec.preprocess.normalization import VectorNormalizer
 from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-from foodspec.modeling.validation.quality import validate_spectrum_set
 
 __all__ = [
     "HeatingAnalysisResult",

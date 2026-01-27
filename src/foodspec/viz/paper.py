@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Paper-ready figure presets for publication-quality matplotlib figures.
 
@@ -30,11 +31,11 @@ Use context manager for temporary preset::
 
 import contextlib
 import copy
-import matplotlib.pyplot as plt
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Any, Optional, Generator
-import warnings
+from typing import Any, Dict, Generator
+
+import matplotlib.pyplot as plt
 
 
 class FigurePreset(Enum):

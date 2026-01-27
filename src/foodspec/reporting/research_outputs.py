@@ -4,11 +4,11 @@ Auto-generates methods sections, reproducibility packages, and dataset cards.
 """
 
 from __future__ import annotations
+
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional
-import json
-import hashlib
 
 
 @dataclass
@@ -25,32 +25,32 @@ class DatasetCard:
     n_features: int
     feature_type: str  # e.g., "NIR spectra", "Raman spectra"
     target_type: str  # e.g., "concentration", "classification"
-    
+
     # Provenance
     collection_date: Optional[str] = None
     collection_method: Optional[str] = None
     instrument: Optional[str] = None
-    
+
     # Characteristics
     wavelength_range: Optional[tuple] = None
     sample_types: List[str] = field(default_factory=list)
     preprocessing_applied: List[str] = field(default_factory=list)
-    
+
     # Quality
     missing_data_fraction: float = 0.0
     outlier_fraction: float = 0.0
     quality_notes: Optional[str] = None
-    
+
     # Usage
     intended_use: Optional[str] = None
     limitations: Optional[str] = None
     ethical_considerations: Optional[str] = None
-    
+
     # Metadata
     created_by: Optional[str] = None
     license: str = "CC-BY-4.0"
     doi: Optional[str] = None
-    
+
     def to_dict(self) -> dict:
         """Export as dictionary."""
         return {
@@ -97,25 +97,25 @@ class ReproducibilityPackage:
     title: str
     authors: List[str]
     date: str
-    
+
     # Code
     code_repository: Optional[str] = None
     commit_hash: Optional[str] = None
     requirements: List[str] = field(default_factory=list)
-    
+
     # Data
     dataset_cards: List[DatasetCard] = field(default_factory=list)
     data_availability: Optional[str] = None
-    
+
     # Methods
     methods_section: Optional[str] = None
     preprocessing_steps: List[str] = field(default_factory=list)
     model_hyperparameters: Dict = field(default_factory=dict)
-    
+
     # Results
     random_seeds: List[int] = field(default_factory=list)
     computational_environment: Dict = field(default_factory=dict)
-    
+
     def to_json(self, filepath: str):
         """Save as JSON."""
         data = {
@@ -141,7 +141,7 @@ class ReproducibilityPackage:
                 'environment': self.computational_environment,
             },
         }
-        
+
         with open(filepath, 'w') as f:
             json.dump(data, f, indent=2)
 
@@ -162,7 +162,7 @@ class MethodsSectionGenerator:
     ...     validation_strategy='5-fold CV',
     ... )
     """
-    
+
     def __init__(self):
         self.templates = {
             'dataset': "A dataset of {n_samples} samples with {n_features} spectral features was used.",
@@ -170,7 +170,7 @@ class MethodsSectionGenerator:
             'model': "{model_type} regression was performed with the following parameters: {params}.",
             'validation': "Model performance was evaluated using {strategy}.",
         }
-    
+
     def generate(
         self,
         dataset_info: Dict,
@@ -181,30 +181,30 @@ class MethodsSectionGenerator:
     ) -> str:
         """Generate methods section text."""
         sections = []
-        
+
         # Dataset
         sections.append(self.templates['dataset'].format(
             n_samples=dataset_info.get('n_samples', 'N'),
             n_features=dataset_info.get('n_features', 'M'),
         ))
-        
+
         # Preprocessing
         if preprocessing:
             steps_str = ', '.join(preprocessing)
             sections.append(self.templates['preprocessing'].format(steps=steps_str))
-        
+
         # Model
         params_str = ', '.join([f"{k}={v}" for k, v in model_params.items()])
         sections.append(self.templates['model'].format(
             model_type=model_type,
             params=params_str,
         ))
-        
+
         # Validation
         sections.append(self.templates['validation'].format(
             strategy=validation_strategy,
         ))
-        
+
         return ' '.join(sections)
 
 
@@ -240,10 +240,10 @@ class ResearchOutputGenerator:
     ... )
     >>> package.to_json('repro_package.json')
     """
-    
+
     def __init__(self):
         self.methods_generator = MethodsSectionGenerator()
-    
+
     def create_dataset_card(
         self,
         X,
@@ -254,9 +254,9 @@ class ResearchOutputGenerator:
     ) -> DatasetCard:
         """Create dataset card from data arrays."""
         import numpy as np
-        
+
         n_samples, n_features = X.shape
-        
+
         return DatasetCard(
             name=name,
             version='1.0',
@@ -268,7 +268,7 @@ class ResearchOutputGenerator:
             missing_data_fraction=float(np.isnan(X).sum() / X.size),
             **{k: v for k, v in kwargs.items() if k not in ['feature_type', 'target_type']},
         )
-    
+
     def generate_methods(
         self,
         preprocessing_pipeline,
@@ -281,7 +281,7 @@ class ResearchOutputGenerator:
         model_type = model.__class__.__name__
         model_params = model.get_params()
         validation_strategy = validation_results.get('cv_strategy', 'cross-validation')
-        
+
         return self.methods_generator.generate(
             dataset_info=dataset_info,
             preprocessing=preprocessing,
@@ -289,7 +289,7 @@ class ResearchOutputGenerator:
             model_params=model_params,
             validation_strategy=validation_strategy,
         )
-    
+
     def create_repro_package(
         self,
         title: str,
@@ -299,9 +299,9 @@ class ResearchOutputGenerator:
         **kwargs,
     ) -> ReproducibilityPackage:
         """Create complete reproducibility package."""
-        import sys
         import platform
-        
+        import sys
+
         return ReproducibilityPackage(
             title=title,
             authors=authors,

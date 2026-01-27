@@ -4,8 +4,7 @@ Maps model aliases to canonical names and maintains approved model lists.
 """
 from __future__ import annotations
 
-from typing import Optional, Set
-
+from typing import Optional
 
 # Canonical model names (what fit_predict expects)
 CANONICAL_MODELS = {
@@ -28,7 +27,7 @@ MODEL_ALIASES = {
     "logisticregression": "logreg",
     "LogisticRegression": "logreg",
     "lr": "logreg",
-    
+
     # SVM Linear
     "svm_linear": "svm_linear",
     "svm-linear": "svm_linear",
@@ -36,45 +35,45 @@ MODEL_ALIASES = {
     "svc_linear": "svm_linear",
     "linearsvc": "svm_linear",
     "LinearSVC": "svm_linear",
-    
+
     # SVM RBF
     "svm_rbf": "svm_rbf",
     "svm-rbf": "svm_rbf",
     "svmrbf": "svm_rbf",
     "svc": "svm_rbf",
     "SVC": "svm_rbf",
-    
+
     # Random Forest
     "rf": "rf",
     "randomforest": "rf",
     "RandomForest": "rf",
     "RandomForestClassifier": "rf",
-    
+
     # Gradient Boosting
     "gboost": "gboost",
     "gradientboosting": "gboost",
     "GradientBoosting": "gboost",
     "GradientBoostingClassifier": "gboost",
     "gb": "gboost",
-    
+
     # XGBoost
     "xgb": "xgb",
     "xgboost": "xgb",
     "XGBoost": "xgb",
     "XGBClassifier": "xgb",
-    
+
     # LightGBM
     "lgbm": "lgbm",
     "lightgbm": "lgbm",
     "LightGBM": "lgbm",
     "LGBMClassifier": "lgbm",
-    
+
     # K-Nearest Neighbors
     "knn": "knn",
     "KNN": "knn",
     "KNeighborsClassifier": "knn",
     "k-neighbors": "knn",
-    
+
     # Multi-Layer Perceptron
     "mlp": "mlp",
     "MLP": "mlp",
@@ -133,24 +132,24 @@ def resolve_model_name(name: Optional[str]) -> Optional[str]:
     """
     if name is None:
         return None
-    
+
     # Normalize: strip whitespace, lowercase for lookup
     normalized = name.strip().lower()
-    
+
     # Try direct canonical match first
     if normalized in CANONICAL_MODELS:
         return normalized
-    
+
     # Try alias lookup (case-insensitive via normalized key)
     canonical = MODEL_ALIASES.get(normalized)
     if canonical:
         return canonical
-    
+
     # Try exact match in aliases (preserves case)
     canonical = MODEL_ALIASES.get(name.strip())
     if canonical:
         return canonical
-    
+
     # Not found
     raise ValueError(
         f"Unknown model name: '{name}'. "
@@ -175,7 +174,7 @@ def is_model_approved(canonical_name: str) -> bool:
     approved_name = CANONICAL_TO_APPROVED.get(canonical_name)
     if approved_name:
         return approved_name in APPROVED_MODELS
-    
+
     # Fall back to checking if canonical name is in approved list
     return canonical_name in APPROVED_MODELS
 
@@ -218,15 +217,15 @@ def resolve_scheme_name(scheme: Optional[str]) -> Optional[str]:
     """
     if scheme is None:
         return None
-    
+
     normalized = scheme.strip().lower()
-    
+
     # Canonical schemes supported by fit_predict
     canonical_schemes = {"nested", "kfold", "loso", "lobo"}
-    
+
     if normalized in canonical_schemes:
         return normalized
-    
+
     # Aliases
     scheme_aliases = {
         "stratified": "kfold",
@@ -236,11 +235,11 @@ def resolve_scheme_name(scheme: Optional[str]) -> Optional[str]:
         "leave-one-subject-out": "loso",
         "leave-one-batch-out": "lobo",
     }
-    
+
     canonical = scheme_aliases.get(normalized)
     if canonical:
         return canonical
-    
+
     raise ValueError(
         f"Unknown validation scheme: '{scheme}'. "
         f"Supported: {sorted(canonical_schemes)} or aliases like 'stratified', 'random', etc."

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """PDF export functionality with graceful dependency handling.
 
 Supports PDF generation from HTML with optional WeasyPrint support.

@@ -1,10 +1,9 @@
-from __future__ import annotations
 """Workflow: Library search (scaffold).
 
 High-level workflow to perform library similarity search over spectral
 datasets and produce ranked matches and optional artifacts.
 """
-
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional

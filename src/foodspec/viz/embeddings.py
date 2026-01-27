@@ -10,13 +10,14 @@ Functions:
     get_embedding_statistics(): Extract per-group statistics from embeddings
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib.patches import Ellipse
 from pathlib import Path
-from typing import Optional, Dict, Tuple, List, Any, Union
+from typing import Any, Dict, Optional, Tuple, Union
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Ellipse
 from scipy.stats import chi2
+
 from foodspec.viz.style import apply_style
 
 
@@ -36,19 +37,19 @@ def _validate_embedding(embedding: np.ndarray) -> None:
     """
     if not isinstance(embedding, np.ndarray):
         raise ValueError("embedding must be a numpy array")
-    
+
     if embedding.ndim != 2:
         raise ValueError(f"embedding must be 2D, got shape {embedding.shape}")
-    
+
     if embedding.size == 0:
         raise ValueError("embedding cannot be empty")
-    
+
     if embedding.shape[1] not in [2, 3]:
         raise ValueError(f"embedding must have 2 or 3 dimensions, got {embedding.shape[1]}")
-    
+
     if not np.issubdtype(embedding.dtype, np.number):
         raise ValueError("embedding must contain numeric values")
-    
+
     if np.any(~np.isfinite(embedding)):
         raise ValueError("embedding contains non-finite values (NaN or Inf)")
 
@@ -71,13 +72,13 @@ def _validate_labels(labels: Optional[np.ndarray], expected_length: int) -> None
     """
     if labels is None:
         return
-    
+
     if not isinstance(labels, np.ndarray):
         labels = np.asarray(labels)
-    
+
     if labels.ndim != 1:
         raise ValueError(f"labels must be 1D, got shape {labels.shape}")
-    
+
     if len(labels) != expected_length:
         raise ValueError(f"labels length {len(labels)} doesn't match embedding {expected_length}")
 
@@ -100,19 +101,19 @@ def _get_embedding_colors(labels: Optional[np.ndarray], colormap: str) -> Dict[A
     """
     if labels is None:
         return {}
-    
+
     unique_labels = np.unique(labels)
     n_labels = len(unique_labels)
-    
+
     if n_labels == 1:
         return {unique_labels[0]: (0.2, 0.4, 0.8)}
-    
+
     cmap = plt.get_cmap(colormap)
     colors = {}
     for i, label in enumerate(unique_labels):
         color = cmap(i / (n_labels - 1))
         colors[label] = color[:3]  # RGB only, ignore alpha
-    
+
     return colors
 
 
@@ -142,26 +143,26 @@ def _fit_confidence_ellipse(
     if len(points) < 2:
         center = points[0]
         return center, np.array([0.1, 0.1]), 0.0
-    
+
     center = np.mean(points, axis=0)
-    
+
     # Compute covariance
     cov_matrix = np.cov(points.T)
-    
+
     # Handle singular covariance
     if cov_matrix.ndim == 0:
         cov_matrix = np.array([[cov_matrix, 0], [0, cov_matrix]])
-    
+
     # Eigendecomposition
     eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-    
+
     # Scale by chi-squared quantile for confidence level
     chi2_val = chi2.ppf(confidence, df=2)
     scales = 2 * np.sqrt(chi2_val * eigenvalues)
-    
+
     # Rotation angle
     angle = np.degrees(np.arctan2(eigenvectors[1, 1], eigenvectors[0, 1]))
-    
+
     return center, scales, angle
 
 
@@ -191,7 +192,7 @@ def _extract_contour_region(
     """
     mask = (points[:, 0] >= xlim[0]) & (points[:, 0] <= xlim[1]) & \
            (points[:, 1] >= ylim[0]) & (points[:, 1] <= ylim[1])
-    
+
     return mask
 
 
@@ -308,16 +309,16 @@ def plot_embedding(
     _validate_labels(class_labels, embedding.shape[0])
     _validate_labels(batch_labels, embedding.shape[0])
     _validate_labels(stage_labels, embedding.shape[0])
-    
+
     # Determine dimensionality and projection
     n_dims = embedding.shape[1]
     is_3d = n_dims == 3
-    
+
     # If stage labels provided, create faceted plot
     if stage_labels is not None:
         unique_stages = np.unique(stage_labels)
         n_stages = len(unique_stages)
-        
+
         # Determine grid layout
         if n_stages <= 2:
             n_rows, n_cols = 1, n_stages
@@ -325,17 +326,17 @@ def plot_embedding(
             n_rows, n_cols = 2, (n_stages + 1) // 2
         else:
             n_rows, n_cols = (n_stages + 2) // 3, 3
-        
+
         fig, axes = plt.subplots(n_rows, n_cols, figsize=figure_size)
         axes = np.atleast_1d(axes).flatten()
-        
+
         for ax_idx, stage in enumerate(unique_stages):
             ax = axes[ax_idx]
             mask = stage_labels == stage
             stage_embedding = embedding[mask]
             stage_classes = class_labels[mask] if class_labels is not None else None
             stage_batches = batch_labels[mask] if batch_labels is not None else None
-            
+
             _plot_embedding_2d(
                 ax, stage_embedding, stage_classes, stage_batches,
                 class_colormap, batch_colormap, alpha, marker_size,
@@ -345,14 +346,14 @@ def plot_embedding(
             ax.set_xlabel("Component 1")
             ax.set_ylabel("Component 2")
             ax.grid(True, alpha=0.3)
-        
+
         # Hide unused subplots
         for idx in range(len(unique_stages), len(axes)):
             axes[idx].set_visible(False)
-        
+
         fig.suptitle(title or f"{embedding_name} by Stage", fontsize=14, fontweight='bold')
         plt.tight_layout()
-    
+
     else:
         # Single plot (2D or 3D)
         if is_3d:
@@ -370,20 +371,20 @@ def plot_embedding(
                 class_colormap, batch_colormap, alpha, marker_size,
                 show_ellipses, ellipse_confidence, show_contours, n_contours
             )
-        
+
         ax.set_title(title or f"{embedding_name} Embedding", fontsize=14, fontweight='bold')
         ax.set_xlabel("Component 1")
         ax.set_ylabel("Component 2")
         if not is_3d:
             ax.set_zlabel("Component 3") if is_3d else None
             ax.grid(True, alpha=0.3)
-    
+
     # Save if requested
     if save_path is not None:
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
-    
+
     return fig
 
 
@@ -397,9 +398,9 @@ def plot_pca_scatter(
     seed=0,
 ):
     """Plot PCA scatter from a feature matrix payload."""
+    from foodspec._version import __version__
     from foodspec.reporting.schema import RunBundle
     from foodspec.viz.save import save_figure
-    from foodspec._version import __version__
 
     apply_style()
     payload = data_bundle if isinstance(data_bundle, dict) else {}
@@ -455,9 +456,9 @@ def plot_umap_scatter(
     seed=0,
 ):
     """Plot UMAP scatter from a feature matrix payload (fallbacks to PCA)."""
+    from foodspec._version import __version__
     from foodspec.reporting.schema import RunBundle
     from foodspec.viz.save import save_figure
-    from foodspec._version import __version__
 
     apply_style()
     payload = data_bundle if isinstance(data_bundle, dict) else {}
@@ -533,7 +534,7 @@ def _plot_embedding_2d(
         # Color by class labels
         class_colors = _get_embedding_colors(class_labels, class_colormap)
         unique_classes = np.unique(class_labels)
-        
+
         for cls in unique_classes:
             mask = class_labels == cls
             color = class_colors[cls]
@@ -541,9 +542,9 @@ def _plot_embedding_2d(
                 embedding[mask, 0], embedding[mask, 1],
                 label=str(cls), s=marker_size, alpha=alpha, c=[color]
             )
-        
+
         ax.legend(loc='best', framealpha=0.9)
-        
+
         # Add confidence ellipses if requested
         if show_ellipses and len(embedding) > 2:
             for cls in unique_classes:
@@ -559,31 +560,31 @@ def _plot_embedding_2d(
                         linewidth=2, linestyle='--', alpha=0.8
                     )
                     ax.add_patch(ellipse)
-    
+
     # Add density contours if requested
     if show_contours and len(embedding) > 10:
         try:
             from scipy.stats import gaussian_kde
-            
+
             x = embedding[:, 0]
             y = embedding[:, 1]
-            
+
             # Create grid
             x_min, x_max = x.min(), x.max()
             y_min, y_max = y.min(), y.max()
             margin_x = (x_max - x_min) * 0.1
             margin_y = (y_max - y_min) * 0.1
-            
+
             xx, yy = np.mgrid[
                 x_min - margin_x:x_max + margin_x:100j,
                 y_min - margin_y:y_max + margin_y:100j
             ]
             positions = np.vstack([xx.ravel(), yy.ravel()])
-            
+
             # Compute KDE
             kde = gaussian_kde(np.vstack([x, y]))
             Z = kde(positions).reshape(xx.shape)
-            
+
             # Plot contours
             ax.contour(xx, yy, Z, levels=n_contours, colors='gray', alpha=0.5, linewidths=1)
         except Exception:
@@ -611,7 +612,7 @@ def _plot_embedding_3d(
     else:
         class_colors = _get_embedding_colors(class_labels, class_colormap)
         unique_classes = np.unique(class_labels)
-        
+
         for cls in unique_classes:
             mask = class_labels == cls
             color = class_colors[cls]
@@ -619,9 +620,9 @@ def _plot_embedding_3d(
                 embedding[mask, 0], embedding[mask, 1], embedding[mask, 2],
                 label=str(cls), s=marker_size, alpha=alpha, c=[color]
             )
-        
+
         ax.legend(loc='best', framealpha=0.9)
-    
+
     ax.set_xlabel("Component 1")
     ax.set_ylabel("Component 2")
     ax.set_zlabel("Component 3")
@@ -681,47 +682,47 @@ def plot_embedding_comparison(
     # Validate embeddings
     n_embeddings = len(embeddings)
     embedding_names = list(embeddings.keys())
-    
+
     if n_embeddings == 0:
         raise ValueError("embeddings dictionary is empty")
-    
+
     # Check all have same number of samples
     n_samples = embeddings[embedding_names[0]].shape[0]
     for name, emb in embeddings.items():
         _validate_embedding(emb)
         if emb.shape[0] != n_samples:
             raise ValueError(f"Embedding '{name}' has {emb.shape[0]} samples, expected {n_samples}")
-    
+
     if class_labels is not None:
         _validate_labels(class_labels, n_samples)
-    
+
     # Create subplots
     fig, axes = plt.subplots(1, n_embeddings, figsize=figure_size)
     axes = np.atleast_1d(axes)
-    
+
     # Plot each embedding
     for ax, name in zip(axes, embedding_names):
         emb = embeddings[name]
-        
+
         _plot_embedding_2d(
             ax, emb, class_labels, None,
             class_colormap, "Set1", alpha, marker_size,
             show_ellipses, ellipse_confidence, False, 5
         )
-        
+
         ax.set_title(name, fontsize=12, fontweight='bold')
         ax.set_xlabel("Component 1")
         ax.set_ylabel("Component 2")
         ax.grid(True, alpha=0.3)
-    
+
     fig.suptitle(title or "Embedding Comparison", fontsize=14, fontweight='bold')
     plt.tight_layout()
-    
+
     if save_path is not None:
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
-    
+
     return fig
 
 
@@ -765,9 +766,9 @@ def get_embedding_statistics(
     """
     _validate_embedding(embedding)
     _validate_labels(class_labels, embedding.shape[0])
-    
+
     stats = {}
-    
+
     if class_labels is None:
         # Global statistics
         stats['global'] = {
@@ -783,12 +784,12 @@ def get_embedding_statistics(
     else:
         unique_classes = np.unique(class_labels)
         means = {}
-        
+
         # Compute per-class statistics
         for cls in unique_classes:
             mask = class_labels == cls
             class_emb = embedding[mask]
-            
+
             stats[str(cls)] = {
                 'n_samples': len(class_emb),
                 'mean_x': float(np.mean(class_emb[:, 0])),
@@ -799,20 +800,20 @@ def get_embedding_statistics(
                 'range_y': float(np.ptp(class_emb[:, 1])),
                 'separation': 0.0
             }
-            
+
             means[str(cls)] = np.array([stats[str(cls)]['mean_x'], stats[str(cls)]['mean_y']])
-        
+
         # Compute separation (distance to nearest other class)
         for cls in unique_classes:
             cls_mean = means[str(cls)]
             min_dist = float('inf')
-            
+
             for other_cls in unique_classes:
                 if other_cls != cls:
                     other_mean = means[str(other_cls)]
                     dist = np.linalg.norm(cls_mean - other_mean)
                     min_dist = min(min_dist, dist)
-            
+
             stats[str(cls)]['separation'] = float(min_dist) if min_dist != float('inf') else 0.0
-    
+
     return stats

@@ -1,11 +1,10 @@
 """Spectral alignment methods: cross-correlation and DTW."""
 from __future__ import annotations
 
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy as np
 from scipy import signal
-from scipy.spatial.distance import euclidean
 from sklearn.base import BaseEstimator, TransformerMixin
 
 __all__ = ["CrossCorrelationAligner", "DynamicTimeWarpingAligner", "align_spectra"]
@@ -69,16 +68,16 @@ class CrossCorrelationAligner(BaseEstimator, TransformerMixin):
         for i, spectrum in enumerate(X):
             # Compute cross-correlation
             xcorr = signal.correlate(spectrum, self.reference_, mode="same")
-            
+
             # Find peak
             center = len(xcorr) // 2
             start = max(0, center - self.max_shift)
             end = min(len(xcorr), center + self.max_shift + 1)
-            
+
             peak_idx = np.argmax(xcorr[start:end]) + start
             shift = peak_idx - center
             self.shifts_.append(shift)
-            
+
             # Apply shift
             X_aligned[i] = np.roll(spectrum, shift)
 

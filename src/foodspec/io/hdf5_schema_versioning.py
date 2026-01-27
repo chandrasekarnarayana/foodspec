@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 HDF5 schema versioning with forward/backward compatibility.
 

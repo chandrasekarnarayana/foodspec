@@ -1,7 +1,6 @@
 """Abstention utilities for selective classification (Phase 4)."""
 from __future__ import annotations
 
-
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Literal, Optional, Sequence
 

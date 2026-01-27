@@ -1,7 +1,6 @@
 """Legacy import path for SpectralDataset (deprecated)."""
 from __future__ import annotations
 
-from foodspec.utils.deprecation import warn_deprecated_import
 from foodspec.data_objects.spectral_dataset import (
     HDF5_SCHEMA_VERSION,
     HyperspectralDataset,
@@ -11,10 +10,11 @@ from foodspec.data_objects.spectral_dataset import (
     baseline_polynomial,
     baseline_rubberband,
     harmonize_datasets,
+    normalize_matrix,
     remove_spikes,
     smooth_signal,
-    normalize_matrix,
 )
+from foodspec.utils.deprecation import warn_deprecated_import
 
 warn_deprecated_import("foodspec.core.spectral_dataset", "foodspec.data_objects.spectral_dataset")
 

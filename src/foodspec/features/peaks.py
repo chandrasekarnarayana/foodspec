@@ -1,7 +1,6 @@
 """Peak detection and feature extraction utilities."""
 from __future__ import annotations
 
-
 from typing import Iterable, Optional, Sequence
 
 import numpy as np

@@ -1,20 +1,20 @@
 """Processing engine namespace (mindmap-aligned + orchestration)."""
 from __future__ import annotations
 
-from .pipeline import run_preprocessing_pipeline
-from .registry import ComponentRegistry
+from .artifacts import (
+    Artifact,
+    ArtifactRegistry,
+    ArtifactType,
+    get_registry,
+    register_artifact,
+    set_registry,
+)
+from .dag import Node, NodeStatus, NodeType, PipelineDAG, build_standard_pipeline
 
 # Orchestration system
 from .orchestrator import ExecutionEngine
-from .dag import PipelineDAG, Node, NodeType, NodeStatus, build_standard_pipeline
-from .artifacts import (
-    ArtifactRegistry,
-    Artifact,
-    ArtifactType,
-    get_registry,
-    set_registry,
-    register_artifact,
-)
+from .pipeline import run_preprocessing_pipeline
+from .registry import ComponentRegistry
 
 __all__ = [
     # Existing

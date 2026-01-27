@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """QC: Spectrum health scoring utilities.
 
 Provides a lightweight scaffolding for computing per-spectrum health

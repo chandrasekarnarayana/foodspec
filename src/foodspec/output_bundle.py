@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 output_bundle - DEPRECATED
 
@@ -19,9 +20,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.output_bundle is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.core.OutputBundle instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.output_bundle is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.core.OutputBundle instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

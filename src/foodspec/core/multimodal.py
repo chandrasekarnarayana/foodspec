@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Multi-modal spectroscopy dataset support.
 
 Enables workflows combining Raman, FTIR, and NIR on the same samples.

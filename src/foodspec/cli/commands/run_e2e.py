@@ -7,7 +7,6 @@ import typer
 
 from foodspec.workflow.orchestrator import EndToEndOrchestrator
 
-
 run_e2e_app = typer.Typer(
     help="End-to-end orchestrated run: validate -> preprocess -> features -> model -> trust -> report.",
     invoke_without_command=True,

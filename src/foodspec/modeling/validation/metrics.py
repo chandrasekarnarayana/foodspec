@@ -1,7 +1,6 @@
 """Validation utilities for chemometrics models."""
 from __future__ import annotations
 
-
 from typing import Any, Optional, Tuple
 
 import numpy as np
@@ -13,13 +12,13 @@ from sklearn.decomposition import PCA
 from sklearn.inspection import permutation_importance
 from sklearn.metrics import (
     accuracy_score,
-    f1_score,
-    precision_score,
-    recall_score,
     balanced_accuracy_score,
     brier_score_loss,
     confusion_matrix,
+    f1_score,
     precision_recall_fscore_support,
+    precision_score,
+    recall_score,
     roc_auc_score,
 )
 from sklearn.model_selection import cross_validate, permutation_test_score

@@ -11,38 +11,32 @@ Central orchestrator that:
 This is the single point of truth for all FoodSpec runs.
 """
 
-import sys
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional, Callable
-from datetime import datetime
 import uuid
+from pathlib import Path
+from typing import Any, Callable, Dict, Optional
 
 from foodspec.core.philosophy import (
-    DESIGN_PRINCIPLES,
     validate_all_principles,
-    PhilosophyError,
 )
+from foodspec.core.run_manifest import (
+    ArtifactSnapshot,
+    DAGSnapshot,
+    DataSnapshot,
+    EnvironmentSnapshot,
+    ManifestBuilder,
+    ProtocolSnapshot,
+    RunManifest,
+    RunStatus,
+)
+from foodspec.engine.artifacts import ArtifactRegistry, ArtifactType
+from foodspec.engine.dag import PipelineDAG, build_standard_pipeline
 from foodspec.utils.determinism import (
-    set_global_seed,
     capture_environment,
     capture_versions,
     fingerprint_csv,
     fingerprint_protocol,
-    generate_reproducibility_report,
-)
-from foodspec.engine.dag import PipelineDAG, NodeType, build_standard_pipeline
-from foodspec.engine.artifacts import ArtifactRegistry, ArtifactType, get_registry
-from foodspec.core.run_manifest import (
-    RunManifest,
-    ManifestMetadata,
-    ManifestBuilder,
-    ProtocolSnapshot,
-    DataSnapshot,
-    EnvironmentSnapshot,
-    DAGSnapshot,
-    ArtifactSnapshot,
-    RunStatus,
+    set_global_seed,
 )
 
 logger = logging.getLogger(__name__)
@@ -62,7 +56,7 @@ class ExecutionEngine:
     
     Every run must go through this engine.
     """
-    
+
     def __init__(self, run_id: Optional[str] = None):
         """
         Initialize execution engine.
@@ -76,13 +70,13 @@ class ExecutionEngine:
         self.pipeline_dag: Optional[PipelineDAG] = None
         self.execution_context: Dict[str, Any] = {}
         self.manifest: Optional[RunManifest] = None
-        
+
         logger.info(f"Execution Engine initialized (run_id={self.run_id})")
-    
+
     # ========================================================================
     # Step 1-2: Protocol & Data Validation
     # ========================================================================
-    
+
     def validate_protocol(
         self,
         protocol: Any,
@@ -102,19 +96,19 @@ class ExecutionEngine:
             PhilosophyError: If protocol invalid
         """
         logger.info("STEP 1: Validating protocol")
-        
+
         # Enforce TASK_FIRST principle
         from foodspec.core.philosophy import enforce_task_first
         enforce_task_first(protocol_dict or protocol)
-        
+
         # Enforce PROTOCOL_IS_SOURCE_OF_TRUTH
         from foodspec.core.philosophy import enforce_protocol_truth
         enforce_protocol_truth(protocol)
-        
+
         # Compute protocol hash
         proto_dict = protocol_dict or {}
         protocol_hash = fingerprint_protocol(proto_dict)
-        
+
         # Build protocol snapshot
         self.manifest_builder.set_protocol(
             ProtocolSnapshot(
@@ -127,10 +121,10 @@ class ExecutionEngine:
                 config_dict=proto_dict,
             )
         )
-        
+
         logger.info(f"  ✓ Protocol validated (hash={protocol_hash[:16]}...)")
         return protocol_hash
-    
+
     def validate_data(self, csv_path: Path) -> Dict[str, Any]:
         """
         Step 2: Validate and fingerprint data.
@@ -142,15 +136,15 @@ class ExecutionEngine:
             Data fingerprint dict
         """
         logger.info("STEP 2: Validating data")
-        
+
         csv_path = Path(csv_path)
-        
+
         if not csv_path.exists():
             raise FileNotFoundError(f"Data file not found: {csv_path}")
-        
+
         # Compute data fingerprint
         data_hash = fingerprint_csv(csv_path)
-        
+
         # Basic statistics
         try:
             import pandas as pd
@@ -161,9 +155,9 @@ class ExecutionEngine:
             logger.warning(f"Could not read CSV statistics: {e}")
             row_count = None
             col_count = None
-        
+
         size_bytes = csv_path.stat().st_size
-        
+
         # Build data snapshot
         self.manifest_builder.set_data(
             DataSnapshot(
@@ -174,20 +168,20 @@ class ExecutionEngine:
                 size_bytes=size_bytes,
             )
         )
-        
+
         logger.info(f"  ✓ Data validated (hash={data_hash[:16]}..., rows={row_count}, cols={col_count})")
-        
+
         return {
             "fingerprint": data_hash,
             "rows": row_count,
             "cols": col_count,
             "size": size_bytes,
         }
-    
+
     # ========================================================================
     # Step 3: Setup Reproducibility
     # ========================================================================
-    
+
     def setup_reproducibility(self, seed: Optional[int] = None) -> None:
         """
         Step 3: Setup reproducibility infrastructure.
@@ -196,19 +190,19 @@ class ExecutionEngine:
             seed: Random seed (generated if None)
         """
         logger.info("STEP 3: Setting up reproducibility")
-        
+
         # Generate seed if not provided
         if seed is None:
             import random as py_random
             seed = py_random.randint(0, 2**31 - 1)
-        
+
         # Set global seed
         set_global_seed(seed)
-        
+
         # Capture environment
         env = capture_environment()
         versions = capture_versions()
-        
+
         # Build environment snapshot
         self.manifest_builder.set_environment(
             EnvironmentSnapshot(
@@ -221,15 +215,15 @@ class ExecutionEngine:
                 package_versions=versions.get("critical_packages", {}),
             )
         )
-        
+
         self.execution_context["seed"] = seed
-        
+
         logger.info(f"  ✓ Reproducibility setup (seed={seed})")
-    
+
     # ========================================================================
     # Step 4-9: Pipeline Execution
     # ========================================================================
-    
+
     def setup_pipeline(self) -> PipelineDAG:
         """
         Step 4: Setup pipeline DAG.
@@ -238,15 +232,15 @@ class ExecutionEngine:
             Configured PipelineDAG
         """
         logger.info("STEP 4: Setting up pipeline DAG")
-        
+
         # Build standard pipeline
         self.pipeline_dag = build_standard_pipeline()
         self.pipeline_dag.validate()
-        
+
         logger.info(f"  ✓ Pipeline DAG setup ({len(self.pipeline_dag.nodes)} nodes)")
-        
+
         return self.pipeline_dag
-    
+
     def register_stage_function(
         self,
         stage_name: str,
@@ -263,16 +257,16 @@ class ExecutionEngine:
         """
         if self.pipeline_dag is None:
             raise ValueError("Pipeline not initialized; call setup_pipeline() first")
-        
+
         node = self.pipeline_dag.get_node(stage_name)
         if node is None:
             raise ValueError(f"Node '{stage_name}' not found in pipeline")
-        
+
         node.func = func
         node.params = params or {}
-        
+
         logger.info(f"Registered function for stage: {stage_name}")
-    
+
     def execute_pipeline(self) -> Dict[str, Any]:
         """
         Steps 5-9: Execute pipeline DAG.
@@ -281,13 +275,13 @@ class ExecutionEngine:
             Execution results
         """
         logger.info("STEPS 5-9: Executing pipeline")
-        
+
         if self.pipeline_dag is None:
             raise ValueError("Pipeline not initialized")
-        
+
         # Execute all stages in order
         results = self.pipeline_dag.execute(self.execution_context)
-        
+
         # Save DAG execution record
         self.manifest_builder.set_dag(
             DAGSnapshot(
@@ -296,15 +290,15 @@ class ExecutionEngine:
                 node_count=len(self.pipeline_dag.nodes),
             )
         )
-        
-        logger.info(f"  ✓ Pipeline execution complete")
-        
+
+        logger.info("  ✓ Pipeline execution complete")
+
         return results
-    
+
     # ========================================================================
     # Step 10: Artifact Registration
     # ========================================================================
-    
+
     def register_artifact(
         self,
         name: str,
@@ -333,13 +327,13 @@ class ExecutionEngine:
             source_node=source_node,
             metadata=metadata or {},
         )
-    
+
     def finalize_artifacts(self) -> None:
         """Finalize and validate artifact registry"""
         logger.info("STEP 10: Finalizing artifact registry")
-        
+
         self.artifact_registry.validate()
-        
+
         # Create artifact snapshot
         summary = self.artifact_registry.summary()
         self.manifest_builder.set_artifacts(
@@ -349,13 +343,13 @@ class ExecutionEngine:
                 total_size_bytes=summary["total_size_bytes"],
             )
         )
-        
+
         logger.info(f"  ✓ {len(self.artifact_registry.artifacts)} artifacts registered")
-    
+
     # ========================================================================
     # Step 11: Generate Manifest
     # ========================================================================
-    
+
     def generate_manifest(self, out_dir: Path) -> Path:
         """
         Step 11: Generate run manifest.
@@ -367,24 +361,24 @@ class ExecutionEngine:
             Path to manifest JSON
         """
         logger.info("STEP 11: Generating run manifest")
-        
+
         self.manifest = self.manifest_builder.build()
-        
+
         manifest_path = Path(out_dir) / "run_manifest.json"
         self.manifest.to_json(manifest_path)
-        
+
         # Also save artifact registry
         registry_path = Path(out_dir) / "artifacts.json"
         self.artifact_registry.to_json(registry_path)
-        
+
         logger.info(f"  ✓ Manifest saved to: {manifest_path}")
-        
+
         return manifest_path
-    
+
     # ========================================================================
     # Step 12: Philosophy Enforcement
     # ========================================================================
-    
+
     def enforce_philosophy(
         self,
         protocol: Any,
@@ -405,14 +399,14 @@ class ExecutionEngine:
             PhilosophyError: If any principle violated
         """
         logger.info("STEP 12: Philosophy enforcement")
-        
+
         # Build artifacts dict for enforcement
         artifacts_dict = {
             f.split("/")[-1]: Path(f) for f in [
                 str(a.path) for a in self.artifact_registry.artifacts.values()
             ]
         }
-        
+
         # Run all philosophy checks
         validate_all_principles(
             config=protocol_dict,
@@ -422,13 +416,13 @@ class ExecutionEngine:
             manifest=self.manifest.to_dict() if self.manifest else {},
             artifacts=artifacts_dict,
         )
-        
-        logger.info(f"  ✓ Philosophy enforcement passed")
-    
+
+        logger.info("  ✓ Philosophy enforcement passed")
+
     # ========================================================================
     # Complete Run Orchestration
     # ========================================================================
-    
+
     def run(
         self,
         protocol: Any,
@@ -458,69 +452,69 @@ class ExecutionEngine:
         logger.info("=" * 70)
         logger.info("EXECUTION ENGINE: Starting comprehensive FoodSpec run")
         logger.info("=" * 70)
-        
+
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
-        
+
         try:
             # Step 1-2: Validate protocol and data
             self.validate_protocol(protocol, protocol_dict)
             self.validate_data(csv_path)
-            
+
             # Step 3: Setup reproducibility
             self.setup_reproducibility(seed)
-            
+
             # Step 4: Setup pipeline
             self.setup_pipeline()
-            
+
             # Mark run as started
             self.manifest_builder.metadata.status = RunStatus.RUNNING
-            
+
             # Steps 5-9: Execute pipeline (caller must register stage functions)
             # This is typically done by higher-level orchestration code
-            
+
             # Step 10: Finalize artifacts
             self.finalize_artifacts()
-            
+
             # Step 11: Generate manifest
             self.generate_manifest(out_dir)
-            
+
             # Step 12: Philosophy enforcement (optional)
             if not skip_philosophy:
                 # Caller must provide these results
                 logger.warning("Philosophy enforcement skipped (incomplete results)")
-            
+
             # Mark success
             self.manifest.mark_success()
             self.manifest.to_json(out_dir / "run_manifest.json")
-            
+
             logger.info("=" * 70)
             logger.info(self.manifest.summary())
             logger.info("=" * 70)
-            
+
             return out_dir
-            
+
         except Exception as e:
             logger.error(f"Run failed: {e}", exc_info=True)
-            
+
             if self.manifest:
                 self.manifest.mark_failed(str(e))
                 self.manifest.to_json(out_dir / "run_manifest.json")
-            
+
             raise
-    
+
     # ========================================================================
     # Utilities
     # ========================================================================
-    
+
     def get_registry(self) -> ArtifactRegistry:
         """Get artifact registry"""
         return self.artifact_registry
-    
+
     def get_manifest(self) -> Optional[RunManifest]:
         """Get generated manifest"""
         return self.manifest
-    
+
     def get_execution_context(self) -> Dict[str, Any]:
         """Get execution context"""
         return self.execution_context

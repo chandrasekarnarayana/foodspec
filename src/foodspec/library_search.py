@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Spectral library search utilities.
 
@@ -27,9 +28,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.library_search is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.workflows.library_search instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.library_search is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.workflows.library_search instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

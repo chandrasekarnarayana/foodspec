@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Model lifecycle utilities: train → freeze → predict.
 
@@ -27,9 +28,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.model_lifecycle is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.ml.ModelLifecycle instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.model_lifecycle is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.ml.ModelLifecycle instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

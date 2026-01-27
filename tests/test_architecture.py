@@ -287,7 +287,10 @@ class TestNoDuplicates:
         repo_root = Path(__file__).parent.parent
 
         protocol_files = list(repo_root.glob("**/protocol.py"))
-        protocol_files = [f for f in protocol_files if ".git" not in f.parts]
+        protocol_files = [
+            f for f in protocol_files
+            if ".git" not in f.parts and not any("venv" in part for part in f.parts)
+        ]
 
         # Should be exactly 1 (in src/foodspec/core/)
         assert len(protocol_files) <= 1, (
@@ -302,7 +305,7 @@ class TestNoDuplicates:
         # Search for ComponentRegistry class definitions
         registry_matches = []
         for py_file in repo_root.glob("**/registry.py"):
-            if ".git" in py_file.parts:
+            if ".git" in py_file.parts or any("venv" in part for part in py_file.parts):
                 continue
             content = py_file.read_text()
             if "class ComponentRegistry" in content:

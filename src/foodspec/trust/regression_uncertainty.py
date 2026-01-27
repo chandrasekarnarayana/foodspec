@@ -1,7 +1,7 @@
 """Regression Uncertainty Quantification: Bootstrap Intervals, Quantile Regression, Conformal Methods."""
 from __future__ import annotations
 
-from typing import Optional, Tuple, Dict, Any
+from typing import Dict, Optional
 
 import numpy as np
 from scipy import stats
@@ -236,7 +236,7 @@ class QuantileRegression:
             # Weighted least squares approximation to quantile regression
             # Using iterative reweighting: weights = 1/|y - pred|
             model = model_class(**model_kwargs)
-            
+
             # Initial fit
             model.fit(X_train, y_train)
             pred = model.predict(X_train)
@@ -261,7 +261,7 @@ class QuantileRegression:
                         model.fit(X_train, y_train)
                 else:
                     model.fit(X_train, y_train)
-                    
+
                 pred = model.predict(X_train)
 
             self.models_[q] = model

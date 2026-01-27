@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Similarity search over spectra or features (top-k).
 
 Provides a simple kNN-style search that returns a similarity table

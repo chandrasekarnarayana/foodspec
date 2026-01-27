@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 from foodspec.utils.errors import (
-    FriendlyError,
     FoodSpecQCError,
     FoodSpecValidationError,
+    FriendlyError,
     classify_error,
     friendly_error,
 )

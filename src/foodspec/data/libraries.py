@@ -1,7 +1,6 @@
 """Local spectral library utilities."""
 from __future__ import annotations
 
-
 import io
 from os import PathLike
 from pathlib import Path

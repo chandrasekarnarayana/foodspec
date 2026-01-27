@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Novelty scoring relative to a training manifold.
 
 Provides a simple distance-to-nearest-neighbor measure and percentile-based

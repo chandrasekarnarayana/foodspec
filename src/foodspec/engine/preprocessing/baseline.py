@@ -5,9 +5,14 @@ import numpy as np
 
 from foodspec.data_objects.spectral_dataset import (
     baseline_als as _baseline_als,
+)
+from foodspec.data_objects.spectral_dataset import (
     baseline_polynomial as _baseline_polynomial,
+)
+from foodspec.data_objects.spectral_dataset import (
     baseline_rubberband as _baseline_rubberband,
 )
+
 
 def baseline_als(y: np.ndarray, lam: float = 1e5, p: float = 0.01, niter: int = 10) -> np.ndarray:
     y = np.asarray(y, dtype=float)

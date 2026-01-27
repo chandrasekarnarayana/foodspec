@@ -21,9 +21,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.model_registry is deprecated and will be removed in v2.0.0. "
-    f"Use None (functionality removed) instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.model_registry is deprecated and will be removed in v2.0.0. "
+    "Use None (functionality removed) instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

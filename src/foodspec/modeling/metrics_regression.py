@@ -1,7 +1,7 @@
 """Regression and count metrics plus diagnostics."""
 from __future__ import annotations
 
-from typing import Dict, Any, Tuple
+from typing import Any, Dict, Tuple
 
 import numpy as np
 from sklearn import metrics

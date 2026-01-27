@@ -4,7 +4,7 @@ from __future__ import annotations
 import base64
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from foodspec.reporting.cards import build_experiment_card_from_bundle
 from foodspec.reporting.modes import ReportMode, get_mode_config, validate_artifacts

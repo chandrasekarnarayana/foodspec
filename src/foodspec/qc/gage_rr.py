@@ -1,7 +1,7 @@
 """Gage R&R (Repeatability & Reproducibility) Analysis."""
 from __future__ import annotations
 
-from typing import Optional, Dict, Tuple, Any
+from typing import Any, Dict, Optional
 
 import numpy as np
 from scipy import stats
@@ -151,7 +151,7 @@ class GageRR:
         # Use tolerance if provided, else 6*sigma_part
         if tolerance is None:
             tolerance = 6 * np.sqrt(max(var_part, 0))
-            
+
         if tolerance == 0:
             tolerance = 6 * np.std(measurements, ddof=1)
 

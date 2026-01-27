@@ -1,12 +1,10 @@
 """Partial Least Squares Regression (PLSR) with VIP scores."""
 from __future__ import annotations
 
-from typing import Optional, Tuple
+from typing import Optional
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_val_score
 
 __all__ = ["PLSRegression", "VIPCalculator"]
 

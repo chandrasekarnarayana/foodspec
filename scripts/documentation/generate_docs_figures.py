@@ -27,7 +27,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_predict
 
-
 ROOT = Path(__file__).resolve().parents[1]
 FIG_OUT = ROOT / "docs" / "assets" / "figures"
 FIG_OUT.mkdir(parents=True, exist_ok=True)

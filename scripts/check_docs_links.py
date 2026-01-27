@@ -2,9 +2,9 @@
 """Simple docs link checker for markdown files."""
 from __future__ import annotations
 
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 
 def collect_markdown_files(docs_root: Path) -> list[Path]:

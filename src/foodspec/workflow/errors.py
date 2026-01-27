@@ -7,10 +7,9 @@ from __future__ import annotations
 
 import json
 import traceback
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional
-
 
 # Exit code contract
 EXIT_SUCCESS = 0
@@ -31,22 +30,22 @@ class WorkflowError(Exception):
     All workflow errors are caught and serialized to error.json with
     exit code, message, hints, and traceback.
     """
-    
+
     message: str
     """Human-readable error message."""
-    
+
     exit_code: int = EXIT_SUCCESS
     """Exit code to return to shell."""
-    
+
     stage: str = "unknown"
     """Which workflow stage failed (e.g. 'validation', 'modeling')."""
-    
+
     hint: str = ""
     """Suggestion for how to fix the error."""
-    
+
     traceback_str: str = ""
     """Captured Python traceback."""
-    
+
     details: Dict[str, Any] = field(default_factory=dict)
     """Additional context (stage-specific)."""
 
@@ -68,7 +67,7 @@ class WorkflowError(Exception):
 
 class CLIError(WorkflowError):
     """Error in CLI argument parsing or validation."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_CLI_ERROR
@@ -76,7 +75,7 @@ class CLIError(WorkflowError):
 
 class ValidationError(WorkflowError):
     """Error in input data validation."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_VALIDATION_ERROR
@@ -84,7 +83,7 @@ class ValidationError(WorkflowError):
 
 class ProtocolError(WorkflowError):
     """Error in protocol loading or validation."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_PROTOCOL_ERROR
@@ -92,7 +91,7 @@ class ProtocolError(WorkflowError):
 
 class ModelingError(WorkflowError):
     """Error in model training or prediction."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_MODELING_ERROR
@@ -100,7 +99,7 @@ class ModelingError(WorkflowError):
 
 class TrustError(WorkflowError):
     """Error in trust stack (calibration, conformal, etc.)."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_TRUST_ERROR
@@ -108,7 +107,7 @@ class TrustError(WorkflowError):
 
 class QCError(WorkflowError):
     """Error in QC gate enforcement."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_QC_ERROR
@@ -116,7 +115,7 @@ class QCError(WorkflowError):
 
 class ReportingError(WorkflowError):
     """Error in report generation."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_REPORTING_ERROR
@@ -124,7 +123,7 @@ class ReportingError(WorkflowError):
 
 class ArtifactError(WorkflowError):
     """Error in artifact contract validation."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exit_code = EXIT_ARTIFACT_ERROR
@@ -166,18 +165,18 @@ def write_error_json(
         "hint": hint,
         "traceback": traceback.format_exc(),
     }
-    
+
     # If it's a WorkflowError, use its structure
     if isinstance(error, WorkflowError):
         error_dict.update(error.to_dict())
-    
+
     # Write to run_dir/error.json
     error_path = run_dir / "error.json"
     run_dir.mkdir(parents=True, exist_ok=True)
-    
+
     with error_path.open("w") as f:
         json.dump(error_dict, f, indent=2, default=str)
-    
+
     return error_path
 
 
@@ -199,7 +198,7 @@ def classify_error_type(exc: Exception) -> tuple[WorkflowError, int]:
     """
     if isinstance(exc, WorkflowError):
         return exc, exc.exit_code
-    
+
     if isinstance(exc, FileNotFoundError):
         err = ValidationError(
             message=f"File not found: {exc}",
@@ -207,7 +206,7 @@ def classify_error_type(exc: Exception) -> tuple[WorkflowError, int]:
             hint="Check file paths and ensure input files exist.",
         )
         return err, EXIT_VALIDATION_ERROR
-    
+
     if isinstance(exc, ValueError):
         err = ValidationError(
             message=f"Invalid value: {exc}",
@@ -215,7 +214,7 @@ def classify_error_type(exc: Exception) -> tuple[WorkflowError, int]:
             hint="Check input data types and ranges.",
         )
         return err, EXIT_VALIDATION_ERROR
-    
+
     if isinstance(exc, ImportError):
         err = ProtocolError(
             message=f"Import failed: {exc}",
@@ -223,7 +222,7 @@ def classify_error_type(exc: Exception) -> tuple[WorkflowError, int]:
             hint="Ensure all required packages are installed.",
         )
         return err, EXIT_PROTOCOL_ERROR
-    
+
     # Default to generic error
     err = WorkflowError(
         message=f"Unexpected error: {exc}",

@@ -4,10 +4,10 @@ Represents compound-peak relationships and metadata as a knowledge graph.
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple
+
 import json
-import numpy as np
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -55,14 +55,14 @@ class SpectralKnowledgeGraph:
     >>> # Query
     >>> compounds = kg.query_by_peak(1080, tolerance=5)
     """
-    
+
     def __init__(self, name: str = 'SpectralKG'):
         self.name = name
         self.compounds: Dict[str, Dict] = {}
         self.peaks: Dict[float, List[CompoundPeakLink]] = {}
         self.metadata: Dict[str, MetadataOntology] = {}
         self.links: List[CompoundPeakLink] = []
-    
+
     def add_compound(
         self,
         compound_id: str,
@@ -76,15 +76,15 @@ class SpectralKnowledgeGraph:
             'formula': formula,
             'peaks': peaks or [],
         }
-    
+
     def add_link(self, link: CompoundPeakLink):
         """Add a compound-peak link."""
         self.links.append(link)
-        
+
         if link.peak_wavelength not in self.peaks:
             self.peaks[link.peak_wavelength] = []
         self.peaks[link.peak_wavelength].append(link)
-    
+
     def query_by_peak(
         self,
         wavelength: float,
@@ -96,11 +96,11 @@ class SpectralKnowledgeGraph:
             if abs(peak_wl - wavelength) <= tolerance:
                 results.extend(links)
         return results
-    
+
     def query_by_compound(self, compound_id: str) -> List[CompoundPeakLink]:
         """Query peaks for a compound."""
         return [link for link in self.links if link.compound_id == compound_id]
-    
+
     def to_rdf(self) -> str:
         """Export to RDF/Turtle format (simplified)."""
         rdf_lines = [
@@ -108,12 +108,12 @@ class SpectralKnowledgeGraph:
             "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
             ""
         ]
-        
+
         # Compounds
         for cid, info in self.compounds.items():
             rdf_lines.append(f"fs:{cid} rdf:type fs:Compound ;")
             rdf_lines.append(f'    fs:name "{info["name"]}" .')
-        
+
         # Links
         for link in self.links:
             rdf_lines.append(f"fs:{link.compound_id} fs:hasPeak [")
@@ -121,9 +121,9 @@ class SpectralKnowledgeGraph:
             if link.assignment:
                 rdf_lines.append(f'    fs:assignment "{link.assignment}" ;')
             rdf_lines.append(f"    fs:confidence {link.confidence} ] .")
-        
+
         return "\n".join(rdf_lines)
-    
+
     def to_json(self) -> str:
         """Export to JSON."""
         data = {
@@ -142,16 +142,16 @@ class SpectralKnowledgeGraph:
             ],
         }
         return json.dumps(data, indent=2)
-    
+
     @classmethod
     def from_json(cls, json_str: str) -> SpectralKnowledgeGraph:
         """Load from JSON."""
         data = json.loads(json_str)
         kg = cls(name=data['name'])
-        
+
         for cid, info in data['compounds'].items():
             kg.add_compound(cid, name=info.get('name'), formula=info.get('formula'))
-        
+
         for link_data in data['links']:
             link = CompoundPeakLink(
                 compound_id=link_data['compound'],
@@ -162,5 +162,5 @@ class SpectralKnowledgeGraph:
                 references=link_data.get('references', []),
             )
             kg.add_link(link)
-        
+
         return kg

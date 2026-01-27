@@ -1,7 +1,7 @@
 """Multi-lab validation helpers."""
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, Iterator, Optional, Tuple
+from typing import Any, Dict, Iterator, Optional, Tuple
 
 import numpy as np
 

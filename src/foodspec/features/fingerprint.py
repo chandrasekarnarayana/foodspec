@@ -1,7 +1,6 @@
 """Spectral similarity utilities."""
 from __future__ import annotations
 
-
 import numpy as np
 
 __all__ = ["cosine_similarity_matrix", "correlation_similarity_matrix"]

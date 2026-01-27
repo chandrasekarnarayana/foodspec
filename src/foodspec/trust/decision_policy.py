@@ -17,17 +17,15 @@ Key concepts:
 from __future__ import annotations
 
 import json
-import warnings
 import logging
-from dataclasses import dataclass, field, asdict
+import warnings
+from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Tuple
-from datetime import datetime
 
 import numpy as np
-from scipy.optimize import brentq, minimize_scalar
-from scipy import stats
 
 # Configure audit logging
 audit_logger = logging.getLogger("foodspec.policy_audit")

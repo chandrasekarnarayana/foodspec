@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Deprecated shim for protocol engine.
 

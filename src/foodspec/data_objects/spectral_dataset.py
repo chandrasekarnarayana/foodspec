@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 SpectralDataset: vendor-neutral representation and preprocessing for Raman/FTIR.
 

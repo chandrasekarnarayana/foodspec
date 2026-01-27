@@ -1,12 +1,17 @@
 """Registry for regression / count models (NCSS-inspired)."""
 from __future__ import annotations
 
-from typing import Callable, Dict, Any
+from typing import Any, Callable, Dict
 
-from sklearn.linear_model import LinearRegression, Ridge, HuberRegressor, PoissonRegressor
-from sklearn.linear_model import TweedieRegressor
-from sklearn.linear_model import RANSACRegressor
 from sklearn.decomposition import PCA
+from sklearn.linear_model import (
+    HuberRegressor,
+    LinearRegression,
+    PoissonRegressor,
+    RANSACRegressor,
+    Ridge,
+    TweedieRegressor,
+)
 from sklearn.pipeline import Pipeline
 
 

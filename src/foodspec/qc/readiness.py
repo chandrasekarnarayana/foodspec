@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Dataset readiness score for ML deployment gatekeeping.
 
@@ -39,12 +40,12 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.core.summary import (
     compute_metadata_completeness,
     compute_samples_per_class,
     compute_spectral_quality_metrics,
 )
+from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.qc.dataset_qc import check_class_balance
 from foodspec.qc.leakage import detect_batch_label_correlation
 from foodspec.qc.replicates import compute_replicate_consistency

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 """Standardized figure saving utilities with metadata sidecars."""
 
-import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping

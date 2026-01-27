@@ -13,7 +13,7 @@ from foodspec.trust.abstention import apply_abstention_rules
 from foodspec.trust.calibration import IsotonicCalibrator, PlattCalibrator
 from foodspec.trust.conformal import MondrianConformalClassifier
 from foodspec.trust.coverage import coverage_by_group
-from foodspec.trust.metrics import compute_calibration_metrics, bootstrap_coverage_efficiency
+from foodspec.trust.metrics import bootstrap_coverage_efficiency, compute_calibration_metrics
 from foodspec.trust.readiness import evaluate_run_readiness, load_trust_payload
 from foodspec.trust.schema import AbstentionArtifact, CalibrationArtifact, ConformalArtifact, ReadinessArtifact
 from foodspec.utils.run_artifacts import (

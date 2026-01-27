@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Preprocessing pipeline for RQ analysis.
 
@@ -26,9 +27,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.preprocessing_pipeline is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.preprocess.PreprocessingEngine instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.preprocessing_pipeline is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.preprocess.PreprocessingEngine instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Canonical registry module for foodspec.core.
 
@@ -14,19 +15,19 @@ except ImportError:
     # If not available, provide a default implementation
     class ComponentRegistry:
         """Registry for component discovery and instantiation."""
-        
+
         _registry = {}
-        
+
         @classmethod
         def register(cls, name: str, component_class):
             """Register a component."""
             cls._registry[name] = component_class
-        
+
         @classmethod
         def get(cls, name: str):
             """Get a registered component."""
             return cls._registry.get(name)
-        
+
         @classmethod
         def list_components(cls):
             """List all registered components."""

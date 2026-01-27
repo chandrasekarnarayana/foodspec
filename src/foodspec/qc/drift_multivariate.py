@@ -1,7 +1,7 @@
 """Multivariate Drift Detection: MMD, Wasserstein, and Advanced Methods."""
 from __future__ import annotations
 
-from typing import Optional, Tuple, Dict, Any
+from typing import Any, Dict, Optional
 
 import numpy as np
 from scipy import stats

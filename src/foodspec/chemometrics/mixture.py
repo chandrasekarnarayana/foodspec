@@ -1,7 +1,6 @@
 """Mixture analysis utilities (NNLS and simplified MCR-ALS)."""
 from __future__ import annotations
 
-
 from typing import Optional, Tuple
 
 import numpy as np

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """CSV import utilities.
 
 Converts public spectral datasets into `FoodSpectrumSet` instances.

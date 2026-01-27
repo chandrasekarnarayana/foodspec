@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Deprecated shim for Ratio-Quality (RQ) engine.
 
@@ -25,9 +26,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.rq is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.features.rq instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.rq is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.features.rq instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

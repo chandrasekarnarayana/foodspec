@@ -5,8 +5,8 @@ reports/cards from a run directory without reimplementing CLI logic.
 """
 from __future__ import annotations
 
-from pathlib import Path
 import shutil
+from pathlib import Path
 from typing import Dict
 
 from foodspec.reporting import ReportBuilder, ReportContext, build_experiment_card

@@ -2,11 +2,10 @@ from __future__ import annotations
 
 """Regulatory readiness scoring."""
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Mapping, Optional
-
-import json
 
 
 @dataclass

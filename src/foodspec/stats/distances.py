@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Spectral distance and similarity metrics.
 
 Implements Euclidean, cosine, Pearson, SID (spectral information divergence),

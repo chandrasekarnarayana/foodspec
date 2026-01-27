@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Core IO utilities.
 
@@ -13,8 +14,8 @@ from typing import Any
 
 from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.io import csv_import
-from foodspec.io.validators import validate_spectrum_schema
 from foodspec.io.text_formats import read_csv_folder, read_jcamp
+from foodspec.io.validators import validate_spectrum_schema
 from foodspec.io.vendor_formats import read_opus, read_spc
 
 

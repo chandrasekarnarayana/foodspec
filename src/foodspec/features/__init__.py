@@ -5,11 +5,12 @@ from foodspec.features.alignment import (
 )
 from foodspec.features.bands import extract_band_features, integrate_bands
 from foodspec.features.confidence import add_confidence, decision_from_confidence
+from foodspec.features.embeddings import pca_embeddings, pls_embeddings
 from foodspec.features.fingerprint import (
     correlation_similarity_matrix,
     cosine_similarity_matrix,
 )
-from foodspec.features.unmixing import NNLSUnmixer, unmix_spectrum
+from foodspec.features.hybrid import combine_feature_tables, extract_features, scale_features
 from foodspec.features.interpretation import (
     DEFAULT_CHEMICAL_LIBRARY,
     ChemicalMeaning,
@@ -18,6 +19,7 @@ from foodspec.features.interpretation import (
     find_chemical_meanings,
 )
 from foodspec.features.library import LibraryIndex, similarity_search
+from foodspec.features.marker_panel import build_marker_panel, export_marker_panel
 from foodspec.features.metrics import (
     discriminative_power,
     feature_cv,
@@ -27,10 +29,6 @@ from foodspec.features.metrics import (
 from foodspec.features.peak_stats import compute_peak_stats, compute_ratio_table
 from foodspec.features.peaks import PeakFeatureExtractor, detect_peaks, extract_peak_features
 from foodspec.features.ratios import RatioFeatureGenerator, compute_ratios
-from foodspec.features.embeddings import pca_embeddings, pls_embeddings
-from foodspec.features.hybrid import combine_feature_tables, extract_features, scale_features
-from foodspec.features.marker_panel import build_marker_panel, export_marker_panel
-from foodspec.features.schema import BandSpec, FeatureConfig, FeatureInfo, PeakSpec, RatioSpec
 from foodspec.features.rq import (
     PeakDefinition,
     RatioDefinition,
@@ -38,8 +36,10 @@ from foodspec.features.rq import (
     RatioQualityResult,
     RQConfig,
 )
+from foodspec.features.schema import BandSpec, FeatureConfig, FeatureInfo, PeakSpec, RatioSpec
 from foodspec.features.selection import compute_minimal_panel, feature_importance_scores, stability_selection
 from foodspec.features.specs import FeatureEngine, FeatureSpec
+from foodspec.features.unmixing import NNLSUnmixer, unmix_spectrum
 
 __all__ = [
     # alignment & unmixing

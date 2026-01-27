@@ -10,26 +10,6 @@ from foodspec.engine.preprocessing.engine import (
     SmoothingStep,
     Step,
 )
-from foodspec.preprocess.recipes import PreprocessingRecipe
-
-# New enhanced preprocessing modules
-from foodspec.preprocess.data import SpectraData, load_csv, validate_modality
-from foodspec.preprocess.spectroscopy_operators import (
-    AtmosphericCorrectionOperator,
-    DespikeOperator,
-    EMSCOperator,
-    FluorescenceRemovalOperator,
-    InterpolationOperator,
-    MSCOperator,
-)
-from foodspec.preprocess.smoothing import WaveletDenoiser
-from foodspec.preprocess.loaders import (
-    build_pipeline_from_recipe,
-    list_operators,
-    load_preset_yaml,
-    load_recipe,
-    merge_recipe,
-)
 from foodspec.preprocess.cache import (
     PreprocessCache,
     PreprocessManifest,
@@ -37,11 +17,31 @@ from foodspec.preprocess.cache import (
     compute_data_hash,
     compute_recipe_hash,
 )
+
+# New enhanced preprocessing modules
+from foodspec.preprocess.data import SpectraData, load_csv, validate_modality
+from foodspec.preprocess.loaders import (
+    build_pipeline_from_recipe,
+    list_operators,
+    load_preset_yaml,
+    load_recipe,
+    merge_recipe,
+)
 from foodspec.preprocess.qc import (
     generate_qc_report,
     plot_baseline_overlay,
     plot_outlier_summary,
     plot_raw_vs_processed,
+)
+from foodspec.preprocess.recipes import PreprocessingRecipe
+from foodspec.preprocess.smoothing import WaveletDenoiser
+from foodspec.preprocess.spectroscopy_operators import (
+    AtmosphericCorrectionOperator,
+    DespikeOperator,
+    EMSCOperator,
+    FluorescenceRemovalOperator,
+    InterpolationOperator,
+    MSCOperator,
 )
 
 __all__ = [

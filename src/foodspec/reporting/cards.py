@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 FoodSpec Experiment Cards system.
 
@@ -18,7 +19,6 @@ Build and export an experiment card::
 
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -279,7 +279,7 @@ def _extract_metrics(context: ReportContext) -> Dict[str, float]:
             metrics["abstain_rate"] = metrics["abstain_rate"] or _get_float(
                 abstention, ["abstain_rate", "abstention_rate"]
             )
-        
+
         # Extract drift score
         drift = trust.get("drift") if isinstance(trust, dict) else {}
         if isinstance(drift, dict):
@@ -292,7 +292,7 @@ def _extract_metrics(context: ReportContext) -> Dict[str, float]:
                 temporal_drift = drift.get("temporal_drift", {})
                 if isinstance(temporal_drift, dict):
                     metrics["drift_score"] = _get_float(temporal_drift, ["mean_drift", "avg_drift", "drift_score"])
-        
+
         # Extract QC pass rate
         qc_summary = trust.get("qc_summary") if isinstance(trust, dict) else {}
         if isinstance(qc_summary, dict):

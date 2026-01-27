@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 FoodSpec v2 Definition of Done:
 - Deterministic outputs: seed is explicit; CV splits reproducible.

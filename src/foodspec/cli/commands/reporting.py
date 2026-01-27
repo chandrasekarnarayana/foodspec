@@ -1,10 +1,9 @@
 """Reporting CLI commands for FoodSpec."""
 from __future__ import annotations
 
-from dataclasses import asdict
-import json
 import shutil
 import sys
+from dataclasses import asdict
 from pathlib import Path
 from typing import List, Optional
 

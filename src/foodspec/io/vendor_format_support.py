@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Vendor format support matrix and comprehensive block type testing.
 

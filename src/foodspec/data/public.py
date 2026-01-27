@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Public dataset loaders for foodspec.
 
 These functions expect users to manually download open datasets to a known

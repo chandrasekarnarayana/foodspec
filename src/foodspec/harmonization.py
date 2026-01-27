@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Advanced harmonization utilities:
 - Instrument-specific calibration curves for wavenumber drift correction.
@@ -26,9 +27,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.harmonization is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.core.harmonize_datasets instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.harmonization is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.core.harmonize_datasets instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

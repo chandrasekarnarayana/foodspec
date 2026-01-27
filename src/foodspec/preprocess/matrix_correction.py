@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Matrix correction for food spectroscopy: background subtraction, robust scaling, domain adaptation.
 

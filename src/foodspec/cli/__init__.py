@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Command-line interface for foodspec.
 
 This module provides the main CLI entry point.

@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import logging
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
@@ -20,38 +19,33 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from foodspec.protocol.config import ProtocolConfig
 from foodspec.modeling.api import fit_predict
-from foodspec.features.hybrid import extract_features
-from foodspec.features.schema import parse_feature_config
 
-from .config import WorkflowConfig
-from .fingerprint import Manifest, compute_dataset_fingerprint
-from .errors import (
-    WorkflowError,
-    ValidationError,
-    ProtocolError,
-    ModelingError,
-    TrustError,
-    ArtifactError,
-    write_error_json,
-    classify_error_type,
-    EXIT_SUCCESS,
-)
 from .artifact_contract import (
     ArtifactContract,
     write_success_json,
 )
+from .config import WorkflowConfig
+from .errors import (
+    EXIT_SUCCESS,
+    ArtifactError,
+    ModelingError,
+    ProtocolError,
+    ValidationError,
+    WorkflowError,
+    classify_error_type,
+    write_error_json,
+)
+from .fingerprint import Manifest, compute_dataset_fingerprint
 from .qc_gates import (
     DataIntegrityGate,
-    SpectralQualityGate,
-    ModelReliabilityGate,
     GateResult,
+    SpectralQualityGate,
 )
 from .regulatory import (
     enforce_model_approved,
-    enforce_trust_stack,
     enforce_reporting,
+    enforce_trust_stack,
 )
 
 logger = logging.getLogger(__name__)
@@ -264,10 +258,10 @@ def _run_qc_gates(
         (all_gates_passed, {gate_name: GateResult})
     """
     logger.info(f"QC gates: running (enforce={enforce})...")
-    
+
     gate_results = {}
     all_passed = True
-    
+
     # Data integrity gate
     di_gate = DataIntegrityGate()
     di_result = di_gate.run(df, label_col=label_col)
@@ -275,34 +269,34 @@ def _run_qc_gates(
     logger.info(f"  Data Integrity: {di_result.status}")
     if di_result.status == "fail":
         all_passed = False
-    
+
     # Spectral quality gate
     spectral_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     if label_col and label_col in spectral_cols:
         spectral_cols.remove(label_col)
-    
+
     sq_gate = SpectralQualityGate()
     sq_result = sq_gate.run(df, spectral_cols=spectral_cols if spectral_cols else None)
     gate_results["spectral_quality"] = sq_result
     logger.info(f"  Spectral Quality: {sq_result.status}")
     if sq_result.status == "fail":
         all_passed = False
-    
+
     # Log gate details
     for gate_name, gate_result in gate_results.items():
         logger.debug(f"    {gate_name}: {gate_result.message}")
         for metric_name, metric_val in gate_result.metrics.items():
             logger.debug(f"      {metric_name}: {metric_val}")
-    
+
     # Decide action
     if not all_passed:
         if enforce:
-            logger.error(f"QC gates failed with enforce=True")
+            logger.error("QC gates failed with enforce=True")
         else:
-            logger.warning(f"QC gates failed but enforce=False (advisory only)")
+            logger.warning("QC gates failed but enforce=False (advisory only)")
     else:
         logger.info("✅ All QC gates passed")
-    
+
     return all_passed, gate_results
 
 
@@ -431,7 +425,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
                 logger_ref.info(f"Inferred label column: {label_col}")
             else:
                 label_col = None
-        
+
         # Run QC gates
         qc_results = {}
         if cfg.enforce_qc:
@@ -440,7 +434,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
                 enforce=True,
                 label_col=label_col,
             )
-            
+
             # Fail on gate failure when explicitly requested
             if not qc_passed:
                 failed_gates = [name for name, res in qc_results.items() if res.status == "fail"]
@@ -449,7 +443,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
                     stage="qc_gates",
                     hint="Review QC metrics in artifacts/qc_results.json and adjust data or thresholds.",
                 )
-        
+
         # ==== Phase 2: Regulatory Enforcement ====
         if cfg.mode == "regulatory":
             # Check model approval
@@ -462,7 +456,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
                     stage="regulatory_enforcement",
                     hint=approval_msg,
                 )
-            
+
             # Check trust stack requirement (only if explicitly requested via CLI flag)
             if cfg.enable_trust:
                 trust_ok, trust_msg = enforce_trust_stack(cfg.enable_trust, cfg.mode)
@@ -473,7 +467,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
                         stage="regulatory_enforcement",
                         hint="Enable trust stack with --enable-trust",
                     )
-            
+
             # Check reporting requirement (only if explicitly requested via CLI flag)
             if cfg.enable_reporting:
                 report_ok, report_msg = enforce_reporting(cfg.enable_reporting, cfg.mode)
@@ -547,7 +541,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
         manifest_path = run_dir / "manifest.json"
         manifest.save(manifest_path)
         logger_ref.info(f"Manifest saved: {manifest_path}")
-        
+
         # Save QC results to artifacts
         if qc_results:
             qc_file = run_dir / "artifacts" / "qc_results.json"

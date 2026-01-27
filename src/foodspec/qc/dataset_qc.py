@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Class balance diagnostics for preventing silent bias in food spectroscopy ML.
 

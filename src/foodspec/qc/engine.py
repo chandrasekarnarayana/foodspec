@@ -1,14 +1,13 @@
 """QC system: health scoring, outlier detection, drift monitoring."""
 from __future__ import annotations
 
-
 import math
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from sklearn.covariance import EmpiricalCovariance, EllipticEnvelope, MinCovDet
+from sklearn.covariance import EllipticEnvelope, EmpiricalCovariance, MinCovDet
 from sklearn.decomposition import PCA
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor

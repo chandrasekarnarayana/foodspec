@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Cosmic ray (spike) detection and correction as a standalone step.
 

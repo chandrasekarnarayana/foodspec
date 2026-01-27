@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Command-line interface for foodspec.
 
 This module assembles CLI commands organized into logical groups:
@@ -21,33 +22,44 @@ import typer
 
 matplotlib.use("Agg")
 
+import glob
+import json
+
+import pandas as pd
+
 from foodspec.cli.commands.analysis import analysis_app
 from foodspec.cli.commands.data import data_app
 from foodspec.cli.commands.evaluate import evaluate_command
 from foodspec.cli.commands.mindmap import (
     features_app as mindmap_features_app,
+)
+from foodspec.cli.commands.mindmap import (
     io_app as mindmap_io_app,
+)
+from foodspec.cli.commands.mindmap import (
     model_app as mindmap_model_app,
+)
+from foodspec.cli.commands.mindmap import (
     preprocess_app as mindmap_preprocess_app,
+)
+from foodspec.cli.commands.mindmap import (
     qc_app as mindmap_qc_app,
+)
+from foodspec.cli.commands.mindmap import (
     train_app as mindmap_train_app,
 )
 from foodspec.cli.commands.modeling import modeling_app
 from foodspec.cli.commands.reporting import report_app
+from foodspec.cli.commands.run_e2e import run_e2e_app
 from foodspec.cli.commands.trust import trust_app
 from foodspec.cli.commands.utils import utils_app
 from foodspec.cli.commands.viz import viz_app
 from foodspec.cli.commands.workflow import workflow_app
-from foodspec.cli.commands.run_e2e import run_e2e_app
 from foodspec.core.errors import FoodSpecQCError, FoodSpecValidationError
 from foodspec.data_objects.spectral_dataset import HyperspectralDataset, SpectralDataset
 from foodspec.experiment import Experiment, RunMode, ValidationScheme
-from foodspec.protocol import ProtocolRunner, load_protocol, validate_protocol
-import glob
-import json
-import pandas as pd
-
 from foodspec.modeling.validation.quality import validate_dataset
+from foodspec.protocol import ProtocolRunner, load_protocol, validate_protocol
 from foodspec.qc.dataset_qc import check_class_balance
 from foodspec.qc.policy import QCPolicy
 from foodspec.utils.run_artifacts import (
@@ -250,17 +262,17 @@ def run_protocol(
                 scheme=scheme or ValidationScheme.LOBO.value,
                 model=model,
             )
-            
+
             # Collect single input
             inputs_list: List[Path] = []
             if input:
                 inputs_list.extend([Path(p) for p in input])
             if input_dir:
                 inputs_list.extend([Path(p) for p in glob.glob(str(Path(input_dir) / glob_pattern))])
-            
+
             if not inputs_list:
                 raise typer.BadParameter("No inputs provided. Use --input or --input-dir.")
-            
+
             # Run on first input (YOLO mode: single input per run)
             csv_path = inputs_list[0]
             result = exp.run(
@@ -269,9 +281,9 @@ def run_protocol(
                 seed=seed,
                 verbose=verbose,
             )
-            
+
             if not quiet:
-                typer.echo(f"=== FoodSpec E2E Orchestration ===")
+                typer.echo("=== FoodSpec E2E Orchestration ===")
                 typer.echo(f"Status: {result.status}")
                 typer.echo(f"Run ID: {result.run_id}")
                 if result.manifest_path:
@@ -282,13 +294,13 @@ def run_protocol(
                     typer.echo(f"Summary: {result.summary_path}")
                 if result.error:
                     typer.echo(f"Error: {result.error}", err=True)
-            
+
             raise typer.Exit(code=result.exit_code)
-        
+
         except Exception as e:
             typer.echo(f"YOLO mode failed: {str(e)}", err=True)
             raise typer.Exit(code=3)
-    
+
     # --- Classic mode: backward compatible ---
     # --- Classic mode: backward compatible ---
     # Collect inputs
@@ -330,7 +342,7 @@ def run_protocol(
 
     # Print quick summary
     if not quiet:
-        typer.echo(f"=== FoodSpec Protocol Runner ===")
+        typer.echo("=== FoodSpec Protocol Runner ===")
         typer.echo(f"Protocol: {cfg.name} (v{cfg.version})")
         typer.echo(f"Inputs: {len(inputs)} file(s)")
     if dry_run:
@@ -465,12 +477,12 @@ def run_protocol(
                 typer.echo(f"Run complete -> {target}")
                 if report_html.exists():
                     typer.echo(f"Report: {report_html}")
-            
+
             # Auto-generate comprehensive report if enabled
             if report:
                 try:
                     from foodspec.reporting.api import build_report_from_run
-                    
+
                     report_artifacts = build_report_from_run(
                         target,
                         out_dir=target,
@@ -478,15 +490,15 @@ def run_protocol(
                         pdf=False,
                         title=f"{cfg.name} Report",
                     )
-                    
+
                     if not quiet:
-                        typer.echo(f"Comprehensive report generated:")
+                        typer.echo("Comprehensive report generated:")
                         for artifact_name, artifact_path in report_artifacts.items():
                             typer.echo(f"  - {artifact_name}: {artifact_path}")
                 except Exception as e:
                     if verbose and not quiet:
                         typer.echo(f"[WARN] Report generation failed: {e}")
-            
+
             # Optional auto-publish (markdown bundle)
             if auto:
                 try:
@@ -524,7 +536,7 @@ def run_protocol(
         raise typer.Exit(code=4)
     if had_validation_errors:
         raise typer.Exit(code=2)
-    
+
 
 def main():
     app()

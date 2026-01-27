@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Backward-compatibility shim for `python -m foodspec.cli_plugin`.
 
 Delegates to the canonical argparse CLI in `foodspec.cli.plugin`.
@@ -25,9 +26,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.cli_plugin is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.cli instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.cli_plugin is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.cli instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

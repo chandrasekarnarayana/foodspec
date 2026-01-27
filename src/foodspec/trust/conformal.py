@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Mondrian conformal prediction for multiclass classification with bin conditioning.
 
@@ -15,7 +16,7 @@ Key References:
 
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -40,11 +41,11 @@ def _mondrian_quantile(scores: np.ndarray, target_coverage: float) -> float:
     n = len(scores)
     if n == 0:
         raise ValueError("scores cannot be empty")
-    
+
     # Quantile level: ensures coverage guarantee
     quantile_level = min(1.0, np.ceil((n + 1) * target_coverage) / n)
     threshold = float(np.quantile(scores, quantile_level, method='lower'))
-    
+
     return threshold
 
 
@@ -76,7 +77,7 @@ class ConformalPredictionResult:
     coverage: Optional[float] = None
     per_bin_coverage: Optional[Dict[str, float]] = None
     per_bin_set_size: Optional[Dict[str, float]] = None
-    
+
     def to_dataframe(
         self,
         y_true: Optional[np.ndarray] = None,
@@ -102,15 +103,15 @@ class ConformalPredictionResult:
             'threshold': self.sample_thresholds,
             'set_members': [str(s) for s in self.prediction_sets],
         }
-        
+
         if y_true is not None:
             y_true = np.asarray(y_true)
             data['covered'] = [int(y_true[i] in self.prediction_sets[i]) for i in range(n)]
-        
+
         if bin_values is not None:
             bin_values = np.asarray(bin_values)
             data['bin'] = bin_values
-        
+
         return pd.DataFrame(data)
 
 
@@ -167,7 +168,7 @@ class MondrianConformalClassifier:
     >>> result_cond = cp_cond.predict_sets(proba_test, meta_test=meta_test)
     >>> print(result_cond.per_bin_coverage)
     """
-    
+
     def __init__(
         self,
         alpha: float = 0.1,
@@ -179,15 +180,15 @@ class MondrianConformalClassifier:
             raise ValueError(f"alpha must be in (0, 1), got {alpha}")
         if min_bin_size < 1:
             raise ValueError(f"min_bin_size must be ≥ 1, got {min_bin_size}")
-        
+
         self.alpha = alpha
         self.condition_key = condition_key
         self.min_bin_size = min_bin_size
-        
+
         self._thresholds: Dict[str, float] = {}
         self._fitted = False
         self._n_classes: Optional[int] = None
-    
+
     def fit(
         self,
         y_true: np.ndarray,
@@ -227,51 +228,51 @@ class MondrianConformalClassifier:
         """
         y_true = np.asarray(y_true)
         proba = np.asarray(proba, dtype=float)
-        
+
         if y_true.ndim != 1:
             raise ValueError("y_true must be 1D")
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
         if y_true.shape[0] != proba.shape[0]:
             raise ValueError("y_true and proba must have same number of samples")
-        
+
         self._n_classes = proba.shape[1]
         y_int = y_true.astype(int)
-        
+
         if (y_int < 0).any() or (y_int >= self._n_classes).any():
             raise ValueError(f"y_true labels out of range [0, {self._n_classes - 1}]")
-        
+
         # Nonconformity score: 1 - p_true
         scores = 1.0 - proba[np.arange(proba.shape[0]), y_int]
-        
+
         # Global threshold
         threshold_global = _mondrian_quantile(scores, 1.0 - self.alpha)
         self._thresholds["__global__"] = threshold_global
         self._thresholds["global"] = threshold_global
-        
+
         # Per-bin thresholds if conditioning enabled
         if self.condition_key is not None and meta_cal is not None:
             meta_cal = np.asarray(meta_cal)
             if meta_cal.shape[0] != proba.shape[0]:
                 raise ValueError("meta_cal length must match calibration data")
-            
+
             bin_keys = [_to_bin_key(m) for m in meta_cal]
             unique_bins = np.unique(bin_keys)
-            
+
             for bin_key in unique_bins:
                 mask = np.array(bin_keys) == bin_key
                 bin_scores = scores[mask]
-                
+
                 # Only compute separate threshold if bin is large enough
                 if len(bin_scores) >= self.min_bin_size:
                     self._thresholds[bin_key] = _mondrian_quantile(
                         bin_scores, 1.0 - self.alpha
                     )
                 # else: use global threshold (fallback)
-        
+
         self._fitted = True
         return self
-    
+
     def predict_sets(
         self,
         proba: np.ndarray,
@@ -306,7 +307,7 @@ class MondrianConformalClassifier:
         """
         if not self._fitted:
             raise RuntimeError("Classifier not fitted; call fit() first")
-        
+
         proba = np.asarray(proba, dtype=float)
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
@@ -314,9 +315,9 @@ class MondrianConformalClassifier:
             raise ValueError(
                 f"proba has {proba.shape[1]} classes, expected {self._n_classes}"
             )
-        
+
         n_samples = proba.shape[0]
-        
+
         # Determine thresholds for each sample
         if meta_test is not None:
             meta_test = np.asarray(meta_test)
@@ -325,11 +326,11 @@ class MondrianConformalClassifier:
             bin_keys = [_to_bin_key(m) for m in meta_test]
         else:
             bin_keys = ["__global__"] * n_samples
-        
+
         # Build prediction sets
         thresholds: List[float] = []
         prediction_sets: List[List[int]] = []
-        
+
         for i in range(n_samples):
             bin_key = bin_keys[i]
             # Lookup threshold: try bin-specific first, fallback to global
@@ -337,12 +338,12 @@ class MondrianConformalClassifier:
                 bin_key,
                 self._thresholds.get("__global__")
             )
-            
+
             if threshold is None:
                 raise RuntimeError("No threshold available for prediction")
-            
+
             thresholds.append(float(threshold))
-            
+
             # Prediction set: all classes with p ≥ 1 - threshold
             # Numerically robust check: p ≥ 1 - t is equivalent to p - (1 - t) ≥ 0
             keep = [
@@ -350,30 +351,30 @@ class MondrianConformalClassifier:
                 for c in range(self._n_classes)
                 if proba[i, c] >= 1.0 - threshold - 1e-12
             ]
-            
+
             # Fallback: include top-1 class if set empty
             if not keep:
                 keep = [int(np.argmax(proba[i]))]
-            
+
             prediction_sets.append(keep)
-        
+
         # Compute coverage metrics if labels provided
         coverage: Optional[float] = None
         per_bin_coverage: Dict[str, float] = {}
         per_bin_set_size: Dict[str, float] = {}
-        
+
         if y_true is not None:
             y_true = np.asarray(y_true)
             if y_true.shape[0] != n_samples:
                 raise ValueError("y_true length must match predictions")
-            
+
             # Marginal coverage
             covered = np.array([
                 int(y_true[i] in prediction_sets[i])
                 for i in range(n_samples)
             ], dtype=float)
             coverage = float(np.mean(covered))
-            
+
             # Per-bin coverage and set size
             unique_bins = np.unique(bin_keys)
             for bin_key in unique_bins:
@@ -385,7 +386,7 @@ class MondrianConformalClassifier:
                     ])
                     per_bin_coverage[bin_key] = float(np.mean(bin_covered))
                     per_bin_set_size[bin_key] = float(np.mean(bin_sizes))
-        
+
         return ConformalPredictionResult(
             prediction_sets=prediction_sets,
             set_sizes=[len(s) for s in prediction_sets],
@@ -395,7 +396,7 @@ class MondrianConformalClassifier:
             per_bin_coverage=per_bin_coverage if per_bin_coverage else None,
             per_bin_set_size=per_bin_set_size if per_bin_set_size else None,
         )
-    
+
     def coverage_report(
         self,
         y_true: np.ndarray,
@@ -426,10 +427,10 @@ class MondrianConformalClassifier:
             - threshold (float): threshold used
         """
         result = self.predict_sets(proba, meta_test=meta_test, y_true=y_true)
-        
+
         if result.coverage is None:
             raise ValueError("No coverage computed (y_true not provided)")
-        
+
         # Global row
         rows = [{
             'bin': '__global__',
@@ -439,14 +440,14 @@ class MondrianConformalClassifier:
             'avg_set_size': float(np.mean(result.set_sizes)),
             'threshold': self._thresholds.get('__global__', self._thresholds.get('global')),
         }]
-        
+
         # Per-bin rows if available
         if result.per_bin_coverage:
             if meta_test is not None:
                 meta_test = np.asarray(meta_test)
                 bin_keys = [_to_bin_key(m) for m in meta_test]
                 unique_bins = np.unique(bin_keys)
-                
+
                 for bin_key in unique_bins:
                     if bin_key == "__global__":
                         continue
@@ -459,7 +460,7 @@ class MondrianConformalClassifier:
                         'avg_set_size': result.per_bin_set_size.get(bin_key, np.nan),
                         'threshold': self._thresholds.get(bin_key, self._thresholds.get('__global__')),
                     })
-        
+
         return pd.DataFrame(rows)
 
 

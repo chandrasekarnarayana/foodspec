@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Simple loaders/savers for vendor-neutral spectra.
 Includes stubs for vendor formats (OPUS, WiRE, ENVI) that can be upgraded later.
@@ -24,9 +25,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.spectral_io is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.io instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.spectral_io is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.io instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

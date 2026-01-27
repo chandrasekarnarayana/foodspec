@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Data ingestion and standardization registry for FoodSpec (Phase 2).
 
 Provides registry-driven loaders, I/O quality metrics, and validation checks:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Optional deep learning models for spectral classification.
 
 Provides a minimal 1D CNN classifier with a scikit-learn-like API. This module

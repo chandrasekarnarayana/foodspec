@@ -16,13 +16,12 @@ Date: January 25, 2026
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import List, Dict, Optional
-import shutil
-
+from typing import List, Optional
 
 # ANSI colors
 GREEN = "\033[92m"

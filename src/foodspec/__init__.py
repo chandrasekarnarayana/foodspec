@@ -93,10 +93,13 @@ from .calibration_transfer import (
     piecewise_direct_standardization,
 )
 from .core.api import FoodSpec
-from .data_objects.spectra_set import FoodSpectrumSet
 from .core.hyperspectral import HyperSpectralCube
 from .core.output_bundle import OutputBundle
 from .core.run_record import RunRecord
+
+# Data governance and dataset intelligence
+from .core.summary import summarize_dataset
+from .data_objects.spectra_set import FoodSpectrumSet
 from .data_objects.spectral_dataset import (
     HDF5_SCHEMA_VERSION,
     HyperspectralDataset,
@@ -108,9 +111,6 @@ from .data_objects.spectral_dataset import (
     harmonize_datasets,
 )
 from .data_objects.spectrum import Spectrum
-
-# Data governance and dataset intelligence
-from .core.summary import summarize_dataset
 from .features.rq import (
     PeakDefinition,
     RatioDefinition,

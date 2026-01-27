@@ -8,21 +8,6 @@ groups (e.g., oil types), assess correlations (e.g., ratios vs heating time),
 and summarize study design balance.
 """
 
-from foodspec.stats.correlations import (
-    compute_correlation_matrix,
-    compute_correlations,
-    compute_cross_correlation,
-)
-from foodspec.stats.design import check_minimum_samples, summarize_group_sizes
-from foodspec.stats.distances import (
-    compute_distances,
-    cosine_distance,
-    euclidean_distance,
-    pearson_distance,
-    sam_angle,
-    sid_distance,
-)
-from foodspec.stats.effects import compute_anova_effect_sizes, compute_cohens_d
 from foodspec.stats.clustering import (
     ClusteringResult,
     FuzzyCMeansResult,
@@ -33,6 +18,12 @@ from foodspec.stats.clustering import (
     kmeans_cluster,
     regression_clustering,
 )
+from foodspec.stats.correlations import (
+    compute_correlation_matrix,
+    compute_correlations,
+    compute_cross_correlation,
+)
+from foodspec.stats.design import check_minimum_samples, summarize_group_sizes
 from foodspec.stats.diagnostics import (
     RunsTestResult,
     adjusted_r2,
@@ -41,6 +32,14 @@ from foodspec.stats.diagnostics import (
     cronbach_alpha,
     normal_tolerance_interval,
     runs_test,
+)
+from foodspec.stats.distances import (
+    compute_distances,
+    cosine_distance,
+    euclidean_distance,
+    pearson_distance,
+    sam_angle,
+    sid_distance,
 )
 from foodspec.stats.distribution_fitting import (
     DistributionFit,
@@ -56,6 +55,7 @@ from foodspec.stats.doe import (
     full_factorial_2level,
     randomized_block_design,
 )
+from foodspec.stats.effects import compute_anova_effect_sizes, compute_cohens_d
 from foodspec.stats.fusion_metrics import (
     cross_modality_correlation,
     modality_agreement_kappa,
@@ -63,12 +63,12 @@ from foodspec.stats.fusion_metrics import (
 )
 from foodspec.stats.hypothesis_tests import (
     benjamini_hochberg,
+    check_group_sequential,
     games_howell,
     group_sequential_boundaries,
-    check_group_sequential,
+    run_ancova,
     run_anderson_darling,
     run_anova,
-    run_ancova,
     run_bartlett,
     run_friedman_test,
     run_kruskal_wallis,

@@ -1,7 +1,7 @@
 """Deployment and artifact management utilities."""
 
 from foodspec.deploy.artifact import Predictor, load_artifact, save_artifact
-from foodspec.deploy.export import export_onnx, export_pmml, load_pipeline, save_pipeline, PipelineBundle
+from foodspec.deploy.export import PipelineBundle, export_onnx, export_pmml, load_pipeline, save_pipeline
 from foodspec.deploy.version_check import (
     CompatibilityLevel,
     VersionCompatibilityReport,

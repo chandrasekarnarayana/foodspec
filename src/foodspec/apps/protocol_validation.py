@@ -1,7 +1,6 @@
 """Protocol-level benchmarks on public datasets."""
 from __future__ import annotations
 
-
 from os import PathLike
 from pathlib import Path
 from typing import Dict, Tuple

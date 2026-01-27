@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Oil vs chips matrix divergence analysis for RQ.
 

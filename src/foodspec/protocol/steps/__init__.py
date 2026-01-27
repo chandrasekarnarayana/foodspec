@@ -8,12 +8,12 @@ from .base import Step
 from .harmonize import HarmonizeStep
 from .hsi_roi import HSIRoiStep
 from .hsi_segment import HSISegmentStep
+from .model_fit_predict import ModelFitPredictStep
+from .multivariate import MultivariateAnalysisStep
 from .output import OutputStep
 from .preprocess import PreprocessStep
-from .multivariate import MultivariateAnalysisStep
 from .qc import QCStep
 from .rq_analysis import RQAnalysisStep
-from .model_fit_predict import ModelFitPredictStep
 
 __all__ = [
     "Step",

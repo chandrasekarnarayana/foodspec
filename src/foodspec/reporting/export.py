@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Reproducibility and archive export system.
 
 Build reproducibility packs and create stable, shareable archives
@@ -22,7 +23,6 @@ Usage:
 """
 
 
-import hashlib
 import json
 import shutil
 import subprocess
@@ -30,7 +30,7 @@ import sys
 import zipfile
 from datetime import datetime
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Sequence
 
 
 class ReproducibilityPackBuilder:
@@ -143,7 +143,7 @@ class ReproducibilityPackBuilder:
     def _create_environment_freeze(self) -> None:
         """Create environment freeze (pip list)."""
         env_file = self.out_dir / "environment.txt"
-        
+
         try:
             # Try to get pip freeze output
             result = subprocess.run(
@@ -460,7 +460,7 @@ def verify_archive_integrity(
         True if archive is valid and contains expected files
     """
     zip_path = Path(zip_path)
-    
+
     try:
         with zipfile.ZipFile(zip_path, "r") as zf:
             # Test archive integrity
@@ -495,7 +495,7 @@ class PaperFigureExporter:
             Publication preset (joss, ieee, elsevier, nature)
         """
         from foodspec.viz.paper import FigurePreset
-        
+
         self.preset = FigurePreset(preset)
 
     def export_figure(
@@ -529,24 +529,24 @@ class PaperFigureExporter:
         """
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
-        
+
         output_paths = {}
-        
+
         if "png" in formats:
             png_path = out_dir / f"{name}.png"
             fig.savefig(png_path, dpi=dpi_png, bbox_inches="tight", facecolor="white")
             output_paths["png"] = png_path
-        
+
         if "svg" in formats:
             svg_path = out_dir / f"{name}.svg"
             fig.savefig(svg_path, dpi=72, bbox_inches="tight", facecolor="white")
             output_paths["svg"] = svg_path
-        
+
         if "pdf" in formats:
             pdf_path = out_dir / f"{name}.pdf"
             fig.savefig(pdf_path, dpi=dpi_png, bbox_inches="tight", facecolor="white")
             output_paths["pdf"] = pdf_path
-        
+
         return output_paths
 
     def create_figure_bundle(
@@ -576,14 +576,14 @@ class PaperFigureExporter:
             Path to created bundle directory
         """
         from foodspec.viz.paper import figure_context
-        
+
         bundle_dir = Path(out_dir) / f"figures_{self.preset.value}"
         bundle_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create subdirectories for each format
         for fmt in formats:
             (bundle_dir / fmt).mkdir(exist_ok=True)
-        
+
         # Export figures with preset applied
         with figure_context(self.preset):
             for name, fig in figures.items():
@@ -592,11 +592,11 @@ class PaperFigureExporter:
                     dpi = 300 if fmt == "png" else 72
                     fmt_path = fmt_dir / f"{name}.{fmt}"
                     fig.savefig(fmt_path, dpi=dpi, bbox_inches="tight", facecolor="white")
-        
+
         # Create README
         if create_readme:
             self._create_bundle_readme(bundle_dir, figures)
-        
+
         return bundle_dir
 
     def _create_bundle_readme(
@@ -613,21 +613,21 @@ class PaperFigureExporter:
             "## Figures",
             "",
         ]
-        
+
         for name in figures.keys():
             lines.append(f"### {name}")
             lines.append("")
             lines.append(f"- **PNG**: `png/{name}.png` (300 DPI, publication quality)")
             lines.append(f"- **SVG**: `svg/{name}.svg` (vector format, editable)")
             lines.append("")
-        
+
         lines.append("## Usage")
         lines.append("")
         lines.append("- Use **PNG** for most journals (resize as needed in document)")
         lines.append("- Use **SVG** for editing or journals that accept vector graphics")
         lines.append("")
         lines.append(f"Generated with FoodSpec using {self.preset.value} preset.")
-        
+
         readme_path = bundle_dir / "README.md"
         readme_path.write_text("\n".join(lines))
 
@@ -660,28 +660,28 @@ def export_paper_figures(
         Path to created figures directory
     """
     from foodspec.reporting.base import collect_figures
-    
+
     run_dir = Path(run_dir)
     out_dir = Path(out_dir or run_dir / "figures_export")
-    
+
     exporter = PaperFigureExporter(preset)
-    
+
     # Collect all figures from run
     figures_dict = collect_figures(run_dir)
-    
+
     # Create subfolder for each category
     for category, fig_paths in figures_dict.items():
         category_dir = out_dir / category
         category_dir.mkdir(parents=True, exist_ok=True)
-        
+
         for fig_path in fig_paths:
             if fig_path.suffix.lower() not in {".png", ".svg", ".jpg", ".jpeg"}:
                 continue
-            
+
             # Copy or re-export figure
             dest = category_dir / fig_path.name
             shutil.copy(fig_path, dest)
-    
+
     # Create bundle README
     readme_lines = [
         f"# Paper-Ready Figures - {preset.upper()}",
@@ -689,14 +689,14 @@ def export_paper_figures(
         "## Directory Structure",
         "",
     ]
-    
+
     for category in sorted(figures_dict.keys()):
         fig_paths = figures_dict[category]
         readme_lines.append(f"### {category}/")
         for fig_path in fig_paths:
             readme_lines.append(f"  - {fig_path.name}")
         readme_lines.append("")
-    
+
     readme_lines.extend([
         "## Export Notes",
         "",
@@ -705,7 +705,7 @@ def export_paper_figures(
         "",
         "Generated by FoodSpec reporting system.",
     ])
-    
+
     (out_dir / "README.md").write_text("\n".join(readme_lines))
-    
+
     return out_dir

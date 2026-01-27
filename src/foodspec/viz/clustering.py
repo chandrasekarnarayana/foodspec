@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Clustering visualization helpers."""
 
 from typing import Iterable, Optional

@@ -1,7 +1,7 @@
 """Advanced QC Control Charts: CUSUM and Process Capability Indices."""
 from __future__ import annotations
 
-from typing import Optional, Tuple, Dict, Any
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 from scipy import stats

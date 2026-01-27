@@ -1,7 +1,6 @@
 """Edible oil authentication workflow."""
 from __future__ import annotations
 
-
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -13,15 +12,15 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 
 from foodspec.chemometrics.models import make_classifier
-from foodspec.modeling.validation.metrics import compute_classification_metrics
 from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.features.peaks import PeakFeatureExtractor
 from foodspec.features.ratios import compute_ratios
+from foodspec.modeling.validation.metrics import compute_classification_metrics
+from foodspec.modeling.validation.quality import validate_spectrum_set
 from foodspec.preprocess.baseline import ALSBaseline
 from foodspec.preprocess.cropping import RangeCropper
 from foodspec.preprocess.normalization import VectorNormalizer
 from foodspec.preprocess.smoothing import SavitzkyGolaySmoother
-from foodspec.modeling.validation.quality import validate_spectrum_set
 
 __all__ = [
     "OilAuthResult",

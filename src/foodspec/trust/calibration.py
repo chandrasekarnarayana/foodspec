@@ -16,7 +16,6 @@ fitting calibration and evaluating it will lead to overly optimistic metrics.
 Best practice: Split your data into [train (fit model), calibration (fit calibrator), test (evaluate)]
 """
 
-import warnings
 from typing import Dict, Optional, Tuple
 
 import joblib
@@ -57,22 +56,22 @@ def expected_calibration_error(
     # Shortcut: if predictions are perfectly accurate, ECE is zero
     if np.all(y_pred == y_true):
         return 0.0
-    
+
     # Bin samples by confidence
     bin_edges = np.linspace(0, 1, n_bins + 1)
     bins = np.digitize(confidences, bin_edges) - 1
     bins = np.clip(bins, 0, n_bins - 1)
-    
+
     ece = 0.0
     for i in range(n_bins):
         mask = bins == i
         if mask.sum() == 0:
             continue
-        
+
         bin_confidence = confidences[mask].mean()
         bin_accuracy = (y_pred[mask] == y_true[mask]).mean()
         ece += mask.sum() / len(y_true) * np.abs(bin_confidence - bin_accuracy)
-    
+
     return ece
 
 
@@ -101,11 +100,11 @@ def maximum_calibration_error(
     y_pred = np.argmax(y_pred_proba, axis=1)
     confidences = np.max(y_pred_proba, axis=1)
     correct = y_pred == y_true
-    
+
     # Sort by confidence
     sorted_idx = np.argsort(confidences)
     sorted_correct = correct[sorted_idx]
-    
+
     # Compute accuracy at each confidence threshold
     mce = 0.0
     for i in range(len(sorted_correct)):
@@ -114,7 +113,7 @@ def maximum_calibration_error(
         accuracy = sorted_correct[:i].mean()
         confidence = confidences[sorted_idx[i - 1]]
         mce = max(mce, np.abs(confidence - accuracy))
-    
+
     return mce
 
 
@@ -148,19 +147,19 @@ def temperature_scale(
     """
     if temperature <= 0:
         raise ValueError(f"Temperature must be > 0, got {temperature}")
-    
+
     if temperature == 1.0:
         return y_pred_proba.copy()
-    
+
     # Work with log-odds to avoid numerical issues
     eps = 1e-10
     y_pred_proba = np.clip(y_pred_proba, eps, 1 - eps)
-    
+
     # Scale log-odds by temperature
     logits = np.log(y_pred_proba / (1 - y_pred_proba))  # Binary case
     scaled_logits = logits / temperature
     scaled_proba = 1 / (1 + np.exp(-scaled_logits))
-    
+
     return scaled_proba
 
 
@@ -194,7 +193,7 @@ def find_optimal_temperature(
             return 1e10
         scaled_proba = temperature_scale(y_pred_proba, temp[0])
         return expected_calibration_error(y_true, scaled_proba)
-    
+
     result = minimize(
         objective,
         [initial_temp],
@@ -202,7 +201,7 @@ def find_optimal_temperature(
         method='L-BFGS-B',
         options={'maxiter': max_iter},
     )
-    
+
     return float(result.x[0])
 
 
@@ -217,11 +216,11 @@ class TemperatureScaler:
     Attributes:
         temperature: Fitted temperature parameter
     """
-    
+
     def __init__(self):
         self.temperature = 1.0
         self._fitted = False
-    
+
     def fit(self, y_true: np.ndarray, y_pred_proba: np.ndarray) -> None:
         """
         Fit temperature scaling on calibration set.
@@ -232,7 +231,7 @@ class TemperatureScaler:
         """
         self.temperature = find_optimal_temperature(y_true, y_pred_proba)
         self._fitted = True
-    
+
     def predict(self, y_pred_proba: np.ndarray) -> np.ndarray:
         """
         Apply temperature scaling to predicted probabilities.
@@ -284,13 +283,13 @@ class PlattCalibrator:
     n_classes_ : int
         Number of classes (only set after fit).
     """
-    
+
     def __init__(self):
         """Initialize Platt calibrator."""
         self.logistic_models_ = {}
         self.n_classes_ = None
         self._fitted = False
-    
+
     def fit(self, y_true: np.ndarray, proba: np.ndarray) -> "PlattCalibrator":
         """
         Fit Platt scaling on calibration set.
@@ -326,20 +325,20 @@ class PlattCalibrator:
         """
         y_true = np.asarray(y_true)
         proba = np.asarray(proba, dtype=float)
-        
+
         if y_true.ndim != 1:
             raise ValueError("y_true must be 1D")
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
         if y_true.shape[0] != proba.shape[0]:
             raise ValueError("y_true and proba must have same number of samples")
-        
+
         self.n_classes_ = proba.shape[1]
         y_int = y_true.astype(int)
-        
+
         if (y_int < 0).any() or (y_int >= self.n_classes_).any():
             raise ValueError(f"y_true labels out of range [0, {self.n_classes_-1}]")
-        
+
         # Fit one logistic model per class (one-vs-rest)
         for c in range(self.n_classes_):
             y_binary = (y_true == c).astype(int)
@@ -347,10 +346,10 @@ class PlattCalibrator:
             lr = LogisticRegression(max_iter=1000, random_state=None)
             lr.fit(proba[:, c].reshape(-1, 1), y_binary)
             self.logistic_models_[c] = lr
-        
+
         self._fitted = True
         return self
-    
+
     def transform(self, proba: np.ndarray) -> np.ndarray:
         """
         Apply Platt scaling to probabilities.
@@ -374,7 +373,7 @@ class PlattCalibrator:
         """
         if not self._fitted:
             raise RuntimeError("PlattCalibrator must be fitted before transform")
-        
+
         proba = np.asarray(proba, dtype=float)
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
@@ -382,20 +381,20 @@ class PlattCalibrator:
             raise ValueError(
                 f"proba has {proba.shape[1]} classes, expected {self.n_classes_}"
             )
-        
+
         # Apply each one-vs-rest logistic model
         calibrated = np.zeros_like(proba)
         for c in range(self.n_classes_):
             lr = self.logistic_models_[c]
             # predict_proba returns [[prob_0, prob_1]], we want prob_1
             calibrated[:, c] = lr.predict_proba(proba[:, c].reshape(-1, 1))[:, 1]
-        
+
         # Renormalize to ensure probabilities sum to 1
         row_sums = calibrated.sum(axis=1, keepdims=True)
         calibrated = calibrated / (row_sums + 1e-10)
-        
+
         return calibrated
-    
+
     def save(self, filepath: str) -> None:
         """
         Save calibrator to disk using joblib.
@@ -408,7 +407,7 @@ class PlattCalibrator:
         if not self._fitted:
             raise RuntimeError("Cannot save unfitted calibrator")
         joblib.dump(self, filepath)
-    
+
     @staticmethod
     def load(filepath: str) -> "PlattCalibrator":
         """
@@ -460,13 +459,13 @@ class IsotonicCalibrator:
     n_classes_ : int
         Number of classes (only set after fit).
     """
-    
+
     def __init__(self):
         """Initialize isotonic calibrator."""
         self.isotonic_models_ = {}
         self.n_classes_ = None
         self._fitted = False
-    
+
     def fit(self, y_true: np.ndarray, proba: np.ndarray) -> "IsotonicCalibrator":
         """
         Fit isotonic regression on calibration data.
@@ -494,30 +493,30 @@ class IsotonicCalibrator:
         """
         y_true = np.asarray(y_true)
         proba = np.asarray(proba, dtype=float)
-        
+
         if y_true.ndim != 1:
             raise ValueError("y_true must be 1D")
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
         if y_true.shape[0] != proba.shape[0]:
             raise ValueError("y_true and proba must have same number of samples")
-        
+
         self.n_classes_ = proba.shape[1]
         y_int = y_true.astype(int)
-        
+
         if (y_int < 0).any() or (y_int >= self.n_classes_).any():
             raise ValueError(f"y_true labels out of range [0, {self.n_classes_-1}]")
-        
+
         # Fit one isotonic model per class (one-vs-rest)
         for c in range(self.n_classes_):
             y_binary = (y_true == c).astype(int)
             isotonic = IsotonicRegression(out_of_bounds='clip')
             isotonic.fit(proba[:, c], y_binary)
             self.isotonic_models_[c] = isotonic
-        
+
         self._fitted = True
         return self
-    
+
     def transform(self, proba: np.ndarray) -> np.ndarray:
         """
         Apply isotonic regression to calibrate probabilities.
@@ -541,7 +540,7 @@ class IsotonicCalibrator:
         """
         if not self._fitted:
             raise RuntimeError("IsotonicCalibrator must be fitted before transform")
-        
+
         proba = np.asarray(proba, dtype=float)
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
@@ -549,18 +548,18 @@ class IsotonicCalibrator:
             raise ValueError(
                 f"proba has {proba.shape[1]} classes, expected {self.n_classes_}"
             )
-        
+
         # Apply isotonic regression to each class
         calibrated = np.zeros_like(proba)
         for c in range(self.n_classes_):
             calibrated[:, c] = self.isotonic_models_[c].predict(proba[:, c])
-        
+
         # Renormalize to ensure probabilities sum to 1
         row_sums = calibrated.sum(axis=1, keepdims=True)
         calibrated = calibrated / (row_sums + 1e-10)
-        
+
         return calibrated
-    
+
     def save(self, filepath: str) -> None:
         """
         Save calibrator to disk using joblib.
@@ -573,7 +572,7 @@ class IsotonicCalibrator:
         if not self._fitted:
             raise RuntimeError("Cannot save unfitted calibrator")
         joblib.dump(self, filepath)
-    
+
     @staticmethod
     def load(filepath: str) -> "IsotonicCalibrator":
         """
@@ -630,21 +629,21 @@ def calibrate_probabilities(
     """
     if method == 'none':
         return y_pred_proba.copy(), {'method': 'none'}
-    
+
     if method not in ['temperature', 'isotonic', 'platt']:
         raise ValueError(f"Unknown method: {method}")
-    
+
     if y_calibration is None:
         raise ValueError(f"method={method} requires y_calibration")
-    
+
     metadata = {'method': method}
-    
+
     if method == 'temperature':
         if 'temperature' in kwargs:
             temp = kwargs['temperature']
         else:
             temp = find_optimal_temperature(y_calibration, y_pred_proba)
-        
+
         calibrated = temperature_scale(y_pred_proba, temp)
         metadata['temperature'] = float(temp)
         metadata['ece_before'] = float(expected_calibration_error(
@@ -653,7 +652,7 @@ def calibrate_probabilities(
         metadata['ece_after'] = float(expected_calibration_error(
             y_calibration, calibrated
         ))
-    
+
     elif method == 'platt':
         calibrator = PlattCalibrator()
         calibrator.fit(y_calibration, y_pred_proba)
@@ -664,7 +663,7 @@ def calibrate_probabilities(
         metadata['ece_after'] = float(expected_calibration_error(
             y_calibration, calibrated
         ))
-    
+
     elif method == 'isotonic':
         calibrator = IsotonicCalibrator()
         calibrator.fit(y_calibration, y_pred_proba)
@@ -675,5 +674,5 @@ def calibrate_probabilities(
         metadata['ece_after'] = float(expected_calibration_error(
             y_calibration, calibrated
         ))
-    
+
     return calibrated, metadata

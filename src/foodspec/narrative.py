@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Narrative and publication helpers.
 
@@ -28,9 +29,9 @@ See: docs/migration/v1-to-v2.md
 import warnings
 
 warnings.warn(
-    f"foodspec.narrative is deprecated and will be removed in v2.0.0. "
-    f"Use foodspec.reporting instead. "
-    f"See docs/migration/v1-to-v2.md for migration guide.",
+    "foodspec.narrative is deprecated and will be removed in v2.0.0. "
+    "Use foodspec.reporting instead. "
+    "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
     stacklevel=2
 )

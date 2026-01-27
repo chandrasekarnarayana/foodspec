@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Vendor format readers (SPC, OPUS).
 
 These readers rely on optional third-party packages. Informative `ImportError`

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 FoodSpec Report Context and Builder.
 
@@ -174,7 +175,7 @@ class ReportContext:
         Returns consolidated dict with all available trust/drift/qc outputs.
         """
         trust_data: Dict[str, Any] = {}
-        
+
         # Legacy location
         legacy_path = run_dir / "trust_outputs.json"
         if legacy_path.exists():
@@ -182,11 +183,11 @@ class ReportContext:
                 trust_data = json.loads(legacy_path.read_text())
             except (json.JSONDecodeError, OSError):
                 pass
-        
+
         # Trust subdirectory
         trust_dir = run_dir / "trust"
         if trust_dir.exists():
-            for trust_file in ["calibration.json", "conformal.json", "abstention.json", 
+            for trust_file in ["calibration.json", "conformal.json", "abstention.json",
                               "coverage.json", "reliability.json", "readiness.json"]:
                 file_path = trust_dir / trust_file
                 if file_path.exists():
@@ -195,12 +196,12 @@ class ReportContext:
                         trust_data[key] = json.loads(file_path.read_text())
                     except (json.JSONDecodeError, OSError):
                         pass
-        
+
         # Drift subdirectory
         drift_dir = run_dir / "drift"
         if drift_dir.exists():
             drift_data = {}
-            for drift_file in ["batch_drift.json", "temporal_drift.json", 
+            for drift_file in ["batch_drift.json", "temporal_drift.json",
                              "stage_differences.json", "replicate_similarity.json"]:
                 file_path = drift_dir / drift_file
                 if file_path.exists():
@@ -211,7 +212,7 @@ class ReportContext:
                         pass
             if drift_data:
                 trust_data["drift"] = drift_data
-        
+
         # QC subdirectory
         qc_dir = run_dir / "qc"
         if qc_dir.exists():
@@ -227,7 +228,7 @@ class ReportContext:
                     trust_data["qc_control_charts"] = json.loads(qc_control_path.read_text())
                 except (json.JSONDecodeError, OSError):
                     pass
-        
+
         return trust_data
 
     @staticmethod
@@ -528,7 +529,7 @@ def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
     """
     figures: Dict[str, List[Path]] = {}
     image_extensions = {".png", ".jpg", ".jpeg", ".svg", ".gif"}
-    
+
     # Directories to scan for figures
     scan_dirs = [
         run_dir / "plots" / "viz",
@@ -560,7 +561,7 @@ def collect_figures(run_dir: Path) -> Dict[str, List[Path]]:
                     # Category from direct parent of base_dir
                     category = base_dir.parent.name if base_dir.parent != run_dir else base_dir.name
                     figures.setdefault(category, []).append(img_path)
-    
+
     # Sort figure lists
     for category in figures:
         figures[category] = sorted(set(figures[category]))  # Remove duplicates

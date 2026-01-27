@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import numpy as np
-
 from foodspec.reporting.figures import FigureExporter, FigureStyle, radar_plot
 from foodspec.reporting.schema import RunBundle
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
+
 def align_spectra(
     reference_wavenumbers: np.ndarray,
     target_wavenumbers: np.ndarray,

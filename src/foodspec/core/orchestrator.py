@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Canonical orchestrator module for foodspec.core.
 

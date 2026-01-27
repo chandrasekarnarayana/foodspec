@@ -10,9 +10,7 @@ saves metrics to artifacts/.
 """
 from __future__ import annotations
 
-import json
 from dataclasses import asdict, dataclass, field
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -53,7 +51,7 @@ class GateResult:
             f"Metrics: {len(self.metrics)} computed",
         ]
         if self.remediation:
-            lines.append(f"Remediation:")
+            lines.append("Remediation:")
             for hint in self.remediation:
                 lines.append(f"  - {hint}")
         return "\n".join(lines)
@@ -252,7 +250,6 @@ class SpectralQualityGate:
 
         # Saturation (high intensity fraction)
         max_per_spectrum = X.max(axis=1)
-        p99_overall = np.percentile(X, 99)
         saturation_frac = (max_per_spectrum > 0.95 * np.max(X)).sum() / len(X)
         metrics["saturation_fraction"] = round(saturation_frac, 3)
 

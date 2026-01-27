@@ -42,7 +42,7 @@ Example:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional
+from typing import Any, List, Optional
 
 import numpy as np
 
@@ -62,16 +62,16 @@ class PhysicsConstraint(ABC):
     name : str, optional
         Name of the constraint for logging.
     """
-    
+
     def __init__(self, weight: float = 1.0, name: Optional[str] = None):
         self.weight = weight
         self.name = name or self.__class__.__name__
-    
+
     @abstractmethod
     def compute_loss(
-        self, 
-        X: Any, 
-        y_pred: Any, 
+        self,
+        X: Any,
+        y_pred: Any,
         model: Optional[Any] = None
     ) -> float:
         """
@@ -130,7 +130,7 @@ class BeerLambertLoss(PhysicsConstraint):
     >>> spectrum_true = y_batch
     >>> loss = bl_loss.compute_loss(X, spectrum_pred, spectrum_true)
     """
-    
+
     def __init__(
         self,
         reference_spectra: Optional[np.ndarray] = None,
@@ -142,10 +142,10 @@ class BeerLambertLoss(PhysicsConstraint):
         self.reference_spectra = reference_spectra
         self.concentration_index = concentration_index
         self.spectra_index = spectra_index
-    
+
     def compute_loss(
-        self, 
-        X: np.ndarray, 
+        self,
+        X: np.ndarray,
         y_pred: np.ndarray,
         y_true: Optional[np.ndarray] = None,
         model: Optional[Any] = None
@@ -162,23 +162,23 @@ class BeerLambertLoss(PhysicsConstraint):
                 c_pred = y_pred[:, self.concentration_index]
             else:
                 c_pred = y_pred  # Assume entire output is concentrations
-            
+
             # Reconstruct spectra via Beer-Lambert
             spectra_reconstructed = c_pred @ self.reference_spectra
-            
+
             # Compare to true spectra (if provided)
             if y_true is not None:
                 loss = np.mean((spectra_reconstructed - y_true) ** 2)
             else:
                 # No ground truth, just return 0 (no violation detectable)
                 loss = 0.0
-        
+
         else:
             # Check linearity: Are predictions linear combinations?
             # This is hard to enforce without knowing true relationships
             # Placeholder: return 0
             loss = 0.0
-        
+
         return self.weight * loss
 
 
@@ -207,7 +207,7 @@ class SmoothnessLoss(PhysicsConstraint):
     >>> smooth_loss = SmoothnessLoss(order=2, weight=0.01)
     >>> loss = smooth_loss.compute_loss(X, y_pred)
     """
-    
+
     def __init__(
         self,
         order: int = 2,
@@ -217,11 +217,11 @@ class SmoothnessLoss(PhysicsConstraint):
         super().__init__(weight=weight, name='Smoothness')
         self.order = order
         self.axis = axis
-    
+
     def compute_loss(
-        self, 
-        X: np.ndarray, 
-        y_pred: np.ndarray, 
+        self,
+        X: np.ndarray,
+        y_pred: np.ndarray,
         model: Optional[Any] = None
     ) -> float:
         """Compute smoothness penalty."""
@@ -229,10 +229,10 @@ class SmoothnessLoss(PhysicsConstraint):
         diff = y_pred
         for _ in range(self.order):
             diff = np.diff(diff, axis=self.axis)
-        
+
         # L2 penalty on derivatives
         loss = np.mean(diff ** 2)
-        
+
         return self.weight * loss
 
 
@@ -264,7 +264,7 @@ class PeakConstraintLoss(PhysicsConstraint):
     >>> peak_loss = PeakConstraintLoss(peak_positions=[50, 100, 150], weight=0.05)
     >>> loss = peak_loss.compute_loss(X, y_pred)
     """
-    
+
     def __init__(
         self,
         peak_positions: List[int],
@@ -276,11 +276,11 @@ class PeakConstraintLoss(PhysicsConstraint):
         self.peak_positions = peak_positions
         self.peak_type = peak_type
         self.width_range = width_range
-    
+
     def compute_loss(
-        self, 
-        X: np.ndarray, 
-        y_pred: np.ndarray, 
+        self,
+        X: np.ndarray,
+        y_pred: np.ndarray,
         model: Optional[Any] = None
     ) -> float:
         """
@@ -290,22 +290,22 @@ class PeakConstraintLoss(PhysicsConstraint):
         """
         loss = 0.0
         n_wavelengths = y_pred.shape[1] if y_pred.ndim > 1 else len(y_pred)
-        
+
         for pos in self.peak_positions:
             # Extract local region around peak
             window = 20  # ±20 wavelengths
             start = max(0, pos - window)
             end = min(n_wavelengths, pos + window)
-            
+
             if y_pred.ndim > 1:
                 local_spectrum = y_pred[:, start:end].mean(axis=0)
             else:
                 local_spectrum = y_pred[start:end]
-            
+
             # Fit peak shape
             x_local = np.arange(len(local_spectrum))
             peak_center = window if pos >= window else pos
-            
+
             if self.peak_type == 'gaussian':
                 # Fit Gaussian: A * exp(-(x - μ)² / (2σ²))
                 fitted_peak = self._fit_gaussian(x_local, local_spectrum, peak_center)
@@ -315,37 +315,37 @@ class PeakConstraintLoss(PhysicsConstraint):
             else:
                 # Voigt (Gaussian + Lorentzian convolution)
                 fitted_peak = self._fit_gaussian(x_local, local_spectrum, peak_center)
-            
+
             # Penalize deviation from expected shape
             shape_error = np.mean((local_spectrum - fitted_peak) ** 2)
             loss += shape_error
-        
+
         return self.weight * loss / len(self.peak_positions)
-    
+
     def _fit_gaussian(
-        self, 
-        x: np.ndarray, 
-        y: np.ndarray, 
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
         center: float
     ) -> np.ndarray:
         """Fit Gaussian peak and return fitted curve."""
         # Simple moment-based fit
         amplitude = np.max(y)
         sigma = 2.0  # Default width
-        
+
         fitted = amplitude * np.exp(-(x - center) ** 2 / (2 * sigma ** 2))
         return fitted
-    
+
     def _fit_lorentzian(
-        self, 
-        x: np.ndarray, 
-        y: np.ndarray, 
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
         center: float
     ) -> np.ndarray:
         """Fit Lorentzian peak and return fitted curve."""
         amplitude = np.max(y)
         gamma = 2.0  # Default width
-        
+
         fitted = amplitude * gamma ** 2 / ((x - center) ** 2 + gamma ** 2)
         return fitted
 
@@ -372,14 +372,14 @@ class EnergyConservationLoss(PhysicsConstraint):
     >>> energy_loss = EnergyConservationLoss(weight=0.1)
     >>> loss = energy_loss.compute_loss(X, y_pred, y_true)
     """
-    
+
     def __init__(self, weight: float = 1.0, axis: int = 1):
         super().__init__(weight=weight, name='EnergyConservation')
         self.axis = axis
-    
+
     def compute_loss(
-        self, 
-        X: np.ndarray, 
+        self,
+        X: np.ndarray,
         y_pred: np.ndarray,
         y_true: Optional[np.ndarray] = None,
         model: Optional[Any] = None
@@ -388,14 +388,14 @@ class EnergyConservationLoss(PhysicsConstraint):
         if y_true is None:
             # No reference, can't check conservation
             return 0.0
-        
+
         # Integrate over wavelength axis
         energy_pred = np.sum(y_pred, axis=self.axis)
         energy_true = np.sum(y_true, axis=self.axis)
-        
+
         # Relative error in total energy
         loss = np.mean(np.abs(energy_pred - energy_true) / (energy_true + 1e-10))
-        
+
         return self.weight * loss
 
 
@@ -421,24 +421,24 @@ class SparsityLoss(PhysicsConstraint):
     >>> sparsity_loss = SparsityLoss(weight=0.01, threshold=0.05)
     >>> loss = sparsity_loss.compute_loss(X, y_pred)
     """
-    
+
     def __init__(self, weight: float = 1.0, threshold: float = 0.0):
         super().__init__(weight=weight, name='Sparsity')
         self.threshold = threshold
-    
+
     def compute_loss(
-        self, 
-        X: np.ndarray, 
-        y_pred: np.ndarray, 
+        self,
+        X: np.ndarray,
+        y_pred: np.ndarray,
         model: Optional[Any] = None
     ) -> float:
         """Compute L1 sparsity penalty."""
         # Apply threshold
         y_thresholded = np.where(np.abs(y_pred) > self.threshold, y_pred, 0)
-        
+
         # L1 norm
         loss = np.mean(np.abs(y_thresholded))
-        
+
         return self.weight * loss
 
 
@@ -472,17 +472,17 @@ class PhysicsInformedLoss:
     >>> # Use in training
     >>> total_loss = data_loss + physics_loss(X, y_pred, model)
     """
-    
+
     def __init__(self, constraints: Optional[List[PhysicsConstraint]] = None):
         self.constraints = constraints if constraints is not None else []
-    
+
     def add_constraint(self, constraint: PhysicsConstraint):
         """Add a physics constraint to the loss function."""
         self.constraints.append(constraint)
-    
+
     def __call__(
-        self, 
-        X: np.ndarray, 
+        self,
+        X: np.ndarray,
         y_pred: np.ndarray,
         y_true: Optional[np.ndarray] = None,
         model: Optional[Any] = None,
@@ -510,21 +510,21 @@ class PhysicsInformedLoss:
             Sum of all physics constraint losses.
         """
         total_loss = 0.0
-        
+
         for constraint in self.constraints:
             # Check if constraint needs y_true
             if 'y_true' in constraint.compute_loss.__code__.co_varnames:
                 loss = constraint.compute_loss(X, y_pred, y_true, model)
             else:
                 loss = constraint.compute_loss(X, y_pred, model)
-            
+
             total_loss += loss
-        
+
         return total_loss
-    
+
     def get_constraint_losses(
-        self, 
-        X: np.ndarray, 
+        self,
+        X: np.ndarray,
         y_pred: np.ndarray,
         y_true: Optional[np.ndarray] = None,
         model: Optional[Any] = None,
@@ -538,13 +538,13 @@ class PhysicsInformedLoss:
             Constraint name -> loss value.
         """
         losses = {}
-        
+
         for constraint in self.constraints:
             if 'y_true' in constraint.compute_loss.__code__.co_varnames:
                 loss = constraint.compute_loss(X, y_pred, y_true, model)
             else:
                 loss = constraint.compute_loss(X, y_pred, model)
-            
+
             losses[constraint.name] = loss
-        
+
         return losses

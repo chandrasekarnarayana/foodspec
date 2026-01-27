@@ -14,13 +14,13 @@ from .engine import (
     SmoothingStep,
     Step,
 )
-from .normalization import normalize_reference, normalize_vector
-from .smoothing import smooth_savgol
 from .harmonization import (
     apply_direct_standardization,
     apply_piecewise_direct_standardization,
     apply_subspace_alignment,
 )
+from .normalization import normalize_reference, normalize_vector
+from .smoothing import smooth_savgol
 
 __all__ = [
     "baseline_als",

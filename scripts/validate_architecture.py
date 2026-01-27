@@ -16,7 +16,6 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # ANSI colors
 GREEN = "\033[92m"
@@ -162,7 +161,7 @@ class ArchitectureValidator:
     def check_no_rewrite_imports(self) -> bool:
         """Verify no imports from foodspec_rewrite."""
         self.log_info("Checking for foodspec_rewrite imports...")
-        
+
         result = subprocess.run(
             ["grep", "-r", "foodspec_rewrite", "--include=*.py", "src/", "tests/"],
             cwd=self.repo_root,

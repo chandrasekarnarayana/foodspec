@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Automated experiment reporting and analysis infrastructure.
 
@@ -9,6 +10,16 @@ Also includes backward-compatible reporting utilities for CLI commands.
 """
 
 # === NEW REPORTING INFRASTRUCTURE ===
+# === BACKWARD COMPATIBILITY: IMPORT FROM DEPRECATED reporting.py ===
+# These functions are used by CLI commands and other modules.
+# They are defined in the deprecated reporting.py module.
+import json
+import pathlib
+from datetime import datetime, timezone
+from typing import Any, Dict
+
+import pandas as pd
+
 from foodspec.reporting.base import ReportBuilder, ReportContext, collect_figures
 from foodspec.reporting.cards import (
     ConfidenceLevel,
@@ -29,16 +40,6 @@ from foodspec.reporting.modes import (
     validate_artifacts,
 )
 from foodspec.reporting.schema import RunBundle
-
-# === BACKWARD COMPATIBILITY: IMPORT FROM DEPRECATED reporting.py ===
-# These functions are used by CLI commands and other modules.
-# They are defined in the deprecated reporting.py module.
-import json
-import pathlib
-from datetime import datetime, timezone
-from typing import Any, Dict
-
-import pandas as pd
 
 try:
     import joblib
@@ -184,7 +185,7 @@ def export_model_and_metrics(
     """
     if joblib is None:
         raise ImportError("joblib is required to export models")
-    
+
     base = pathlib.Path(path_base)
     base.parent.mkdir(parents=True, exist_ok=True)
     model_path = base.with_suffix(".joblib")

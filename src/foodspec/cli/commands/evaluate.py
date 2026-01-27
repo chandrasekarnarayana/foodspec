@@ -9,8 +9,8 @@ import typer
 from sklearn.preprocessing import LabelEncoder
 
 from foodspec.core.errors import FoodSpecValidationError
-from foodspec.modeling.validation.metrics import classification_metrics_bundle
 from foodspec.modeling.api import metrics_by_group
+from foodspec.modeling.validation.metrics import classification_metrics_bundle
 from foodspec.utils.run_artifacts import (
     get_logger,
     init_run_dir,

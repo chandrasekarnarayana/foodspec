@@ -19,21 +19,21 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 from foodspec.chemometrics.models import make_classifier, make_pls_da
 from foodspec.core.errors import FoodSpecValidationError
-from foodspec.modeling.diagnostics.roc import compute_roc_diagnostics
 from foodspec.modeling.diagnostics.artifacts import save_roc_artifacts
+from foodspec.modeling.diagnostics.roc import compute_roc_diagnostics
+from foodspec.modeling.metrics_regression import (
+    count_metrics,
+    overdispersion_summary,
+    regression_metrics,
+    residual_diagnostics,
+)
+from foodspec.modeling.models_regression import REGRESSION_REGISTRY, build_regression_model
+from foodspec.modeling.outcome import OutcomeType
 from foodspec.modeling.validation.metrics import (
     bootstrap_classification_ci,
     classification_metrics_bundle,
 )
 from foodspec.modeling.validation.strategies import leave_one_group_out
-from foodspec.modeling.metrics_regression import (
-    count_metrics,
-    regression_metrics,
-    residual_diagnostics,
-    overdispersion_summary,
-)
-from foodspec.modeling.models_regression import REGRESSION_REGISTRY, build_regression_model
-from foodspec.modeling.outcome import OutcomeType
 
 
 @dataclass

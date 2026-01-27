@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Probability calibration diagnostics and recalibration methods.
 
 Provides tools for assessing and improving classifier calibration in production.

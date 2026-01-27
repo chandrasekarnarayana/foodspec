@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Bridge from spectral features to chemical meaning.
 
 Provides a small curated library of wavenumber-to-chemical meaning entries and

@@ -1,12 +1,9 @@
 """Non-Negative Least Squares (NNLS) regression for constrained prediction."""
 from __future__ import annotations
 
-from typing import Optional, Tuple
-
 import numpy as np
-from sklearn.base import BaseEstimator, RegressorMixin
 from scipy.optimize import nnls
-from sklearn.preprocessing import StandardScaler
+from sklearn.base import BaseEstimator, RegressorMixin
 
 __all__ = ["NNLSRegression", "ConstrainedLasso"]
 

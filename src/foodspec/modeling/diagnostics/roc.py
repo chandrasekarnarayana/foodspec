@@ -11,10 +11,9 @@ Provides:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 import numpy as np
-from scipy import stats as scipy_stats
 from sklearn.metrics import auc as sklearn_auc
 from sklearn.metrics import roc_curve as sklearn_roc_curve
 from sklearn.preprocessing import label_binarize
@@ -278,7 +277,7 @@ def _compute_optimal_thresholds_binary(
 
     # Compute metrics on all samples and all thresholds in y_proba
     unique_thresholds = np.sort(np.unique(y_proba))[::-1]  # Descending
-    
+
     n_pos = np.sum(y_true_binary)
     n_neg = len(y_true_binary) - n_pos
 
@@ -292,7 +291,7 @@ def _compute_optimal_thresholds_binary(
             pred_pos = (y_proba >= thr).astype(int)
             tp = np.sum((pred_pos == 1) & (y_true_binary == 1))
             fp = np.sum((pred_pos == 1) & (y_true_binary == 0))
-            
+
             sensitivity = tp / n_pos if n_pos > 0 else 0
             specificity = 1.0 - (fp / n_neg) if n_neg > 0 else 0
             j_stat = sensitivity + specificity - 1

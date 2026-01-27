@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Dataset summary metrics for food spectroscopy.
 

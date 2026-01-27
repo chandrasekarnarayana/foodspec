@@ -7,16 +7,17 @@ Ensures reproducibility through:
 3. Package version snapshots
 """
 
-import os
-import sys
 import json
+import logging
+import os
 import platform
 import random
-import numpy as np
-from pathlib import Path
-from typing import Dict, Any, Optional
+import sys
 from dataclasses import dataclass
-import logging
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+import numpy as np
 
 try:
     import sklearn
@@ -48,18 +49,18 @@ def set_global_seed(seed: int) -> None:
     """
     global _GLOBAL_SEED
     _GLOBAL_SEED = seed
-    
+
     # Python random
     random.seed(seed)
-    
+
     # NumPy
     np.random.seed(seed)
-    
+
     # scikit-learn (if available)
     if SKLEARN_AVAILABLE:
-        import sklearn
+        pass
         # sklearn uses np.random internally, but being explicit
-    
+
     logger.info(f"Global seed set: {seed}")
 
 
@@ -139,7 +140,7 @@ def capture_versions() -> Dict[str, Any]:
         "foodspec_packages": {},
         "other_packages": {},
     }
-    
+
     # Capture critical packages
     for pkg_name in CRITICAL_PACKAGES:
         try:
@@ -148,7 +149,7 @@ def capture_versions() -> Dict[str, Any]:
             versions["critical_packages"][pkg_name] = version
         except ImportError:
             versions["critical_packages"][pkg_name] = "not installed"
-    
+
     # Capture FoodSpec packages
     for pkg_name in FOODSPEC_PACKAGES:
         try:
@@ -157,7 +158,7 @@ def capture_versions() -> Dict[str, Any]:
             versions["foodspec_packages"][pkg_name] = version
         except ImportError:
             versions["foodspec_packages"][pkg_name] = "not installed"
-    
+
     return versions
 
 
@@ -178,13 +179,13 @@ def fingerprint_csv(csv_path: Path) -> str:
         Hex digest of SHA256
     """
     import hashlib
-    
+
     sha256 = hashlib.sha256()
-    
+
     with open(csv_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             sha256.update(chunk)
-    
+
     return sha256.hexdigest()
 
 
@@ -201,10 +202,10 @@ def fingerprint_protocol(protocol_dict: Dict[str, Any]) -> str:
         Hex digest of SHA256
     """
     import hashlib
-    
+
     # Sort keys for reproducibility
     json_str = json.dumps(protocol_dict, sort_keys=True, default=str)
-    
+
     sha256 = hashlib.sha256(json_str.encode())
     return sha256.hexdigest()
 
@@ -216,14 +217,14 @@ def fingerprint_protocol(protocol_dict: Dict[str, Any]) -> str:
 @dataclass
 class ReproducibilityReport:
     """Comprehensive reproducibility metadata"""
-    
+
     seed: Optional[int]
     environment: Dict[str, Any]
     versions: Dict[str, Any]
     data_fingerprint: str
     protocol_fingerprint: str
     timestamp: str
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dict"""
         return {
@@ -234,7 +235,7 @@ class ReproducibilityReport:
             "protocol_fingerprint": self.protocol_fingerprint,
             "timestamp": self.timestamp,
         }
-    
+
     def to_json(self, out_path: Path) -> Path:
         """Save to JSON file"""
         with open(out_path, "w") as f:
@@ -259,15 +260,15 @@ def generate_reproducibility_report(
         ReproducibilityReport object
     """
     from datetime import datetime
-    
+
     env = capture_environment()
     vers = capture_versions()
-    
+
     data_fp = fingerprint_csv(csv_path) if csv_path and csv_path.exists() else "none"
     proto_fp = fingerprint_protocol(protocol_dict) if protocol_dict else "none"
-    
+
     timestamp = datetime.utcnow().isoformat()
-    
+
     return ReproducibilityReport(
         seed=seed or get_global_seed(),
         environment=env,

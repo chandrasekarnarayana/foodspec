@@ -1,9 +1,8 @@
 """Classification visualization helpers."""
 from __future__ import annotations
 
-
-from typing import Dict, Sequence, Tuple
 from pathlib import Path
+from typing import Dict, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -69,9 +68,9 @@ def plot_reliability_diagram(
     data_bundle : RunBundle | dict
         Either a RunBundle or payload with y_true and y_prob.
     """
+    from foodspec._version import __version__
     from foodspec.reporting.schema import RunBundle
     from foodspec.viz.save import save_figure
-    from foodspec._version import __version__
 
     payload = data_bundle if isinstance(data_bundle, dict) else {}
     if isinstance(data_bundle, RunBundle):

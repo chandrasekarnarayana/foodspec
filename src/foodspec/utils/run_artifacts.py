@@ -14,7 +14,6 @@ from foodspec._version import __version__
 from foodspec.logging_utils import get_logger as _get_logger
 from foodspec.logging_utils import setup_logging
 
-
 _DEFAULT_MAX_HASH_MB = 200
 
 

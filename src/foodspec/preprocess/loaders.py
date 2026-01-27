@@ -10,7 +10,6 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.engine.preprocessing.engine import (
     AlignmentStep,
     BaselineStep,

@@ -15,8 +15,8 @@ Provides visualization tools for analyzing multi-stage spectral preprocessing:
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
 
@@ -42,16 +42,16 @@ def _validate_wavenumbers(wavenumbers: np.ndarray) -> int:
     """
     if not isinstance(wavenumbers, np.ndarray):
         wavenumbers = np.asarray(wavenumbers)
-    
+
     if wavenumbers.ndim != 1:
         raise ValueError(f"Wavenumbers must be 1D, got shape {wavenumbers.shape}")
-    
+
     if len(wavenumbers) == 0:
         raise ValueError("Wavenumbers array is empty")
-    
+
     if not np.issubdtype(wavenumbers.dtype, np.number):
         raise ValueError(f"Wavenumbers must be numeric, got dtype {wavenumbers.dtype}")
-    
+
     return len(wavenumbers)
 
 
@@ -81,25 +81,25 @@ def _validate_spectral_stages(
     """
     if not isinstance(stages_data, dict):
         raise ValueError("stages_data must be a dictionary")
-    
+
     if len(stages_data) == 0:
         raise ValueError("stages_data dictionary is empty")
-    
+
     for stage_name, spectrum in stages_data.items():
         if not isinstance(spectrum, np.ndarray):
             spectrum = np.asarray(spectrum)
-        
+
         if spectrum.ndim != 1:
             raise ValueError(
                 f"Stage '{stage_name}' spectrum must be 1D, got shape {spectrum.shape}"
             )
-        
+
         if len(spectrum) != expected_length:
             raise ValueError(
                 f"Stage '{stage_name}' has length {len(spectrum)}, "
                 f"expected {expected_length}"
             )
-    
+
     return len(stages_data)
 
 
@@ -124,7 +124,7 @@ def _get_stage_colors(
     """
     if n_stages == 1:
         return [plt.colormaps[colormap](0.5)]
-    
+
     cmap = plt.colormaps[colormap]
     indices = np.linspace(0, 1, n_stages)
     return [cmap(idx) for idx in indices]
@@ -156,23 +156,23 @@ def _extract_zoom_regions(
     """
     if zoom_regions is None:
         return []
-    
+
     if not isinstance(zoom_regions, list):
         raise ValueError("zoom_regions must be a list of tuples")
-    
+
     if len(zoom_regions) > 3:
         raise ValueError("Maximum 3 zoom regions allowed")
-    
+
     indices = []
     for min_wv, max_wv in zoom_regions:
         if min_wv >= max_wv:
             raise ValueError(f"Invalid zoom region: {min_wv} >= {max_wv}")
-        
+
         start_idx = np.argmin(np.abs(wavenumbers - min_wv))
         end_idx = np.argmin(np.abs(wavenumbers - max_wv))
-        
+
         indices.append((min(start_idx, end_idx), max(start_idx, end_idx)))
-    
+
     return indices
 
 
@@ -270,7 +270,7 @@ def plot_processing_stages(
     # Validate inputs
     n_wv = _validate_wavenumbers(wavenumbers)
     n_stages = _validate_spectral_stages(stages_data, n_wv)
-    
+
     # Get stage names
     if stage_names is None:
         stage_names = list(stages_data.keys())
@@ -279,7 +279,7 @@ def plot_processing_stages(
             f"stage_names length {len(stage_names)} doesn't match "
             f"stages_data length {n_stages}"
         )
-    
+
     # Get colors
     if stage_colors is None:
         stage_colors = _get_stage_colors(n_stages, colormap)
@@ -288,14 +288,14 @@ def plot_processing_stages(
             f"stage_colors length {len(stage_colors)} doesn't match "
             f"n_stages {n_stages}"
         )
-    
+
     # Extract zoom regions
     zoom_indices = _extract_zoom_regions(wavenumbers, zoom_regions)
-    
+
     # Set title
     if title is None:
         title = f"Spectral Processing Stages ({n_stages} stages)"
-    
+
     # Create figure layout based on zoom regions
     if zoom_indices:
         # Create grid: main plot + inset plots
@@ -315,7 +315,7 @@ def plot_processing_stages(
     else:
         fig, ax_main = plt.subplots(figsize=figure_size, dpi=dpi)
         axes_inset = []
-    
+
     # Plot main spectral stages
     for (stage_key, spectrum), stage_name, color in zip(
         stages_data.items(), stage_names, stage_colors
@@ -328,25 +328,25 @@ def plot_processing_stages(
             alpha=alpha,
             linewidth=linewidth
         )
-    
+
     # Formatting main plot
     ax_main.set_xlabel("Wavenumber (cm⁻¹)", fontsize=12, fontweight="bold")
     ax_main.set_ylabel("Intensity", fontsize=12, fontweight="bold")
     ax_main.set_title(title, fontsize=13, fontweight="bold")
     ax_main.legend(loc="best", framealpha=0.95, fontsize=10)
-    
+
     if show_grid:
         ax_main.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
-    
+
     ax_main.set_xlim(wavenumbers.min(), wavenumbers.max())
-    
+
     # Add zoom regions as rectangles on main plot
     if zoom_indices:
         for (start_idx, end_idx), ax_inset in zip(zoom_indices, axes_inset):
             # Get wavenumber range for this zoom region
             wv_min = wavenumbers[start_idx]
             wv_max = wavenumbers[end_idx]
-            
+
             # Add rectangle to main plot
             rect = mpatches.Rectangle(
                 (wv_min, ax_main.get_ylim()[0]),
@@ -359,7 +359,7 @@ def plot_processing_stages(
                 alpha=0.6
             )
             ax_main.add_patch(rect)
-            
+
             # Plot zoom window
             for (stage_key, spectrum), stage_name, color in zip(
                 stages_data.items(), stage_names, stage_colors
@@ -374,7 +374,7 @@ def plot_processing_stages(
                     alpha=alpha,
                     linewidth=linewidth
                 )
-            
+
             # Format zoom window
             ax_inset.set_xlabel("Wavenumber (cm⁻¹)", fontsize=10)
             ax_inset.set_ylabel("Intensity", fontsize=10)
@@ -383,18 +383,18 @@ def plot_processing_stages(
                 fontsize=11,
                 fontweight="bold"
             )
-            
+
             if show_grid:
                 ax_inset.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
-    
+
     plt.tight_layout()
-    
+
     # Save if requested
     if save_path is not None:
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
-    
+
     return fig
 
 
@@ -455,27 +455,27 @@ def plot_preprocessing_comparison(
     """
     # Validate inputs
     _validate_wavenumbers(wavenumbers)
-    
+
     if not isinstance(before_spectrum, np.ndarray):
         before_spectrum = np.asarray(before_spectrum)
     if not isinstance(after_spectrum, np.ndarray):
         after_spectrum = np.asarray(after_spectrum)
-    
+
     if len(before_spectrum) != len(wavenumbers):
         raise ValueError("before_spectrum length doesn't match wavenumbers")
     if len(after_spectrum) != len(wavenumbers):
         raise ValueError("after_spectrum length doesn't match wavenumbers")
-    
+
     if title is None:
         title = f"Preprocessing Comparison: {preprocessing_name}"
-    
+
     # Create figure
     if show_difference:
         fig, axes = plt.subplots(2, 1, figsize=figure_size, dpi=dpi)
     else:
         fig, ax = plt.subplots(figsize=figure_size, dpi=dpi)
         axes = [ax]
-    
+
     # Main comparison plot
     ax = axes[0]
     ax.plot(
@@ -499,7 +499,7 @@ def plot_preprocessing_comparison(
     ax.set_title(title, fontsize=12, fontweight="bold")
     ax.legend(loc="best", framealpha=0.95, fontsize=10)
     ax.grid(True, alpha=0.3, linestyle="--")
-    
+
     # Difference plot
     if show_difference:
         ax = axes[1]
@@ -512,15 +512,15 @@ def plot_preprocessing_comparison(
         ax.set_title("Change Applied", fontsize=11, fontweight="bold")
         ax.legend(loc="best", framealpha=0.95, fontsize=10)
         ax.grid(True, alpha=0.3, linestyle="--")
-    
+
     plt.tight_layout()
-    
+
     # Save if requested
     if save_path is not None:
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
-    
+
     return fig
 
 
@@ -544,11 +544,11 @@ def get_processing_statistics(
         Statistics dictionary with keys for each stage
     """
     stats = {}
-    
+
     for stage_name, spectrum in stages_data.items():
         if not isinstance(spectrum, np.ndarray):
             spectrum = np.asarray(spectrum)
-        
+
         stats[stage_name] = {
             "mean": float(np.mean(spectrum)),
             "std": float(np.std(spectrum)),
@@ -559,5 +559,5 @@ def get_processing_statistics(
             "q75": float(np.percentile(spectrum, 75)),
             "range": float(np.max(spectrum) - np.min(spectrum)),
         }
-    
+
     return stats

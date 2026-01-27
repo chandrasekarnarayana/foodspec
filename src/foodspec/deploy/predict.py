@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Deployment helpers: prediction scaffolding.
 
 Defines `DeployedPredictor` to restore a model from a single-file artifact and

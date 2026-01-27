@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Embedded FoodSpec logo utilities.
 
 Provides access to a small PNG of the FoodSpec logo for GUI/reporting use cases

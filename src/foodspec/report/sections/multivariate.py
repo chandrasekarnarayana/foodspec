@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Multivariate reporting section builder.
 
 Detects multivariate artifacts under a run directory, renders publication-grade

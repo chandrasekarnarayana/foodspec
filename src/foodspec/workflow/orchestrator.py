@@ -7,30 +7,30 @@ scheme, features, and reporting options without mutating the protocol.
 """
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Tuple
 
-import json
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import confusion_matrix
-import matplotlib.pyplot as plt
+from sklearn.model_selection import StratifiedKFold
 
 from foodspec.core.artifacts import ArtifactRegistry
-from foodspec.core.manifest import RunManifest
 from foodspec.core.errors import FoodSpecValidationError
+from foodspec.core.manifest import RunManifest
 from foodspec.features.hybrid import extract_features
 from foodspec.features.schema import FeatureConfig, FeatureInfo, parse_feature_config, split_spectral_dataframe
 from foodspec.io.validators import validate_input
 from foodspec.modeling.api import fit_predict
-from foodspec.reporting.api import build_report_from_run
-from foodspec.trust.evaluator import TrustEvaluator
-from foodspec.utils.run_artifacts import init_run_dir, write_run_summary, get_logger
 from foodspec.protocol.config import ProtocolConfig
 from foodspec.protocol.utils import validate_protocol
+from foodspec.reporting.api import build_report_from_run
+from foodspec.trust.evaluator import TrustEvaluator
+from foodspec.utils.run_artifacts import get_logger, init_run_dir, write_run_summary
 
 
 @dataclass

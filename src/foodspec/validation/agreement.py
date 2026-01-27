@@ -130,7 +130,7 @@ class BlandAltmanAnalysis:
         ax.axhline(self.mean_diff_, color="red", linestyle="-", linewidth=2, label=f"Mean = {self.mean_diff_:.3f}")
 
         # Plot limits of agreement
-        ax.axhline(self.upper_loa_, color="red", linestyle="--", linewidth=1.5, label=f"±1.96 SD")
+        ax.axhline(self.upper_loa_, color="red", linestyle="--", linewidth=1.5, label="±1.96 SD")
         ax.axhline(self.lower_loa_, color="red", linestyle="--", linewidth=1.5)
 
         ax.set_xlabel("Mean of Methods")

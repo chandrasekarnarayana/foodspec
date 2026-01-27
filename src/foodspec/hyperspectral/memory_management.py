@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Memory-efficient processing for large hyperspectral image cubes.
 

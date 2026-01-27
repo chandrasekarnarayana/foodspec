@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Normalization transformers.
 
 Includes vector, area, internal-peak, standard normal variate (SNV), and

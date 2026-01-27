@@ -3,7 +3,7 @@ from __future__ import annotations
 """Shared plotting styles for FoodSpec visualizations."""
 
 from dataclasses import dataclass
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable
 
 import matplotlib as mpl
 

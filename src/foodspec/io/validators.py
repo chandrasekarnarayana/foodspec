@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Dict, Iterable, List, Mapping, Optional, Set
+from typing import Dict, List, Mapping, Set
 
 import numpy as np
 

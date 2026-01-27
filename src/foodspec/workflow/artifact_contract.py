@@ -17,13 +17,13 @@ class ArtifactContract:
     
     Supports versioned contracts with deterministic digests.
     """
-    
+
     # Default contract version
     DEFAULT_VERSION = "v3"
-    
+
     # Contract file location
     CONTRACT_DIR = Path(__file__).parent / "contracts"
-    
+
     @classmethod
     def _load_contract(cls, version: str = DEFAULT_VERSION) -> Dict:
         """Load contract JSON for specified version.
@@ -51,7 +51,7 @@ class ArtifactContract:
             )
         with open(contract_file) as f:
             return json.load(f)
-    
+
     @classmethod
     def compute_digest(cls, contract_dict: Dict) -> str:
         """Compute deterministic SHA256 digest of contract required artifacts.
@@ -68,19 +68,19 @@ class ArtifactContract:
         """
         # Collect all required artifact lists
         all_artifacts = []
-        for key in ["required_always", "required_success", "required_qc", 
+        for key in ["required_always", "required_success", "required_qc",
                     "required_trust", "required_reporting", "required_modeling",
                     "required_preprocessing", "required_features", "required_failure"]:
             if key in contract_dict:
                 all_artifacts.extend(sorted(contract_dict[key].keys()))
-        
+
         # Create deterministic JSON representation
         payload = json.dumps(sorted(set(all_artifacts)), separators=(",", ":"))
         return hashlib.sha256(payload.encode()).hexdigest()
-    
+
     @classmethod
     def validate_contract_version(
-        cls, 
+        cls,
         manifest_dict: Dict,
         strict_regulatory: bool = False,
     ) -> Tuple[bool, Optional[str]]:
@@ -100,7 +100,7 @@ class ArtifactContract:
         """
         expected_version = cls.DEFAULT_VERSION
         actual_version = manifest_dict.get("artifact_contract_version")
-        
+
         if actual_version != expected_version:
             msg = (
                 f"Contract version mismatch: manifest has '{actual_version}', "
@@ -111,7 +111,7 @@ class ArtifactContract:
                 return False, msg
             # In research mode, just warn
             return True, None
-        
+
         return True, None
 
     # Legacy static members (backward compatibility)
@@ -127,17 +127,17 @@ class ArtifactContract:
     REQUIRED_SUCCESS = {
         "success.json": "Success marker with status and summary",
     }
-    
+
     # Phase 2: QC artifacts (conditional)
     REQUIRED_QC = {
         "artifacts/qc_results.json": "QC gate results (data integrity, spectral quality, model reliability)",
     }
-    
+
     # Phase 2: Trust artifacts (conditional - when enable_trust=True)
     REQUIRED_TRUST = {
         "artifacts/trust_stack.json": "Trust stack results (calibration, conformal, abstention)",
     }
-    
+
     # Phase 2: Reporting artifacts (conditional - when enable_reporting=True)
     REQUIRED_REPORTING = {
         "artifacts/report.html": "HTML report",
@@ -183,7 +183,7 @@ class ArtifactContract:
         """
         missing = []
         all_required = {**cls.REQUIRED_ALWAYS, **cls.REQUIRED_SUCCESS}
-        
+
         # Add conditional requirements
         if enforce_qc:
             all_required.update(cls.REQUIRED_QC)
@@ -273,7 +273,7 @@ class ArtifactContract:
         )
 
         if is_valid:
-            return f"✅ Artifact contract validated (all required files present)"
+            return "✅ Artifact contract validated (all required files present)"
         else:
             return f"❌ Artifact contract FAILED: missing {missing}"
 

@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Iterator, List, Optional, Tuple
 
 import numpy as np
-import pandas as pd
 from sklearn.metrics import balanced_accuracy_score, confusion_matrix, recall_score, roc_auc_score
 from sklearn.model_selection import GroupKFold, StratifiedGroupKFold, StratifiedKFold
 

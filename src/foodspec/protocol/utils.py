@@ -9,9 +9,10 @@ from typing import Dict, List, Union
 
 import pandas as pd
 
+from foodspec.modeling.outcome import OutcomeType
+
 from .config import ProtocolConfig
 from .steps import STEP_REGISTRY
-from foodspec.modeling.outcome import OutcomeType
 
 
 def list_available_protocols(proto_dir: Union[str, Path] = "examples/protocols") -> List[Path]:

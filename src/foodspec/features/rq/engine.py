@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Ratio-Quality (RQ) Engine - Main Engine Class
 ==============================================

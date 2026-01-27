@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 from .metadata import validate_metadata
-from .protocols import ProtocolConfig, ProtocolRunResult, ProtocolRunner, load_protocol, validate_protocol
-from .spectrum import Spectrum
+from .protocols import ProtocolConfig, ProtocolRunner, ProtocolRunResult, load_protocol, validate_protocol
 from .spectra_set import FoodSpectrumSet, SpectraSet
 from .spectral_dataset import (
     HDF5_SCHEMA_VERSION,
@@ -11,6 +10,7 @@ from .spectral_dataset import (
     PreprocessingConfig,
     SpectralDataset,
 )
+from .spectrum import Spectrum
 
 __all__ = [
     "Spectrum",

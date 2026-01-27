@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Optional
 
 import numpy as np
 from scipy.ndimage import median_filter
-from scipy.signal import savgol_filter
 
 from foodspec.data_objects.spectra_set import FoodSpectrumSet
 from foodspec.engine.preprocessing.engine import Step

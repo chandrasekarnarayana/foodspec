@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Calibration transfer toolkit for spectroscopy.
 

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
-import json
 import pandas as pd
 import typer
 
@@ -21,10 +21,10 @@ from foodspec.io.parsers import read_spectra
 from foodspec.io.validators import validate_input
 from foodspec.modeling.api import fit_predict, metrics_by_group
 from foodspec.modeling.validation.quality import validate_dataset
+from foodspec.qc import control_charts as qc_charts
 from foodspec.qc.dataset_qc import check_class_balance, diagnose_imbalance
 from foodspec.qc.engine import compute_health_scores, detect_outliers
 from foodspec.qc.policy import QCPolicy
-from foodspec.qc import control_charts as qc_charts
 from foodspec.trust.dataset_cards import DatasetCard, write_dataset_card
 from foodspec.trust.model_cards import ModelCard, write_model_card
 from foodspec.utils.run_artifacts import (

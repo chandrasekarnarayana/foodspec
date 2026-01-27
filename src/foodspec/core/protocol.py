@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Canonical protocol module for foodspec.core.
 
@@ -7,8 +8,8 @@ It re-exports from the protocol subsystem for a clean, canonical location.
 """
 
 
-from foodspec.protocol.runner import ProtocolRunner as ProtocolV2
 from foodspec.protocol.config import ProtocolConfig, ProtocolRunResult
+from foodspec.protocol.runner import ProtocolRunner as ProtocolV2
 
 __all__ = [
     "ProtocolV2",

@@ -1,11 +1,10 @@
 """Regulatory compliance checks for run artifacts."""
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
-
-import json
 
 
 @dataclass

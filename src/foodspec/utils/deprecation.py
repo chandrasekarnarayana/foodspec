@@ -38,10 +38,10 @@ def deprecated(
             if alternative:
                 msg += f" Use {alternative} instead."
             msg += f" Will be removed in v{version}."
-            
+
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             return func(*args, **kwargs)
-        
+
         # Add deprecation marker to docstring
         if wrapper.__doc__:
             wrapper.__doc__ = (
@@ -50,7 +50,7 @@ def deprecated(
                 f"    Will be removed in v{version}.\n\n"
                 f"{wrapper.__doc__}"
             )
-        
+
         return wrapper
     return decorator
 

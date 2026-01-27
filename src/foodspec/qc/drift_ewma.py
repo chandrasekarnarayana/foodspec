@@ -1,7 +1,7 @@
 """EWMA control charts for drift monitoring on scores (PCA/PLS)."""
 from __future__ import annotations
 
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy as np
 from scipy import stats

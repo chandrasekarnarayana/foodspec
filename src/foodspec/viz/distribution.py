@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """Distribution diagnostic plots."""
 
 from typing import Optional
