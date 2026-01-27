@@ -25,14 +25,14 @@ def _now_utc_iso() -> str:
 
 def _sha256_file(path: Path, max_mb: int = 200) -> Optional[str]:
     """Compute SHA256 hash of a file, skipping if > max_mb.
-    
+
     Parameters
     ----------
     path : Path
         File path to hash.
     max_mb : int
         Max file size in MB to hash. Returns None if file larger.
-    
+
     Returns
     -------
     Optional[str]
@@ -68,14 +68,14 @@ def _git_commit() -> Optional[str]:
 
 def compute_dataset_fingerprint(csv_path: Path) -> Dict[str, Any]:
     """Compute fingerprint of input CSV.
-    
+
     Includes SHA256 hash, row count, column list, and missingness.
-    
+
     Parameters
     ----------
     csv_path : Path
         Path to input CSV file.
-    
+
     Returns
     -------
     Dict[str, Any]
@@ -103,12 +103,12 @@ def compute_dataset_fingerprint(csv_path: Path) -> Dict[str, Any]:
 
 def compute_protocol_fingerprint(protocol_path: Path) -> Dict[str, Any]:
     """Compute fingerprint of protocol file.
-    
+
     Parameters
     ----------
     protocol_path : Path
         Path to protocol YAML or JSON file.
-    
+
     Returns
     -------
     Dict[str, Any]
@@ -124,14 +124,14 @@ def compute_protocol_fingerprint(protocol_path: Path) -> Dict[str, Any]:
 @dataclass
 class Manifest:
     """Execution manifest for a workflow run.
-    
+
     Captures protocol hash, dataset hash, environment, versions, timestamps,
     and artifacts for full reproducibility and audit trail.
-    
+
     Examples
     --------
     Build and save a manifest::
-    
+
         manifest = Manifest.build(
             protocol_path=Path("protocol.yaml"),
             input_paths=[Path("data.csv")],
@@ -184,7 +184,7 @@ class Manifest:
         cli_overrides: Optional[Dict[str, Any]] = None,
     ) -> Manifest:
         """Build manifest from workflow configuration.
-        
+
         Parameters
         ----------
         protocol_path : Path
@@ -199,7 +199,7 @@ class Manifest:
             Full CLI arguments snapshot.
         cli_overrides : Optional[Dict]
             Fields overridden via CLI.
-        
+
         Returns
         -------
         Manifest
@@ -235,7 +235,7 @@ class Manifest:
 
     def save(self, path: Path) -> None:
         """Save manifest to JSON file.
-        
+
         Parameters
         ----------
         path : Path
@@ -252,12 +252,12 @@ class Manifest:
     @classmethod
     def load(cls, path: Path) -> Manifest:
         """Load manifest from JSON file.
-        
+
         Parameters
         ----------
         path : Path
             Input file path.
-        
+
         Returns
         -------
         Manifest
@@ -269,7 +269,7 @@ class Manifest:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert manifest to dictionary.
-        
+
         Returns
         -------
         Dict[str, Any]
@@ -278,7 +278,7 @@ class Manifest:
 
     def summary_str(self) -> str:
         """Return human-readable summary.
-        
+
         Returns
         -------
         str

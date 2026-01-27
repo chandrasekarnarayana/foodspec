@@ -135,7 +135,7 @@ def _validate_inputs(cfg: WorkflowConfig) -> Tuple[bool, list]:
 
 def _load_and_validate_protocol(protocol_path: Path) -> Tuple[ProtocolConfig, Dict[str, Any], Dict[str, Any]]:
     """Load and validate protocol.
-    
+
     Returns
     -------
     Tuple[ProtocolConfig, Dict[str, Any], Dict[str, Any]]
@@ -248,7 +248,7 @@ def _run_preprocessing_real(
     protocol_cfg: ProtocolConfig,
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Run real preprocessing via protocol or engine.
-    
+
     Returns
     -------
     (preprocessed_df, stage_result)
@@ -282,7 +282,7 @@ def _run_features_real(
     label_col: Optional[str] = None,
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Run real feature extraction via protocol.
-    
+
     Returns
     -------
     (features_df, stage_result)
@@ -318,7 +318,7 @@ def _run_modeling_real(
     groups: Optional[np.ndarray] = None,
 ) -> Dict[str, Any]:
     """Run real modeling stage.
-    
+
     Returns
     -------
     stage_result dict with metrics, model info, etc.
@@ -374,7 +374,7 @@ def _run_trust_stack_real(
     allow_placeholder: bool = False,
 ) -> Dict[str, Any]:
     """Run real trust stack (calibration + conformal + abstention).
-    
+
     Parameters
     ----------
     predictions : np.ndarray
@@ -387,13 +387,13 @@ def _run_trust_stack_real(
         If True, strict regulatory semantics apply
     allow_placeholder : bool
         If True, allow placeholder implementation in strict mode (for development)
-    
+
     Placeholder: returns stub results. Real trust module wiring TBD.
-    
+
     Returns
     -------
     trust_result dict with "implementation" field indicating "placeholder" or "real"
-    
+
     Raises
     ------
     TrustError
@@ -461,7 +461,7 @@ def _run_reporting_real(
     strict_regulatory: bool = False,
 ) -> Dict[str, Any]:
     """Generate real HTML report.
-    
+
     Parameters
     ----------
     run_dir : Path
@@ -478,13 +478,13 @@ def _run_reporting_real(
         Trust stack results
     strict_regulatory : bool
         If True, reporting cannot be skipped (Part B)
-    
+
     Placeholder: creates minimal report. Real reporting TBD.
-    
+
     Returns
     -------
     reporting_result dict
-    
+
     Raises
     ------
     ReportingError
@@ -518,17 +518,17 @@ def _run_reporting_real(
         <p><strong>Timestamp:</strong> {datetime.now(timezone.utc).isoformat()}</p>
         <p><strong>Seed:</strong> {cfg.seed}</p>
     </div>
-    
+
     <div class="section">
         <h2>QC Results</h2>
         <pre>{json.dumps({name: res.to_dict() for name, res in qc_results.items()}, indent=2)}</pre>
     </div>
-    
+
     <div class="section">
         <h2>Modeling Results</h2>
         <pre>{json.dumps(modeling_result, indent=2, default=str)}</pre>
     </div>
-    
+
     <div class="section">
         <h2>Manifest Hash</h2>
         <pre>{manifest.id if hasattr(manifest, 'id') else 'N/A'}</pre>
@@ -560,7 +560,7 @@ def _run_reporting_real(
 
 def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> int:
     """Execute Phase 3 full end-to-end workflow.
-    
+
     Orchestrates:
     1. Config validation
     2. Protocol loading
@@ -572,7 +572,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
     8. Real trust stack
     9. Real reporting
     10. Artifact validation
-    
+
     Parameters
     ----------
     cfg : WorkflowConfig
@@ -583,7 +583,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
         - regulatory mode MUST enable trust
         - regulatory mode MUST enable reporting
         If False, use Phase 1 relaxed semantics (backward compatible).
-    
+
     Returns
     -------
     int

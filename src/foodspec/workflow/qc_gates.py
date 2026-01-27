@@ -62,7 +62,7 @@ class DataIntegrityGate:
 
     def __init__(self, thresholds: Optional[Dict[str, Any]] = None):
         """Initialize gate with thresholds.
-        
+
         Parameters
         ----------
         thresholds : Optional[Dict[str, Any]]
@@ -80,14 +80,14 @@ class DataIntegrityGate:
 
     def run(self, df: pd.DataFrame, label_col: Optional[str] = None) -> GateResult:
         """Evaluate data integrity.
-        
+
         Parameters
         ----------
         df : pd.DataFrame
             Input data.
         label_col : Optional[str]
             Label column name for class balance check.
-        
+
         Returns
         -------
         GateResult
@@ -165,7 +165,7 @@ class SpectralQualityGate:
 
     def __init__(self, thresholds: Optional[Dict[str, Any]] = None):
         """Initialize gate with thresholds.
-        
+
         Parameters
         ----------
         thresholds : Optional[Dict[str, Any]]
@@ -183,14 +183,14 @@ class SpectralQualityGate:
         spectral_cols: Optional[List[str]] = None,
     ) -> GateResult:
         """Evaluate spectral quality.
-        
+
         Parameters
         ----------
         df : pd.DataFrame
             Input data with spectral features.
         spectral_cols : Optional[List[str]]
             Column names of spectral features. If None, tries to auto-detect.
-        
+
         Returns
         -------
         GateResult
@@ -281,7 +281,7 @@ class ModelReliabilityGate:
 
     def __init__(self, thresholds: Optional[Dict[str, Any]] = None):
         """Initialize gate with thresholds.
-        
+
         Parameters
         ----------
         thresholds : Optional[Dict[str, Any]]
@@ -295,12 +295,12 @@ class ModelReliabilityGate:
 
     def run(self, modeling_result: Optional[Dict[str, Any]] = None) -> GateResult:
         """Evaluate model reliability.
-        
+
         Parameters
         ----------
         modeling_result : Optional[Dict[str, Any]]
             Result dict from fit_predict or similar, with 'metrics' key.
-        
+
         Returns
         -------
         GateResult

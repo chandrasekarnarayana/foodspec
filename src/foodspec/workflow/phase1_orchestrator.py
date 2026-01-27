@@ -71,7 +71,7 @@ def _setup_run_dir(output_dir: Optional[Path | str]) -> Path:
 
 def _setup_logging(run_dir: Path, verbose: bool = False) -> Tuple[logging.Logger, Any]:
     """Setup logging to run.log + run.jsonl.
-    
+
     Returns
     -------
     (logger, jsonl_handler)
@@ -117,7 +117,7 @@ def _setup_logging(run_dir: Path, verbose: bool = False) -> Tuple[logging.Logger
 
 def _validate_inputs(cfg: WorkflowConfig) -> Tuple[bool, list[str]]:
     """Validate workflow config.
-    
+
     Returns
     -------
     (is_valid, errors)
@@ -133,7 +133,7 @@ def _load_and_validate_protocol(
     protocol_path: Path,
 ) -> Tuple[Any, Dict[str, Any]]:
     """Load protocol and validate against schema.
-    
+
     Returns
     -------
     (protocol_config, validation_results)
@@ -159,7 +159,7 @@ def _read_and_validate_data(
     input_paths: list[Path],
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Read CSV and validate basic schema.
-    
+
     Returns
     -------
     (dataframe, validation_results)
@@ -211,9 +211,9 @@ def _read_and_validate_data(
 
 def _run_preprocessing(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Run preprocessing stage (stub for Phase 1).
-    
+
     Phase 1: minimal preprocessing. Just return df as-is.
-    
+
     Returns
     -------
     (preprocessed_df, stage_result)
@@ -226,7 +226,7 @@ def _run_preprocessing(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, Any]]:
 
 def _run_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Run feature extraction stage (stub for Phase 1).
-    
+
     Returns
     -------
     (features_df, stage_result)
@@ -243,7 +243,7 @@ def _run_qc_gates(
     label_col: Optional[str] = None,
 ) -> Tuple[bool, Dict[str, GateResult]]:
     """Run QC gates and return pass/fail status.
-    
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -252,7 +252,7 @@ def _run_qc_gates(
         If True, fail on gate failures. If False, only warn.
     label_col : Optional[str]
         Label column for class balance check.
-    
+
     Returns
     -------
     (passed, gate_results)
@@ -309,7 +309,7 @@ def _run_modeling(
     seed: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Run modeling stage.
-    
+
     Returns
     -------
     stage_result dict with metrics, model info, etc.
@@ -358,7 +358,7 @@ def _run_modeling(
 
 def run_workflow(cfg: WorkflowConfig) -> int:
     """Execute minimal guaranteed workflow.
-    
+
     Orchestrates:
     1. Config validation
     2. Protocol loading
@@ -369,21 +369,21 @@ def run_workflow(cfg: WorkflowConfig) -> int:
     7. Trust stack (stub)
     8. Reporting (stub)
     9. Artifact validation
-    
+
     Parameters
     ----------
     cfg : WorkflowConfig
         Workflow configuration.
-    
+
     Returns
     -------
     int
         Exit code (0 for success, 2-9 for errors).
-    
+
     Examples
     --------
     Execute a minimal workflow::
-    
+
         cfg = WorkflowConfig(
             protocol=Path("protocol.yaml"),
             inputs=[Path("data.csv")],

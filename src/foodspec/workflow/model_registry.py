@@ -103,22 +103,22 @@ CANONICAL_TO_APPROVED = {
 
 def resolve_model_name(name: Optional[str]) -> Optional[str]:
     """Resolve model name alias to canonical form.
-    
+
     Parameters
     ----------
     name : Optional[str]
         Model name or alias (can be None)
-    
+
     Returns
     -------
     Optional[str]
         Canonical model name, or None if input is None
-    
+
     Raises
     ------
     ValueError
         If name is not recognized
-    
+
     Examples
     --------
     >>> resolve_model_name("LogisticRegression")
@@ -159,12 +159,12 @@ def resolve_model_name(name: Optional[str]) -> Optional[str]:
 
 def is_model_approved(canonical_name: str) -> bool:
     """Check if canonical model name is approved for regulatory use.
-    
+
     Parameters
     ----------
     canonical_name : str
         Canonical model name (e.g., "logreg", "rf")
-    
+
     Returns
     -------
     bool
@@ -181,12 +181,12 @@ def is_model_approved(canonical_name: str) -> bool:
 
 def get_approved_display_name(canonical_name: str) -> str:
     """Get regulatory-approved display name for canonical model.
-    
+
     Parameters
     ----------
     canonical_name : str
         Canonical model name (e.g., "logreg")
-    
+
     Returns
     -------
     str
@@ -197,17 +197,17 @@ def get_approved_display_name(canonical_name: str) -> str:
 
 def resolve_scheme_name(scheme: Optional[str]) -> Optional[str]:
     """Resolve cross-validation scheme alias to canonical form.
-    
+
     Parameters
     ----------
     scheme : Optional[str]
         Scheme name or alias
-    
+
     Returns
     -------
     Optional[str]
         Canonical scheme name
-    
+
     Examples
     --------
     >>> resolve_scheme_name("stratified")

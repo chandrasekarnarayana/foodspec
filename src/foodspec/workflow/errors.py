@@ -26,7 +26,7 @@ EXIT_ARTIFACT_ERROR = 9
 @dataclass
 class WorkflowError(Exception):
     """Base exception for workflow errors.
-    
+
     All workflow errors are caught and serialized to error.json with
     exit code, message, hints, and traceback.
     """
@@ -137,7 +137,7 @@ def write_error_json(
     hint: str = "",
 ) -> Path:
     """Write error.json artifact to run directory.
-    
+
     Parameters
     ----------
     run_dir : Path
@@ -150,7 +150,7 @@ def write_error_json(
         Exit code (inferred from exception if WorkflowError).
     hint : str
         Human-friendly suggestion for fixing.
-    
+
     Returns
     -------
     Path
@@ -182,15 +182,15 @@ def write_error_json(
 
 def classify_error_type(exc: Exception) -> tuple[WorkflowError, int]:
     """Classify an exception into WorkflowError + exit code.
-    
+
     If already a WorkflowError, returns as-is.
     Otherwise, tries to infer based on exception type.
-    
+
     Parameters
     ----------
     exc : Exception
         Exception to classify.
-    
+
     Returns
     -------
     (WorkflowError, exit_code)

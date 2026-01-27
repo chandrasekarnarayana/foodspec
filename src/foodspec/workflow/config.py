@@ -13,13 +13,13 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class WorkflowConfig:
     """Configuration for a workflow run.
-    
+
     Captures protocol path, input files, output directory, mode, and CLI overrides.
-    
+
     Examples
     --------
     Create a workflow config and execute it::
-    
+
         cfg = WorkflowConfig(
             protocol="examples/protocols/oils.yaml",
             inputs=[Path("data.csv")],
@@ -104,7 +104,7 @@ class WorkflowConfig:
 
     def validate(self) -> tuple[bool, list[str]]:
         """Validate workflow config.
-        
+
         Returns
         -------
         (is_valid, errors)

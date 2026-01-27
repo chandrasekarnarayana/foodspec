@@ -51,7 +51,7 @@ class OverrideGovern:
 
 def enforce_model_approved(model_name: str, mode: str, approved_models: Optional[Set[str]] = None) -> tuple[bool, str]:
     """Check if model is approved for regulatory mode.
-    
+
     Parameters
     ----------
     model_name : str
@@ -60,7 +60,7 @@ def enforce_model_approved(model_name: str, mode: str, approved_models: Optional
         Workflow mode: "research" or "regulatory".
     approved_models : Optional[Set[str]]
         Custom approved models set. If None, uses APPROVED_MODELS.
-    
+
     Returns
     -------
     tuple[bool, str]
@@ -84,7 +84,7 @@ def enforce_trust_stack(
     components: Optional[Set[str]] = None,
 ) -> tuple[bool, str]:
     """Enforce trust stack requirements.
-    
+
     Parameters
     ----------
     enable_trust : bool
@@ -93,7 +93,7 @@ def enforce_trust_stack(
         Workflow mode: "research" or "regulatory".
     components : Optional[Set[str]]
         Required trust components. If None, all are required in regulatory mode.
-    
+
     Returns
     -------
     tuple[bool, str]
@@ -120,14 +120,14 @@ def enforce_reporting(
     mode: str,
 ) -> tuple[bool, str]:
     """Enforce reporting requirements.
-    
+
     Parameters
     ----------
     enable_report : bool
         Whether reporting is enabled.
     mode : str
         Workflow mode: "research" or "regulatory".
-    
+
     Returns
     -------
     tuple[bool, str]
@@ -148,7 +148,7 @@ def check_override_governance(
     max_allowed: int = 1,
 ) -> tuple[bool, str]:
     """Check override governance rules.
-    
+
     Parameters
     ----------
     override_count : int
@@ -157,7 +157,7 @@ def check_override_governance(
         Justification text for each override.
     max_allowed : int
         Maximum overrides allowed per run.
-    
+
     Returns
     -------
     tuple[bool, str]
@@ -177,12 +177,12 @@ def check_override_governance(
 
 def get_regulatory_restrictions(mode: str) -> Dict[str, Any]:
     """Get all regulatory restrictions for a mode.
-    
+
     Parameters
     ----------
     mode : str
         Workflow mode: "research" or "regulatory".
-    
+
     Returns
     -------
     Dict[str, Any]

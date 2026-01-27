@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Tuple
 
 class ArtifactContract:
     """Defines which artifacts must exist at different stages.
-    
+
     Supports versioned contracts with deterministic digests.
     """
 
@@ -27,17 +27,17 @@ class ArtifactContract:
     @classmethod
     def _load_contract(cls, version: str = DEFAULT_VERSION) -> Dict:
         """Load contract JSON for specified version.
-        
+
         Parameters
         ----------
         version : str
             Contract version (default "v3")
-            
+
         Returns
         -------
         contract_dict : Dict
             Parsed contract JSON
-            
+
         Raises
         ------
         FileNotFoundError
@@ -55,12 +55,12 @@ class ArtifactContract:
     @classmethod
     def compute_digest(cls, contract_dict: Dict) -> str:
         """Compute deterministic SHA256 digest of contract required artifacts.
-        
+
         Parameters
         ----------
         contract_dict : Dict
             Contract dictionary
-            
+
         Returns
         -------
         digest : str
@@ -85,14 +85,14 @@ class ArtifactContract:
         strict_regulatory: bool = False,
     ) -> Tuple[bool, Optional[str]]:
         """Validate contract version in manifest matches expected version.
-        
+
         Parameters
         ----------
         manifest_dict : Dict
             Manifest JSON
         strict_regulatory : bool
             If True, version mismatch is an error
-            
+
         Returns
         -------
         (is_valid, error_message)
