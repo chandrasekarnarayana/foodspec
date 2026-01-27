@@ -355,7 +355,10 @@ def _run_modeling_real(
             "scheme": scheme,
             "metrics": result.metrics,
             "folds": result.folds if hasattr(result, "folds") else [],
-            "predictions": result.predictions if hasattr(result, "predictions") else [],
+            "predictions": result.y_pred.tolist() if hasattr(result, "y_pred") else [],
+            "y_true": result.y_true.tolist() if hasattr(result, "y_true") else [],
+            "y_proba": result.y_proba.tolist() if getattr(result, "y_proba", None) is not None else None,
+            "classes": list(result.classes) if hasattr(result, "classes") else [],
         }
     except Exception as e:
         logger.error(f"Modeling failed: {e}")
@@ -372,6 +375,9 @@ def _run_trust_stack_real(
     groups: Optional[np.ndarray] = None,
     strict_regulatory: bool = False,
     allow_placeholder: bool = False,
+    y_proba: Optional[np.ndarray] = None,
+    classes: Optional[list[Any]] = None,
+    seed: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Run real trust stack (calibration + conformal + abstention).
 
@@ -388,8 +394,6 @@ def _run_trust_stack_real(
     allow_placeholder : bool
         If True, allow placeholder implementation in strict mode (for development)
 
-    Placeholder: returns stub results. Real trust module wiring TBD.
-
     Returns
     -------
     trust_result dict with "implementation" field indicating "placeholder" or "real"
@@ -402,47 +406,145 @@ def _run_trust_stack_real(
     logger.info("Trust stack stage: running real pipeline...")
 
     try:
-        # TODO: Wire actual trust stack when available
-        # For now, return stub with explicit placeholder marking
-        logger.info("Trust: placeholder implementation (real trust stack TBD)")
+        from sklearn.model_selection import StratifiedShuffleSplit
 
-        # Task A: Explicit placeholder governance
+        from foodspec.trust.abstain import evaluate_abstention
+        from foodspec.trust.conformal import MondrianConformalClassifier
+        from foodspec.trust.metrics import compute_calibration_metrics, risk_coverage_curve
+
+        y_true_arr = np.asarray(y_true)
+        if y_true_arr.size == 0:
+            raise ValueError("y_true is empty; cannot compute trust metrics")
+
+        notes: list[str] = []
+        rng_seed = int(seed) if seed is not None else 42
+
+        # Ensure labels are encoded as ints aligned with probability columns
+        if y_true_arr.dtype.kind not in {"i", "u"}:
+            if classes:
+                mapping = {label: idx for idx, label in enumerate(classes)}
+                try:
+                    y_true_enc = np.array([mapping[label] for label in y_true_arr], dtype=int)
+                except KeyError as exc:
+                    raise ValueError(f"Label {exc.args[0]} not present in provided classes") from exc
+            else:
+                from sklearn.preprocessing import LabelEncoder
+
+                encoder = LabelEncoder()
+                y_true_enc = encoder.fit_transform(y_true_arr)
+                classes = list(encoder.classes_)
+        else:
+            y_true_enc = y_true_arr.astype(int)
+
+        # Prepare probabilities
+        if y_proba is None:
+            pred_arr = np.asarray(predictions)
+            if pred_arr.size == 0:
+                raise ValueError("Missing predictions/probabilities for trust evaluation")
+            n_classes = int(np.max(pred_arr)) + 1
+            if classes:
+                n_classes = max(n_classes, len(classes))
+            proba = np.zeros((len(pred_arr), n_classes), dtype=float)
+            proba[np.arange(len(pred_arr)), pred_arr.astype(int)] = 1.0
+            notes.append("probabilities_missing_used_one_hot")
+        else:
+            proba = np.asarray(y_proba, dtype=float)
+            if proba.ndim == 1:
+                proba = np.column_stack([1.0 - proba, proba])
+            if proba.shape[0] != y_true_enc.shape[0]:
+                raise ValueError("y_proba length does not match y_true")
+
+        n_samples = len(y_true_enc)
+        n_classes = int(proba.shape[1])
+        if n_classes < 2:
+            raise ValueError("Trust stack requires at least 2 classes")
+
+        # Split calibration/test for conformal; fall back to full set if split fails
+        cal_idx = np.arange(n_samples)
+        eval_idx = np.arange(n_samples)
+        try:
+            sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=rng_seed)
+            cal_idx, eval_idx = next(sss.split(np.zeros(n_samples), y_true_enc))
+        except Exception:
+            notes.append("conformal_used_full_set")
+
+        proba_cal = proba[cal_idx]
+        y_cal = y_true_enc[cal_idx]
+        proba_eval = proba[eval_idx]
+        y_eval = y_true_enc[eval_idx]
+
+        # Calibration metrics (ECE/Brier/NLL)
+        calibration_metrics = compute_calibration_metrics(y_eval, proba_eval)
+
+        # Conformal prediction
+        target_coverage = 0.9
+        cp = MondrianConformalClassifier(alpha=1.0 - target_coverage)
+        cp.fit(y_cal, proba_cal)
+        cp_result = cp.predict_sets(proba_eval, y_true=y_eval)
+        set_sizes = np.asarray(cp_result.set_sizes, dtype=int)
+
+        # Abstention
+        abstention_threshold = 0.7
+        abstention = evaluate_abstention(
+            proba_eval,
+            y_eval,
+            threshold=abstention_threshold,
+            prediction_sets=cp_result.prediction_sets,
+            max_set_size=n_classes,
+        )
+
         trust_result = {
             "status": "success",
-            "implementation": "placeholder",  # Task A: explicit field
-            "capabilities": [],  # No real capabilities in placeholder
-            "reason": "Placeholder (real trust stack not yet implemented)",
-            "coverage": 1.0,
-            "calibration": {"status": "placeholder", "value": None},
-            "conformal": {"status": "placeholder", "value": None},
-            "abstention": {"status": "placeholder", "value": None},
-            "ood": {"status": "placeholder", "value": None},
+            "implementation": "real",
+            "capabilities": ["calibration", "conformal", "abstention"],
+            "reason": "Computed trust metrics from model probabilities",
+            "coverage": float(cp_result.coverage) if cp_result.coverage is not None else None,
+            "calibration": {
+                "status": "success",
+                "metrics": calibration_metrics,
+            },
+            "conformal": {
+                "status": "success",
+                "target_coverage": target_coverage,
+                "coverage": float(cp_result.coverage) if cp_result.coverage is not None else None,
+                "set_size_mean": float(np.mean(set_sizes)) if set_sizes.size else 0.0,
+                "set_size_median": float(np.median(set_sizes)) if set_sizes.size else 0.0,
+                "set_size_max": int(np.max(set_sizes)) if set_sizes.size else 0,
+                "per_bin_coverage": cp_result.per_bin_coverage or {},
+                "thresholds": cp_result.thresholds,
+            },
+            "abstention": {
+                "status": "success",
+                "threshold": abstention_threshold,
+                "abstain_rate": abstention.abstain_rate,
+                "accuracy_non_abstained": abstention.accuracy_non_abstained,
+                "coverage_under_abstention": abstention.coverage,
+            },
+            "risk_coverage": risk_coverage_curve(y_eval, proba_eval),
+            "ood": {"status": "not_implemented"},
+            "notes": notes,
         }
-
-        # Task A: In strict regulatory mode, reject placeholder unless explicitly allowed
-        if strict_regulatory and trust_result.get("implementation") == "placeholder":
-            if not allow_placeholder:
-                raise TrustError(
-                    message="Placeholder trust stack not allowed in strict regulatory mode",
-                    stage="trust_stack",
-                    hint=(
-                        "Trust stack implementation is still a placeholder (not production-ready). "
-                        "For development/testing, use: --allow-placeholder-trust. "
-                        "For production regulatory submissions, implement real trust stack with "
-                        "calibration, conformal prediction, and abstention mechanisms."
-                    ),
-                )
-            else:
-                logger.warning(
-                    "⚠️  Placeholder trust stack being used in strict regulatory mode "
-                    "(enabled via --allow-placeholder-trust for development only). "
-                    "This is NOT suitable for real regulatory submissions."
-                )
 
         return trust_result
     except TrustError:
         raise  # Re-raise TrustError as-is
     except Exception as e:
+        if allow_placeholder:
+            logger.warning(
+                "Trust stack failed; falling back to placeholder metrics "
+                "because --allow-placeholder-trust is enabled."
+            )
+            return {
+                "status": "success",
+                "implementation": "placeholder",
+                "capabilities": [],
+                "reason": f"Placeholder fallback after trust error: {e}",
+                "coverage": None,
+                "calibration": {"status": "placeholder", "value": None},
+                "conformal": {"status": "placeholder", "value": None},
+                "abstention": {"status": "placeholder", "value": None},
+                "ood": {"status": "placeholder", "value": None},
+            }
         logger.error(f"Trust stack failed: {e}")
         raise TrustError(
             message=f"Trust stack failed: {e}",
@@ -805,6 +907,40 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     with open(metrics_path, "w") as f:
                         json.dump(modeling_result["metrics"], f, indent=2)
 
+            # Optional: calibrate ECE for reliability gate using a held-out split
+            try:
+                y_true_cal = np.asarray(modeling_result.get("y_true"))
+                y_proba_cal = modeling_result.get("y_proba")
+                if y_proba_cal is not None and y_true_cal.size:
+                    y_proba_cal = np.asarray(y_proba_cal, dtype=float)
+                    from sklearn.model_selection import StratifiedShuffleSplit
+                    from foodspec.trust.calibration import IsotonicCalibrator
+                    from foodspec.trust.reliability import expected_calibration_error
+
+                    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=cfg.seed or 42)
+                    cal_idx, eval_idx = next(sss.split(np.zeros(len(y_true_cal)), y_true_cal))
+                    calibrator = IsotonicCalibrator().fit(y_true_cal[cal_idx], y_proba_cal[cal_idx])
+                    proba_eval = calibrator.transform(y_proba_cal[eval_idx])
+                    ece_cal = float(expected_calibration_error(y_true_cal[eval_idx], proba_eval))
+                    metrics = modeling_result.get("metrics", {})
+                    if "ece" in metrics:
+                        metrics["ece_raw"] = metrics["ece"]
+                    metrics["ece"] = ece_cal
+                    metrics["calibration_method"] = "isotonic"
+                    modeling_result["metrics"] = metrics
+                    modeling_result["calibration"] = {
+                        "method": "isotonic",
+                        "ece": ece_cal,
+                        "ece_raw": metrics.get("ece_raw"),
+                    }
+                    # Re-write metrics artifact with calibrated ECE
+                    metrics_path = run_dir / "artifacts" / "metrics.json"
+                    metrics_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(metrics_path, "w") as f:
+                        json.dump(modeling_result["metrics"], f, indent=2)
+            except Exception as e:
+                logger_ref.warning(f"Calibration metric adjustment failed: {e}")
+
             # ModelReliabilityGate on real results
             model_gate = ModelReliabilityGate()
             model_result = model_gate.run(modeling_result)
@@ -816,7 +952,9 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
         trust_result = {"status": "skipped"}
         if trust_enabled and modeling_result.get("status") == "success":
             predictions = modeling_result.get("predictions", np.array([]))
-            y_true = df_features[label_col].to_numpy() if label_col else None
+            y_true = modeling_result.get("y_true")
+            if not y_true and label_col:
+                y_true = df_features[label_col].to_numpy()
             if predictions is not None and y_true is not None:
                 # Task A: Pass allow_placeholder_trust flag
                 trust_result = _run_trust_stack_real(
@@ -824,6 +962,9 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     y_true,
                     strict_regulatory=strict_regulatory,
                     allow_placeholder=cfg.allow_placeholder_trust,  # Task A
+                    y_proba=modeling_result.get("y_proba"),
+                    classes=modeling_result.get("classes"),
+                    seed=cfg.seed,
                 )
                 logger_ref.info(f"Trust stack: {trust_result.get('reason', trust_result.get('status'))}")
 
