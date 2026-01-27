@@ -97,3 +97,5 @@ protocol_runs_test/
 *.tmp
 *.log
 .workflow_venv/
+tmp_run/
+tmp_run3/
