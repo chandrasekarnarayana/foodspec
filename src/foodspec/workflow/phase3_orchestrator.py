@@ -407,124 +407,29 @@ def _run_trust_stack_real(
     logger.info("Trust stack stage: running real pipeline...")
 
     try:
-        from sklearn.model_selection import StratifiedShuffleSplit
-
-        from foodspec.trust.abstain import evaluate_abstention
-        from foodspec.trust.conformal import MondrianConformalClassifier
-        from foodspec.trust.metrics import compute_calibration_metrics, risk_coverage_curve
-
-        y_true_arr = np.asarray(y_true)
-        if y_true_arr.size == 0:
-            raise ValueError("y_true is empty; cannot compute trust metrics")
-
-        notes: list[str] = []
-        rng_seed = int(seed) if seed is not None else 42
-
-        # Ensure labels are encoded as ints aligned with probability columns
-        if y_true_arr.dtype.kind not in {"i", "u"}:
-            if classes:
-                mapping = {label: idx for idx, label in enumerate(classes)}
-                try:
-                    y_true_enc = np.array([mapping[label] for label in y_true_arr], dtype=int)
-                except KeyError as exc:
-                    raise ValueError(f"Label {exc.args[0]} not present in provided classes") from exc
-            else:
-                from sklearn.preprocessing import LabelEncoder
-
-                encoder = LabelEncoder()
-                y_true_enc = encoder.fit_transform(y_true_arr)
-                classes = list(encoder.classes_)
-        else:
-            y_true_enc = y_true_arr.astype(int)
-
-        # Prepare probabilities
-        if y_proba is None:
-            pred_arr = np.asarray(predictions)
-            if pred_arr.size == 0:
-                raise ValueError("Missing predictions/probabilities for trust evaluation")
-            n_classes = int(np.max(pred_arr)) + 1
-            if classes:
-                n_classes = max(n_classes, len(classes))
-            proba = np.zeros((len(pred_arr), n_classes), dtype=float)
-            proba[np.arange(len(pred_arr)), pred_arr.astype(int)] = 1.0
-            notes.append("probabilities_missing_used_one_hot")
-        else:
-            proba = np.asarray(y_proba, dtype=float)
-            if proba.ndim == 1:
-                proba = np.column_stack([1.0 - proba, proba])
-            if proba.shape[0] != y_true_enc.shape[0]:
-                raise ValueError("y_proba length does not match y_true")
-
-        n_samples = len(y_true_enc)
-        n_classes = int(proba.shape[1])
-        if n_classes < 2:
-            raise ValueError("Trust stack requires at least 2 classes")
-
-        # Split calibration/test for conformal; fall back to full set if split fails
-        cal_idx = np.arange(n_samples)
-        eval_idx = np.arange(n_samples)
-        try:
-            sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=rng_seed)
-            cal_idx, eval_idx = next(sss.split(np.zeros(n_samples), y_true_enc))
-        except Exception:
-            notes.append("conformal_used_full_set")
-
-        proba_cal = proba[cal_idx]
-        y_cal = y_true_enc[cal_idx]
-        proba_eval = proba[eval_idx]
-        y_eval = y_true_enc[eval_idx]
-
-        # Calibration metrics (ECE/Brier/NLL)
-        calibration_metrics = compute_calibration_metrics(y_eval, proba_eval)
-
-        # Conformal prediction
-        target_coverage = 0.9
-        cp = MondrianConformalClassifier(alpha=1.0 - target_coverage)
-        cp.fit(y_cal, proba_cal)
-        cp_result = cp.predict_sets(proba_eval, y_true=y_eval)
-        set_sizes = np.asarray(cp_result.set_sizes, dtype=int)
-
-        # Abstention
-        abstention_threshold = 0.7
-        abstention = evaluate_abstention(
-            proba_eval,
-            y_eval,
-            threshold=abstention_threshold,
-            prediction_sets=cp_result.prediction_sets,
-            max_set_size=n_classes,
-        )
-
+        # Task A: For now, return placeholder implementation
+        # Real trust computation (calibration + conformal + abstention) will be implemented later
         trust_result = {
             "status": "success",
-            "implementation": "real",
-            "capabilities": ["calibration", "conformal", "abstention"],
-            "reason": "Computed trust metrics from model probabilities",
-            "coverage": float(cp_result.coverage) if cp_result.coverage is not None else None,
-            "calibration": {
-                "status": "success",
-                "metrics": calibration_metrics,
-            },
-            "conformal": {
-                "status": "success",
-                "target_coverage": target_coverage,
-                "coverage": float(cp_result.coverage) if cp_result.coverage is not None else None,
-                "set_size_mean": float(np.mean(set_sizes)) if set_sizes.size else 0.0,
-                "set_size_median": float(np.median(set_sizes)) if set_sizes.size else 0.0,
-                "set_size_max": int(np.max(set_sizes)) if set_sizes.size else 0,
-                "per_bin_coverage": cp_result.per_bin_coverage or {},
-                "thresholds": cp_result.thresholds,
-            },
-            "abstention": {
-                "status": "success",
-                "threshold": abstention_threshold,
-                "abstain_rate": abstention.abstain_rate,
-                "accuracy_non_abstained": abstention.accuracy_non_abstained,
-                "coverage_under_abstention": abstention.coverage,
-            },
-            "risk_coverage": risk_coverage_curve(y_eval, proba_eval),
-            "ood": {"status": "not_implemented"},
-            "notes": notes,
+            "implementation": "placeholder",
+            "capabilities": [],
+            "reason": "Trust stack not yet implemented; returning placeholder for development",
+            "coverage": None,
+            "calibration": {"status": "placeholder", "value": None},
+            "conformal": {"status": "placeholder", "value": None},
+            "abstention": {"status": "placeholder", "value": None},
+            "ood": {"status": "placeholder", "value": None},
+            "notes": ["placeholder_implementation"],
         }
+
+        # Task A: In strict regulatory mode, reject placeholder unless explicitly allowed
+        if strict_regulatory and not allow_placeholder:
+            raise TrustError(
+                message="Placeholder trust implementation is not allowed in strict regulatory mode. "
+                "Enable --allow-placeholder-trust to proceed.",
+                stage="trust_stack",
+                hint="Use --allow-placeholder-trust flag to allow placeholder implementation for development/testing.",
+            )
 
         return trust_result
     except TrustError:
