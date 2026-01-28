@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+limit=$((90*1024*1024))
+files=$(git diff --cached --name-only)
+for f in $files; do
+  [ -f "$f" ] || continue
+  size=$(wc -c <"$f")
+  if [ "$size" -gt "$limit" ]; then
+    echo "ERROR: $f is $size bytes (> 90MB). Remove it or use Git LFS."
+    exit 1
+  fi
+done
