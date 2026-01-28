@@ -470,12 +470,22 @@ class Experiment:
     ) -> tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
         """Extract features and target.
 
-        Stub: assumes last column is target.
+        Stub: assumes last column is target, looks for 'group' column for CV schemes.
         """
         self.logger.info(f"Feature engineering: {df.shape}")
-        X = df.iloc[:, :-1].values
-        y = df.iloc[:, -1].values
+        
+        # Look for group column (for LOBO/LOSO schemes)
         groups = None
+        if "group" in df.columns:
+            groups = df["group"].values
+            # Remove group from features
+            df_features = df.drop(columns=["group"])
+            X = df_features.iloc[:, :-1].values
+            y = df_features.iloc[:, -1].values
+        else:
+            # Last column is target
+            X = df.iloc[:, :-1].values
+            y = df.iloc[:, -1].values
 
         X_path = features_dir / "X.npy"
         y_path = features_dir / "y.npy"

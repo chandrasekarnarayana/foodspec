@@ -36,6 +36,8 @@ def synthetic_csv():
     feature_cols = [f"feature_{i}" for i in range(n_features)]
     df = pd.DataFrame(X, columns=feature_cols)
     df["target"] = y
+    # Add group column for LOBO/LOSO schemes
+    df["group"] = np.repeat(np.arange(10), 5)  # 10 groups of 5 samples each
 
     # Save to temp file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
