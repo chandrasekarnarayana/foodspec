@@ -89,12 +89,7 @@ class ArchitectureValidator:
         """Verify exactly one pyproject.toml."""
         self.log_info("Checking single pyproject.toml...")
         matches = list(self.repo_root.glob("**/pyproject.toml"))
-        matches = [
-            m for m in matches
-            if ".git" not in m.parts
-            and "venv" not in m.parts
-            and m.parent == self.repo_root
-        ]
+        matches = [m for m in matches if ".git" not in m.parts and "venv" not in m.parts and m.parent == self.repo_root]
 
         if len(matches) != 1:
             self.log_fail(
@@ -199,10 +194,9 @@ class ArchitectureValidator:
 
             # Filter to actual definitions (not comments)
             definitions = [
-                line for line in result.stdout.split("\n")
-                if f"class {class_name}" in line
-                and not line.strip().startswith("#")
-                and ".git" not in line
+                line
+                for line in result.stdout.split("\n")
+                if f"class {class_name}" in line and not line.strip().startswith("#") and ".git" not in line
             ]
 
             if len(definitions) > 1:
@@ -290,18 +284,18 @@ class ArchitectureValidator:
                 self.log_fail(f"Check failed with exception: {e}")
 
         print(f"\n{BLUE}{'=' * 60}{RESET}")
-        print(f"Results: {GREEN}{self.checks_passed} passed{RESET}, "
-              f"{RED}{self.checks_failed} failed{RESET}, "
-              f"{YELLOW}{self.warnings} warnings{RESET}")
+        print(
+            f"Results: {GREEN}{self.checks_passed} passed{RESET}, "
+            f"{RED}{self.checks_failed} failed{RESET}, "
+            f"{YELLOW}{self.warnings} warnings{RESET}"
+        )
         print(f"{BLUE}{'=' * 60}{RESET}\n")
 
         return self.checks_failed == 0
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Validate FoodSpec architecture coherence"
-    )
+    parser = argparse.ArgumentParser(description="Validate FoodSpec architecture coherence")
     parser.add_argument(
         "--strict",
         action="store_true",

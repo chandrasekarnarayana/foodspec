@@ -1,4 +1,5 @@
 """Shared typing aliases for FoodSpec."""
+
 from __future__ import annotations
 
 from typing import Iterable, Mapping, Sequence
@@ -22,4 +23,3 @@ IntArray = np.ndarray
 SequenceLike = Sequence
 IterableLike = Iterable
 MappingLike = Mapping
-

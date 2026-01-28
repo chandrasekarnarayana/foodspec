@@ -1,4 +1,5 @@
 """Legacy import path for SpectralDataset (deprecated)."""
+
 from __future__ import annotations
 
 from foodspec.data_objects.spectral_dataset import (
@@ -31,4 +32,3 @@ __all__ = [
     "smooth_signal",
     "normalize_matrix",
 ]
-

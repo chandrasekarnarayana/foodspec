@@ -1,4 +1,5 @@
 """Raman loader wrappers."""
+
 from __future__ import annotations
 
 from foodspec.io.loaders.folder import load_folder

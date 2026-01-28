@@ -26,6 +26,7 @@ This module provides tools for analyzing spectral changes over time:
     >>> #   classification: true
     >>> #   shelf_life_threshold: 2.0
 """
+
 from __future__ import annotations
 
 import warnings

@@ -120,10 +120,7 @@ def _get_embedding_colors(labels: Optional[np.ndarray], colormap: str) -> Dict[A
     return colors
 
 
-def _fit_confidence_ellipse(
-    points: np.ndarray,
-    confidence: float = 0.68
-) -> Tuple[np.ndarray, np.ndarray, float]:
+def _fit_confidence_ellipse(points: np.ndarray, confidence: float = 0.68) -> Tuple[np.ndarray, np.ndarray, float]:
     """
     Fit confidence ellipse to 2D point cloud.
 
@@ -170,9 +167,7 @@ def _fit_confidence_ellipse(
 
 
 def _extract_contour_region(
-    points: np.ndarray,
-    xlim: Tuple[float, float],
-    ylim: Tuple[float, float]
+    points: np.ndarray, xlim: Tuple[float, float], ylim: Tuple[float, float]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Extract points within bounding region for contour calculation.
@@ -193,8 +188,7 @@ def _extract_contour_region(
     yy : np.ndarray
         Grid Y coordinates
     """
-    mask = (points[:, 0] >= xlim[0]) & (points[:, 0] <= xlim[1]) & \
-           (points[:, 1] >= ylim[0]) & (points[:, 1] <= ylim[1])
+    mask = (points[:, 0] >= xlim[0]) & (points[:, 0] <= xlim[1]) & (points[:, 1] >= ylim[0]) & (points[:, 1] <= ylim[1])
 
     return mask
 
@@ -217,7 +211,7 @@ def plot_embedding(
     title: Optional[str] = None,
     figure_size: Tuple[int, int] = (12, 9),
     save_path: Optional[Union[str, Path]] = None,
-    dpi: int = 300
+    dpi: int = 300,
 ) -> plt.Figure:
     """
     Visualize dimensionality reduction embedding with multi-factor coloring.
@@ -341,9 +335,18 @@ def plot_embedding(
             stage_batches = batch_labels[mask] if batch_labels is not None else None
 
             _plot_embedding_2d(
-                ax, stage_embedding, stage_classes, stage_batches,
-                class_colormap, batch_colormap, alpha, marker_size,
-                show_ellipses, ellipse_confidence, show_contours, n_contours
+                ax,
+                stage_embedding,
+                stage_classes,
+                stage_batches,
+                class_colormap,
+                batch_colormap,
+                alpha,
+                marker_size,
+                show_ellipses,
+                ellipse_confidence,
+                show_contours,
+                n_contours,
             )
             ax.set_title(f"{embedding_name} - {stage}")
             ax.set_xlabel("Component 1")
@@ -354,28 +357,44 @@ def plot_embedding(
         for idx in range(len(unique_stages), len(axes)):
             axes[idx].set_visible(False)
 
-        fig.suptitle(title or f"{embedding_name} by Stage", fontsize=14, fontweight='bold')
+        fig.suptitle(title or f"{embedding_name} by Stage", fontsize=14, fontweight="bold")
         plt.tight_layout()
 
     else:
         # Single plot (2D or 3D)
         if is_3d:
             fig = plt.figure(figsize=figure_size)
-            ax = fig.add_subplot(111, projection='3d')
+            ax = fig.add_subplot(111, projection="3d")
             _plot_embedding_3d(
-                ax, embedding, class_labels, batch_labels,
-                class_colormap, batch_colormap, alpha, marker_size,
-                show_ellipses, ellipse_confidence
+                ax,
+                embedding,
+                class_labels,
+                batch_labels,
+                class_colormap,
+                batch_colormap,
+                alpha,
+                marker_size,
+                show_ellipses,
+                ellipse_confidence,
             )
         else:
             fig, ax = plt.subplots(figsize=figure_size)
             _plot_embedding_2d(
-                ax, embedding, class_labels, batch_labels,
-                class_colormap, batch_colormap, alpha, marker_size,
-                show_ellipses, ellipse_confidence, show_contours, n_contours
+                ax,
+                embedding,
+                class_labels,
+                batch_labels,
+                class_colormap,
+                batch_colormap,
+                alpha,
+                marker_size,
+                show_ellipses,
+                ellipse_confidence,
+                show_contours,
+                n_contours,
             )
 
-        ax.set_title(title or f"{embedding_name} Embedding", fontsize=14, fontweight='bold')
+        ax.set_title(title or f"{embedding_name} Embedding", fontsize=14, fontweight="bold")
         ax.set_xlabel("Component 1")
         ax.set_ylabel("Component 2")
         if not is_3d:
@@ -386,7 +405,7 @@ def plot_embedding(
     if save_path is not None:
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 
@@ -527,12 +546,12 @@ def _plot_embedding_2d(
     show_ellipses: bool,
     ellipse_confidence: float,
     show_contours: bool,
-    n_contours: int
+    n_contours: int,
 ) -> None:
     """Helper function to plot 2D embedding."""
     if class_labels is None:
         # Plot all points in single color
-        ax.scatter(embedding[:, 0], embedding[:, 1], s=marker_size, alpha=alpha, c='steelblue')
+        ax.scatter(embedding[:, 0], embedding[:, 1], s=marker_size, alpha=alpha, c="steelblue")
     else:
         # Color by class labels
         class_colors = _get_embedding_colors(class_labels, class_colormap)
@@ -541,12 +560,9 @@ def _plot_embedding_2d(
         for cls in unique_classes:
             mask = class_labels == cls
             color = class_colors[cls]
-            ax.scatter(
-                embedding[mask, 0], embedding[mask, 1],
-                label=str(cls), s=marker_size, alpha=alpha, c=[color]
-            )
+            ax.scatter(embedding[mask, 0], embedding[mask, 1], label=str(cls), s=marker_size, alpha=alpha, c=[color])
 
-        ax.legend(loc='best', framealpha=0.9)
+        ax.legend(loc="best", framealpha=0.9)
 
         # Add confidence ellipses if requested
         if show_ellipses and len(embedding) > 2:
@@ -554,13 +570,17 @@ def _plot_embedding_2d(
                 mask = class_labels == cls
                 class_points = embedding[mask]
                 if len(class_points) > 2:
-                    center, scales, angle = _fit_confidence_ellipse(
-                        class_points[:, :2], ellipse_confidence
-                    )
+                    center, scales, angle = _fit_confidence_ellipse(class_points[:, :2], ellipse_confidence)
                     ellipse = Ellipse(
-                        center, scales[0], scales[1], angle=angle,
-                        edgecolor=class_colors[cls], facecolor='none',
-                        linewidth=2, linestyle='--', alpha=0.8
+                        center,
+                        scales[0],
+                        scales[1],
+                        angle=angle,
+                        edgecolor=class_colors[cls],
+                        facecolor="none",
+                        linewidth=2,
+                        linestyle="--",
+                        alpha=0.8,
                     )
                     ax.add_patch(ellipse)
 
@@ -578,10 +598,7 @@ def _plot_embedding_2d(
             margin_x = (x_max - x_min) * 0.1
             margin_y = (y_max - y_min) * 0.1
 
-            xx, yy = np.mgrid[
-                x_min - margin_x:x_max + margin_x:100j,
-                y_min - margin_y:y_max + margin_y:100j
-            ]
+            xx, yy = np.mgrid[x_min - margin_x : x_max + margin_x : 100j, y_min - margin_y : y_max + margin_y : 100j]
             positions = np.vstack([xx.ravel(), yy.ravel()])
 
             # Compute KDE
@@ -589,7 +606,7 @@ def _plot_embedding_2d(
             Z = kde(positions).reshape(xx.shape)
 
             # Plot contours
-            ax.contour(xx, yy, Z, levels=n_contours, colors='gray', alpha=0.5, linewidths=1)
+            ax.contour(xx, yy, Z, levels=n_contours, colors="gray", alpha=0.5, linewidths=1)
         except Exception:
             pass  # Silently skip contours if KDE fails
 
@@ -604,14 +621,11 @@ def _plot_embedding_3d(
     alpha: float,
     marker_size: int,
     show_ellipses: bool,
-    ellipse_confidence: float
+    ellipse_confidence: float,
 ) -> None:
     """Helper function to plot 3D embedding."""
     if class_labels is None:
-        ax.scatter(
-            embedding[:, 0], embedding[:, 1], embedding[:, 2],
-            s=marker_size, alpha=alpha, c='steelblue'
-        )
+        ax.scatter(embedding[:, 0], embedding[:, 1], embedding[:, 2], s=marker_size, alpha=alpha, c="steelblue")
     else:
         class_colors = _get_embedding_colors(class_labels, class_colormap)
         unique_classes = np.unique(class_labels)
@@ -620,11 +634,16 @@ def _plot_embedding_3d(
             mask = class_labels == cls
             color = class_colors[cls]
             ax.scatter(
-                embedding[mask, 0], embedding[mask, 1], embedding[mask, 2],
-                label=str(cls), s=marker_size, alpha=alpha, c=[color]
+                embedding[mask, 0],
+                embedding[mask, 1],
+                embedding[mask, 2],
+                label=str(cls),
+                s=marker_size,
+                alpha=alpha,
+                c=[color],
             )
 
-        ax.legend(loc='best', framealpha=0.9)
+        ax.legend(loc="best", framealpha=0.9)
 
     ax.set_xlabel("Component 1")
     ax.set_ylabel("Component 2")
@@ -642,7 +661,7 @@ def plot_embedding_comparison(
     title: Optional[str] = None,
     figure_size: Tuple[int, int] = (15, 5),
     save_path: Optional[Union[str, Path]] = None,
-    dpi: int = 300
+    dpi: int = 300,
 ) -> plt.Figure:
     """
     Compare multiple embeddings side-by-side with unified coloring.
@@ -708,30 +727,38 @@ def plot_embedding_comparison(
         emb = embeddings[name]
 
         _plot_embedding_2d(
-            ax, emb, class_labels, None,
-            class_colormap, "Set1", alpha, marker_size,
-            show_ellipses, ellipse_confidence, False, 5
+            ax,
+            emb,
+            class_labels,
+            None,
+            class_colormap,
+            "Set1",
+            alpha,
+            marker_size,
+            show_ellipses,
+            ellipse_confidence,
+            False,
+            5,
         )
 
-        ax.set_title(name, fontsize=12, fontweight='bold')
+        ax.set_title(name, fontsize=12, fontweight="bold")
         ax.set_xlabel("Component 1")
         ax.set_ylabel("Component 2")
         ax.grid(True, alpha=0.3)
 
-    fig.suptitle(title or "Embedding Comparison", fontsize=14, fontweight='bold')
+    fig.suptitle(title or "Embedding Comparison", fontsize=14, fontweight="bold")
     plt.tight_layout()
 
     if save_path is not None:
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 
 
 def get_embedding_statistics(
-    embedding: np.ndarray,
-    class_labels: Optional[np.ndarray] = None
+    embedding: np.ndarray, class_labels: Optional[np.ndarray] = None
 ) -> Dict[str, Dict[str, float]]:
     """
     Extract per-group statistics from embedding.
@@ -774,15 +801,15 @@ def get_embedding_statistics(
 
     if class_labels is None:
         # Global statistics
-        stats['global'] = {
-            'n_samples': len(embedding),
-            'mean_x': float(np.mean(embedding[:, 0])),
-            'mean_y': float(np.mean(embedding[:, 1])),
-            'std_x': float(np.std(embedding[:, 0])),
-            'std_y': float(np.std(embedding[:, 1])),
-            'range_x': float(np.ptp(embedding[:, 0])),
-            'range_y': float(np.ptp(embedding[:, 1])),
-            'separation': 0.0
+        stats["global"] = {
+            "n_samples": len(embedding),
+            "mean_x": float(np.mean(embedding[:, 0])),
+            "mean_y": float(np.mean(embedding[:, 1])),
+            "std_x": float(np.std(embedding[:, 0])),
+            "std_y": float(np.std(embedding[:, 1])),
+            "range_x": float(np.ptp(embedding[:, 0])),
+            "range_y": float(np.ptp(embedding[:, 1])),
+            "separation": 0.0,
         }
     else:
         unique_classes = np.unique(class_labels)
@@ -794,22 +821,22 @@ def get_embedding_statistics(
             class_emb = embedding[mask]
 
             stats[str(cls)] = {
-                'n_samples': len(class_emb),
-                'mean_x': float(np.mean(class_emb[:, 0])),
-                'mean_y': float(np.mean(class_emb[:, 1])),
-                'std_x': float(np.std(class_emb[:, 0])),
-                'std_y': float(np.std(class_emb[:, 1])),
-                'range_x': float(np.ptp(class_emb[:, 0])),
-                'range_y': float(np.ptp(class_emb[:, 1])),
-                'separation': 0.0
+                "n_samples": len(class_emb),
+                "mean_x": float(np.mean(class_emb[:, 0])),
+                "mean_y": float(np.mean(class_emb[:, 1])),
+                "std_x": float(np.std(class_emb[:, 0])),
+                "std_y": float(np.std(class_emb[:, 1])),
+                "range_x": float(np.ptp(class_emb[:, 0])),
+                "range_y": float(np.ptp(class_emb[:, 1])),
+                "separation": 0.0,
             }
 
-            means[str(cls)] = np.array([stats[str(cls)]['mean_x'], stats[str(cls)]['mean_y']])
+            means[str(cls)] = np.array([stats[str(cls)]["mean_x"], stats[str(cls)]["mean_y"]])
 
         # Compute separation (distance to nearest other class)
         for cls in unique_classes:
             cls_mean = means[str(cls)]
-            min_dist = float('inf')
+            min_dist = float("inf")
 
             for other_cls in unique_classes:
                 if other_cls != cls:
@@ -817,6 +844,6 @@ def get_embedding_statistics(
                     dist = np.linalg.norm(cls_mean - other_mean)
                     min_dist = min(min_dist, dist)
 
-            stats[str(cls)]['separation'] = float(min_dist) if min_dist != float('inf') else 0.0
+            stats[str(cls)]["separation"] = float(min_dist) if min_dist != float("inf") else 0.0
 
     return stats

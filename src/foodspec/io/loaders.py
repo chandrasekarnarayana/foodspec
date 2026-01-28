@@ -1,4 +1,5 @@
 """I/O loaders for spectral data."""
+
 from __future__ import annotations
 
 from os import PathLike
@@ -62,7 +63,7 @@ def load_folder(
     common_axis, stacked = _stack_spectra_on_common_axis(w_axes, spectra)
 
     # Trim stacked spectra to match common axis length
-    stacked = stacked[:, :len(common_axis)]
+    stacked = stacked[:, : len(common_axis)]
 
     metadata = pd.DataFrame({"sample_id": sample_ids})
     if metadata_csv is not None:
@@ -128,7 +129,7 @@ def load_from_metadata_table(
     common_axis, stacked = _stack_spectra_on_common_axis(w_axes, spectra)
 
     # Trim stacked spectra to match common axis length
-    stacked = stacked[:, :len(common_axis)]
+    stacked = stacked[:, : len(common_axis)]
 
     metadata = table.drop(columns=["file_path"]).copy()
     if "sample_id" not in metadata.columns:

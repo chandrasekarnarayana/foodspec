@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Simple docs link checker for markdown files."""
+
 from __future__ import annotations
 
 import re
@@ -53,4 +54,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

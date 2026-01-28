@@ -43,8 +43,8 @@ class ProtocolConfig:
     # Outcome typing for modeling
     outcome_type: str = "classification"  # classification | regression | count | survival
     target_column: Optional[str] = None
-    event_column: Optional[str] = None      # survival
-    time_column: Optional[str] = None       # survival
+    event_column: Optional[str] = None  # survival
+    time_column: Optional[str] = None  # survival
     exposure_columns: List[str] = field(default_factory=list)  # for 2SLS / offsets
     instrument_columns: List[str] = field(default_factory=list)
 

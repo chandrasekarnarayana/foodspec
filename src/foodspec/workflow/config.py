@@ -3,6 +3,7 @@
 Defines WorkflowConfig, which captures all CLI inputs and protocol overrides
 for a single workflow execution.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -142,10 +142,7 @@ def get_mode_config(mode: ReportMode | str) -> ModeConfig:
         try:
             mode = ReportMode(mode_str.lower())
         except ValueError:
-            raise ValueError(
-                f"Unknown reporting mode '{mode}'. "
-                f"Valid modes: {sorted([m.value for m in ReportMode])}"
-            )
+            raise ValueError(f"Unknown reporting mode '{mode}'. Valid modes: {sorted([m.value for m in ReportMode])}")
 
     if mode not in _MODE_CONFIGS:
         raise ValueError(f"No configuration for mode {mode}")

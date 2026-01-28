@@ -8,6 +8,7 @@ Provides 3 QC gates with real metrics and configurable thresholds:
 Each gate produces a GateResult with pass/fail/warn/skip status and
 saves metrics to artifacts/.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -106,7 +107,7 @@ class DataIntegrityGate:
             missing_frac = df[col].isna().sum() / len(df)
             missing_per_col[col] = round(missing_frac, 3)
             if missing_frac > self.max_missingness:
-                issues.append(f"Column '{col}' missing: {100*missing_frac:.1f}% > {100*self.max_missingness:.1f}%")
+                issues.append(f"Column '{col}' missing: {100 * missing_frac:.1f}% > {100 * self.max_missingness:.1f}%")
 
         metrics["missing_per_column"] = missing_per_col
         metrics["max_missingness_observed"] = round(max(missing_per_col.values()), 3) if missing_per_col else 0.0
@@ -117,7 +118,7 @@ class DataIntegrityGate:
         metrics["duplicate_rows"] = int(n_duplicates)
         metrics["duplicate_fraction"] = round(dup_frac, 3)
         if dup_frac > self.max_duplicates:
-            issues.append(f"Duplicate rows: {100*dup_frac:.1f}% > {100*self.max_duplicates:.1f}%")
+            issues.append(f"Duplicate rows: {100 * dup_frac:.1f}% > {100 * self.max_duplicates:.1f}%")
 
         # Label distribution
         if label_col and label_col in df.columns:
@@ -232,7 +233,7 @@ class SpectralQualityGate:
         metrics["n_outliers"] = int(outlier_mask.sum())
 
         if outlier_frac > self.max_outlier_frac:
-            issues.append(f"Outlier fraction {100*outlier_frac:.1f}% > {100*self.max_outlier_frac:.1f}%")
+            issues.append(f"Outlier fraction {100 * outlier_frac:.1f}% > {100 * self.max_outlier_frac:.1f}%")
 
         # SNR proxy (signal-to-noise ratio as robust metric)
         # Use: SNR ~ (p95 - p5) / std(gradient)

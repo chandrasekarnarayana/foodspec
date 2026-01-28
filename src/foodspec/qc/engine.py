@@ -1,4 +1,5 @@
 """QC system: health scoring, outlier detection, drift monitoring."""
+
 from __future__ import annotations
 
 import math

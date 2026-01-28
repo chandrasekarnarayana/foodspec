@@ -28,7 +28,7 @@ class AcquisitionFunction:
         mu, sigma = gp.predict(X, return_std=True)
         sigma = sigma.reshape(-1, 1)
 
-        with np.errstate(divide='warn'):
+        with np.errstate(divide="warn"):
             imp = mu - y_best - xi
             Z = imp / sigma
             ei = imp * norm.cdf(Z) + sigma * norm.pdf(Z)
@@ -57,7 +57,7 @@ class AcquisitionFunction:
         mu, sigma = gp.predict(X, return_std=True)
         sigma = sigma.reshape(-1, 1)
 
-        with np.errstate(divide='warn'):
+        with np.errstate(divide="warn"):
             Z = (mu - y_best - xi) / sigma
             pi = norm.cdf(Z)
             pi[sigma == 0.0] = 0.0
@@ -80,8 +80,8 @@ class BayesianOptimizer:
 
     def __init__(
         self,
-        acquisition: Literal['ei', 'ucb', 'pi'] = 'ei',
-        kernel = None,
+        acquisition: Literal["ei", "ucb", "pi"] = "ei",
+        kernel=None,
         random_state: Optional[int] = None,
     ):
         self.acquisition = acquisition
@@ -132,18 +132,12 @@ class BayesianOptimizer:
         self.gp.fit(X_obs, y_obs)
 
         # Compute acquisition function
-        if self.acquisition == 'ei':
-            acq_values = AcquisitionFunction.expected_improvement(
-                X_candidates, self.gp, y_obs.max()
-            )
-        elif self.acquisition == 'ucb':
-            acq_values = AcquisitionFunction.upper_confidence_bound(
-                X_candidates, self.gp
-            )
-        elif self.acquisition == 'pi':
-            acq_values = AcquisitionFunction.probability_of_improvement(
-                X_candidates, self.gp, y_obs.max()
-            )
+        if self.acquisition == "ei":
+            acq_values = AcquisitionFunction.expected_improvement(X_candidates, self.gp, y_obs.max())
+        elif self.acquisition == "ucb":
+            acq_values = AcquisitionFunction.upper_confidence_bound(X_candidates, self.gp)
+        elif self.acquisition == "pi":
+            acq_values = AcquisitionFunction.probability_of_improvement(X_candidates, self.gp, y_obs.max())
 
         # Select top suggestions
         top_indices = np.argsort(acq_values)[-n_suggestions:][::-1]
@@ -171,7 +165,7 @@ class ActiveDesign:
 
     def __init__(
         self,
-        acquisition: str = 'ei',
+        acquisition: str = "ei",
         random_state: Optional[int] = None,
     ):
         self.optimizer = BayesianOptimizer(

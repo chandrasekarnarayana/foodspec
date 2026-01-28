@@ -88,12 +88,7 @@ def check_mkdocs_build():
 
     try:
         result = subprocess.run(
-            "mkdocs build --strict",
-            shell=True,
-            check=False,
-            capture_output=True,
-            text=True,
-            cwd=PROJECT_ROOT
+            "mkdocs build --strict", shell=True, check=False, capture_output=True, text=True, cwd=PROJECT_ROOT
         )
 
         output = result.stdout + result.stderr

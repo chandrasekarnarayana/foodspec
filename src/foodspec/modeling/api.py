@@ -1,4 +1,5 @@
 """Modeling API: unified training + validation entry point."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -62,7 +63,9 @@ def _normalize_model_name(model_name: str) -> str:
     return model_name.strip().lower().replace("-", "_")
 
 
-def _default_param_grid(model_name: str, outcome_type: OutcomeType = OutcomeType.CLASSIFICATION) -> Dict[str, Iterable[Any]]:
+def _default_param_grid(
+    model_name: str, outcome_type: OutcomeType = OutcomeType.CLASSIFICATION
+) -> Dict[str, Iterable[Any]]:
     name = _normalize_model_name(model_name)
     if outcome_type == OutcomeType.CLASSIFICATION:
         if name in {"logreg", "logistic_regression"}:
@@ -91,7 +94,9 @@ def _default_param_grid(model_name: str, outcome_type: OutcomeType = OutcomeType
     return {}
 
 
-def _build_estimator(model_name: str, *, outcome_type: OutcomeType = OutcomeType.CLASSIFICATION, random_state: int = 0) -> BaseEstimator:
+def _build_estimator(
+    model_name: str, *, outcome_type: OutcomeType = OutcomeType.CLASSIFICATION, random_state: int = 0
+) -> BaseEstimator:
     name = _normalize_model_name(model_name)
 
     if outcome_type == OutcomeType.CLASSIFICATION:
@@ -200,9 +205,7 @@ def _generate_splits(
 
     if scheme in {"random", "kfold"}:
         if not allow_random:
-            raise FoodSpecValidationError(
-                "Random CV is blocked for food data. Use --unsafe-random-cv to override."
-            )
+            raise FoodSpecValidationError("Random CV is blocked for food data. Use --unsafe-random-cv to override.")
         splitter = StratifiedKFold(
             n_splits=min(outer_splits, len(np.unique(y))),
             shuffle=True,
@@ -488,6 +491,7 @@ def fit_predict(
         if embed_seed is not None and "random_state" not in embed_params:
             embed_params["random_state"] = embed_seed
         if embed_method:
+
             def _build_embed_component():
                 from foodspec.multivariate import build_component
 
@@ -609,9 +613,9 @@ def fit_predict(
                     )
             except Exception as e:
                 import warnings
+
                 warnings.warn(
-                    f"ROC diagnostics computation failed: {str(e)}. "
-                    "Continuing without ROC artifacts.",
+                    f"ROC diagnostics computation failed: {str(e)}. Continuing without ROC artifacts.",
                     RuntimeWarning,
                     stacklevel=2,
                 )

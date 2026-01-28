@@ -1,4 +1,5 @@
 """Principal Component Analysis component."""
+
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -12,7 +13,13 @@ from foodspec.multivariate.base import MultivariateComponent, MultivariateResult
 class PCAComponent(MultivariateComponent):
     method = "pca"
 
-    def __init__(self, n_components: Optional[int] = None, whiten: bool = False, random_state: Optional[int] = None, **kwargs: Any):
+    def __init__(
+        self,
+        n_components: Optional[int] = None,
+        whiten: bool = False,
+        random_state: Optional[int] = None,
+        **kwargs: Any,
+    ):
         super().__init__(n_components=n_components, whiten=whiten, random_state=random_state, **kwargs)
         self._random_state = random_state
 

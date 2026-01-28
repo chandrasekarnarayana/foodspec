@@ -1,4 +1,5 @@
 """Core error helpers (re-exported from foodspec.utils.errors)."""
+
 from __future__ import annotations
 
 from foodspec.utils.errors import (

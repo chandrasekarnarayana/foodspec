@@ -16,9 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def _normalize_coefficients(
-    coefficients: np.ndarray, method: str = "standard"
-) -> np.ndarray:
+def _normalize_coefficients(coefficients: np.ndarray, method: str = "standard") -> np.ndarray:
     """
     Normalize coefficients using specified method.
 
@@ -60,9 +58,7 @@ def _normalize_coefficients(
     return coefficients.copy()
 
 
-def _sort_features_by_magnitude(
-    coefficients: np.ndarray, method: str = "mean"
-) -> np.ndarray:
+def _sort_features_by_magnitude(coefficients: np.ndarray, method: str = "mean") -> np.ndarray:
     """
     Sort features by coefficient magnitude.
 
@@ -92,9 +88,7 @@ def _sort_features_by_magnitude(
     return np.argsort(magnitudes)
 
 
-def _format_coefficient_annotation(
-    value: float, decimals: int = 2
-) -> str:
+def _format_coefficient_annotation(value: float, decimals: int = 2) -> str:
     """
     Format coefficient value for annotation.
 
@@ -197,9 +191,7 @@ def plot_coefficients_heatmap(
     if coefficients.size == 0:
         raise ValueError("Coefficients array cannot be empty")
     if coefficients.ndim != 2:
-        raise ValueError(
-            f"Coefficients must be 2D array, got shape {coefficients.shape}"
-        )
+        raise ValueError(f"Coefficients must be 2D array, got shape {coefficients.shape}")
 
     n_features, n_classes = coefficients.shape
 
@@ -211,15 +203,9 @@ def plot_coefficients_heatmap(
 
     # Validate name lengths
     if len(class_names) != n_classes:
-        raise ValueError(
-            f"class_names length {len(class_names)} "
-            f"does not match coefficients shape {n_classes}"
-        )
+        raise ValueError(f"class_names length {len(class_names)} does not match coefficients shape {n_classes}")
     if len(feature_names) != n_features:
-        raise ValueError(
-            f"feature_names length {len(feature_names)} "
-            f"does not match coefficients shape {n_features}"
-        )
+        raise ValueError(f"feature_names length {len(feature_names)} does not match coefficients shape {n_features}")
 
     # Normalize if requested
     if normalize is True:

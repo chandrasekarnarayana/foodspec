@@ -43,6 +43,7 @@ warnings.warn(
 # Original module content continues below...
 # ==============================================
 
+
 def generate_methods_text(run_dir: Path) -> str:
     run_dir = Path(run_dir)
     meta = json.loads((run_dir / "metadata.json").read_text()) if (run_dir / "metadata.json").exists() else {}

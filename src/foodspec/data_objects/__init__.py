@@ -1,4 +1,5 @@
 """Data objects for FoodSpec (mindmap-aligned namespace)."""
+
 from __future__ import annotations
 
 from .metadata import validate_metadata

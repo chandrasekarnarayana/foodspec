@@ -1,4 +1,5 @@
 """Deprecated leakage shim for foodspec.validation."""
+
 from __future__ import annotations
 
 from foodspec.qc.leakage import (

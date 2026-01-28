@@ -1,4 +1,5 @@
 """Advanced QC Control Charts: CUSUM and Process Capability Indices."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional, Tuple
@@ -337,7 +338,11 @@ class CapabilityIndices:
             Cpk = Ppk
 
         # Taguchi capability index
-        Cpm = tolerance / (6 * np.sqrt(std_overall ** 2 + (mean - center) ** 2)) if std_overall > 0 or mean != center else np.inf
+        Cpm = (
+            tolerance / (6 * np.sqrt(std_overall**2 + (mean - center) ** 2))
+            if std_overall > 0 or mean != center
+            else np.inf
+        )
 
         # Process yield (defect rate)
         Z_lower = (mean - lower_spec) / std_overall if std_overall > 0 else np.inf
@@ -463,30 +468,30 @@ class ProcessCapability:
         report = f"""
 Process Capability Analysis
 ============================
-Sample Size:                {r['n_observations']}
-Mean:                       {r['mean']:.4f}
-Std Dev:                    {r['std']:.4f}
-Min:                        {r['min']:.4f}
-Max:                        {r['max']:.4f}
+Sample Size:                {r["n_observations"]}
+Mean:                       {r["mean"]:.4f}
+Std Dev:                    {r["std"]:.4f}
+Min:                        {r["min"]:.4f}
+Max:                        {r["max"]:.4f}
 
 Specification Limits:
-  Lower (LSL):              {r['specification_limits']['lower']:.4f}
-  Upper (USL):              {r['specification_limits']['upper']:.4f}
-  Center (Target):          {r['specification_limits']['center']:.4f}
+  Lower (LSL):              {r["specification_limits"]["lower"]:.4f}
+  Upper (USL):              {r["specification_limits"]["upper"]:.4f}
+  Center (Target):          {r["specification_limits"]["center"]:.4f}
 
 Process Capability Indices:
-  Pp (Preliminary):         {idx['Pp']:.4f}
-  Ppk (Preliminary):        {idx['Ppk']:.4f}
-  Cp (Process):             {idx['Cp']:.4f}
-  Cpk (Process):            {idx['Cpk']:.4f}
-  Cpm (Taguchi):            {idx['Cpm']:.4f}
+  Pp (Preliminary):         {idx["Pp"]:.4f}
+  Ppk (Preliminary):        {idx["Ppk"]:.4f}
+  Cp (Process):             {idx["Cp"]:.4f}
+  Cpk (Process):            {idx["Cpk"]:.4f}
+  Cpm (Taguchi):            {idx["Cpm"]:.4f}
 
 Process Quality:
-  Within Specification:     {r['within_spec']:.1%}
-  Defects (PPM):            {idx['ppm_total']:.0f}
-  Lower Defects:            {idx['ppm_lower']:.0f}
-  Upper Defects:            {idx['ppm_upper']:.0f}
+  Within Specification:     {r["within_spec"]:.1%}
+  Defects (PPM):            {idx["ppm_total"]:.0f}
+  Lower Defects:            {idx["ppm_lower"]:.0f}
+  Upper Defects:            {idx["ppm_upper"]:.0f}
 
-Classification:             {r['capability_classification']}
+Classification:             {r["capability_classification"]}
 """
         return report

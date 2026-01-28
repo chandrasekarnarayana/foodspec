@@ -13,6 +13,7 @@ from typing import Dict, List, Optional
 @dataclass
 class CompoundPeakLink:
     """Link between compound and spectral peak."""
+
     compound_id: str
     peak_wavelength: float
     peak_intensity: Optional[float] = None
@@ -24,6 +25,7 @@ class CompoundPeakLink:
 @dataclass
 class MetadataOntology:
     """Ontology for spectral metadata."""
+
     instrument_type: str
     measurement_conditions: Dict[str, float]
     sample_preparation: Optional[str] = None
@@ -56,7 +58,7 @@ class SpectralKnowledgeGraph:
     >>> compounds = kg.query_by_peak(1080, tolerance=5)
     """
 
-    def __init__(self, name: str = 'SpectralKG'):
+    def __init__(self, name: str = "SpectralKG"):
         self.name = name
         self.compounds: Dict[str, Dict] = {}
         self.peaks: Dict[float, List[CompoundPeakLink]] = {}
@@ -72,9 +74,9 @@ class SpectralKnowledgeGraph:
     ):
         """Add a compound to the knowledge graph."""
         self.compounds[compound_id] = {
-            'name': name or compound_id,
-            'formula': formula,
-            'peaks': peaks or [],
+            "name": name or compound_id,
+            "formula": formula,
+            "peaks": peaks or [],
         }
 
     def add_link(self, link: CompoundPeakLink):
@@ -106,7 +108,7 @@ class SpectralKnowledgeGraph:
         rdf_lines = [
             "@prefix fs: <http://foodspec.org/kg#> .",
             "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
-            ""
+            "",
         ]
 
         # Compounds
@@ -127,16 +129,16 @@ class SpectralKnowledgeGraph:
     def to_json(self) -> str:
         """Export to JSON."""
         data = {
-            'name': self.name,
-            'compounds': self.compounds,
-            'links': [
+            "name": self.name,
+            "compounds": self.compounds,
+            "links": [
                 {
-                    'compound': link.compound_id,
-                    'wavelength': link.peak_wavelength,
-                    'intensity': link.peak_intensity,
-                    'assignment': link.assignment,
-                    'confidence': link.confidence,
-                    'references': link.references,
+                    "compound": link.compound_id,
+                    "wavelength": link.peak_wavelength,
+                    "intensity": link.peak_intensity,
+                    "assignment": link.assignment,
+                    "confidence": link.confidence,
+                    "references": link.references,
                 }
                 for link in self.links
             ],
@@ -147,19 +149,19 @@ class SpectralKnowledgeGraph:
     def from_json(cls, json_str: str) -> SpectralKnowledgeGraph:
         """Load from JSON."""
         data = json.loads(json_str)
-        kg = cls(name=data['name'])
+        kg = cls(name=data["name"])
 
-        for cid, info in data['compounds'].items():
-            kg.add_compound(cid, name=info.get('name'), formula=info.get('formula'))
+        for cid, info in data["compounds"].items():
+            kg.add_compound(cid, name=info.get("name"), formula=info.get("formula"))
 
-        for link_data in data['links']:
+        for link_data in data["links"]:
             link = CompoundPeakLink(
-                compound_id=link_data['compound'],
-                peak_wavelength=link_data['wavelength'],
-                peak_intensity=link_data.get('intensity'),
-                assignment=link_data.get('assignment'),
-                confidence=link_data.get('confidence', 1.0),
-                references=link_data.get('references', []),
+                compound_id=link_data["compound"],
+                peak_wavelength=link_data["wavelength"],
+                peak_intensity=link_data.get("intensity"),
+                assignment=link_data.get("assignment"),
+                confidence=link_data.get("confidence", 1.0),
+                references=link_data.get("references", []),
             )
             kg.add_link(link)
 

@@ -4,6 +4,7 @@ Enforces that required artifacts exist and validates their structure
 for both success and failure paths. Supports versioned contracts with
 deterministic digest validation.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -45,10 +46,7 @@ class ArtifactContract:
         """
         contract_file = cls.CONTRACT_DIR / f"contract_{version}.json"
         if not contract_file.exists():
-            raise FileNotFoundError(
-                f"Contract file not found: {contract_file}. "
-                f"Expected contract version: {version}"
-            )
+            raise FileNotFoundError(f"Contract file not found: {contract_file}. Expected contract version: {version}")
         with open(contract_file) as f:
             return json.load(f)
 
@@ -68,9 +66,17 @@ class ArtifactContract:
         """
         # Collect all required artifact lists
         all_artifacts = []
-        for key in ["required_always", "required_success", "required_qc",
-                    "required_trust", "required_reporting", "required_modeling",
-                    "required_preprocessing", "required_features", "required_failure"]:
+        for key in [
+            "required_always",
+            "required_success",
+            "required_qc",
+            "required_trust",
+            "required_reporting",
+            "required_modeling",
+            "required_preprocessing",
+            "required_features",
+            "required_failure",
+        ]:
             if key in contract_dict:
                 all_artifacts.extend(sorted(contract_dict[key].keys()))
 
@@ -115,7 +121,6 @@ class ArtifactContract:
         return True, None
 
     # Legacy static members (backward compatibility)
-
 
     # Mandatory for all runs
     REQUIRED_ALWAYS = {
@@ -266,11 +271,7 @@ class ArtifactContract:
         str
             Summary string.
         """
-        is_valid, missing = (
-            cls.validate_success(run_dir)
-            if is_success
-            else cls.validate_failure(run_dir)
-        )
+        is_valid, missing = cls.validate_success(run_dir) if is_success else cls.validate_failure(run_dir)
 
         if is_valid:
             return "✅ Artifact contract validated (all required files present)"

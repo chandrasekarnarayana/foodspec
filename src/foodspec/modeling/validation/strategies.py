@@ -1,4 +1,5 @@
 """Validation strategies: batch-aware CV, group-stratified splits, nested CV."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

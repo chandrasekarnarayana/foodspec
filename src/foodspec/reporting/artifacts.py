@@ -1,4 +1,5 @@
 """Reporting artifact helpers built on the FoodSpec run artifact contract."""
+
 from __future__ import annotations
 
 import platform

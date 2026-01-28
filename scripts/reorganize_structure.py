@@ -70,10 +70,7 @@ class ReorganizationExecutor:
 
             # Use git mv for tracked files
             result = subprocess.run(
-                ["git", "mv", str(src), str(dst)],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True
+                ["git", "mv", str(src), str(dst)], cwd=self.repo_root, capture_output=True, text=True
             )
 
             if result.returncode != 0:
@@ -97,12 +94,7 @@ class ReorganizationExecutor:
 
         try:
             # Use git rm -r for tracked directories
-            result = subprocess.run(
-                ["git", "rm", "-r", str(path)],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["git", "rm", "-r", str(path)], cwd=self.repo_root, capture_output=True, text=True)
 
             if result.returncode != 0:
                 # Fallback to regular removal for untracked
@@ -182,12 +174,7 @@ protocol_runs_test/
             return
 
         try:
-            result = subprocess.run(
-                ["git", "clean", "-fdX"],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["git", "clean", "-fdX"], cwd=self.repo_root, capture_output=True, text=True)
             self.log_action("CLEAN", "ignored files")
             if result.stdout:
                 print(f"  {BLUE}Removed: {result.stdout.strip()}{RESET}")
@@ -225,7 +212,7 @@ protocol_runs_test/
             "PHASE_1_IMPLEMENTATION.md",
             "PHASE_7_SUMMARY.md",
             "PHASE8_COMPLETION_REPORT.md",
-            "PHASE9_COMPLETION_REPORT.md"
+            "PHASE9_COMPLETION_REPORT.md",
         ]
 
         for filename in phase_files:
@@ -234,10 +221,7 @@ protocol_runs_test/
             self.move_file(src, dst)
 
         # Move JOSS documents
-        joss_files = [
-            "JOSS_DOCS_AUDIT_REPORT.md",
-            "JOSS_SUBMISSION_CHECKLIST.md"
-        ]
+        joss_files = ["JOSS_DOCS_AUDIT_REPORT.md", "JOSS_SUBMISSION_CHECKLIST.md"]
 
         for filename in joss_files:
             src = self.repo_root / filename
@@ -349,7 +333,7 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
             "mixture_analysis_quickstart.py",
             "aging_quickstart.py",
             "phase1_quickstart.py",
-            "qc_quickstart.py"
+            "qc_quickstart.py",
         ]
 
         advanced = [
@@ -360,13 +344,13 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
             "multimodal_fusion_demo.py",
             "spectral_dataset_demo.py",
             "vip_demo.py",
-            "foodspec_rq_demo.py"
+            "foodspec_rq_demo.py",
         ]
 
         validation = [
             "validation_chemometrics_oils.py",
             "validation_peak_ratios.py",
-            "validation_preprocessing_baseline.py"
+            "validation_preprocessing_baseline.py",
         ]
 
         new_features = [
@@ -377,7 +361,7 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
             "paper_presets_demo.py",
             "embeddings_demo.py",
             "processing_stages_demo.py",
-            "coefficients_stability_demo.py"
+            "coefficients_stability_demo.py",
         ]
 
         # Move files
@@ -420,30 +404,24 @@ See `BRANCH_MIGRATION_PLAN.md` in project root for the v1.0 → v2.0 migration s
             self.create_directory(scripts_dir / subdir)
 
         # File categorization
-        development = [
-            "audit_imports.py",
-            "test_examples_imports.py",
-            "execute_migration.py"
-        ]
+        development = ["audit_imports.py", "test_examples_imports.py", "execute_migration.py"]
 
         documentation = [
             "generate_docs_figures.py",
             "generate_workflow_figure.py",
             "validate_docs.py",
             "check_docs_links.py",
-            "bulk_update_links.py"
+            "bulk_update_links.py",
         ]
 
         maintenance = [
             "fix_codeblock_languages.py",
             "fix_methods_depth.py",
             "fix_tutorials_depth.py",
-            "fix_workflows_depth.py"
+            "fix_workflows_depth.py",
         ]
 
-        workflows = [
-            "raman_workflow_foodspec.py"
-        ]
+        workflows = ["raman_workflow_foodspec.py"]
 
         # Move files
         for filename in development:
@@ -530,20 +508,12 @@ def main():
 Examples:
   python scripts/reorganize_structure.py --dry-run   # Preview changes
   python scripts/reorganize_structure.py --execute   # Apply changes
-        """
+        """,
     )
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Preview changes without modifying files"
-    )
-    group.add_argument(
-        "--execute",
-        action="store_true",
-        help="Execute reorganization (CAUTION: modifies files)"
-    )
+    group.add_argument("--dry-run", action="store_true", help="Preview changes without modifying files")
+    group.add_argument("--execute", action="store_true", help="Execute reorganization (CAUTION: modifies files)")
 
     args = parser.parse_args()
 

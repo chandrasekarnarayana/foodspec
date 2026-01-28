@@ -1,4 +1,5 @@
 """Bootstrap stability and confidence interval analysis for models."""
+
 from __future__ import annotations
 
 from typing import Callable, Optional, Tuple
@@ -107,10 +108,12 @@ class BootstrapStability:
         q_lower = alpha / 2
         q_upper = 1 - alpha / 2
 
-        param_ci = np.column_stack([
-            np.percentile(params_bootstrap, q_lower * 100, axis=0),
-            np.percentile(params_bootstrap, q_upper * 100, axis=0),
-        ])
+        param_ci = np.column_stack(
+            [
+                np.percentile(params_bootstrap, q_lower * 100, axis=0),
+                np.percentile(params_bootstrap, q_upper * 100, axis=0),
+            ]
+        )
 
         self.bootstrap_samples_ = params_bootstrap
 
@@ -174,10 +177,12 @@ class BootstrapStability:
         q_lower = alpha / 2
         q_upper = 1 - alpha / 2
 
-        pred_ci = np.column_stack([
-            np.percentile(preds_bootstrap, q_lower * 100, axis=0),
-            np.percentile(preds_bootstrap, q_upper * 100, axis=0),
-        ])
+        pred_ci = np.column_stack(
+            [
+                np.percentile(preds_bootstrap, q_lower * 100, axis=0),
+                np.percentile(preds_bootstrap, q_upper * 100, axis=0),
+            ]
+        )
 
         self.bootstrap_predictions_ = preds_bootstrap
 
@@ -238,9 +243,7 @@ class StabilityIndex:
         param_mean = np.mean(params_jack, axis=0)
 
         # Jackknife variance estimate
-        param_var = ((n_samples - 1) / n_samples) * np.sum(
-            (params_jack - param_mean) ** 2, axis=0
-        )
+        param_var = ((n_samples - 1) / n_samples) * np.sum((params_jack - param_mean) ** 2, axis=0)
         param_std = np.sqrt(param_var)
 
         return param_mean, param_std

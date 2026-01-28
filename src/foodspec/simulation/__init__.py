@@ -2,4 +2,4 @@
 Simulation module for spectroscopy.
 """
 
-__all__ = ['SpectraSimulator', 'NoiseModel', 'InstrumentModel', 'DomainShiftGenerator']
+__all__ = ["SpectraSimulator", "NoiseModel", "InstrumentModel", "DomainShiftGenerator"]

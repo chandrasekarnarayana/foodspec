@@ -1,4 +1,5 @@
 """Multivariate Drift Detection: MMD, Wasserstein, and Advanced Methods."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -95,7 +96,7 @@ class MMDDriftDetector:
         if self.kernel == "rbf":
             # RBF kernel: exp(-||x-y||^2 / (2*width^2))
             sq_dists = cdist(X, Y, metric="sqeuclidean")
-            K = np.exp(-sq_dists / (2 * self.kernel_width ** 2))
+            K = np.exp(-sq_dists / (2 * self.kernel_width**2))
         elif self.kernel == "linear":
             K = np.dot(X, Y.T)
         else:
@@ -135,11 +136,7 @@ class MMDDriftDetector:
         K_ref_test = self._compute_kernel_matrix(self.reference_data_, X_test)
 
         # MMD^2 = mean K(X,X) + mean K(Y,Y) - 2*mean K(X,Y)
-        mmd2 = (
-            np.mean(K_ref_ref)
-            + np.mean(K_test_test)
-            - 2 * np.mean(K_ref_test)
-        )
+        mmd2 = np.mean(K_ref_ref) + np.mean(K_test_test) - 2 * np.mean(K_ref_test)
 
         return float(mmd2)
 
@@ -237,15 +234,11 @@ class WassersteinDriftDetector:
             # Handle different sizes via interpolation
             if len(X_proj_sorted) < len(Y_proj_sorted):
                 X_proj_sorted = np.interp(
-                    np.linspace(0, 1, len(Y_proj_sorted)),
-                    np.linspace(0, 1, len(X_proj_sorted)),
-                    X_proj_sorted
+                    np.linspace(0, 1, len(Y_proj_sorted)), np.linspace(0, 1, len(X_proj_sorted)), X_proj_sorted
                 )
             elif len(Y_proj_sorted) < len(X_proj_sorted):
                 Y_proj_sorted = np.interp(
-                    np.linspace(0, 1, len(X_proj_sorted)),
-                    np.linspace(0, 1, len(Y_proj_sorted)),
-                    Y_proj_sorted
+                    np.linspace(0, 1, len(X_proj_sorted)), np.linspace(0, 1, len(Y_proj_sorted)), Y_proj_sorted
                 )
 
             # 1D Wasserstein distance
@@ -296,11 +289,12 @@ class WassersteinDriftDetector:
                 idx1 = np.random.choice(len(self.reference_data_), len(self.reference_data_) // 2, replace=False)
                 idx2 = np.setdiff1d(np.arange(len(self.reference_data_)), idx1)
 
-                d = self._sliced_wasserstein(
-                    self.reference_data_[idx1],
-                    self.reference_data_[idx2]
-                ) if self.approximation == "sliced" else np.linalg.norm(
-                    np.mean(self.reference_data_[idx1], axis=0) - np.mean(self.reference_data_[idx2], axis=0)
+                d = (
+                    self._sliced_wasserstein(self.reference_data_[idx1], self.reference_data_[idx2])
+                    if self.approximation == "sliced"
+                    else np.linalg.norm(
+                        np.mean(self.reference_data_[idx1], axis=0) - np.mean(self.reference_data_[idx2], axis=0)
+                    )
                 )
                 ref_distances.append(d)
 

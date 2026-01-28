@@ -340,9 +340,7 @@ def compute_calibration_metrics(
     """
     ece = expected_calibration_error(y_true, proba, n_bins=n_bins, strategy=strategy)
     brier = brier_score(y_true, proba)
-    bin_centers, accuracies, _, counts = reliability_curve_data(
-        y_true, proba, n_bins=n_bins, strategy=strategy
-    )
+    bin_centers, accuracies, _, counts = reliability_curve_data(y_true, proba, n_bins=n_bins, strategy=strategy)
 
     return CalibrationMetrics(
         ece=ece,

@@ -1,4 +1,5 @@
 """Derivative transformers using Savitzky-Golay."""
+
 from __future__ import annotations
 
 from typing import Literal, Optional

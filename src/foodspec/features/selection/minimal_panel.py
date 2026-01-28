@@ -1,4 +1,5 @@
 """Minimal marker panel helpers (shim to RatioQualityEngine)."""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -19,4 +20,3 @@ def compute_minimal_panel(
 
 
 __all__ = ["compute_minimal_panel"]
-

@@ -1,4 +1,5 @@
 """Protocol step for model training + validation (classification or regression)."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List
@@ -33,9 +34,11 @@ class ModelFitPredictStep(Step):
 
         proto_cfg = ctx.get("config")
         outcome = OutcomeType(self.cfg.get("outcome_type", getattr(proto_cfg, "outcome_type", "classification")))
-        target_col = self.cfg.get("target_column") or getattr(proto_cfg, "target_column", None) or (
-            getattr(proto_cfg, "expected_columns", {}) or {}
-        ).get("target_column")
+        target_col = (
+            self.cfg.get("target_column")
+            or getattr(proto_cfg, "target_column", None)
+            or (getattr(proto_cfg, "expected_columns", {}) or {}).get("target_column")
+        )
         if not target_col:
             raise ValueError("target_column is required for model_fit_predict step.")
         if target_col not in df.columns:
@@ -61,7 +64,13 @@ class ModelFitPredictStep(Step):
 
         model_name = self.cfg.get("model")
         if not model_name:
-            model_name = "ridge" if outcome == OutcomeType.REGRESSION else "poisson" if outcome == OutcomeType.COUNT else "lightgbm"
+            model_name = (
+                "ridge"
+                if outcome == OutcomeType.REGRESSION
+                else "poisson"
+                if outcome == OutcomeType.COUNT
+                else "lightgbm"
+            )
 
         result = fit_predict(
             X,
@@ -81,7 +90,9 @@ class ModelFitPredictStep(Step):
         # Store artifacts
         ctx["tables"]["model_metrics"] = pd.DataFrame([result.metrics])
         if result.metrics_ci:
-            ctx["tables"]["model_metrics_ci"] = pd.DataFrame(result.metrics_ci).T.reset_index().rename(columns={"index": "metric"})
+            ctx["tables"]["model_metrics_ci"] = (
+                pd.DataFrame(result.metrics_ci).T.reset_index().rename(columns={"index": "metric"})
+            )
         ctx["tables"]["model_predictions"] = pd.DataFrame({"y_true": result.y_true, "y_pred": result.y_pred})
 
         if outcome in {OutcomeType.REGRESSION, OutcomeType.COUNT}:

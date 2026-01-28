@@ -99,10 +99,12 @@ class ExecutionEngine:
 
         # Enforce TASK_FIRST principle
         from foodspec.core.philosophy import enforce_task_first
+
         enforce_task_first(protocol_dict or protocol)
 
         # Enforce PROTOCOL_IS_SOURCE_OF_TRUTH
         from foodspec.core.philosophy import enforce_protocol_truth
+
         enforce_protocol_truth(protocol)
 
         # Compute protocol hash
@@ -148,6 +150,7 @@ class ExecutionEngine:
         # Basic statistics
         try:
             import pandas as pd
+
             df = pd.read_csv(csv_path)
             row_count = len(df)
             col_count = len(df.columns)
@@ -194,6 +197,7 @@ class ExecutionEngine:
         # Generate seed if not provided
         if seed is None:
             import random as py_random
+
             seed = py_random.randint(0, 2**31 - 1)
 
         # Set global seed
@@ -402,9 +406,7 @@ class ExecutionEngine:
 
         # Build artifacts dict for enforcement
         artifacts_dict = {
-            f.split("/")[-1]: Path(f) for f in [
-                str(a.path) for a in self.artifact_registry.artifacts.values()
-            ]
+            f.split("/")[-1]: Path(f) for f in [str(a.path) for a in self.artifact_registry.artifacts.values()]
         }
 
         # Run all philosophy checks

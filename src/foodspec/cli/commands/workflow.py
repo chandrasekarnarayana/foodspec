@@ -1,4 +1,5 @@
 """Workflow orchestration commands: experiment runner, benchmarks, Phase 1 orchestrator."""
+
 from __future__ import annotations
 
 import json
@@ -192,18 +193,19 @@ def run_phase1_workflow(
 
     # Apply seed globally if provided
     if seed is not None:
-        _apply_seeds({
-            "numpy_seed": seed,
-            "python_random_seed": seed,
-            "torch_seed": seed,
-        })
+        _apply_seeds(
+            {
+                "numpy_seed": seed,
+                "python_random_seed": seed,
+                "torch_seed": seed,
+            }
+        )
 
     # Execute workflow
     exit_code = run_workflow(cfg)
 
     # Exit with code
     sys.exit(exit_code)
-
 
 
 @workflow_app.command("run-strict")
@@ -360,11 +362,13 @@ def run_phase3_workflow(
 
     # Apply seed globally if provided
     if seed is not None:
-        _apply_seeds({
-            "numpy_seed": seed,
-            "python_random_seed": seed,
-            "torch_seed": seed,
-        })
+        _apply_seeds(
+            {
+                "numpy_seed": seed,
+                "python_random_seed": seed,
+                "torch_seed": seed,
+            }
+        )
 
     # Task C: Route to appropriate orchestrator based on phase
     if phase == 1:
@@ -384,7 +388,6 @@ def run_phase3_workflow(
 
     # Exit with code
     sys.exit(exit_code)
-
 
 
 def _build_feature_specs(raw_specs: list[dict[str, Any]]) -> list[FeatureSpec]:

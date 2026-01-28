@@ -38,11 +38,13 @@ def _detect_label_cols(df: pd.DataFrame) -> Dict[str, Optional[str]]:
     cand_labels = ["label", "class", "target", "y"]
     cand_batch = ["batch", "batch_id"]
     cand_stage = ["stage", "phase", "step"]
+
     def _pick(candidates: List[str]) -> Optional[str]:
         for c in candidates:
             if c in df.columns:
                 return c
         return None
+
     return {
         "label": _pick(cand_labels),
         "batch": _pick(cand_batch),
@@ -54,7 +56,14 @@ def _numeric_columns(df: pd.DataFrame) -> List[str]:
     return [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
 
 
-def _plot_scores(df: pd.DataFrame, name: str, label_col: Optional[str], batch_col: Optional[str], stage_col: Optional[str], out_dir: Path) -> List[Path]:
+def _plot_scores(
+    df: pd.DataFrame,
+    name: str,
+    label_col: Optional[str],
+    batch_col: Optional[str],
+    stage_col: Optional[str],
+    out_dir: Path,
+) -> List[Path]:
     import matplotlib.pyplot as plt
 
     exporter = FigureExporter(style=FigureStyle.JOSS, size_preset="double", formats=("png",))
@@ -107,7 +116,9 @@ def _plot_scores(df: pd.DataFrame, name: str, label_col: Optional[str], batch_co
         markers = ["o", "s", "^", "D", "P", "X", "*", "v"]
         for idx, b in enumerate(uniq):
             mask = batches == b
-            ax.scatter(df.loc[mask, xcol], df.loc[mask, ycol], marker=markers[idx % len(markers)], label=str(b), alpha=0.85)
+            ax.scatter(
+                df.loc[mask, xcol], df.loc[mask, ycol], marker=markers[idx % len(markers)], label=str(b), alpha=0.85
+            )
         ax.set_title(f"{name.upper()} scores by batch")
         ax.set_xlabel(xcol)
         ax.set_ylabel(ycol)
@@ -208,7 +219,9 @@ def build_multivariate_section(context) -> Dict[str, Any]:
         loadings_df = pd.read_csv(loadings_path) if loadings_path.exists() else pd.DataFrame()
         summary = _read_json(summary_path)
 
-        label_info = _detect_label_cols(scores_df) if not scores_df.empty else {"label": None, "batch": None, "stage": None}
+        label_info = (
+            _detect_label_cols(scores_df) if not scores_df.empty else {"label": None, "batch": None, "stage": None}
+        )
         figs: List[Path] = []
         if not scores_df.empty:
             figs.extend(

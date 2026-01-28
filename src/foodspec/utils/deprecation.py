@@ -9,11 +9,7 @@ from functools import wraps
 from typing import Callable
 
 
-def deprecated(
-    reason: str,
-    version: str = "2.0.0",
-    alternative: str | None = None
-) -> Callable:
+def deprecated(reason: str, version: str = "2.0.0", alternative: str | None = None) -> Callable:
     """Decorator to mark functions/classes as deprecated.
 
     Parameters
@@ -31,6 +27,7 @@ def deprecated(
     ... def old_function():
     ...     pass
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -45,21 +42,15 @@ def deprecated(
         # Add deprecation marker to docstring
         if wrapper.__doc__:
             wrapper.__doc__ = (
-                f".. deprecated:: 1.1.0\n"
-                f"    {reason}\n"
-                f"    Will be removed in v{version}.\n\n"
-                f"{wrapper.__doc__}"
+                f".. deprecated:: 1.1.0\n    {reason}\n    Will be removed in v{version}.\n\n{wrapper.__doc__}"
             )
 
         return wrapper
+
     return decorator
 
 
-def warn_deprecated_import(
-    old_module: str,
-    new_module: str,
-    version: str = "2.0.0"
-):
+def warn_deprecated_import(old_module: str, new_module: str, version: str = "2.0.0"):
     """Issue warning for deprecated module import.
 
     Parameters
@@ -76,5 +67,5 @@ def warn_deprecated_import(
         f"Use {new_module} instead. "
         f"See docs/migration/v1-to-v2.md for migration guide.",
         DeprecationWarning,
-        stacklevel=3
+        stacklevel=3,
     )

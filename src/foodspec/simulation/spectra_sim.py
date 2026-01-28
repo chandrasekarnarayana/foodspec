@@ -70,7 +70,7 @@ class NoiseModel:
     >>> noise_mixed = NoiseModel('mixed', std=0.01, scale=0.005)
     """
 
-    noise_type: Literal['gaussian', 'poisson', 'multiplicative', 'mixed']
+    noise_type: Literal["gaussian", "poisson", "multiplicative", "mixed"]
     std: Optional[float] = None
     scale: Optional[float] = None
     snr_db: Optional[float] = None
@@ -214,7 +214,7 @@ class SpectraSimulator:
         for pos, intensity, width in zip(peak_positions, peak_intensities, peak_widths):
             # Gaussian peak: I * exp(-(λ - λ0)² / (2σ²))
             sigma = width / (2 * np.sqrt(2 * np.log(2)))  # FWHM to sigma
-            gaussian = intensity * np.exp(-((self.wavelengths - pos) ** 2) / (2 * sigma ** 2))
+            gaussian = intensity * np.exp(-((self.wavelengths - pos) ** 2) / (2 * sigma**2))
             spectrum += gaussian
 
         return spectrum
@@ -267,22 +267,14 @@ class SpectraSimulator:
         for i in range(n_components):
             # Random peak positions across wavelength range
             n_peaks = self.rng.integers(2, 6)
-            peak_positions = self.rng.uniform(
-                self.wavelengths.min() + 20,
-                self.wavelengths.max() - 20,
-                n_peaks
-            )
+            peak_positions = self.rng.uniform(self.wavelengths.min() + 20, self.wavelengths.max() - 20, n_peaks)
             spectrum = self.generate_pure_component(peak_positions)
             pure_spectra.append(spectrum)
 
         pure_spectra = np.array(pure_spectra)  # Shape: (n_components, n_wavelengths)
 
         # Generate concentration profiles
-        concentrations = self.rng.uniform(
-            concentration_range[0],
-            concentration_range[1],
-            (n_samples, n_components)
-        )
+        concentrations = self.rng.uniform(concentration_range[0], concentration_range[1], (n_samples, n_components))
 
         if normalize_concentrations:
             concentrations = concentrations / concentrations.sum(axis=1, keepdims=True)
@@ -299,10 +291,10 @@ class SpectraSimulator:
             X = self._apply_noise(X)
 
         metadata = {
-            'pure_spectra': pure_spectra,
-            'concentrations': concentrations,
-            'noise_models': self.noise_models,
-            'instrument_model': self.instrument_model,
+            "pure_spectra": pure_spectra,
+            "concentrations": concentrations,
+            "noise_models": self.noise_models,
+            "instrument_model": self.instrument_model,
         }
 
         return X, concentrations, metadata
@@ -322,10 +314,7 @@ class SpectraSimulator:
         if self.instrument_model.baseline_drift != 0 or self.instrument_model.baseline_curve != 0:
             x = np.arange(self.n_wavelengths)
             x_norm = (x - x.mean()) / x.std()
-            baseline = (
-                self.instrument_model.baseline_drift * x_norm +
-                self.instrument_model.baseline_curve * x_norm ** 2
-            )
+            baseline = self.instrument_model.baseline_drift * x_norm + self.instrument_model.baseline_curve * x_norm**2
             X_inst += baseline
 
         # Wavelength shift (not implemented - would require interpolation)
@@ -345,12 +334,12 @@ class SpectraSimulator:
 
     def _apply_single_noise(self, X: np.ndarray, noise_model: NoiseModel) -> np.ndarray:
         """Apply a single noise model."""
-        if noise_model.noise_type == 'gaussian':
+        if noise_model.noise_type == "gaussian":
             std = noise_model.std if noise_model.std is not None else 0.01
             noise = self.rng.normal(0, std, X.shape)
             return X + noise
 
-        elif noise_model.noise_type == 'poisson':
+        elif noise_model.noise_type == "poisson":
             # Poisson noise: σ² = μ (shot noise)
             scale = noise_model.scale if noise_model.scale is not None else 0.01
             # Ensure non-negative for Poisson
@@ -358,13 +347,13 @@ class SpectraSimulator:
             X_poisson = self.rng.poisson(X_scaled) * scale
             return X_poisson
 
-        elif noise_model.noise_type == 'multiplicative':
+        elif noise_model.noise_type == "multiplicative":
             # Multiplicative noise: X * (1 + ε)
             scale = noise_model.scale if noise_model.scale is not None else 0.01
             noise = self.rng.normal(1.0, scale, X.shape)
             return X * noise
 
-        elif noise_model.noise_type == 'mixed':
+        elif noise_model.noise_type == "mixed":
             # Combination of Gaussian + Poisson
             std = noise_model.std if noise_model.std is not None else 0.01
             scale = noise_model.scale if noise_model.scale is not None else 0.005
@@ -411,7 +400,7 @@ class DomainShiftGenerator:
 
     def __init__(
         self,
-        shift_type: Literal['temperature', 'concentration', 'instrument', 'time'],
+        shift_type: Literal["temperature", "concentration", "instrument", "time"],
         magnitude: float = 1.0,
         random_state: Optional[int] = None,
     ):
@@ -441,13 +430,13 @@ class DomainShiftGenerator:
         X_shifted : ndarray
             Domain-shifted spectra.
         """
-        if self.shift_type == 'temperature':
+        if self.shift_type == "temperature":
             return self._apply_temperature_shift(X, wavelengths)
-        elif self.shift_type == 'concentration':
+        elif self.shift_type == "concentration":
             return self._apply_concentration_shift(X)
-        elif self.shift_type == 'instrument':
+        elif self.shift_type == "instrument":
             return self._apply_instrument_shift(X)
-        elif self.shift_type == 'time':
+        elif self.shift_type == "time":
             return self._apply_time_drift(X)
         else:
             raise ValueError(f"Unknown shift type: {self.shift_type}")

@@ -276,9 +276,7 @@ def run_levene(*groups, center: str = "median") -> TestResult:
     if len(arrays) < 2:
         raise ValueError("Levene test requires at least two groups.")
     stat, p = stats.levene(*arrays, center=center)
-    summary = pd.DataFrame(
-        [{"test": "levene", "statistic": stat, "pvalue": p, "df": None, "center": center}]
-    )
+    summary = pd.DataFrame([{"test": "levene", "statistic": stat, "pvalue": p, "df": None, "center": center}])
     return TestResult(statistic=float(stat), pvalue=float(p), df=None, summary=summary)
 
 
@@ -460,7 +458,11 @@ def group_sequential_boundaries(
     for look in range(1, n_looks + 1):
         t = look / n_looks
         if method == "obrien_fleming":
-            alpha_i = 2 * (1 - stats.norm.cdf(z_alpha / np.sqrt(t))) if two_sided else 1 - stats.norm.cdf(z_alpha / np.sqrt(t))
+            alpha_i = (
+                2 * (1 - stats.norm.cdf(z_alpha / np.sqrt(t)))
+                if two_sided
+                else 1 - stats.norm.cdf(z_alpha / np.sqrt(t))
+            )
         elif method == "pocock":
             alpha_i = alpha / n_looks
         else:
@@ -485,6 +487,7 @@ def check_group_sequential(
         "first_look": None if first_idx < 0 else int(first_idx + 1),
         "z_at_crossing": None if first_idx < 0 else float(z_vals[first_idx]),
     }
+
 
 def benjamini_hochberg(pvalues: Iterable[float], alpha: float = 0.05) -> pd.DataFrame:
     """Benjamini-Hochberg FDR correction for multiple hypothesis testing.

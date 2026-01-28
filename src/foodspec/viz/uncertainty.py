@@ -37,9 +37,7 @@ def _normalize_confidences(confidences: np.ndarray) -> np.ndarray:
     return confidences
 
 
-def _sort_by_confidence(
-    confidences: np.ndarray, descending: bool = True
-) -> np.ndarray:
+def _sort_by_confidence(confidences: np.ndarray, descending: bool = True) -> np.ndarray:
     """Return indices sorted by confidence."""
     if descending:
         return np.argsort(-confidences)  # Descending
@@ -127,27 +125,21 @@ def plot_confidence_map(
     if sample_labels is None:
         sample_labels = [f"Sample {i}" for i in range(n_samples)]
     elif len(sample_labels) != n_samples:
-        raise ValueError(
-            f"sample_labels length {len(sample_labels)} "
-            f"does not match confidences length {n_samples}"
-        )
+        raise ValueError(f"sample_labels length {len(sample_labels)} does not match confidences length {n_samples}")
 
     # Validate class predictions
     if class_predictions is not None:
         class_predictions = np.asarray(class_predictions)
         if len(class_predictions) != n_samples:
             raise ValueError(
-                f"class_predictions length {len(class_predictions)} "
-                f"does not match confidences length {n_samples}"
+                f"class_predictions length {len(class_predictions)} does not match confidences length {n_samples}"
             )
 
     # Sort if requested
     indices = _sort_by_confidence(confidences, descending=False)
     confidences_sorted = confidences[indices]
     sample_labels = [sample_labels[i] for i in indices]
-    class_pred_sorted = (
-        class_predictions[indices] if class_predictions is not None else None
-    )
+    class_pred_sorted = class_predictions[indices] if class_predictions is not None else None
 
     # Create figure
     fig, ax = plt.subplots(figsize=figure_size)
@@ -433,7 +425,9 @@ def plot_coverage_efficiency(
         )
 
     # Add target coverage line
-    ax.axhline(target_coverage, color="red", linestyle="--", linewidth=2, alpha=0.7, label=f"Target: {target_coverage:.1%}")
+    ax.axhline(
+        target_coverage, color="red", linestyle="--", linewidth=2, alpha=0.7, label=f"Target: {target_coverage:.1%}"
+    )
 
     # Add perfect coverage line
     ax.axhline(1.0, color="green", linestyle=":", linewidth=1.5, alpha=0.5, label="Perfect (100%)")
@@ -580,7 +574,9 @@ def plot_abstention_distribution(
         # Value annotations
         for i, (predict_rate, abstain_rate) in enumerate(zip(predict_rates, abstain_rates)):
             ax.text(i, predict_rate / 2, f"{predict_rate:.1%}", ha="center", va="center", fontweight="bold")
-            ax.text(i, predict_rate + abstain_rate / 2, f"{abstain_rate:.1%}", ha="center", va="center", fontweight="bold")
+            ax.text(
+                i, predict_rate + abstain_rate / 2, f"{abstain_rate:.1%}", ha="center", va="center", fontweight="bold"
+            )
 
         ax.set_xticks(x_pos)
         ax.set_xticklabels(unique_facets)

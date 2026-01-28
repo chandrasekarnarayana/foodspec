@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class NodeStatus(str, Enum):
     """Execution status of a node"""
+
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -26,6 +27,7 @@ class NodeStatus(str, Enum):
 
 class NodeType(str, Enum):
     """Types of pipeline nodes"""
+
     PREPROCESS = "preprocess"
     QC = "qc"
     FEATURES = "features"
@@ -44,15 +46,15 @@ class Node:
     Represents one stage of the workflow.
     """
 
-    name: str                           # Unique identifier
-    node_type: NodeType                 # Type of operation
-    func: Optional[Callable] = None     # Execution function
+    name: str  # Unique identifier
+    node_type: NodeType  # Type of operation
+    func: Optional[Callable] = None  # Execution function
     inputs: List[str] = field(default_factory=list)  # Dependency names
-    outputs: List[str] = field(default_factory=list) # Output artifact names
+    outputs: List[str] = field(default_factory=list)  # Output artifact names
     params: Dict[str, Any] = field(default_factory=dict)  # Configuration
     status: NodeStatus = NodeStatus.PENDING
-    result: Optional[Any] = None        # Execution result
-    error: Optional[str] = None         # Error message if failed
+    result: Optional[Any] = None  # Execution result
+    error: Optional[str] = None  # Error message if failed
 
     def __hash__(self):
         return hash(self.name)
@@ -327,6 +329,7 @@ class PipelineDAG:
 # ============================================================================
 # Standard Pipeline Builder
 # ============================================================================
+
 
 def build_standard_pipeline() -> PipelineDAG:
     """

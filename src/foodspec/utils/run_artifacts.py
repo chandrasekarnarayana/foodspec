@@ -1,4 +1,5 @@
 """Run artifact utilities for CLI and pipeline workflows."""
+
 from __future__ import annotations
 
 import json
@@ -88,6 +89,7 @@ def get_logger(run_dir: Optional[Path | str]) -> logging.Logger:
 
 def safe_json_dump(path: Path, obj: Dict[str, Any]) -> Path:
     """Write JSON to disk, ensuring parent directories exist."""
+
     def _normalize(value: Any) -> Any:
         if isinstance(value, Path):
             return str(value)

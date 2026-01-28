@@ -1,4 +1,5 @@
 """Utility commands: about, version, report generation."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -140,27 +141,32 @@ def report(
         typer.echo(f"Runtime error: {exc}", err=True)
         raise typer.Exit(code=4)
 
+
 @utils_app.command("report-run")
 def report_run(
-    run_dir: Path = typer.Option(
-        ..., "--run-dir", "-r", help="Path to protocol run directory."
-    ),
+    run_dir: Path = typer.Option(..., "--run-dir", "-r", help="Path to protocol run directory."),
     mode: str = typer.Option(
         "research",
-        "--mode", "-m",
+        "--mode",
+        "-m",
         help="Report mode: research|regulatory|monitoring",
     ),
     output_format: str = typer.Option(
         "all",
-        "--format", "-f",
+        "--format",
+        "-f",
         help="Output format: html|json|markdown|all",
     ),
     out_dir: Optional[Path] = typer.Option(
-        None, "--output-dir", "-o",
+        None,
+        "--output-dir",
+        "-o",
         help="Output directory (defaults to run_dir)",
     ),
     title: str = typer.Option(
-        "FoodSpec Report", "--title", "-t",
+        "FoodSpec Report",
+        "--title",
+        "-t",
         help="Report title for HTML output",
     ),
 ):

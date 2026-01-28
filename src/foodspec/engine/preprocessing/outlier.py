@@ -1,4 +1,5 @@
 """Outlier detection helpers (engine namespace)."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -13,4 +14,3 @@ def detect_spectral_outliers(X: np.ndarray, z_threshold: float = 3.0):
 
 
 __all__ = ["detect_spectral_outliers"]
-

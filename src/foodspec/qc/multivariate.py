@@ -1,4 +1,5 @@
 """Multivariate QC: outliers, Hotelling T², batch drift."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

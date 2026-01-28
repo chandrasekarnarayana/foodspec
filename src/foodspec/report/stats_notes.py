@@ -1,4 +1,5 @@
 """Statistical justification snippets for manuscripts."""
+
 from __future__ import annotations
 
 from typing import Dict, Optional

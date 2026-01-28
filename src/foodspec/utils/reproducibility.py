@@ -1,4 +1,5 @@
 """Reproducibility helpers for FoodSpec runs."""
+
 from __future__ import annotations
 
 import json
@@ -53,4 +54,3 @@ def write_reproducibility_snapshot(run_dir: str | Path) -> Path:
 
 
 __all__ = ["capture_reproducibility", "write_reproducibility_snapshot"]
-

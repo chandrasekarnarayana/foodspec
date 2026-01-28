@@ -1,4 +1,5 @@
 """Metadata Governance: Instrument Profiles, Calibration History, Audit Trails."""
+
 from __future__ import annotations
 
 import hashlib
@@ -83,19 +84,19 @@ CALIBRATION CERTIFICATE
 ID:                     {self.calibration_id}
 Instrument:             {self.instrument_id}
 Calibration Date:       {self.calibration_date}
-Valid Until:            {self.valid_until or 'N/A'}
+Valid Until:            {self.valid_until or "N/A"}
 
 Method:                 {self.calibration_method}
 Standard Reference:     {self.standard_reference}
 Performed By:           {self.performed_by}
 
 Acceptance Criteria:
-{chr(10).join([f'  {k}: {v}' for k, v in self.acceptance_criteria.items()])}
+{chr(10).join([f"  {k}: {v}" for k, v in self.acceptance_criteria.items()])}
 
 Results:
-{chr(10).join([f'  {k}: {v}' for k, v in self.results.items()])}
+{chr(10).join([f"  {k}: {v}" for k, v in self.results.items()])}
 
-Status:                 {'PASSED' if self.passed else 'FAILED'}
+Status:                 {"PASSED" if self.passed else "FAILED"}
 Notes:                  {self.notes}
 """
         return cert.strip()
@@ -193,10 +194,7 @@ class GovernanceRegistry:
 
     def get_instrument_calibrations(self, instrument_id: str) -> List[CalibrationRecord]:
         """Get all calibration records for an instrument."""
-        return [
-            cal for cal in self.calibrations.values()
-            if cal.instrument_id == instrument_id
-        ]
+        return [cal for cal in self.calibrations.values() if cal.instrument_id == instrument_id]
 
     def is_instrument_calibrated(self, instrument_id: str) -> bool:
         """Check if instrument has valid calibration."""
@@ -243,7 +241,8 @@ class GovernanceRegistry:
         min_time = meas_dt - timedelta(minutes=allowed_deviation_minutes)
 
         relevant_logs = [
-            log for log in self.get_environment_history(instrument_id)
+            log
+            for log in self.get_environment_history(instrument_id)
             if datetime.fromisoformat(log.timestamp) >= min_time
         ]
 
@@ -255,9 +254,7 @@ class GovernanceRegistry:
             }
 
         # Check conditions
-        all_within_limits = all(
-            log.is_within_limits() for log in relevant_logs
-        )
+        all_within_limits = all(log.is_within_limits() for log in relevant_logs)
 
         avg_temp = sum(log.temperature_c for log in relevant_logs) / len(relevant_logs)
         avg_humidity = sum(log.humidity_percent for log in relevant_logs) / len(relevant_logs)
@@ -294,8 +291,8 @@ Instrument: {inst_id}
   Serial: {profile.serial_number}
   Calibration Status: {profile.calibration_status}
   Calibrations: {len(cals)}
-  Latest: {latest_cal.calibration_date if latest_cal else 'None'}
-  Passed Latest: {latest_cal.passed if latest_cal else 'N/A'}
+  Latest: {latest_cal.calibration_date if latest_cal else "None"}
+  Passed Latest: {latest_cal.passed if latest_cal else "N/A"}
 """
 
         report += f"""

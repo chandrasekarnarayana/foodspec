@@ -168,7 +168,7 @@ def fig_heating_trend_and_workflow():
 def fig_hsi_and_roi():
     H, W, L = 40, 40, 400
     w = np.linspace(800, 3000, L)
-    base = np.exp(-((w - 1600) / 220) ** 2)
+    base = np.exp(-(((w - 1600) / 220) ** 2))
     cube = np.tile(base, (H, W, 1)) + RNG.normal(0, 0.01, (H, W, L))
     cube[15:28, 10:24, :] *= 0.6
 

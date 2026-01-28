@@ -1,4 +1,5 @@
 """Reporting schema objects for run artifact bundles."""
+
 from __future__ import annotations
 
 import csv

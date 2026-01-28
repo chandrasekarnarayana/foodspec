@@ -1,4 +1,5 @@
 """Workflows mixin for FoodSpec API - heating trajectory analysis."""
+
 from __future__ import annotations
 
 import hashlib

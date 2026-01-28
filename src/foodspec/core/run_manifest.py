@@ -32,11 +32,13 @@ def _json_safe(value: Any) -> Any:
     except Exception:
         return str(value)
 
+
 logger = logging.getLogger(__name__)
 
 
 class RunStatus(str, Enum):
     """Status of a run"""
+
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -48,18 +50,19 @@ class RunStatus(str, Enum):
 class ManifestMetadata:
     """Top-level run metadata"""
 
-    run_id: str                                     # Unique run identifier
-    timestamp_start: str                            # ISO format
-    timestamp_end: Optional[str] = None             # ISO format
+    run_id: str  # Unique run identifier
+    timestamp_start: str  # ISO format
+    timestamp_end: Optional[str] = None  # ISO format
     status: RunStatus = RunStatus.PENDING
-    version: str = "1.0"                           # Manifest version
-    foodspec_version: str = "unknown"               # FoodSpec version
+    version: str = "1.0"  # Manifest version
+    foodspec_version: str = "unknown"  # FoodSpec version
 
     def duration_seconds(self) -> Optional[float]:
         """Compute run duration"""
         if not self.timestamp_end:
             return None
         from datetime import datetime
+
         start = datetime.fromisoformat(self.timestamp_start)
         end = datetime.fromisoformat(self.timestamp_end)
         return (end - start).total_seconds()
@@ -69,21 +72,21 @@ class ManifestMetadata:
 class ProtocolSnapshot:
     """Snapshot of protocol configuration"""
 
-    protocol_hash: str                              # SHA256 of protocol
-    protocol_path: Optional[str] = None             # Where protocol came from
+    protocol_hash: str  # SHA256 of protocol
+    protocol_path: Optional[str] = None  # Where protocol came from
     task: Optional[str] = None
     modality: Optional[str] = None
     model: Optional[str] = None
     validation: Optional[str] = None
-    config_dict: Optional[Dict[str, Any]] = None    # Full protocol dict
+    config_dict: Optional[Dict[str, Any]] = None  # Full protocol dict
 
 
 @dataclass
 class DataSnapshot:
     """Snapshot of input data"""
 
-    data_fingerprint: str                           # SHA256 of CSV
-    data_path: Optional[str] = None                 # Where data came from
+    data_fingerprint: str  # SHA256 of CSV
+    data_path: Optional[str] = None  # Where data came from
     row_count: Optional[int] = None
     column_count: Optional[int] = None
     size_bytes: Optional[int] = None
@@ -93,12 +96,12 @@ class DataSnapshot:
 class EnvironmentSnapshot:
     """Capture of execution environment"""
 
-    seed: Optional[int]                             # Random seed
-    python_version: str                             # Python version
-    os_name: str                                    # OS type
-    os_version: str                                 # OS version
-    machine: str                                    # Machine type
-    cpu_count: int                                  # CPU cores
+    seed: Optional[int]  # Random seed
+    python_version: str  # Python version
+    os_name: str  # OS type
+    os_version: str  # OS version
+    machine: str  # Machine type
+    cpu_count: int  # CPU cores
     package_versions: Dict[str, str] = field(default_factory=dict)  # Key packages
 
 
@@ -106,18 +109,18 @@ class EnvironmentSnapshot:
 class DAGSnapshot:
     """Snapshot of pipeline DAG"""
 
-    dag_dict: Dict[str, Any]                        # Full DAG JSON
-    execution_order: List[str]                      # Node execution order
-    node_count: int                                 # Number of nodes
+    dag_dict: Dict[str, Any]  # Full DAG JSON
+    execution_order: List[str]  # Node execution order
+    node_count: int  # Number of nodes
 
 
 @dataclass
 class ArtifactSnapshot:
     """Snapshot of produced artifacts"""
 
-    artifact_count: int                             # Total artifacts
-    by_type: Dict[str, int]                         # Count by type
-    total_size_bytes: int                           # Total size
+    artifact_count: int  # Total artifacts
+    by_type: Dict[str, int]  # Count by type
+    total_size_bytes: int  # Total size
 
 
 @dataclass
@@ -135,7 +138,7 @@ class RunManifest:
     dag: Optional[DAGSnapshot] = None
     artifacts: Optional[ArtifactSnapshot] = None
     philosophy_checks: Optional[Dict[str, bool]] = None  # Philosophy validation results
-    errors: List[str] = field(default_factory=list)      # Any errors during run
+    errors: List[str] = field(default_factory=list)  # Any errors during run
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dict (preserves structure)"""
@@ -230,6 +233,7 @@ class RunManifest:
 # ============================================================================
 # Manifest Builder
 # ============================================================================
+
 
 class ManifestBuilder:
     """Fluent builder for constructing manifests"""

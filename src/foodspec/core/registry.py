@@ -32,7 +32,7 @@ except ImportError:
             """List all registered components."""
             return list(cls._registry.keys())
 
+
 __all__ = [
     "ComponentRegistry",
 ]
-

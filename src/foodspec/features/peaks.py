@@ -1,4 +1,5 @@
 """Peak detection and feature extraction utilities."""
+
 from __future__ import annotations
 
 from typing import Iterable, Optional, Sequence
@@ -118,7 +119,9 @@ def extract_peak_features(
                 centroid = float(np.sum(local_w * corrected) / (total + 1e-12))
                 left_mask = local_w <= centroid
                 right_mask = local_w >= centroid
-                left_area = float(np.trapezoid(corrected[left_mask], x=local_w[left_mask])) if np.any(left_mask) else 0.0
+                left_area = (
+                    float(np.trapezoid(corrected[left_mask], x=local_w[left_mask])) if np.any(left_mask) else 0.0
+                )
                 right_area = (
                     float(np.trapezoid(corrected[right_mask], x=local_w[right_mask])) if np.any(right_mask) else 0.0
                 )

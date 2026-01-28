@@ -186,8 +186,14 @@ class ReportContext:
         # Trust subdirectory
         trust_dir = run_dir / "trust"
         if trust_dir.exists():
-            for trust_file in ["calibration.json", "conformal.json", "abstention.json",
-                              "coverage.json", "reliability.json", "readiness.json"]:
+            for trust_file in [
+                "calibration.json",
+                "conformal.json",
+                "abstention.json",
+                "coverage.json",
+                "reliability.json",
+                "readiness.json",
+            ]:
                 file_path = trust_dir / trust_file
                 if file_path.exists():
                     try:
@@ -200,8 +206,12 @@ class ReportContext:
         drift_dir = run_dir / "drift"
         if drift_dir.exists():
             drift_data = {}
-            for drift_file in ["batch_drift.json", "temporal_drift.json",
-                             "stage_differences.json", "replicate_similarity.json"]:
+            for drift_file in [
+                "batch_drift.json",
+                "temporal_drift.json",
+                "stage_differences.json",
+                "replicate_similarity.json",
+            ]:
                 file_path = drift_dir / drift_file
                 if file_path.exists():
                     try:
@@ -387,6 +397,7 @@ class ReportBuilder:
             # Fallback: use filesystem loader
             template_dir = Path(__file__).parent / "templates"
             from jinja2 import FileSystemLoader
+
             self.env = Environment(
                 loader=FileSystemLoader(str(template_dir)),
                 autoescape=select_autoescape(["html", "xml"]),
@@ -447,12 +458,14 @@ class ReportBuilder:
 
         # Prepare template data
         context_dict = self.context.to_dict()
-        context_dict.update({
-            "title": title,
-            "mode": mode.value,
-            "mode_description": mode_config.description,
-            "enabled_sections": mode_config.enabled_sections,
-        })
+        context_dict.update(
+            {
+                "title": title,
+                "mode": mode.value,
+                "mode_description": mode_config.description,
+                "enabled_sections": mode_config.enabled_sections,
+            }
+        )
 
         mv_section = build_multivariate_section(self.context)
         context_dict["multivariate_section"] = mv_section

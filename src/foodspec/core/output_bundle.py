@@ -1,4 +1,5 @@
 """Output bundle: unified management of workflow artifacts."""
+
 from __future__ import annotations
 
 import json

@@ -195,11 +195,7 @@ def load_run_summary(run_dir: str | Path) -> RunSummary:
             qc_data = json.load(f)
             # Extract boolean flags
             if isinstance(qc_data, dict):
-                qc_flags = {
-                    k: bool(v)
-                    for k, v in qc_data.items()
-                    if isinstance(v, (bool, int, float))
-                }
+                qc_flags = {k: bool(v) for k, v in qc_data.items() if isinstance(v, (bool, int, float))}
 
     return RunSummary(
         run_id=run_id,
@@ -477,9 +473,7 @@ def create_monitoring_plot(
         timestamps.append(ts)
 
     # Create figure
-    fig, axes = plt.subplots(
-        len(metrics), 1, figsize=(12, 4 * len(metrics)), sharex=True
-    )
+    fig, axes = plt.subplots(len(metrics), 1, figsize=(12, 4 * len(metrics)), sharex=True)
     if len(metrics) == 1:
         axes = [axes]
 

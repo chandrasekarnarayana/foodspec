@@ -1,4 +1,5 @@
 """Journal preset metadata for rapid compliance checks."""
+
 from __future__ import annotations
 
 from typing import Dict, List

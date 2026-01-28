@@ -1,4 +1,5 @@
 """Regulatory compliance checks for run artifacts."""
+
 from __future__ import annotations
 
 import json

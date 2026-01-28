@@ -1,4 +1,5 @@
 """Registry for regression / count models (NCSS-inspired)."""
+
 from __future__ import annotations
 
 from typing import Any, Callable, Dict
@@ -33,11 +34,20 @@ REGRESSION_REGISTRY: Dict[str, Dict[str, Any]] = {
     "linear": {"builder": LinearRegression, "supports_weights": True, "type": "regression"},
     "ridge": {"builder": Ridge, "supports_weights": True, "type": "regression"},
     "huber": {"builder": HuberRegressor, "supports_weights": False, "type": "regression"},
-    "ransac": {"builder": lambda: RANSACRegressor(base_estimator=LinearRegression()), "supports_weights": False, "type": "regression"},
+    "ransac": {
+        "builder": lambda: RANSACRegressor(base_estimator=LinearRegression()),
+        "supports_weights": False,
+        "type": "regression",
+    },
     "pcr": {"builder": _pcr_builder, "supports_weights": False, "type": "regression"},
     "poisson": {"builder": lambda: PoissonRegressor(alpha=0.0), "supports_weights": True, "type": "count"},
     "neg_binom": {"builder": _neg_binom_builder, "supports_weights": True, "type": "count"},
-    "tsls": {"builder": _tsls_builder, "supports_weights": False, "type": "regression", "note": "simple 2SLS placeholder"},
+    "tsls": {
+        "builder": _tsls_builder,
+        "supports_weights": False,
+        "type": "regression",
+        "note": "simple 2SLS placeholder",
+    },
 }
 
 

@@ -44,15 +44,11 @@ def _validate_stability_matrix(
     if stability_matrix.size == 0:
         raise ValueError("Stability matrix cannot be empty")
     if stability_matrix.ndim != 2:
-        raise ValueError(
-            f"Stability matrix must be 2D, got shape {stability_matrix.shape}"
-        )
+        raise ValueError(f"Stability matrix must be 2D, got shape {stability_matrix.shape}")
     return stability_matrix.shape
 
 
-def _normalize_stability(
-    stability_matrix: np.ndarray, method: str = "minmax"
-) -> np.ndarray:
+def _normalize_stability(stability_matrix: np.ndarray, method: str = "minmax") -> np.ndarray:
     """
     Normalize stability values to [0, 1].
 
@@ -120,9 +116,7 @@ def _compute_feature_frequency(
     return np.mean(stability_matrix, axis=1)
 
 
-def _sort_by_stability(
-    stability_matrix: np.ndarray, method: str = "frequency"
-) -> np.ndarray:
+def _sort_by_stability(stability_matrix: np.ndarray, method: str = "frequency") -> np.ndarray:
     """
     Sort features by stability metric.
 
@@ -274,15 +268,9 @@ def plot_feature_stability(
 
     # Validate name lengths
     if len(fold_names) != n_folds:
-        raise ValueError(
-            f"fold_names length {len(fold_names)} "
-            f"does not match matrix columns {n_folds}"
-        )
+        raise ValueError(f"fold_names length {len(fold_names)} does not match matrix columns {n_folds}")
     if len(feature_names) != n_features:
-        raise ValueError(
-            f"feature_names length {len(feature_names)} "
-            f"does not match matrix rows {n_features}"
-        )
+        raise ValueError(f"feature_names length {len(feature_names)} does not match matrix rows {n_features}")
 
     # Normalize
     if normalize is True:
@@ -290,9 +278,7 @@ def plot_feature_stability(
     elif normalize is False:
         normalize = "none"
     data_to_plot = (
-        stability_matrix.copy()
-        if normalize == "none"
-        else _normalize_stability(stability_matrix, method=normalize)
+        stability_matrix.copy() if normalize == "none" else _normalize_stability(stability_matrix, method=normalize)
     )
 
     # Sort or cluster features
@@ -346,10 +332,7 @@ def plot_feature_stability(
                 value = data_to_plot[i, j]
                 text_color = "white" if value > 0.5 else "black"
                 annotation = f"{value:.{value_decimals}f}"
-                ax_main.text(
-                    j, i, annotation, ha="center", va="center",
-                    color=text_color, fontsize=8
-                )
+                ax_main.text(j, i, annotation, ha="center", va="center", color=text_color, fontsize=8)
 
     # Colorbar
     cbar = plt.colorbar(im, ax=ax_main, fraction=0.046, pad=0.04)
@@ -459,14 +442,10 @@ def get_stability_statistics(
 
     # Consistency metrics
     stats["consistency_metrics"]["stable_features"] = [
-        feature_names[i]
-        for i in range(n_features)
-        if frequencies[i] >= np.percentile(frequencies, 75)
+        feature_names[i] for i in range(n_features) if frequencies[i] >= np.percentile(frequencies, 75)
     ]
     stats["consistency_metrics"]["unstable_features"] = [
-        feature_names[i]
-        for i in range(n_features)
-        if frequencies[i] <= np.percentile(frequencies, 25)
+        feature_names[i] for i in range(n_features) if frequencies[i] <= np.percentile(frequencies, 25)
     ]
 
     return stats

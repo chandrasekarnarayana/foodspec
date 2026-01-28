@@ -1,4 +1,5 @@
 """Lightweight regression/count diagnostics for QC artifacts."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List
@@ -42,11 +43,13 @@ def summarize_regression_diagnostics(
         if ratio > 1.5:
             flags.append("overdispersion_high")
 
-    residuals_df = pd.DataFrame({
-        "y_true": yt,
-        "y_pred": yp,
-        "residual": resid,
-    })
+    residuals_df = pd.DataFrame(
+        {
+            "y_true": yt,
+            "y_pred": yp,
+            "residual": resid,
+        }
+    )
     residuals_df["abs_residual"] = residuals_df["residual"].abs()
     residuals_df.sort_values("abs_residual", ascending=False, inplace=True)
     residuals_top = residuals_df.head(max_rows).reset_index(drop=True)

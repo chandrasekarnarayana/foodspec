@@ -73,7 +73,9 @@ class RocDiagnosticsResult:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-def _validate_inputs(y_true: np.ndarray, y_proba: np.ndarray, sample_weight: Optional[np.ndarray]) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+def _validate_inputs(
+    y_true: np.ndarray, y_proba: np.ndarray, sample_weight: Optional[np.ndarray]
+) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """Validate and coerce inputs to numpy arrays."""
     y_true = np.asarray(y_true)
     y_proba = np.asarray(y_proba)
@@ -245,7 +247,12 @@ def compute_binary_roc_diagnostics(
     # Compute CI
     y_proba_pos = y_proba[:, 1] if y_proba.ndim == 2 and y_proba.shape[1] > 1 else y_proba[:, 0]
     auc_val, ci_lower, ci_upper = compute_auc_ci_bootstrap(
-        y_true, y_proba_pos, pos_label=pos_label, n_bootstrap=n_bootstrap, confidence_level=confidence_level, random_seed=random_seed
+        y_true,
+        y_proba_pos,
+        pos_label=pos_label,
+        n_bootstrap=n_bootstrap,
+        confidence_level=confidence_level,
+        random_seed=random_seed,
     )
     metrics.ci_lower = ci_lower
     metrics.ci_upper = ci_upper
@@ -360,7 +367,15 @@ def compute_multiclass_roc_diagnostics(
     if n_classes <= 2:
         # Fall back to binary if only 2 classes
         if n_classes == 2:
-            return compute_binary_roc_diagnostics(y_true, y_proba, sample_weight=sample_weight, pos_label=labels[1], n_bootstrap=n_bootstrap, confidence_level=confidence_level, random_seed=random_seed)
+            return compute_binary_roc_diagnostics(
+                y_true,
+                y_proba,
+                sample_weight=sample_weight,
+                pos_label=labels[1],
+                n_bootstrap=n_bootstrap,
+                confidence_level=confidence_level,
+                random_seed=random_seed,
+            )
         else:
             raise ValueError("Only 1 class detected")
 
@@ -381,7 +396,12 @@ def compute_multiclass_roc_diagnostics(
 
         # CI for this class
         auc_val, ci_lower, ci_upper = compute_auc_ci_bootstrap(
-            y_true_i, y_proba_i, pos_label=1, n_bootstrap=n_bootstrap, confidence_level=confidence_level, random_seed=random_seed
+            y_true_i,
+            y_proba_i,
+            pos_label=1,
+            n_bootstrap=n_bootstrap,
+            confidence_level=confidence_level,
+            random_seed=random_seed,
         )
 
         per_class_metrics[label] = PerClassRocMetrics(
@@ -526,11 +546,22 @@ def compute_roc_diagnostics(
 
     if task == "binary":
         return compute_binary_roc_diagnostics(
-            y_true, y_proba, sample_weight=sample_weight, n_bootstrap=n_bootstrap, confidence_level=confidence_level, random_seed=random_seed
+            y_true,
+            y_proba,
+            sample_weight=sample_weight,
+            n_bootstrap=n_bootstrap,
+            confidence_level=confidence_level,
+            random_seed=random_seed,
         )
     elif task == "multiclass":
         return compute_multiclass_roc_diagnostics(
-            y_true, y_proba, sample_weight=sample_weight, labels=labels, n_bootstrap=n_bootstrap, confidence_level=confidence_level, random_seed=random_seed
+            y_true,
+            y_proba,
+            sample_weight=sample_weight,
+            labels=labels,
+            n_bootstrap=n_bootstrap,
+            confidence_level=confidence_level,
+            random_seed=random_seed,
         )
     else:
         raise ValueError(f"Unknown task: {task}")

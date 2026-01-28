@@ -1,4 +1,5 @@
 """Streaming monitoring API for real-time QC and drift tracking."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -48,7 +49,9 @@ class StreamingMonitor:
         }
         self.history: List[MonitoringEvent] = []
 
-    def update(self, X: np.ndarray, *, metadata: Optional[Any] = None, timestamp: Optional[str] = None) -> MonitoringEvent:
+    def update(
+        self, X: np.ndarray, *, metadata: Optional[Any] = None, timestamp: Optional[str] = None
+    ) -> MonitoringEvent:
         """Process a new batch of spectra and return monitoring event."""
         X = np.asarray(X, dtype=float)
         if X.ndim == 1:

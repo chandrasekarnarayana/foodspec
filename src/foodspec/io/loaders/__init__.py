@@ -1,4 +1,5 @@
 """Instrument loaders (mindmap-aligned)."""
+
 from __future__ import annotations
 
 from .csv import load_csv_spectra

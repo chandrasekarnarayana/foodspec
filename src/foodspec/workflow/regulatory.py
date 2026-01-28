@@ -6,6 +6,7 @@ Provides:
 - Mandatory trust stack requirements
 - Mandatory reporting requirements
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

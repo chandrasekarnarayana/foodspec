@@ -1,4 +1,5 @@
 """EWMA control charts for drift monitoring on scores (PCA/PLS)."""
+
 from __future__ import annotations
 
 from typing import Tuple
@@ -172,9 +173,9 @@ class EWMAControlChart:
             lcl = self.lcl_[0]
             center = self.center_[0]
         else:
-            ucl = self.ucl_[0] if hasattr(self.ucl_, '__len__') else self.ucl_
-            lcl = self.lcl_[0] if hasattr(self.lcl_, '__len__') else self.lcl_
-            center = self.center_[0] if hasattr(self.center_, '__len__') else self.center_
+            ucl = self.ucl_[0] if hasattr(self.ucl_, "__len__") else self.ucl_
+            lcl = self.lcl_[0] if hasattr(self.lcl_, "__len__") else self.lcl_
+            center = self.center_[0] if hasattr(self.center_, "__len__") else self.center_
 
         ax.plot(times, ewma_vals, "b.-", label="EWMA", markersize=4)
 
@@ -186,7 +187,9 @@ class EWMAControlChart:
         # Highlight out-of-control points
         ooc_idx = np.where(self.out_of_control_)[0]
         if len(ooc_idx) > 0:
-            ax.scatter(times[ooc_idx], ewma_vals[ooc_idx], color="red", s=100, marker="X", label="Out of Control", zorder=5)
+            ax.scatter(
+                times[ooc_idx], ewma_vals[ooc_idx], color="red", s=100, marker="X", label="Out of Control", zorder=5
+            )
 
         ax.set_xlabel("Sample Number")
         ax.set_ylabel("EWMA Value")
@@ -419,15 +422,21 @@ class DriftDetector:
         summary_text = f"""
 Drift Detection Summary
 ========================
-Total Observations:   {summary['n_observations']}
-EWMA Alarms:          {summary['n_alarms']}
-Outliers:             {summary['n_outliers']}
-Alarm Rate:           {summary['alarm_rate']:.1%}
-Mean Mahalanobis:     {summary['mean_mahalanobis']:.3f}
+Total Observations:   {summary["n_observations"]}
+EWMA Alarms:          {summary["n_alarms"]}
+Outliers:             {summary["n_outliers"]}
+Alarm Rate:           {summary["alarm_rate"]:.1%}
+Mean Mahalanobis:     {summary["mean_mahalanobis"]:.3f}
 """
-        axes[1, 1].text(0.05, 0.95, summary_text, transform=axes[1, 1].transAxes,
-                       fontfamily="monospace", verticalalignment="top",
-                       bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5))
+        axes[1, 1].text(
+            0.05,
+            0.95,
+            summary_text,
+            transform=axes[1, 1].transAxes,
+            fontfamily="monospace",
+            verticalalignment="top",
+            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
+        )
         axes[1, 1].axis("off")
 
         plt.tight_layout()

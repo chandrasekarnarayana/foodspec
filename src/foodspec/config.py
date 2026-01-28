@@ -1,4 +1,5 @@
 """Simple configuration loader/merger for foodspec CLI."""
+
 from __future__ import annotations
 
 import json

@@ -69,6 +69,7 @@ from foodspec.utils.run_artifacts import (
 
 app = typer.Typer(help="foodspec command-line interface")
 
+
 def _run_protocol_qc(cfg, input_path: Path, run_dir: Path) -> dict:
     qc_policy = QCPolicy.from_dict(getattr(cfg, "qc", {}) or {})
     required_cols = []
@@ -117,6 +118,7 @@ def _run_protocol_qc(cfg, input_path: Path, run_dir: Path) -> dict:
     if qc_policy.required and report["status"] != "pass":
         raise FoodSpecQCError("QC required by policy; failing run.")
     return report
+
 
 # Mindmap-aligned commands (new structure)
 app.add_typer(mindmap_io_app, name="io")
@@ -186,13 +188,16 @@ app.command("evaluate")(evaluate_command)
 
 # --- Protocol runner (convenience) ------------------------------------------------------
 
+
 @app.command("run")
 def run_protocol(
     protocol: str = typer.Option(..., "--protocol", "-p", help="Protocol name or path to YAML/JSON."),
     input: List[Path] = typer.Option(None, "--input", "-i", help="Input CSV/HDF5 file (repeatable)."),
     input_dir: Optional[Path] = typer.Option(None, help="Directory of inputs when using --glob."),
     glob_pattern: str = typer.Option("*.csv", "--glob", help="Glob pattern used with --input-dir."),
-    output_dir: Path = typer.Option(Path("protocol_runs"), "--output-dir", "--outdir", help="Directory for run outputs."),
+    output_dir: Path = typer.Option(
+        Path("protocol_runs"), "--output-dir", "--outdir", help="Directory for run outputs."
+    ),
     seed: Optional[int] = typer.Option(None, help="Random seed override."),
     cv_folds: Optional[int] = typer.Option(None, help="Override CV folds for RQ models."),
     normalization_mode: Optional[str] = typer.Option(None, help="Normalization mode override (e.g. reference)."),

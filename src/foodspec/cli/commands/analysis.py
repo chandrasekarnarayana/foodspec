@@ -1,4 +1,5 @@
 """Analysis commands: domain-specific workflows (oil, heating, mixture, hyperspectral, aging, shelf-life)."""
+
 from __future__ import annotations
 
 from pathlib import Path

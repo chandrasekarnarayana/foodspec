@@ -32,6 +32,7 @@ _GLOBAL_SEED: Optional[int] = None
 # Global Seed Management
 # ============================================================================
 
+
 def set_global_seed(seed: int) -> None:
     """
     Set global seed for all RNG systems.
@@ -69,6 +70,7 @@ def get_global_seed() -> Optional[int]:
 # ============================================================================
 # Environment Capture
 # ============================================================================
+
 
 def capture_environment() -> Dict[str, Any]:
     """
@@ -163,6 +165,7 @@ def capture_versions() -> Dict[str, Any]:
 # Data Fingerprinting
 # ============================================================================
 
+
 def fingerprint_csv(csv_path: Path) -> str:
     """
     Compute deterministic fingerprint of CSV file.
@@ -210,6 +213,7 @@ def fingerprint_protocol(protocol_dict: Dict[str, Any]) -> str:
 # ============================================================================
 # Reproducibility Report
 # ============================================================================
+
 
 @dataclass
 class ReproducibilityReport:

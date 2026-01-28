@@ -1,4 +1,5 @@
 """Visualization helpers for heating degradation analysis."""
+
 from __future__ import annotations
 
 import matplotlib.pyplot as plt

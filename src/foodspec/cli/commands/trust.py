@@ -1,4 +1,5 @@
 """Trust and uncertainty CLI commands."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -168,7 +169,9 @@ def fit_calibration(
             },
         )
         readiness = evaluate_run_readiness(run, load_trust_payload(trust_outputs))
-        readiness_artifact = ReadinessArtifact(score=readiness.score, components=readiness.components, notes=readiness.notes)
+        readiness_artifact = ReadinessArtifact(
+            score=readiness.score, components=readiness.components, notes=readiness.notes
+        )
         readiness_path = trust_dir / "readiness.json"
         safe_json_dump(readiness_path, readiness_artifact.to_dict())
         _update_trust_outputs(run_dir, {"readiness": readiness_artifact.to_dict()})
@@ -200,7 +203,9 @@ def fit_calibration(
 @trust_app.command("calibrate")
 def calibrate_compat(
     run: Optional[Path] = typer.Option(None, "--run", help="Run directory with predictions.csv."),
-    calibration_csv: Optional[Path] = typer.Option(None, "--calibration-csv", "-c", help="CSV with labels and probabilities."),
+    calibration_csv: Optional[Path] = typer.Option(
+        None, "--calibration-csv", "-c", help="CSV with labels and probabilities."
+    ),
     label_col: str = typer.Option("y_true", help="Column containing true labels."),
     proba_prefix: str = typer.Option("proba_", help="Prefix for probability columns."),
     method: str = typer.Option("platt", help="Calibration method: platt|isotonic."),
@@ -235,6 +240,7 @@ def calibrate_compat(
         typer.echo(f"Validation error: {exc}", err=True)
         raise typer.Exit(code=2)
 
+
 @trust_app.command("conformal")
 def conformal_from_run(
     run: Optional[Path] = typer.Option(None, "--run", help="Run directory with predictions.csv."),
@@ -242,7 +248,9 @@ def conformal_from_run(
     test_csv: Optional[Path] = typer.Option(None, "--test-csv", "-t", help="Legacy test CSV."),
     alpha: float = typer.Option(0.1, help="Significance level (1 - target coverage)."),
     mondrian: Optional[str] = typer.Option(None, "--mondrian", help="Mondrian conditioning, e.g. group=stage."),
-    condition_col: Optional[str] = typer.Option(None, "--condition-col", help="Legacy conditioning column for CSV mode."),
+    condition_col: Optional[str] = typer.Option(
+        None, "--condition-col", help="Legacy conditioning column for CSV mode."
+    ),
     label_col: str = typer.Option("y_true", help="Column containing true labels."),
     proba_prefix: str = typer.Option("proba_", help="Prefix for probability columns."),
     outdir: Optional[Path] = typer.Option(None, "--outdir", help="Output directory for trust artifacts."),
@@ -343,7 +351,9 @@ def conformal_from_run(
             {"conformal": payload, "coverage": artifact.coverage, "mean_set_size": artifact.mean_set_size},
         )
         readiness = evaluate_run_readiness(run, load_trust_payload(trust_outputs))
-        readiness_artifact = ReadinessArtifact(score=readiness.score, components=readiness.components, notes=readiness.notes)
+        readiness_artifact = ReadinessArtifact(
+            score=readiness.score, components=readiness.components, notes=readiness.notes
+        )
         readiness_path = trust_dir / "readiness.json"
         safe_json_dump(readiness_path, readiness_artifact.to_dict())
         _update_trust_outputs(run_dir, {"readiness": readiness_artifact.to_dict()})
@@ -435,7 +445,9 @@ def abstain_from_run(
             {"abstention": artifact.to_dict(), "abstain_rate": artifact.abstain_rate},
         )
         readiness = evaluate_run_readiness(run, load_trust_payload(trust_outputs))
-        readiness_artifact = ReadinessArtifact(score=readiness.score, components=readiness.components, notes=readiness.notes)
+        readiness_artifact = ReadinessArtifact(
+            score=readiness.score, components=readiness.components, notes=readiness.notes
+        )
         readiness_path = trust_dir / "readiness.json"
         safe_json_dump(readiness_path, readiness_artifact.to_dict())
         _update_trust_outputs(run_dir, {"readiness": readiness_artifact.to_dict()})

@@ -1,4 +1,5 @@
 """Spectral alignment helpers (engine namespace)."""
+
 from __future__ import annotations
 
 import numpy as np

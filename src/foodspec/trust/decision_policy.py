@@ -31,10 +31,7 @@ import numpy as np
 audit_logger = logging.getLogger("foodspec.policy_audit")
 if not audit_logger.handlers:
     handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        '%(asctime)s|AUDIT|%(levelname)s|%(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
+    formatter = logging.Formatter("%(asctime)s|AUDIT|%(levelname)s|%(message)s", datefmt="%Y-%m-%d %H:%M:%S")
     handler.setFormatter(formatter)
     audit_logger.addHandler(handler)
     audit_logger.setLevel(logging.INFO)
@@ -80,32 +77,21 @@ class DecisionPolicy:
     def __post_init__(self):
         """Validate policy configuration."""
         if self.name not in [p.value for p in PolicyType]:
-            raise ValueError(
-                f"Unknown policy '{self.name}'. "
-                f"Valid options: {[p.value for p in PolicyType]}"
-            )
+            raise ValueError(f"Unknown policy '{self.name}'. Valid options: {[p.value for p in PolicyType]}")
 
         # Validate params for specific policies
         if self.name == PolicyType.COST_SENSITIVE.value:
             if "cost_fp" not in self.params or "cost_fn" not in self.params:
-                raise ValueError(
-                    "cost_sensitive policy requires cost_fp and cost_fn in params"
-                )
+                raise ValueError("cost_sensitive policy requires cost_fp and cost_fn in params")
         elif self.name == PolicyType.TARGET_SENSITIVITY.value:
             if "min_sensitivity" not in self.params:
-                raise ValueError(
-                    "target_sensitivity policy requires min_sensitivity in params"
-                )
+                raise ValueError("target_sensitivity policy requires min_sensitivity in params")
         elif self.name == PolicyType.TARGET_SPECIFICITY.value:
             if "min_specificity" not in self.params:
-                raise ValueError(
-                    "target_specificity policy requires min_specificity in params"
-                )
+                raise ValueError("target_specificity policy requires min_specificity in params")
         elif self.name == PolicyType.ABSTENTION_AWARE.value:
             if "max_abstention_rate" not in self.params:
-                raise ValueError(
-                    "abstention_aware policy requires max_abstention_rate in params"
-                )
+                raise ValueError("abstention_aware policy requires max_abstention_rate in params")
 
 
 @dataclass
@@ -220,8 +206,7 @@ def choose_operating_point(
     # Validate policy applies to data
     if policy.applies_to == "binary" and not is_binary:
         raise ValueError(
-            f"Policy '{policy.name}' applies to binary classification only, "
-            f"but data has {n_classes} classes"
+            f"Policy '{policy.name}' applies to binary classification only, but data has {n_classes} classes"
         )
 
     # Route to policy implementation
@@ -234,9 +219,7 @@ def choose_operating_point(
     elif policy.name == PolicyType.TARGET_SPECIFICITY.value:
         return _apply_target_specificity_policy(y_true, y_proba, roc_result, policy)
     elif policy.name == PolicyType.ABSTENTION_AWARE.value:
-        return _apply_abstention_aware_policy(
-            y_true, y_proba, roc_result, policy, abstention=abstention
-        )
+        return _apply_abstention_aware_policy(y_true, y_proba, roc_result, policy, abstention=abstention)
     else:
         raise ValueError(f"Unknown policy: {policy.name}")
 
@@ -617,10 +600,7 @@ def save_operating_point(
     # 2. Save thresholds CSV (for easy inspection)
     thresholds_csv_path = output_dir / "operating_point_thresholds.csv"
     if isinstance(operating_point.thresholds, dict):
-        thresholds_data = [
-            {"class": str(k), "threshold": float(v)}
-            for k, v in operating_point.thresholds.items()
-        ]
+        thresholds_data = [{"class": str(k), "threshold": float(v)} for k, v in operating_point.thresholds.items()]
     else:
         thresholds_data = [{"class": "binary", "threshold": float(operating_point.thresholds)}]
 
@@ -645,6 +625,7 @@ def save_operating_point(
         pass
 
     return artifacts
+
 
 # ============================================================================
 # REGULATORY-GRADE COMPONENTS: Cost-Sensitive Analysis, Audit Logging

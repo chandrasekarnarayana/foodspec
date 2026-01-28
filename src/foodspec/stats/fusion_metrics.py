@@ -1,4 +1,5 @@
 """Agreement and consistency metrics for multi-modal fusion."""
+
 from __future__ import annotations
 
 from typing import Dict

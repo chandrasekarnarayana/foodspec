@@ -1,4 +1,5 @@
 """I/O mixin for FoodSpec API - data loading functionality."""
+
 from __future__ import annotations
 
 from pathlib import Path

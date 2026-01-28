@@ -1,4 +1,5 @@
 """Legacy validation namespace (deprecated)."""
+
 from __future__ import annotations
 
 from foodspec.modeling.evaluation import evaluate_model_cv

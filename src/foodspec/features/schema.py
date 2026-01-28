@@ -1,4 +1,5 @@
 """Feature engineering schemas and protocol parsing helpers."""
+
 from __future__ import annotations
 
 import json
@@ -113,7 +114,9 @@ def _dedupe_by_name(items: Sequence[Any]) -> list[Any]:
     return out
 
 
-def _parse_peak_specs(items: Iterable[dict[str, Any]], *, default_window: float, default_baseline: str) -> list[PeakSpec]:
+def _parse_peak_specs(
+    items: Iterable[dict[str, Any]], *, default_window: float, default_baseline: str
+) -> list[PeakSpec]:
     peaks: list[PeakSpec] = []
     for item in items:
         if not isinstance(item, dict):
@@ -192,7 +195,11 @@ def parse_feature_config(protocol_path: Path) -> FeatureConfig:
     default_peak_baseline = str(features_payload.get("peak_baseline", "none"))
     default_band_baseline = str(features_payload.get("band_baseline", "none"))
 
-    peaks.extend(_parse_peak_specs(features_payload.get("peaks", []), default_window=default_window, default_baseline=default_peak_baseline))
+    peaks.extend(
+        _parse_peak_specs(
+            features_payload.get("peaks", []), default_window=default_window, default_baseline=default_peak_baseline
+        )
+    )
     bands.extend(_parse_band_specs(features_payload.get("bands", []), default_baseline=default_band_baseline))
     ratios.extend(_parse_ratio_specs(features_payload.get("ratios", [])))
 
@@ -218,7 +225,9 @@ def parse_feature_config(protocol_path: Path) -> FeatureConfig:
         if step_type in {"rq_analysis", "features"}:
             ratios.extend(_parse_ratio_specs(params.get("ratios", [])))
 
-    assignment_overrides = features_payload.get("assignments", {}) if isinstance(features_payload.get("assignments"), dict) else {}
+    assignment_overrides = (
+        features_payload.get("assignments", {}) if isinstance(features_payload.get("assignments"), dict) else {}
+    )
     if assignment_overrides:
         peaks = [
             PeakSpec(

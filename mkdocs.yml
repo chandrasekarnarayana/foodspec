@@ -12,7 +12,7 @@ theme:
   features:
     - content.footer
     - content.code.annotate
-  custom_dir: overrides
+  custom_dir: docs/overrides
 
 plugins:
   - search

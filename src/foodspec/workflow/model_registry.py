@@ -2,6 +2,7 @@
 
 Maps model aliases to canonical names and maintains approved model lists.
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -27,7 +28,6 @@ MODEL_ALIASES = {
     "logisticregression": "logreg",
     "LogisticRegression": "logreg",
     "lr": "logreg",
-
     # SVM Linear
     "svm_linear": "svm_linear",
     "svm-linear": "svm_linear",
@@ -35,45 +35,38 @@ MODEL_ALIASES = {
     "svc_linear": "svm_linear",
     "linearsvc": "svm_linear",
     "LinearSVC": "svm_linear",
-
     # SVM RBF
     "svm_rbf": "svm_rbf",
     "svm-rbf": "svm_rbf",
     "svmrbf": "svm_rbf",
     "svc": "svm_rbf",
     "SVC": "svm_rbf",
-
     # Random Forest
     "rf": "rf",
     "randomforest": "rf",
     "RandomForest": "rf",
     "RandomForestClassifier": "rf",
-
     # Gradient Boosting
     "gboost": "gboost",
     "gradientboosting": "gboost",
     "GradientBoosting": "gboost",
     "GradientBoostingClassifier": "gboost",
     "gb": "gboost",
-
     # XGBoost
     "xgb": "xgb",
     "xgboost": "xgb",
     "XGBoost": "xgb",
     "XGBClassifier": "xgb",
-
     # LightGBM
     "lgbm": "lgbm",
     "lightgbm": "lgbm",
     "LightGBM": "lgbm",
     "LGBMClassifier": "lgbm",
-
     # K-Nearest Neighbors
     "knn": "knn",
     "KNN": "knn",
     "KNeighborsClassifier": "knn",
     "k-neighbors": "knn",
-
     # Multi-Layer Perceptron
     "mlp": "mlp",
     "MLP": "mlp",

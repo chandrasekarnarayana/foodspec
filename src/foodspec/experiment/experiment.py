@@ -12,6 +12,7 @@ The Experiment class orchestrates a complete reproducible analysis:
 
 Design: one run = one complete artifact bundle with manifest, metrics, report.
 """
+
 from __future__ import annotations
 
 import json
@@ -103,6 +104,7 @@ class BatchRunResult:
             "summary_path": str(self.summary_path) if self.summary_path else None,
             "results": [r.to_dict() for r in self.results],
         }
+
 
 @dataclass
 class ExperimentConfig:
@@ -303,9 +305,7 @@ class Experiment:
                 self._generate_report(fit_result, report_dir)
 
             # Create manifest
-            manifest = self._build_manifest(
-                csv_path, fit_result, run_dir, start_time, pd.Timestamp.now(tz="UTC")
-            )
+            manifest = self._build_manifest(csv_path, fit_result, run_dir, start_time, pd.Timestamp.now(tz="UTC"))
             manifest_path = run_dir / "manifest.json"
             manifest.save(manifest_path)
 
@@ -465,7 +465,9 @@ class Experiment:
         df.to_csv(preprocessed_path, index=False)
         return df
 
-    def _run_features(self, df: pd.DataFrame, features_dir: Path) -> tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+    def _run_features(
+        self, df: pd.DataFrame, features_dir: Path
+    ) -> tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
         """Extract features and target.
 
         Stub: assumes last column is target.

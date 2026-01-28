@@ -186,15 +186,17 @@ class ExperimentCard:
         else:
             lines.append("*No metrics available*")
 
-        lines.extend([
-            "",
-            "## Summary",
-            "",
-            self.auto_summary,
-            "",
-            "## Risk Assessment",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Summary",
+                "",
+                self.auto_summary,
+                "",
+                "## Risk Assessment",
+                "",
+            ]
+        )
 
         if self.key_risks:
             for risk in self.key_risks:
@@ -202,17 +204,19 @@ class ExperimentCard:
         else:
             lines.append("*No significant risks identified*")
 
-        lines.extend([
-            "",
-            "## Confidence & Readiness",
-            "",
-            f"**Confidence Level**: {self.confidence_level.value.upper()}  ",
-            f"*{self.confidence_reasoning}*",
-            "",
-            f"**Deployment Readiness**: {self.deployment_readiness.value.upper()}  ",
-            f"*{self.readiness_reasoning}*",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Confidence & Readiness",
+                "",
+                f"**Confidence Level**: {self.confidence_level.value.upper()}  ",
+                f"*{self.confidence_reasoning}*",
+                "",
+                f"**Deployment Readiness**: {self.deployment_readiness.value.upper()}  ",
+                f"*{self.readiness_reasoning}*",
+                "",
+            ]
+        )
         if self.regulatory_readiness_score is not None:
             lines.append(f"**Regulatory Readiness Score**: {self.regulatory_readiness_score:.1f}/100  ")
             if self.regulatory_readiness_notes:
@@ -617,9 +621,7 @@ def build_experiment_card(
     confidence_level, confidence_reasoning = _assess_confidence(metrics, context, mode)
 
     # Assess deployment readiness
-    deployment_readiness, readiness_reasoning = _assess_deployment_readiness(
-        confidence_level, context, mode
-    )
+    deployment_readiness, readiness_reasoning = _assess_deployment_readiness(confidence_level, context, mode)
     readiness_score, readiness_notes = _extract_readiness(context)
 
     # Generate summary

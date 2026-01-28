@@ -1,4 +1,5 @@
 """Reporting CLI commands for FoodSpec."""
+
 from __future__ import annotations
 
 import shutil

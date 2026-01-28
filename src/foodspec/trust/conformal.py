@@ -43,7 +43,7 @@ def _mondrian_quantile(scores: np.ndarray, target_coverage: float) -> float:
 
     # Quantile level: ensures coverage guarantee
     quantile_level = min(1.0, np.ceil((n + 1) * target_coverage) / n)
-    threshold = float(np.quantile(scores, quantile_level, method='lower'))
+    threshold = float(np.quantile(scores, quantile_level, method="lower"))
 
     return threshold
 
@@ -69,6 +69,7 @@ class ConformalPredictionResult:
     per_bin_set_size : dict
         Per-bin mean set size.
     """
+
     prediction_sets: List[List[int]]
     set_sizes: List[int]
     sample_thresholds: List[float]
@@ -98,18 +99,18 @@ class ConformalPredictionResult:
         """
         n = len(self.set_sizes)
         data = {
-            'set_size': self.set_sizes,
-            'threshold': self.sample_thresholds,
-            'set_members': [str(s) for s in self.prediction_sets],
+            "set_size": self.set_sizes,
+            "threshold": self.sample_thresholds,
+            "set_members": [str(s) for s in self.prediction_sets],
         }
 
         if y_true is not None:
             y_true = np.asarray(y_true)
-            data['covered'] = [int(y_true[i] in self.prediction_sets[i]) for i in range(n)]
+            data["covered"] = [int(y_true[i] in self.prediction_sets[i]) for i in range(n)]
 
         if bin_values is not None:
             bin_values = np.asarray(bin_values)
-            data['bin'] = bin_values
+            data["bin"] = bin_values
 
         return pd.DataFrame(data)
 
@@ -264,9 +265,7 @@ class MondrianConformalClassifier:
 
                 # Only compute separate threshold if bin is large enough
                 if len(bin_scores) >= self.min_bin_size:
-                    self._thresholds[bin_key] = _mondrian_quantile(
-                        bin_scores, 1.0 - self.alpha
-                    )
+                    self._thresholds[bin_key] = _mondrian_quantile(bin_scores, 1.0 - self.alpha)
                 # else: use global threshold (fallback)
 
         self._fitted = True
@@ -311,9 +310,7 @@ class MondrianConformalClassifier:
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
         if proba.shape[1] != self._n_classes:
-            raise ValueError(
-                f"proba has {proba.shape[1]} classes, expected {self._n_classes}"
-            )
+            raise ValueError(f"proba has {proba.shape[1]} classes, expected {self._n_classes}")
 
         n_samples = proba.shape[0]
 
@@ -333,10 +330,7 @@ class MondrianConformalClassifier:
         for i in range(n_samples):
             bin_key = bin_keys[i]
             # Lookup threshold: try bin-specific first, fallback to global
-            threshold = self._thresholds.get(
-                bin_key,
-                self._thresholds.get("__global__")
-            )
+            threshold = self._thresholds.get(bin_key, self._thresholds.get("__global__"))
 
             if threshold is None:
                 raise RuntimeError("No threshold available for prediction")
@@ -345,11 +339,7 @@ class MondrianConformalClassifier:
 
             # Prediction set: all classes with p ≥ 1 - threshold
             # Numerically robust check: p ≥ 1 - t is equivalent to p - (1 - t) ≥ 0
-            keep = [
-                int(c)
-                for c in range(self._n_classes)
-                if proba[i, c] >= 1.0 - threshold - 1e-12
-            ]
+            keep = [int(c) for c in range(self._n_classes) if proba[i, c] >= 1.0 - threshold - 1e-12]
 
             # Fallback: include top-1 class if set empty
             if not keep:
@@ -368,10 +358,7 @@ class MondrianConformalClassifier:
                 raise ValueError("y_true length must match predictions")
 
             # Marginal coverage
-            covered = np.array([
-                int(y_true[i] in prediction_sets[i])
-                for i in range(n_samples)
-            ], dtype=float)
+            covered = np.array([int(y_true[i] in prediction_sets[i]) for i in range(n_samples)], dtype=float)
             coverage = float(np.mean(covered))
 
             # Per-bin coverage and set size
@@ -380,9 +367,7 @@ class MondrianConformalClassifier:
                 mask = np.array(bin_keys) == bin_key
                 if mask.any():
                     bin_covered = covered[mask]
-                    bin_sizes = np.array([
-                        len(prediction_sets[i]) for i in np.where(mask)[0]
-                    ])
+                    bin_sizes = np.array([len(prediction_sets[i]) for i in np.where(mask)[0]])
                     per_bin_coverage[bin_key] = float(np.mean(bin_covered))
                     per_bin_set_size[bin_key] = float(np.mean(bin_sizes))
 
@@ -431,14 +416,16 @@ class MondrianConformalClassifier:
             raise ValueError("No coverage computed (y_true not provided)")
 
         # Global row
-        rows = [{
-            'bin': '__global__',
-            'n_samples': len(y_true),
-            'coverage': result.coverage,
-            'target_coverage': 1.0 - self.alpha,
-            'avg_set_size': float(np.mean(result.set_sizes)),
-            'threshold': self._thresholds.get('__global__', self._thresholds.get('global')),
-        }]
+        rows = [
+            {
+                "bin": "__global__",
+                "n_samples": len(y_true),
+                "coverage": result.coverage,
+                "target_coverage": 1.0 - self.alpha,
+                "avg_set_size": float(np.mean(result.set_sizes)),
+                "threshold": self._thresholds.get("__global__", self._thresholds.get("global")),
+            }
+        ]
 
         # Per-bin rows if available
         if result.per_bin_coverage:
@@ -451,19 +438,22 @@ class MondrianConformalClassifier:
                     if bin_key == "__global__":
                         continue
                     mask = np.array(bin_keys) == bin_key
-                    rows.append({
-                        'bin': bin_key,
-                        'n_samples': int(mask.sum()),
-                        'coverage': result.per_bin_coverage.get(bin_key, np.nan),
-                        'target_coverage': 1.0 - self.alpha,
-                        'avg_set_size': result.per_bin_set_size.get(bin_key, np.nan),
-                        'threshold': self._thresholds.get(bin_key, self._thresholds.get('__global__')),
-                    })
+                    rows.append(
+                        {
+                            "bin": bin_key,
+                            "n_samples": int(mask.sum()),
+                            "coverage": result.per_bin_coverage.get(bin_key, np.nan),
+                            "target_coverage": 1.0 - self.alpha,
+                            "avg_set_size": result.per_bin_set_size.get(bin_key, np.nan),
+                            "threshold": self._thresholds.get(bin_key, self._thresholds.get("__global__")),
+                        }
+                    )
 
         return pd.DataFrame(rows)
 
 
 class ConformalPredictor(MondrianConformalClassifier):
     """Backward-compatible alias for MondrianConformalClassifier."""
+
 
 __all__ = ["MondrianConformalClassifier", "ConformalPredictionResult", "ConformalPredictor"]

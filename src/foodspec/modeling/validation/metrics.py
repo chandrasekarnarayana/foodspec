@@ -1,4 +1,5 @@
 """Validation utilities for chemometrics models."""
+
 from __future__ import annotations
 
 from typing import Any, Optional, Tuple
@@ -163,9 +164,7 @@ def classification_metrics_bundle(
     if ece is not None:
         metrics_out["ece"] = ece
 
-    prec, rec, f1, support = precision_recall_fscore_support(
-        y_true, y_pred, labels=labels, zero_division=0
-    )
+    prec, rec, f1, support = precision_recall_fscore_support(y_true, y_pred, labels=labels, zero_division=0)
     per_class = {
         str(label): {
             "precision": float(prec[i]),

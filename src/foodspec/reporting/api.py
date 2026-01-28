@@ -3,6 +3,7 @@
 Provides a stable callable used by CLI and orchestrators to generate
 reports/cards from a run directory without reimplementing CLI logic.
 """
+
 from __future__ import annotations
 
 import shutil

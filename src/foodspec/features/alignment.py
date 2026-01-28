@@ -1,4 +1,5 @@
 """Spectral alignment methods: cross-correlation and DTW."""
+
 from __future__ import annotations
 
 from typing import Tuple

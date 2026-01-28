@@ -1,4 +1,5 @@
 """Metrics and evaluation utilities for FoodSpec."""
+
 from __future__ import annotations
 
 from typing import Dict, Optional, Sequence, Tuple

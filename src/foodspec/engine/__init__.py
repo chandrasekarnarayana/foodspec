@@ -1,4 +1,5 @@
 """Processing engine namespace (mindmap-aligned + orchestration)."""
+
 from __future__ import annotations
 
 from .artifacts import (
@@ -34,4 +35,3 @@ __all__ = [
     "set_registry",
     "register_artifact",
 ]
-

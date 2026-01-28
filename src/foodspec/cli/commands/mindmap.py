@@ -428,6 +428,7 @@ def io_validate(
         typer.echo(f"Runtime error: {exc}", err=True)
         raise typer.Exit(code=4)
 
+
 @qc_app.callback(invoke_without_command=True)
 def qc_root(
     ctx: typer.Context,
@@ -552,6 +553,7 @@ def qc_dataset(
         _write_status(run_dir, "fail", {"error": str(exc)})
         typer.echo(f"Runtime error: {exc}", err=True)
         raise typer.Exit(code=4)
+
 
 @preprocess_app.callback(invoke_without_command=True)
 def preprocess_root(
@@ -680,7 +682,11 @@ def qc_control_chart(
             payload["mr"] = _chart_result_to_dict(result.variability)
         elif chart_key == "cusum":
             result = qc_charts.cusum_chart(values)
-            payload["cusum"] = {"pos": result["pos"].tolist(), "neg": result["neg"].tolist(), "signals": result["signals"]}
+            payload["cusum"] = {
+                "pos": result["pos"].tolist(),
+                "neg": result["neg"].tolist(),
+                "signals": result["signals"],
+            }
         elif chart_key == "ewma":
             result = qc_charts.ewma_chart(values)
             payload["ewma"] = {
@@ -730,6 +736,7 @@ def qc_control_chart(
         _write_status(run_dir, "fail", {"error": str(exc)})
         typer.echo(f"Runtime error: {exc}", err=True)
         raise typer.Exit(code=4)
+
 
 @features_app.command("extract")
 def features_extract(
@@ -1103,7 +1110,9 @@ def train_root(
     csv_path: Optional[Path] = typer.Option(None, "--csv", help="CSV file with features and labels."),
     scheme: str = typer.Option("nested", "--scheme", help="Validation scheme: nested|lobo|loso|random."),
     group: Optional[str] = typer.Option(None, "--group", help="Group column for LOBO/LOSO."),
-    model: str = typer.Option("logreg", "--model", help="Model name (logreg, svm_linear, svm_rbf, rf, pls_da, xgb, lgbm)."),
+    model: str = typer.Option(
+        "logreg", "--model", help="Model name (logreg, svm_linear, svm_rbf, rf, pls_da, xgb, lgbm)."
+    ),
     label_col: Optional[str] = typer.Option(None, "--label-col", help="Label column in CSV (overrides protocol)."),
     features: str = typer.Option(
         "raw",

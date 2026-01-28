@@ -92,7 +92,7 @@ def fuzzy_c_means(
     obj = 0.0
 
     for _ in range(max_iter):
-        weights = memberships ** m
+        weights = memberships**m
         centers = (weights.T @ X) / (weights.sum(axis=0)[:, None] + 1e-12)
         distances = np.linalg.norm(X[:, None, :] - centers[None, :, :], axis=2) + 1e-12
         inv = distances ** (-2 / (m - 1))
@@ -140,7 +140,9 @@ def regression_clustering(
         r2 = reg.score(X[mask], y[mask])
         cluster_models[cluster_id] = {
             "slope": float(reg.coef_.ravel()[0]) if reg.coef_.size else 0.0,
-            "intercept": float(reg.intercept_.ravel()[0]) if hasattr(reg.intercept_, "ravel") else float(reg.intercept_),
+            "intercept": float(reg.intercept_.ravel()[0])
+            if hasattr(reg.intercept_, "ravel")
+            else float(reg.intercept_),
             "r2": float(r2),
         }
     return RegressionClusterResult(labels=labels, cluster_models=cluster_models)

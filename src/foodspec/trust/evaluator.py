@@ -105,9 +105,7 @@ class TrustEvaluator:
         try:
             return np.array([self._label_to_index[label] for label in labels])
         except KeyError as exc:  # pragma: no cover - defensive
-            raise ValueError(
-                f"Unknown label {exc.args[0]} not present in model.classes_"
-            ) from exc
+            raise ValueError(f"Unknown label {exc.args[0]} not present in model.classes_") from exc
 
     def fit_conformal(
         self,
@@ -244,9 +242,7 @@ class TrustEvaluator:
             per_bin_coverage=cp_result.per_bin_coverage,
             ece=ece,
             temperature_scale=(
-                float(self._calibrator.temperature)
-                if isinstance(self._calibrator, TemperatureScaler)
-                else None
+                float(self._calibrator.temperature) if isinstance(self._calibrator, TemperatureScaler) else None
             ),
             isotonic_applied=isinstance(self._calibrator, IsotonicCalibrator),
             abstention_rate=abstain_result.abstention_rate,
@@ -276,10 +272,7 @@ class TrustEvaluator:
             sets_group = [cp_result.prediction_sets[i] for i in np.where(mask)[0]]
 
             # Per-group coverage
-            coverage = np.mean([
-                int(y_group[i] in sets_group[i])
-                for i in range(len(y_group))
-            ])
+            coverage = np.mean([int(y_group[i] in sets_group[i]) for i in range(len(y_group))])
 
             # Per-group abstention
             abstain_res = evaluate_abstention(
@@ -292,9 +285,7 @@ class TrustEvaluator:
                 "coverage": coverage,
                 "set_size_mean": float(np.mean([len(s) for s in sets_group])),
                 "abstention_rate": abstain_res.abstention_rate,
-                "accuracy_non_abstained": (
-                    abstain_res.accuracy_non_abstained or 0.0
-                ),
+                "accuracy_non_abstained": (abstain_res.accuracy_non_abstained or 0.0),
             }
 
         return group_metrics
@@ -336,11 +327,13 @@ class TrustEvaluator:
         artifacts["evaluation_result"] = result_key
 
         # Save prediction sets
-        sets_df = pd.DataFrame({
-            "sample_idx": range(len(prediction_sets)),
-            "prediction_set": [str(s) for s in prediction_sets],
-            "set_size": set_sizes,
-        })
+        sets_df = pd.DataFrame(
+            {
+                "sample_idx": range(len(prediction_sets)),
+                "prediction_set": [str(s) for s in prediction_sets],
+                "set_size": set_sizes,
+            }
+        )
         sets_key = self.artifact_registry.register(
             name=f"prediction_sets_{result.model_name}",
             artifact_type="prediction_sets",
@@ -350,10 +343,12 @@ class TrustEvaluator:
         artifacts["prediction_sets"] = sets_key
 
         # Save abstention summary
-        abstain_df = pd.DataFrame({
-            "sample_idx": range(len(abstention_mask)),
-            "abstained": abstention_mask,
-        })
+        abstain_df = pd.DataFrame(
+            {
+                "sample_idx": range(len(abstention_mask)),
+                "abstained": abstention_mask,
+            }
+        )
         abstain_key = self.artifact_registry.register(
             name=f"abstention_{result.model_name}",
             artifact_type="abstention",
@@ -383,41 +378,33 @@ class TrustEvaluator:
             "=" * 70,
             f"\nModel: {result.model_name}",
             f"Timestamp: {result.timestamp}",
-
             "\n--- CONFORMAL PREDICTION ---",
             f"Target Coverage: {self.target_coverage:.1%}",
             f"Achieved Coverage: {result.conformal_coverage:.1%}",
             f"Mean Set Size: {result.conformal_set_size_mean:.2f}",
             f"Median Set Size: {result.conformal_set_size_median:.2f}",
             f"Max Set Size: {result.conformal_set_size_max}",
-
             "\n--- CALIBRATION ---",
             f"Calibration Method: {self.calibration_method}",
             f"ECE: {result.ece:.4f}",
-            (
-                f"Temperature Scale: {result.temperature_scale:.4f}"
-                if result.temperature_scale else "N/A"
-            ),
+            (f"Temperature Scale: {result.temperature_scale:.4f}" if result.temperature_scale else "N/A"),
             f"Isotonic: {result.isotonic_applied}",
-
             "\n--- ABSTENTION ---",
             f"Abstention Threshold: {self.abstention_threshold:.1%}",
             f"Abstention Rate: {result.abstention_rate:.1%}",
             (
                 f"Accuracy (non-abstained): {result.accuracy_non_abstained:.1%}"
-                if result.accuracy_non_abstained is not None else "N/A"
+                if result.accuracy_non_abstained is not None
+                else "N/A"
             ),
             (
                 f"Accuracy (abstained): {result.accuracy_abstained:.1%}"
-                if result.accuracy_abstained is not None else "N/A"
+                if result.accuracy_abstained is not None
+                else "N/A"
             ),
-
             "\n--- COMBINED METRICS ---",
             f"Coverage under Abstention: {result.coverage_under_abstention:.1%}",
-            (
-                f"Efficiency Gain: {result.efficiency_gain:.2f}x"
-                if result.efficiency_gain else "N/A"
-            ),
+            (f"Efficiency Gain: {result.efficiency_gain:.2f}x" if result.efficiency_gain else "N/A"),
         ]
 
         # Add per-bin coverage if available

@@ -1,4 +1,5 @@
 """Abstention utilities for selective classification (Phase 4)."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -158,9 +159,7 @@ class ConformalSizeAbstainer:
             raise ValueError(f"max_set_size must be positive, got {max_set_size}")
         self.max_set_size = max_set_size
 
-    def apply(
-        self, proba: np.ndarray | None, conformal_sets: Sequence[Iterable[int]]
-    ) -> tuple[np.ndarray, List[str]]:
+    def apply(self, proba: np.ndarray | None, conformal_sets: Sequence[Iterable[int]]) -> tuple[np.ndarray, List[str]]:
         """Apply abstention rule."""
         if conformal_sets is None:
             raise ValueError("conformal_sets cannot be None for ConformalSizeAbstainer")

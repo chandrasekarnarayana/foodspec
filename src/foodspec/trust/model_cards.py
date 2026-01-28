@@ -1,4 +1,5 @@
 """Model card helpers for trust and regulatory readiness."""
+
 from __future__ import annotations
 
 import json

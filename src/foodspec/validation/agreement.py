@@ -1,4 +1,5 @@
 """Agreement analysis between methods: Bland-Altman, Deming regression."""
+
 from __future__ import annotations
 
 from typing import Optional, Tuple
@@ -158,7 +159,7 @@ Bland-Altman Agreement Analysis
 Mean Difference (Bias):     {self.mean_diff_:.4f}
 Std Dev of Differences:     {self.std_diff_:.4f}
 
-Limits of Agreement ({self.confidence*100:.0f}% CI):
+Limits of Agreement ({self.confidence * 100:.0f}% CI):
   Lower Limit:              {self.lower_loa_:.4f}
   Upper Limit:              {self.upper_loa_:.4f}
 
@@ -213,13 +214,13 @@ class DemingRegression:
         X_centered = X - x_mean
         y_centered = y - y_mean
 
-        s_xx = np.sum(X_centered ** 2)
-        s_yy = np.sum(y_centered ** 2)
+        s_xx = np.sum(X_centered**2)
+        s_yy = np.sum(y_centered**2)
         s_xy = np.sum(X_centered * y_centered)
 
         # Deming regression slope
         lambda_param = self.variance_ratio
-        discriminant = (s_yy - lambda_param * s_xx) ** 2 + 4 * lambda_param * (s_xy ** 2)
+        discriminant = (s_yy - lambda_param * s_xx) ** 2 + 4 * lambda_param * (s_xy**2)
         slope = ((s_yy - lambda_param * s_xx) + np.sqrt(discriminant)) / (2 * s_xy)
 
         intercept = y_mean - slope * x_mean
@@ -266,7 +267,7 @@ class DemingRegression:
         """
         y_pred = self.predict(X)
         # Perpendicular distance to line: |y - y_pred| / sqrt(1 + slope^2)
-        return (y - y_pred) / np.sqrt(1 + self.slope_ ** 2)
+        return (y - y_pred) / np.sqrt(1 + self.slope_**2)
 
     def plot(self, ax=None, title: Optional[str] = None):
         """

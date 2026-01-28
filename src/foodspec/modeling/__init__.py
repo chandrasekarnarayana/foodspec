@@ -1,4 +1,5 @@
 """Modeling and validation namespace (mindmap-aligned)."""
+
 from __future__ import annotations
 
 from .api import FitPredictResult, compute_roc_for_result, fit_predict, metrics_by_group

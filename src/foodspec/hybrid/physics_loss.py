@@ -68,12 +68,7 @@ class PhysicsConstraint(ABC):
         self.name = name or self.__class__.__name__
 
     @abstractmethod
-    def compute_loss(
-        self,
-        X: Any,
-        y_pred: Any,
-        model: Optional[Any] = None
-    ) -> float:
+    def compute_loss(self, X: Any, y_pred: Any, model: Optional[Any] = None) -> float:
         """
         Compute physics-based loss.
 
@@ -138,17 +133,13 @@ class BeerLambertLoss(PhysicsConstraint):
         spectra_index: Optional[int | slice] = None,
         weight: float = 1.0,
     ):
-        super().__init__(weight=weight, name='BeerLambert')
+        super().__init__(weight=weight, name="BeerLambert")
         self.reference_spectra = reference_spectra
         self.concentration_index = concentration_index
         self.spectra_index = spectra_index
 
     def compute_loss(
-        self,
-        X: np.ndarray,
-        y_pred: np.ndarray,
-        y_true: Optional[np.ndarray] = None,
-        model: Optional[Any] = None
+        self, X: np.ndarray, y_pred: np.ndarray, y_true: Optional[np.ndarray] = None, model: Optional[Any] = None
     ) -> float:
         """
         Compute Beer-Lambert violation.
@@ -214,16 +205,11 @@ class SmoothnessLoss(PhysicsConstraint):
         weight: float = 1.0,
         axis: int = 1,
     ):
-        super().__init__(weight=weight, name='Smoothness')
+        super().__init__(weight=weight, name="Smoothness")
         self.order = order
         self.axis = axis
 
-    def compute_loss(
-        self,
-        X: np.ndarray,
-        y_pred: np.ndarray,
-        model: Optional[Any] = None
-    ) -> float:
+    def compute_loss(self, X: np.ndarray, y_pred: np.ndarray, model: Optional[Any] = None) -> float:
         """Compute smoothness penalty."""
         # Compute finite differences
         diff = y_pred
@@ -231,7 +217,7 @@ class SmoothnessLoss(PhysicsConstraint):
             diff = np.diff(diff, axis=self.axis)
 
         # L2 penalty on derivatives
-        loss = np.mean(diff ** 2)
+        loss = np.mean(diff**2)
 
         return self.weight * loss
 
@@ -268,21 +254,16 @@ class PeakConstraintLoss(PhysicsConstraint):
     def __init__(
         self,
         peak_positions: List[int],
-        peak_type: str = 'gaussian',
+        peak_type: str = "gaussian",
         width_range: tuple[float, float] = (1.0, 10.0),
         weight: float = 1.0,
     ):
-        super().__init__(weight=weight, name='PeakConstraint')
+        super().__init__(weight=weight, name="PeakConstraint")
         self.peak_positions = peak_positions
         self.peak_type = peak_type
         self.width_range = width_range
 
-    def compute_loss(
-        self,
-        X: np.ndarray,
-        y_pred: np.ndarray,
-        model: Optional[Any] = None
-    ) -> float:
+    def compute_loss(self, X: np.ndarray, y_pred: np.ndarray, model: Optional[Any] = None) -> float:
         """
         Compute peak shape violation.
 
@@ -306,10 +287,10 @@ class PeakConstraintLoss(PhysicsConstraint):
             x_local = np.arange(len(local_spectrum))
             peak_center = window if pos >= window else pos
 
-            if self.peak_type == 'gaussian':
+            if self.peak_type == "gaussian":
                 # Fit Gaussian: A * exp(-(x - μ)² / (2σ²))
                 fitted_peak = self._fit_gaussian(x_local, local_spectrum, peak_center)
-            elif self.peak_type == 'lorentzian':
+            elif self.peak_type == "lorentzian":
                 # Fit Lorentzian: A * γ² / ((x - μ)² + γ²)
                 fitted_peak = self._fit_lorentzian(x_local, local_spectrum, peak_center)
             else:
@@ -322,31 +303,21 @@ class PeakConstraintLoss(PhysicsConstraint):
 
         return self.weight * loss / len(self.peak_positions)
 
-    def _fit_gaussian(
-        self,
-        x: np.ndarray,
-        y: np.ndarray,
-        center: float
-    ) -> np.ndarray:
+    def _fit_gaussian(self, x: np.ndarray, y: np.ndarray, center: float) -> np.ndarray:
         """Fit Gaussian peak and return fitted curve."""
         # Simple moment-based fit
         amplitude = np.max(y)
         sigma = 2.0  # Default width
 
-        fitted = amplitude * np.exp(-(x - center) ** 2 / (2 * sigma ** 2))
+        fitted = amplitude * np.exp(-((x - center) ** 2) / (2 * sigma**2))
         return fitted
 
-    def _fit_lorentzian(
-        self,
-        x: np.ndarray,
-        y: np.ndarray,
-        center: float
-    ) -> np.ndarray:
+    def _fit_lorentzian(self, x: np.ndarray, y: np.ndarray, center: float) -> np.ndarray:
         """Fit Lorentzian peak and return fitted curve."""
         amplitude = np.max(y)
         gamma = 2.0  # Default width
 
-        fitted = amplitude * gamma ** 2 / ((x - center) ** 2 + gamma ** 2)
+        fitted = amplitude * gamma**2 / ((x - center) ** 2 + gamma**2)
         return fitted
 
 
@@ -374,15 +345,11 @@ class EnergyConservationLoss(PhysicsConstraint):
     """
 
     def __init__(self, weight: float = 1.0, axis: int = 1):
-        super().__init__(weight=weight, name='EnergyConservation')
+        super().__init__(weight=weight, name="EnergyConservation")
         self.axis = axis
 
     def compute_loss(
-        self,
-        X: np.ndarray,
-        y_pred: np.ndarray,
-        y_true: Optional[np.ndarray] = None,
-        model: Optional[Any] = None
+        self, X: np.ndarray, y_pred: np.ndarray, y_true: Optional[np.ndarray] = None, model: Optional[Any] = None
     ) -> float:
         """Compute energy conservation violation."""
         if y_true is None:
@@ -423,15 +390,10 @@ class SparsityLoss(PhysicsConstraint):
     """
 
     def __init__(self, weight: float = 1.0, threshold: float = 0.0):
-        super().__init__(weight=weight, name='Sparsity')
+        super().__init__(weight=weight, name="Sparsity")
         self.threshold = threshold
 
-    def compute_loss(
-        self,
-        X: np.ndarray,
-        y_pred: np.ndarray,
-        model: Optional[Any] = None
-    ) -> float:
+    def compute_loss(self, X: np.ndarray, y_pred: np.ndarray, model: Optional[Any] = None) -> float:
         """Compute L1 sparsity penalty."""
         # Apply threshold
         y_thresholded = np.where(np.abs(y_pred) > self.threshold, y_pred, 0)
@@ -513,7 +475,7 @@ class PhysicsInformedLoss:
 
         for constraint in self.constraints:
             # Check if constraint needs y_true
-            if 'y_true' in constraint.compute_loss.__code__.co_varnames:
+            if "y_true" in constraint.compute_loss.__code__.co_varnames:
                 loss = constraint.compute_loss(X, y_pred, y_true, model)
             else:
                 loss = constraint.compute_loss(X, y_pred, model)
@@ -540,7 +502,7 @@ class PhysicsInformedLoss:
         losses = {}
 
         for constraint in self.constraints:
-            if 'y_true' in constraint.compute_loss.__code__.co_varnames:
+            if "y_true" in constraint.compute_loss.__code__.co_varnames:
                 loss = constraint.compute_loss(X, y_pred, y_true, model)
             else:
                 loss = constraint.compute_loss(X, y_pred, model)

@@ -50,6 +50,7 @@ warnings.warn(
 # Original module content continues below...
 # ==============================================
 
+
 def detect_input_mode(df: pd.DataFrame) -> str:
     """
     Heuristic detection of raw spectra vs peak table.

@@ -1,4 +1,5 @@
 """Multivariate and dimensionality reduction components."""
+
 from foodspec.multivariate.base import MultivariateComponent, MultivariateResult
 from foodspec.multivariate.cca import CCAComponent
 from foodspec.multivariate.discriminant import LDAComponent, QDAComponent

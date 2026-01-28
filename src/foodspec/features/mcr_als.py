@@ -131,14 +131,14 @@ class MCRALS(BaseEstimator, TransformerMixin):
         tol: float = 1e-8,
         c_constraints: Optional[list[str]] = None,
         st_constraints: Optional[list[str]] = None,
-        initialization: Literal['pca', 'random'] = 'pca',
+        initialization: Literal["pca", "random"] = "pca",
         random_state: Optional[int] = None,
     ):
         self.n_components = n_components
         self.max_iter = max_iter
         self.tol = tol
-        self.c_constraints = c_constraints if c_constraints is not None else ['non_neg']
-        self.st_constraints = st_constraints if st_constraints is not None else ['non_neg']
+        self.c_constraints = c_constraints if c_constraints is not None else ["non_neg"]
+        self.st_constraints = st_constraints if st_constraints is not None else ["non_neg"]
         self.initialization = initialization
         self.random_state = random_state
 
@@ -160,14 +160,12 @@ class MCRALS(BaseEstimator, TransformerMixin):
             Fitted model.
         """
         from sklearn.utils.validation import check_array
+
         X = check_array(X, dtype=float, ensure_2d=True)
         n_samples, n_features = X.shape
 
         if self.n_components > min(n_samples, n_features):
-            raise ValueError(
-                f"n_components={self.n_components} exceeds data dimensions "
-                f"({n_samples}, {n_features})"
-            )
+            raise ValueError(f"n_components={self.n_components} exceeds data dimensions ({n_samples}, {n_features})")
 
         # Initialize S^T (pure spectra)
         ST = self._initialize_spectra(X)
@@ -187,7 +185,7 @@ class MCRALS(BaseEstimator, TransformerMixin):
 
             # Compute lack-of-fit
             X_reconstructed = C @ ST
-            lof = np.linalg.norm(X - X_reconstructed, 'fro') / np.linalg.norm(X, 'fro')
+            lof = np.linalg.norm(X - X_reconstructed, "fro") / np.linalg.norm(X, "fro")
             self.lack_of_fit_.append(lof)
 
             # Check convergence
@@ -202,9 +200,8 @@ class MCRALS(BaseEstimator, TransformerMixin):
 
         if not self.converged_:
             warnings.warn(
-                f"MCR-ALS did not converge after {self.max_iter} iterations. "
-                f"Final LOF change: {delta_lof:.2e}",
-                UserWarning
+                f"MCR-ALS did not converge after {self.max_iter} iterations. Final LOF change: {delta_lof:.2e}",
+                UserWarning,
             )
 
         return self
@@ -224,6 +221,7 @@ class MCRALS(BaseEstimator, TransformerMixin):
             Concentration profiles.
         """
         from sklearn.utils.validation import check_array
+
         X = check_array(X, dtype=float, ensure_2d=True)
 
         # Solve for C given fixed S^T
@@ -282,17 +280,17 @@ class MCRALS(BaseEstimator, TransformerMixin):
         """Initialize pure spectra S^T using PCA or random selection."""
         rng = np.random.default_rng(self.random_state)
 
-        if self.initialization == 'pca':
+        if self.initialization == "pca":
             # Use first n_components PC loadings
             pca = PCA(n_components=self.n_components, random_state=self.random_state)
             pca.fit(X)
             ST = pca.components_
 
             # Ensure non-negativity if required
-            if 'non_neg' in self.st_constraints:
+            if "non_neg" in self.st_constraints:
                 ST = np.abs(ST)
 
-        elif self.initialization == 'random':
+        elif self.initialization == "random":
             # Randomly select spectra from data
             n_samples = X.shape[0]
             indices = rng.choice(n_samples, size=self.n_components, replace=False)
@@ -317,12 +315,7 @@ class MCRALS(BaseEstimator, TransformerMixin):
         ST = np.linalg.pinv(C) @ X
         return ST
 
-    def _apply_constraints(
-        self,
-        M: np.ndarray,
-        constraints: list[str],
-        axis: int = 1
-    ) -> np.ndarray:
+    def _apply_constraints(self, M: np.ndarray, constraints: list[str], axis: int = 1) -> np.ndarray:
         """
         Apply constraints to matrix M.
 
@@ -343,16 +336,16 @@ class MCRALS(BaseEstimator, TransformerMixin):
         M_out = M.copy()
 
         for constraint in constraints:
-            if constraint == 'non_neg':
+            if constraint == "non_neg":
                 M_out = np.maximum(M_out, 0)
 
-            elif constraint == 'norm':
+            elif constraint == "norm":
                 # Closure constraint (sum to 1)
                 sums = M_out.sum(axis=axis, keepdims=True)
                 sums = np.where(sums == 0, 1, sums)  # Avoid division by zero
                 M_out = M_out / sums
 
-            elif constraint == 'unimodal':
+            elif constraint == "unimodal":
                 # Enforce unimodality along each profile
                 if axis == 1:  # Row-wise (concentration profiles)
                     for i in range(M_out.shape[0]):
@@ -443,7 +436,7 @@ class RotationalAmbiguityAnalysis:
     """
 
     def __init__(self, mcr_model: MCRALS):
-        if not hasattr(mcr_model, 'components_'):
+        if not hasattr(mcr_model, "components_"):
             raise ValueError("MCR model must be fitted before ambiguity analysis")
 
         self.mcr_model = mcr_model
@@ -493,16 +486,12 @@ class RotationalAmbiguityAnalysis:
             ST_rotated = np.linalg.inv(T) @ ST_orig
 
             # Apply constraints
-            C_rotated = self.mcr_model._apply_constraints(
-                C_rotated, self.mcr_model.c_constraints, axis=1
-            )
-            ST_rotated = self.mcr_model._apply_constraints(
-                ST_rotated, self.mcr_model.st_constraints, axis=0
-            )
+            C_rotated = self.mcr_model._apply_constraints(C_rotated, self.mcr_model.c_constraints, axis=1)
+            ST_rotated = self.mcr_model._apply_constraints(ST_rotated, self.mcr_model.st_constraints, axis=0)
 
             # Check if rotation maintains reconstruction quality
             X_reconstructed = C_rotated @ ST_rotated
-            rel_error = np.linalg.norm(X - X_reconstructed, 'fro') / np.linalg.norm(X, 'fro')
+            rel_error = np.linalg.norm(X - X_reconstructed, "fro") / np.linalg.norm(X, "fro")
 
             if rel_error < 1.1 * self.mcr_model.lack_of_fit_[-1]:
                 # Accept this rotation as feasible
@@ -519,12 +508,8 @@ class RotationalAmbiguityAnalysis:
         self.st_max_ = ST_stack.max(axis=0)
 
         # Compute ambiguity indices (average relative range)
-        self.ambiguity_index_c_ = np.mean(
-            (self.c_max_ - self.c_min_) / (self.c_max_ + 1e-10)
-        )
-        self.ambiguity_index_st_ = np.mean(
-            (self.st_max_ - self.st_min_) / (self.st_max_ + 1e-10)
-        )
+        self.ambiguity_index_c_ = np.mean((self.c_max_ - self.c_min_) / (self.c_max_ + 1e-10))
+        self.ambiguity_index_st_ = np.mean((self.st_max_ - self.st_min_) / (self.st_max_ + 1e-10))
 
         return self
 
@@ -576,16 +561,12 @@ class RotationalAmbiguityAnalysis:
             x_axis = np.arange(self.mcr_model.n_components)
 
             ax.fill_between(
-                x_axis,
-                self.c_min_[sample_idx, :],
-                self.c_max_[sample_idx, :],
-                alpha=0.3,
-                label='Feasible range'
+                x_axis, self.c_min_[sample_idx, :], self.c_max_[sample_idx, :], alpha=0.3, label="Feasible range"
             )
-            ax.plot(x_axis, C_orig[sample_idx, :], 'o-', label='Nominal solution')
-            ax.set_xlabel('Component')
-            ax.set_ylabel('Concentration')
-            ax.set_title(f'Concentration Band Boundaries (Sample {sample_idx})')
+            ax.plot(x_axis, C_orig[sample_idx, :], "o-", label="Nominal solution")
+            ax.set_xlabel("Component")
+            ax.set_ylabel("Concentration")
+            ax.set_title(f"Concentration Band Boundaries (Sample {sample_idx})")
 
         else:
             # Plot spectral band for specific component
@@ -597,12 +578,12 @@ class RotationalAmbiguityAnalysis:
                 self.st_min_[component_idx, :],
                 self.st_max_[component_idx, :],
                 alpha=0.3,
-                label='Feasible range'
+                label="Feasible range",
             )
-            ax.plot(x_axis, ST_orig[component_idx, :], '-', label='Nominal solution')
-            ax.set_xlabel('Wavelength index')
-            ax.set_ylabel('Intensity')
-            ax.set_title(f'Spectral Band Boundaries (Component {component_idx})')
+            ax.plot(x_axis, ST_orig[component_idx, :], "-", label="Nominal solution")
+            ax.set_xlabel("Wavelength index")
+            ax.set_ylabel("Intensity")
+            ax.set_title(f"Spectral Band Boundaries (Component {component_idx})")
 
         ax.legend()
         ax.grid(True, alpha=0.3)

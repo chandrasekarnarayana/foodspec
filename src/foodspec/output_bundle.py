@@ -28,7 +28,7 @@ warnings.warn(
     "Use foodspec.core.OutputBundle instead. "
     "See docs/migration/v1-to-v2.md for migration guide.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Original module content continues below...

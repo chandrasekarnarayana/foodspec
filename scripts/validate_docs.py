@@ -6,6 +6,7 @@ Supports:
   --strict     : build docs (strict) + link check
   --skip-build : only run markdown link check
 """
+
 from __future__ import annotations
 
 import argparse

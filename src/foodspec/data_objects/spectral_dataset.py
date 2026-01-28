@@ -276,6 +276,7 @@ class SpectralDataset:
         logs (list[str]): Operation logs.
         history (list[dict]): Preprocessing steps applied.
     """
+
     wavenumbers: np.ndarray
     spectra: np.ndarray  # shape (n_samples, n_points)
     metadata: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
@@ -443,6 +444,7 @@ class SpectralDataset:
         if h5py is None:
             raise ImportError("h5py not installed.")
         import io as io_module
+
         with h5py.File(path, "r") as f:
             _validate_hdf5_version(f.attrs.get("foodspec_hdf5_schema_version", "1.0"), allow_future=allow_future)
             if "spectra" in f and "wn_axis" in f["spectra"]:

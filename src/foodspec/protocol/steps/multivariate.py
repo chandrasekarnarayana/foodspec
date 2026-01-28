@@ -1,4 +1,5 @@
 """Protocol step for multivariate analysis (PCA, LDA, MDS, stats)."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
@@ -83,7 +84,7 @@ class MultivariateAnalysisStep(Step):
         else:
             result = component.fit_transform(X, y_array)
 
-        comp_names = [f"{method}_c{i+1}" for i in range(result.scores.shape[1])]
+        comp_names = [f"{method}_c{i + 1}" for i in range(result.scores.shape[1])]
         scores_df = pd.DataFrame(result.scores, columns=comp_names)
         scores_df.insert(0, "sample_id", sample_ids)
         ctx.setdefault("tables", {})["multivariate_scores"] = scores_df
@@ -124,7 +125,9 @@ class MultivariateAnalysisStep(Step):
                 score_dict["t2"] = t2
             else:
                 pca_method = outlier_cfg.get("method", "robust")
-                pca_res = compute_pca_outlier_scores(result.scores, method="robust" if pca_method == "robust" else "classic")
+                pca_res = compute_pca_outlier_scores(
+                    result.scores, method="robust" if pca_method == "robust" else "classic"
+                )
                 score_dict["score_distance"] = np.asarray(pca_res["score_distance"], dtype=float)
                 score_dict["orthogonal_distance"] = np.asarray(pca_res["orthogonal_distance"], dtype=float)
                 thresholds.update(pca_res.get("thresholds", {}))
@@ -221,8 +224,18 @@ class MultivariateAnalysisStep(Step):
                     drift_ax = drift_plot.add_subplot(1, 1, 1)
                     drift_df_plot = qc_artifacts["multivariate_drift"]
                     drift_ax.bar(drift_df_plot["group"].astype(str), drift_df_plot["value"], color="#2563eb")
-                    drift_ax.axhline(float(qc_cfg.get("drift", {}).get("warn_threshold", 2.0)), color="#f59e0b", linestyle="--", label="warn")
-                    drift_ax.axhline(float(qc_cfg.get("drift", {}).get("fail_threshold", 4.0)), color="#ef4444", linestyle=":", label="fail")
+                    drift_ax.axhline(
+                        float(qc_cfg.get("drift", {}).get("warn_threshold", 2.0)),
+                        color="#f59e0b",
+                        linestyle="--",
+                        label="warn",
+                    )
+                    drift_ax.axhline(
+                        float(qc_cfg.get("drift", {}).get("fail_threshold", 4.0)),
+                        color="#ef4444",
+                        linestyle=":",
+                        label="fail",
+                    )
                     drift_ax.set_ylabel("Centroid shift (L2)")
                     drift_ax.set_title("Batch drift")
                     drift_ax.legend()

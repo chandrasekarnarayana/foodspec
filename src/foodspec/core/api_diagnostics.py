@@ -1,4 +1,5 @@
 """Diagnostics mixin for FoodSpec API - dataset quality assessment."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional

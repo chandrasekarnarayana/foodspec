@@ -1,4 +1,5 @@
 """Multi-run comparison helpers and leaderboard generation."""
+
 from __future__ import annotations
 
 import csv

@@ -1,4 +1,5 @@
 """Chemometrics helpers under features namespace."""
+
 from __future__ import annotations
 
 from foodspec.modeling.validation.metrics import compute_vip_scores as compute_vip

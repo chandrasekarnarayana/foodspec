@@ -63,7 +63,9 @@ def _shift_array(sig: np.ndarray, shift: int) -> np.ndarray:
     return np.roll(sig, shift)
 
 
-def _piecewise_align(ref: np.ndarray, row: np.ndarray, segment_size: int, max_shift: int) -> tuple[np.ndarray, list[int]]:
+def _piecewise_align(
+    ref: np.ndarray, row: np.ndarray, segment_size: int, max_shift: int
+) -> tuple[np.ndarray, list[int]]:
     n = row.shape[0]
     aligned = row.copy()
     shifts: list[int] = []
@@ -87,6 +89,7 @@ def _linear_warp(ref: np.ndarray, row: np.ndarray) -> tuple[np.ndarray, int]:
     src = idx / scale
     warped = np.interp(idx, src, row, left=row[0], right=row[-1])
     return warped, int(ref_peak - row_peak)
+
 
 # ----------------------------- Step base -----------------------------
 

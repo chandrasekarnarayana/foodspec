@@ -216,9 +216,7 @@ class DossierBuilder:
                 prec = fold.get("precision", 0)
                 rec = fold.get("recall", 0)
                 f1 = fold.get("f1", 0)
-                lines.append(
-                    f"| {i} | {acc:.4f} | {prec:.4f} | {rec:.4f} | {f1:.4f} |\n"
-                )
+                lines.append(f"| {i} | {acc:.4f} | {prec:.4f} | {rec:.4f} | {f1:.4f} |\n")
             lines.append("\n")
 
         # Key Findings
@@ -313,9 +311,7 @@ class DossierBuilder:
         if uncertainty and "reliability" in uncertainty:
             rel = uncertainty["reliability"]
             if "calibration_error" in rel:
-                lines.append(
-                    f"- **Calibration Error**: {rel['calibration_error']:.4f}\n"
-                )
+                lines.append(f"- **Calibration Error**: {rel['calibration_error']:.4f}\n")
             if "sharpness" in rel:
                 lines.append(f"- **Sharpness**: {rel['sharpness']:.4f}\n")
         lines.append("\n")
@@ -327,9 +323,7 @@ class DossierBuilder:
             if "coverage" in conf:
                 lines.append(f"- **Empirical coverage**: {conf['coverage']:.4f}\n")
             if "average_set_size" in conf:
-                lines.append(
-                    f"- **Average prediction set size**: {conf['average_set_size']:.2f}\n"
-                )
+                lines.append(f"- **Average prediction set size**: {conf['average_set_size']:.2f}\n")
             if "coverage_by_size" in conf:
                 lines.append("\n**Coverage by prediction set size**:\n")
                 for size, cov in conf["coverage_by_size"].items():
@@ -343,15 +337,9 @@ class DossierBuilder:
             if "rate" in abst:
                 lines.append(f"- **Abstention rate**: {abst['rate']:.4f}\n")
             if "accuracy_when_predicting" in abst:
-                lines.append(
-                    f"- **Accuracy (when predicting)**: "
-                    f"{abst['accuracy_when_predicting']:.4f}\n"
-                )
+                lines.append(f"- **Accuracy (when predicting)**: {abst['accuracy_when_predicting']:.4f}\n")
             if "coverage_when_predicting" in abst:
-                lines.append(
-                    f"- **Coverage (when predicting)**: "
-                    f"{abst['coverage_when_predicting']:.4f}\n"
-                )
+                lines.append(f"- **Coverage (when predicting)**: {abst['coverage_when_predicting']:.4f}\n")
         lines.append("\n")
 
         # Write to file
@@ -427,10 +415,10 @@ class DossierBuilder:
         """Generate dossier_index.html linking all documents."""
         html_lines = [
             "<!DOCTYPE html>\n",
-            "<html lang=\"en\">\n",
+            '<html lang="en">\n',
             "<head>\n",
-            "    <meta charset=\"UTF-8\">\n",
-            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n",
+            '    <meta charset="UTF-8">\n',
+            '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n',
             "    <title>Scientific Dossier</title>\n",
             "    <style>\n",
             "        body {\n",
@@ -509,52 +497,54 @@ class DossierBuilder:
             "    </style>\n",
             "</head>\n",
             "<body>\n",
-            "    <div class=\"header\">\n",
+            '    <div class="header">\n',
             "        <h1>📋 Scientific Dossier</h1>\n",
             "        <p>Comprehensive submission package for publication</p>\n",
         ]
 
-        html_lines.extend([
-            "    </div>\n",
-            "\n",
-            "    <div class=\"document-grid\">\n",
-            "        <div class=\"document-card\">\n",
-            "            <h3>📖 Methods</h3>\n",
-            "            <p>Protocol specification, data source, processing pipeline, and model configuration.</p>\n",
-            "            <a href=\"methods.md\">View Document →</a>\n",
-            "        </div>\n",
-            "\n",
-            "        <div class=\"document-card\">\n",
-            "            <h3>📊 Results</h3>\n",
-            "            <p>Summary performance metrics, cross-validation stability, and key findings.</p>\n",
-            "            <a href=\"results.md\">View Document →</a>\n",
-            "        </div>\n",
-            "\n",
-            "        <div class=\"document-card\">\n",
-            "            <h3>🔬 QC Appendix</h3>\n",
-            "            <p>Quality control checks, drift analysis, and failure investigation.</p>\n",
-            "            <a href=\"appendix_qc.md\">View Document →</a>\n",
-            "        </div>\n",
-            "\n",
-            "        <div class=\"document-card\">\n",
-            "            <h3>⚠️ Uncertainty Appendix</h3>\n",
-            "            <p>Reliability analysis, conformal coverage, and abstention metrics.</p>\n",
-            "            <a href=\"appendix_uncertainty.md\">View Document →</a>\n",
-            "        </div>\n",
-            "\n",
-            "        <div class=\"document-card\">\n",
-            "            <h3>🔐 Reproducibility Appendix</h3>\n",
-            "            <p>Data hashes, software versions, random seeds, and execution details.</p>\n",
-            "            <a href=\"appendix_reproducibility.md\">View Document →</a>\n",
-            "        </div>\n",
-            "    </div>\n",
-            "\n",
-            "    <div class=\"footer\">\n",
-            "        <p>Scientific Dossier generated by FoodSpec Reporting System</p>\n",
-            "    </div>\n",
-            "</body>\n",
-            "</html>\n",
-        ])
+        html_lines.extend(
+            [
+                "    </div>\n",
+                "\n",
+                '    <div class="document-grid">\n',
+                '        <div class="document-card">\n',
+                "            <h3>📖 Methods</h3>\n",
+                "            <p>Protocol specification, data source, processing pipeline, and model configuration.</p>\n",
+                '            <a href="methods.md">View Document →</a>\n',
+                "        </div>\n",
+                "\n",
+                '        <div class="document-card">\n',
+                "            <h3>📊 Results</h3>\n",
+                "            <p>Summary performance metrics, cross-validation stability, and key findings.</p>\n",
+                '            <a href="results.md">View Document →</a>\n',
+                "        </div>\n",
+                "\n",
+                '        <div class="document-card">\n',
+                "            <h3>🔬 QC Appendix</h3>\n",
+                "            <p>Quality control checks, drift analysis, and failure investigation.</p>\n",
+                '            <a href="appendix_qc.md">View Document →</a>\n',
+                "        </div>\n",
+                "\n",
+                '        <div class="document-card">\n',
+                "            <h3>⚠️ Uncertainty Appendix</h3>\n",
+                "            <p>Reliability analysis, conformal coverage, and abstention metrics.</p>\n",
+                '            <a href="appendix_uncertainty.md">View Document →</a>\n',
+                "        </div>\n",
+                "\n",
+                '        <div class="document-card">\n',
+                "            <h3>🔐 Reproducibility Appendix</h3>\n",
+                "            <p>Data hashes, software versions, random seeds, and execution details.</p>\n",
+                '            <a href="appendix_reproducibility.md">View Document →</a>\n',
+                "        </div>\n",
+                "    </div>\n",
+                "\n",
+                '    <div class="footer">\n',
+                "        <p>Scientific Dossier generated by FoodSpec Reporting System</p>\n",
+                "    </div>\n",
+                "</body>\n",
+                "</html>\n",
+            ]
+        )
 
         index_path = self.out_dir / "dossier_index.html"
         index_path.write_text("".join(html_lines), encoding="utf-8")
@@ -847,11 +837,13 @@ class RegulatoryDossierGenerator:
             Immutable fingerprint for this version
         """
         fp = self.get_fingerprint()
-        self.fingerprint_chain.append({
-            "version": self.version,
-            "fingerprint": fp,
-            "locked_at": datetime.utcnow().isoformat(),
-        })
+        self.fingerprint_chain.append(
+            {
+                "version": self.version,
+                "fingerprint": fp,
+                "locked_at": datetime.utcnow().isoformat(),
+            }
+        )
         return fp
 
     def to_json(self, indent: int = 2) -> str:

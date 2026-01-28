@@ -10,6 +10,7 @@ This orchestrator runs the complete FoodSpec pipeline:
 
 Entry point: run_workflow_phase3(cfg: WorkflowConfig) -> int
 """
+
 from __future__ import annotations
 
 import json
@@ -531,8 +532,7 @@ def _run_trust_stack_real(
     except Exception as e:
         if allow_placeholder:
             logger.warning(
-                "Trust stack failed; falling back to placeholder metrics "
-                "because --allow-placeholder-trust is enabled."
+                "Trust stack failed; falling back to placeholder metrics because --allow-placeholder-trust is enabled."
             )
             return {
                 "status": "success",
@@ -633,7 +633,7 @@ def _run_reporting_real(
 
     <div class="section">
         <h2>Manifest Hash</h2>
-        <pre>{manifest.id if hasattr(manifest, 'id') else 'N/A'}</pre>
+        <pre>{manifest.id if hasattr(manifest, "id") else "N/A"}</pre>
     </div>
 </body>
 </html>"""
@@ -877,9 +877,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
             else:
                 dropped = [c for c in X.columns if c not in numeric_cols]
                 if dropped:
-                    logger_ref.warning(
-                        f"Dropping non-numeric feature columns before modeling: {dropped}"
-                    )
+                    logger_ref.warning(f"Dropping non-numeric feature columns before modeling: {dropped}")
                 X = X[numeric_cols]
 
             if numeric_cols:
@@ -887,7 +885,7 @@ def run_workflow_phase3(cfg: WorkflowConfig, strict_regulatory: bool = True) -> 
                     X,
                     y,
                     model_name=resolved_model,  # Use resolved canonical name
-                    scheme=resolved_scheme,      # Use resolved scheme
+                    scheme=resolved_scheme,  # Use resolved scheme
                     seed=cfg.seed,
                     groups=groups,
                 )

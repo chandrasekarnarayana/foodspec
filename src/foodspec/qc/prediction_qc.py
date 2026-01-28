@@ -1,4 +1,5 @@
 """Prediction quality gating for production use."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

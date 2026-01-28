@@ -6,6 +6,7 @@ uncertainty metrics, and more.
 
 All functions are deterministic (seed-controlled) and save to stable filenames.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -62,19 +63,19 @@ def plot_raw_vs_processed_overlay(
         axes = [axes]
 
     for idx, ax in zip(indices, axes):
-        ax.plot(wavenumbers, X_raw[idx], 'gray', alpha=0.7, label='Raw', linewidth=1)
-        ax.plot(wavenumbers, X_processed[idx], '#2a6fdb', label='Processed', linewidth=1.5)
-        ax.set_ylabel('Intensity (a.u.)')
-        ax.legend(loc='upper right', fontsize=8)
-        ax.set_title(f'Sample {idx}', fontsize=9)
+        ax.plot(wavenumbers, X_raw[idx], "gray", alpha=0.7, label="Raw", linewidth=1)
+        ax.plot(wavenumbers, X_processed[idx], "#2a6fdb", label="Processed", linewidth=1.5)
+        ax.set_ylabel("Intensity (a.u.)")
+        ax.legend(loc="upper right", fontsize=8)
+        ax.set_title(f"Sample {idx}", fontsize=9)
 
-    axes[-1].set_xlabel('Wavenumber (cm$^{-1}$)')
+    axes[-1].set_xlabel("Wavenumber (cm$^{-1}$)")
     axes[-1].invert_xaxis()
-    fig.suptitle('Raw vs Processed Spectra', fontsize=11, fontweight='bold')
+    fig.suptitle("Raw vs Processed Spectra", fontsize=11, fontweight="bold")
     fig.tight_layout()
 
     if save_path:
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 
@@ -82,7 +83,7 @@ def plot_raw_vs_processed_overlay(
 def plot_pca_umap(
     X_embedded: np.ndarray,
     labels: Optional[np.ndarray] = None,
-    method: str = 'PCA',
+    method: str = "PCA",
     *,
     seed: int = 0,
     save_path: Optional[Path] = None,
@@ -120,21 +121,28 @@ def plot_pca_umap(
 
         for label, color in zip(unique_labels, colors):
             mask = labels == label
-            ax.scatter(X_embedded[mask, 0], X_embedded[mask, 1],
-                      c=[color], label=str(label), alpha=0.7, s=30, edgecolors='k', linewidths=0.5)
-        ax.legend(title='Class', bbox_to_anchor=(1.05, 1), loc='upper left')
+            ax.scatter(
+                X_embedded[mask, 0],
+                X_embedded[mask, 1],
+                c=[color],
+                label=str(label),
+                alpha=0.7,
+                s=30,
+                edgecolors="k",
+                linewidths=0.5,
+            )
+        ax.legend(title="Class", bbox_to_anchor=(1.05, 1), loc="upper left")
     else:
-        ax.scatter(X_embedded[:, 0], X_embedded[:, 1],
-                  c='#2a6fdb', alpha=0.6, s=30, edgecolors='k', linewidths=0.5)
+        ax.scatter(X_embedded[:, 0], X_embedded[:, 1], c="#2a6fdb", alpha=0.6, s=30, edgecolors="k", linewidths=0.5)
 
-    ax.set_xlabel(f'{method} Component 1')
-    ax.set_ylabel(f'{method} Component 2')
-    ax.set_title(f'{method} Projection', fontweight='bold')
+    ax.set_xlabel(f"{method} Component 1")
+    ax.set_ylabel(f"{method} Component 2")
+    ax.set_title(f"{method} Projection", fontweight="bold")
     ax.grid(True, alpha=0.2)
     fig.tight_layout()
 
     if save_path:
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 
@@ -178,19 +186,19 @@ def plot_coverage_efficiency_curve(
     fig, ax = plt.subplots(figsize=(6, 4))
 
     # Plot coverage and efficiency
-    ax.plot(alpha_values, coverage, 'o-', label='Coverage', color='#2a6fdb', linewidth=2)
-    ax.plot(alpha_values, efficiency, 's-', label='Efficiency', color='#e67e22', linewidth=2)
+    ax.plot(alpha_values, coverage, "o-", label="Coverage", color="#2a6fdb", linewidth=2)
+    ax.plot(alpha_values, efficiency, "s-", label="Efficiency", color="#e67e22", linewidth=2)
 
     # Highlight target alpha
     if target_alpha in alpha_values:
         idx = np.where(alpha_values == target_alpha)[0][0]
-        ax.axvline(target_alpha, color='red', linestyle='--', alpha=0.5, label=f'α={target_alpha}')
-        ax.plot(target_alpha, coverage[idx], 'ro', markersize=8)
-        ax.plot(target_alpha, efficiency[idx], 'ro', markersize=8)
+        ax.axvline(target_alpha, color="red", linestyle="--", alpha=0.5, label=f"α={target_alpha}")
+        ax.plot(target_alpha, coverage[idx], "ro", markersize=8)
+        ax.plot(target_alpha, efficiency[idx], "ro", markersize=8)
 
-    ax.set_xlabel('Significance Level (α)')
-    ax.set_ylabel('Metric Value')
-    ax.set_title('Coverage vs Efficiency Trade-off', fontweight='bold')
+    ax.set_xlabel("Significance Level (α)")
+    ax.set_ylabel("Metric Value")
+    ax.set_title("Coverage vs Efficiency Trade-off", fontweight="bold")
     ax.legend()
     ax.grid(True, alpha=0.2)
     ax.set_xlim(0, max(alpha_values) * 1.05)
@@ -198,7 +206,7 @@ def plot_coverage_efficiency_curve(
     fig.tight_layout()
 
     if save_path:
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 
@@ -236,18 +244,17 @@ def plot_conformal_set_sizes(
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
     # Histogram of set sizes
-    axes[0].hist(set_sizes, bins=np.arange(0.5, max(set_sizes) + 1.5, 1),
-                color='#2a6fdb', alpha=0.7, edgecolor='black')
-    axes[0].set_xlabel('Prediction Set Size')
-    axes[0].set_ylabel('Frequency')
-    axes[0].set_title('Distribution of Set Sizes', fontweight='bold')
-    axes[0].grid(axis='y', alpha=0.2)
+    axes[0].hist(set_sizes, bins=np.arange(0.5, max(set_sizes) + 1.5, 1), color="#2a6fdb", alpha=0.7, edgecolor="black")
+    axes[0].set_xlabel("Prediction Set Size")
+    axes[0].set_ylabel("Frequency")
+    axes[0].set_title("Distribution of Set Sizes", fontweight="bold")
+    axes[0].grid(axis="y", alpha=0.2)
 
     # Statistics
     mean_size = np.mean(set_sizes)
     median_size = np.median(set_sizes)
-    axes[0].axvline(mean_size, color='red', linestyle='--', label=f'Mean: {mean_size:.2f}')
-    axes[0].axvline(median_size, color='orange', linestyle='--', label=f'Median: {median_size:.1f}')
+    axes[0].axvline(mean_size, color="red", linestyle="--", label=f"Mean: {mean_size:.2f}")
+    axes[0].axvline(median_size, color="orange", linestyle="--", label=f"Median: {median_size:.1f}")
     axes[0].legend()
 
     # Box plot by class (if labels provided)
@@ -255,19 +262,18 @@ def plot_conformal_set_sizes(
         unique_labels = sorted(np.unique(labels))
         data_by_class = [set_sizes[labels == lbl] for lbl in unique_labels]
         axes[1].boxplot(data_by_class, labels=[str(lbl) for lbl in unique_labels])
-        axes[1].set_xlabel('Class')
-        axes[1].set_ylabel('Set Size')
-        axes[1].set_title('Set Sizes by Class', fontweight='bold')
-        axes[1].grid(axis='y', alpha=0.2)
+        axes[1].set_xlabel("Class")
+        axes[1].set_ylabel("Set Size")
+        axes[1].set_title("Set Sizes by Class", fontweight="bold")
+        axes[1].grid(axis="y", alpha=0.2)
     else:
-        axes[1].text(0.5, 0.5, 'No class labels\navailable',
-                    ha='center', va='center', transform=axes[1].transAxes)
-        axes[1].axis('off')
+        axes[1].text(0.5, 0.5, "No class labels\navailable", ha="center", va="center", transform=axes[1].transAxes)
+        axes[1].axis("off")
 
     fig.tight_layout()
 
     if save_path:
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 
@@ -323,17 +329,16 @@ def plot_abstention_distribution(
         unique_labels = sorted(np.unique(labels))
         rates = [np.mean(abstain_flags[labels == lbl]) for lbl in unique_labels]
 
-        axes[plot_idx].bar(range(len(unique_labels)), rates, color='#e74c3c', alpha=0.7, edgecolor='black')
-        axes[plot_idx].axhline(abstention_rate, color='black', linestyle='--',
-                              label=f'Overall: {abstention_rate:.1%}')
-        axes[plot_idx].set_xlabel('Class')
-        axes[plot_idx].set_ylabel('Abstention Rate')
-        axes[plot_idx].set_title('Abstention by Class', fontweight='bold')
+        axes[plot_idx].bar(range(len(unique_labels)), rates, color="#e74c3c", alpha=0.7, edgecolor="black")
+        axes[plot_idx].axhline(abstention_rate, color="black", linestyle="--", label=f"Overall: {abstention_rate:.1%}")
+        axes[plot_idx].set_xlabel("Class")
+        axes[plot_idx].set_ylabel("Abstention Rate")
+        axes[plot_idx].set_title("Abstention by Class", fontweight="bold")
         axes[plot_idx].set_xticks(range(len(unique_labels)))
         axes[plot_idx].set_xticklabels([str(lbl) for lbl in unique_labels])
         axes[plot_idx].set_ylim(0, 1)
         axes[plot_idx].legend()
-        axes[plot_idx].grid(axis='y', alpha=0.2)
+        axes[plot_idx].grid(axis="y", alpha=0.2)
         plot_idx += 1
 
     # By batch
@@ -341,17 +346,16 @@ def plot_abstention_distribution(
         unique_batches = sorted(np.unique(batch_ids))
         rates = [np.mean(abstain_flags[batch_ids == b]) for b in unique_batches]
 
-        axes[plot_idx].bar(range(len(unique_batches)), rates, color='#e67e22', alpha=0.7, edgecolor='black')
-        axes[plot_idx].axhline(abstention_rate, color='black', linestyle='--',
-                              label=f'Overall: {abstention_rate:.1%}')
-        axes[plot_idx].set_xlabel('Batch')
-        axes[plot_idx].set_ylabel('Abstention Rate')
-        axes[plot_idx].set_title('Abstention by Batch', fontweight='bold')
+        axes[plot_idx].bar(range(len(unique_batches)), rates, color="#e67e22", alpha=0.7, edgecolor="black")
+        axes[plot_idx].axhline(abstention_rate, color="black", linestyle="--", label=f"Overall: {abstention_rate:.1%}")
+        axes[plot_idx].set_xlabel("Batch")
+        axes[plot_idx].set_ylabel("Abstention Rate")
+        axes[plot_idx].set_title("Abstention by Batch", fontweight="bold")
         axes[plot_idx].set_xticks(range(len(unique_batches)))
         axes[plot_idx].set_xticklabels([str(b) for b in unique_batches], rotation=45)
         axes[plot_idx].set_ylim(0, 1)
         axes[plot_idx].legend()
-        axes[plot_idx].grid(axis='y', alpha=0.2)
+        axes[plot_idx].grid(axis="y", alpha=0.2)
         plot_idx += 1
 
     # If no grouping, show overall summary
@@ -359,17 +363,21 @@ def plot_abstention_distribution(
         n_abstained = np.sum(abstain_flags)
         n_total = len(abstain_flags)
 
-        axes[0].bar(['Predicted', 'Abstained'],
-                   [n_total - n_abstained, n_abstained],
-                   color=['#2ecc71', '#e74c3c'], alpha=0.7, edgecolor='black')
-        axes[0].set_ylabel('Count')
-        axes[0].set_title(f'Abstention Summary\n({abstention_rate:.1%} abstained)', fontweight='bold')
-        axes[0].grid(axis='y', alpha=0.2)
+        axes[0].bar(
+            ["Predicted", "Abstained"],
+            [n_total - n_abstained, n_abstained],
+            color=["#2ecc71", "#e74c3c"],
+            alpha=0.7,
+            edgecolor="black",
+        )
+        axes[0].set_ylabel("Count")
+        axes[0].set_title(f"Abstention Summary\n({abstention_rate:.1%} abstained)", fontweight="bold")
+        axes[0].grid(axis="y", alpha=0.2)
 
     fig.tight_layout()
 
     if save_path:
-        fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
 
     return fig
 

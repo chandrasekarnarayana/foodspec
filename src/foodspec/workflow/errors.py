@@ -3,6 +3,7 @@
 Defines exception classes for each phase of the workflow with corresponding
 exit codes, and provides error.json serialization helpers.
 """
+
 from __future__ import annotations
 
 import json

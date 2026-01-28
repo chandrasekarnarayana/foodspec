@@ -1,4 +1,5 @@
 """Normalization helpers (engine namespace)."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -19,4 +20,3 @@ def normalize_reference(X: np.ndarray, target_wavenumber: float, window: float =
 
 
 __all__ = ["normalize_vector", "normalize_reference"]
-

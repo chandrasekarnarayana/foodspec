@@ -29,7 +29,9 @@ def run_e2e(
     viz: bool = typer.Option(True, "--viz/--no-viz", help="Generate basic visualizations."),
     report: bool = typer.Option(True, "--report/--no-report", help="Generate HTML report."),
     pdf: bool = typer.Option(False, "--pdf", help="Also export PDF if possible."),
-    unsafe_random_cv: bool = typer.Option(False, "--unsafe-random-cv", help="Allow random CV when no group column is available."),
+    unsafe_random_cv: bool = typer.Option(
+        False, "--unsafe-random-cv", help="Allow random CV when no group column is available."
+    ),
 ):
     """Run a complete FoodSpec pipeline (schema->preprocess->features->model->trust->report)."""
     orchestrator = EndToEndOrchestrator(

@@ -1,4 +1,5 @@
 """Single-file deployment artifacts (.foodspec) for FoodSpec models."""
+
 from __future__ import annotations
 
 import io

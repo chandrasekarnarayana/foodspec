@@ -225,10 +225,7 @@ def get_pdf_export_message(
         if mode == "brief":
             return "PDF export not available"
         else:
-            return (
-                "PDF export not available. "
-                "Install weasyprint: pip install weasyprint"
-            )
+            return "PDF export not available. Install weasyprint: pip install weasyprint"
 
 
 class PDFExporter:

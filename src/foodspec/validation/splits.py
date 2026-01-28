@@ -1,4 +1,5 @@
 """Deprecated splits shim for foodspec.validation."""
+
 from __future__ import annotations
 
 from foodspec.modeling.validation.splits import (

@@ -75,42 +75,44 @@ def coverage_by_group(
     results = []
     for group_name, group_df in grouped:
         n = len(group_df)
-        avg_set_size = float(np.mean(group_df['set_size']))
-        min_set_size = int(np.min(group_df['set_size']))
-        max_set_size = int(np.max(group_df['set_size']))
-        threshold_mean = float(np.mean(group_df['threshold']))
+        avg_set_size = float(np.mean(group_df["set_size"]))
+        min_set_size = int(np.min(group_df["set_size"]))
+        max_set_size = int(np.max(group_df["set_size"]))
+        threshold_mean = float(np.mean(group_df["threshold"]))
 
         # Compute coverage if 'covered' column exists
-        if 'covered' in group_df.columns:
-            coverage = float(np.mean(group_df['covered']))
+        if "covered" in group_df.columns:
+            coverage = float(np.mean(group_df["covered"]))
         else:
             coverage = np.nan
 
-        results.append({
-            'group': str(group_name),
-            'coverage': coverage,
-            'n_samples': n,
-            'avg_set_size': avg_set_size,
-            'min_set_size': min_set_size,
-            'max_set_size': max_set_size,
-            'threshold_mean': threshold_mean,
-        })
+        results.append(
+            {
+                "group": str(group_name),
+                "coverage": coverage,
+                "n_samples": n,
+                "avg_set_size": avg_set_size,
+                "min_set_size": min_set_size,
+                "max_set_size": max_set_size,
+                "threshold_mean": threshold_mean,
+            }
+        )
 
     result_df = pd.DataFrame(results)
 
     # Sort: first by sort_by if specified, else by group
     if sort_by and sort_by in result_df.columns:
-        result_df = result_df.sort_values(sort_by, na_position='last').reset_index(drop=True)
+        result_df = result_df.sort_values(sort_by, na_position="last").reset_index(drop=True)
     else:
         # Sort by group column (alphabetically/numerically stable)
-        numeric_groups = pd.to_numeric(result_df['group'], errors='coerce')
+        numeric_groups = pd.to_numeric(result_df["group"], errors="coerce")
         if numeric_groups.notna().any():
             # Has at least some numeric groups - sort numerically
-            result_df['_sort_key'] = numeric_groups
-            result_df = result_df.sort_values('_sort_key', na_position='last').drop('_sort_key', axis=1)
+            result_df["_sort_key"] = numeric_groups
+            result_df = result_df.sort_values("_sort_key", na_position="last").drop("_sort_key", axis=1)
         else:
             # All non-numeric - sort alphabetically
-            result_df = result_df.sort_values('group').reset_index(drop=True)
+            result_df = result_df.sort_values("group").reset_index(drop=True)
 
         result_df = result_df.reset_index(drop=True)
 
@@ -144,20 +146,18 @@ def format_coverage_table(
 
     # Select columns to display
     if include_min_max:
-        cols = ['group', 'n_samples', 'coverage', 'avg_set_size', 'min_set_size', 'max_set_size', 'threshold_mean']
+        cols = ["group", "n_samples", "coverage", "avg_set_size", "min_set_size", "max_set_size", "threshold_mean"]
     else:
-        cols = ['group', 'n_samples', 'coverage', 'avg_set_size', 'threshold_mean']
+        cols = ["group", "n_samples", "coverage", "avg_set_size", "threshold_mean"]
 
     cols = [c for c in cols if c in df_copy.columns]
     display_df = df_copy[cols].copy()
 
     # Format floating-point columns
-    float_cols = ['coverage', 'avg_set_size', 'threshold_mean']
+    float_cols = ["coverage", "avg_set_size", "threshold_mean"]
     for col in float_cols:
         if col in display_df.columns:
-            display_df[col] = display_df[col].apply(
-                lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "N/A"
-            )
+            display_df[col] = display_df[col].apply(lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "N/A")
 
     # Convert to string with nice formatting
     return display_df.to_string(index=False)
@@ -192,30 +192,28 @@ def to_markdown(
 
     # Select columns
     if include_min_max:
-        cols = ['group', 'n_samples', 'coverage', 'avg_set_size', 'min_set_size', 'max_set_size', 'threshold_mean']
+        cols = ["group", "n_samples", "coverage", "avg_set_size", "min_set_size", "max_set_size", "threshold_mean"]
     else:
-        cols = ['group', 'n_samples', 'coverage', 'avg_set_size', 'threshold_mean']
+        cols = ["group", "n_samples", "coverage", "avg_set_size", "threshold_mean"]
 
     cols = [c for c in cols if c in df_copy.columns]
     display_df = df_copy[cols].copy()
 
     # Format floating-point columns
-    float_cols = ['coverage', 'avg_set_size', 'threshold_mean']
+    float_cols = ["coverage", "avg_set_size", "threshold_mean"]
     for col in float_cols:
         if col in display_df.columns:
-            display_df[col] = display_df[col].apply(
-                lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "N/A"
-            )
+            display_df[col] = display_df[col].apply(lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "N/A")
 
     # Rename columns for display
     rename_map = {
-        'group': 'Group',
-        'n_samples': 'N Samples',
-        'coverage': 'Coverage',
-        'avg_set_size': 'Avg Set Size',
-        'min_set_size': 'Min Set Size',
-        'max_set_size': 'Max Set Size',
-        'threshold_mean': 'Mean Threshold',
+        "group": "Group",
+        "n_samples": "N Samples",
+        "coverage": "Coverage",
+        "avg_set_size": "Avg Set Size",
+        "min_set_size": "Min Set Size",
+        "max_set_size": "Max Set Size",
+        "threshold_mean": "Mean Threshold",
     }
     display_df = display_df.rename(columns=rename_map)
 
@@ -260,30 +258,28 @@ def to_latex(
 
     # Select columns
     if include_min_max:
-        cols = ['group', 'n_samples', 'coverage', 'avg_set_size', 'min_set_size', 'max_set_size', 'threshold_mean']
+        cols = ["group", "n_samples", "coverage", "avg_set_size", "min_set_size", "max_set_size", "threshold_mean"]
     else:
-        cols = ['group', 'n_samples', 'coverage', 'avg_set_size', 'threshold_mean']
+        cols = ["group", "n_samples", "coverage", "avg_set_size", "threshold_mean"]
 
     cols = [c for c in cols if c in df_copy.columns]
     display_df = df_copy[cols].copy()
 
     # Format floating-point columns
-    float_cols = ['coverage', 'avg_set_size', 'threshold_mean']
+    float_cols = ["coverage", "avg_set_size", "threshold_mean"]
     for col in float_cols:
         if col in display_df.columns:
-            display_df[col] = display_df[col].apply(
-                lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "N/A"
-            )
+            display_df[col] = display_df[col].apply(lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "N/A")
 
     # Rename columns for display
     rename_map = {
-        'group': 'Group',
-        'n_samples': 'N Samples',
-        'coverage': 'Coverage',
-        'avg_set_size': 'Avg Set Size',
-        'min_set_size': 'Min Set Size',
-        'max_set_size': 'Max Set Size',
-        'threshold_mean': 'Mean Threshold',
+        "group": "Group",
+        "n_samples": "N Samples",
+        "coverage": "Coverage",
+        "avg_set_size": "Avg Set Size",
+        "min_set_size": "Min Set Size",
+        "max_set_size": "Max Set Size",
+        "threshold_mean": "Mean Threshold",
     }
     display_df = display_df.rename(columns=rename_map)
 
@@ -292,11 +288,11 @@ def to_latex(
 
     # Add caption and label if provided
     if caption or label:
-        lines = latex.split('\n')
+        lines = latex.split("\n")
         # Find the line after \begin{tabular}...
         insert_idx = 1
         for i, line in enumerate(lines):
-            if r'\begin{tabular}' in line:
+            if r"\begin{tabular}" in line:
                 insert_idx = i + 1
                 break
 
@@ -309,7 +305,7 @@ def to_latex(
         for cap_line in reversed(caption_lines):
             lines.insert(insert_idx, cap_line)
 
-        latex = '\n'.join(lines)
+        latex = "\n".join(lines)
 
     return latex
 
@@ -340,47 +336,51 @@ def check_coverage_guarantees(
         - near_violations (list): Groups within tolerance but below target
         - stats (dict): Min/max coverage, num groups
     """
-    if 'coverage' not in grouped_df.columns:
+    if "coverage" not in grouped_df.columns:
         raise ValueError("grouped_df must have 'coverage' column")
 
-    coverages = grouped_df['coverage'].dropna()
+    coverages = grouped_df["coverage"].dropna()
 
     violations = []
     near_violations = []
 
     for _, row in grouped_df.iterrows():
-        cov = row['coverage']
-        group = row['group']
+        cov = row["coverage"]
+        group = row["group"]
 
         if pd.isna(cov):
             continue
 
         # Hard failure: below (target - tolerance)
         if cov < target_coverage - tolerance:
-            violations.append({
-                'group': group,
-                'coverage': float(cov),
-                'gap': float(target_coverage - cov),
-            })
+            violations.append(
+                {
+                    "group": group,
+                    "coverage": float(cov),
+                    "gap": float(target_coverage - cov),
+                }
+            )
         # Warning: within tolerance but below target
         elif cov < target_coverage:
-            near_violations.append({
-                'group': group,
-                'coverage': float(cov),
-                'gap': float(target_coverage - cov),
-            })
+            near_violations.append(
+                {
+                    "group": group,
+                    "coverage": float(cov),
+                    "gap": float(target_coverage - cov),
+                }
+            )
 
     overall_pass = len(violations) == 0
 
     return {
-        'overall_pass': overall_pass,
-        'violations': violations,
-        'near_violations': near_violations,
-        'stats': {
-            'target_coverage': target_coverage,
-            'min_coverage': float(np.min(coverages)) if len(coverages) > 0 else np.nan,
-            'max_coverage': float(np.max(coverages)) if len(coverages) > 0 else np.nan,
-            'num_groups': len(grouped_df),
+        "overall_pass": overall_pass,
+        "violations": violations,
+        "near_violations": near_violations,
+        "stats": {
+            "target_coverage": target_coverage,
+            "min_coverage": float(np.min(coverages)) if len(coverages) > 0 else np.nan,
+            "max_coverage": float(np.max(coverages)) if len(coverages) > 0 else np.nan,
+            "num_groups": len(grouped_df),
         },
     }
 
@@ -408,28 +408,28 @@ def coverage_comparison(
     """
     # Merge on 'group'
     merged = pd.merge(
-        df1[['group', 'coverage', 'n_samples', 'avg_set_size']],
-        df2[['group', 'coverage', 'n_samples', 'avg_set_size']],
-        on='group',
-        how='outer',
-        suffixes=(f'_{name1.replace(" ", "_")}', f'_{name2.replace(" ", "_")}'),
+        df1[["group", "coverage", "n_samples", "avg_set_size"]],
+        df2[["group", "coverage", "n_samples", "avg_set_size"]],
+        on="group",
+        how="outer",
+        suffixes=(f"_{name1.replace(' ', '_')}", f"_{name2.replace(' ', '_')}"),
     )
 
     # Compute deltas
-    cov_cols = [c for c in merged.columns if 'coverage' in c]
+    cov_cols = [c for c in merged.columns if "coverage" in c]
     if len(cov_cols) == 2:
-        merged['delta_coverage'] = merged[cov_cols[1]] - merged[cov_cols[0]]
+        merged["delta_coverage"] = merged[cov_cols[1]] - merged[cov_cols[0]]
 
-    set_size_cols = [c for c in merged.columns if 'avg_set_size' in c]
+    set_size_cols = [c for c in merged.columns if "avg_set_size" in c]
     if len(set_size_cols) == 2:
-        merged['delta_set_size'] = merged[set_size_cols[1]] - merged[set_size_cols[0]]
+        merged["delta_set_size"] = merged[set_size_cols[1]] - merged[set_size_cols[0]]
 
     # Sort by group
     try:
-        merged['_sort_key'] = pd.to_numeric(merged['group'], errors='coerce')
-        merged = merged.sort_values('_sort_key', na_position='last').drop('_sort_key', axis=1)
+        merged["_sort_key"] = pd.to_numeric(merged["group"], errors="coerce")
+        merged = merged.sort_values("_sort_key", na_position="last").drop("_sort_key", axis=1)
     except Exception:
-        merged = merged.sort_values('group')
+        merged = merged.sort_values("group")
 
     merged = merged.reset_index(drop=True)
 
@@ -457,10 +457,10 @@ def summarize_coverage(
     """
     target_coverage = 1.0 - alpha
 
-    if 'coverage' not in grouped_df.columns:
+    if "coverage" not in grouped_df.columns:
         return "No coverage data available."
 
-    coverages = grouped_df['coverage'].dropna()
+    coverages = grouped_df["coverage"].dropna()
 
     if len(coverages) == 0:
         return "No coverage data available."
@@ -489,11 +489,11 @@ def summarize_coverage(
     # Check guarantees
     guarantee_check = check_coverage_guarantees(grouped_df, target_coverage, tolerance=0.05)
 
-    if guarantee_check['overall_pass']:
+    if guarantee_check["overall_pass"]:
         summary_lines.append("✓ Coverage guarantee met in all groups")
     else:
         summary_lines.append(f"✗ Coverage violations in {len(guarantee_check['violations'])} groups:")
-        for viol in guarantee_check['violations']:
+        for viol in guarantee_check["violations"]:
             summary_lines.append(f"    - {viol['group']}: {viol['coverage']:.1%} (gap: {viol['gap']:.1%})")
 
     return "\n".join(summary_lines)

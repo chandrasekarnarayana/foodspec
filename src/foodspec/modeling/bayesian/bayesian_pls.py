@@ -165,6 +165,7 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
             Fitted model.
         """
         from sklearn.utils.validation import check_X_y
+
         X, y = check_X_y(X, y, dtype=float, ensure_2d=False, y_numeric=True)
 
         if y.ndim == 1:
@@ -219,7 +220,7 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
             # Sample σ² | y, T, β_pls
             # Posterior: Inverse-Gamma(α_post, β_post)
             residuals = y - T @ beta_pls
-            ss_residuals = np.sum(residuals ** 2)
+            ss_residuals = np.sum(residuals**2)
 
             alpha_post = self.prior_alpha + n_samples * n_targets / 2
             beta_post = self.prior_beta + ss_residuals / 2
@@ -233,8 +234,8 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
             sigma2_samples[i] = sigma2
 
         # Discard burn-in
-        beta_pls_samples = beta_pls_samples[self.burn_in:]
-        sigma2_samples = sigma2_samples[self.burn_in:]
+        beta_pls_samples = beta_pls_samples[self.burn_in :]
+        sigma2_samples = sigma2_samples[self.burn_in :]
 
         # Convert β_pls to β (original space): β = W @ β_pls
         W = pls.x_weights_  # Shape: (n_features, n_components)
@@ -257,11 +258,7 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
 
         return self
 
-    def predict(
-        self,
-        X: np.ndarray,
-        return_std: bool = False
-    ) -> np.ndarray | Tuple[np.ndarray, np.ndarray]:
+    def predict(self, X: np.ndarray, return_std: bool = False) -> np.ndarray | Tuple[np.ndarray, np.ndarray]:
         """
         Predict target values with optional uncertainty.
 
@@ -307,9 +304,11 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
 
         # Inverse transform if scaled
         if self.scale:
-            y_pred = self.y_scaler_.inverse_transform(
-                y_pred.reshape(-1, 1) if y_pred.ndim == 1 else y_pred
-            ).ravel() if y_pred.ndim == 1 else self.y_scaler_.inverse_transform(y_pred)
+            y_pred = (
+                self.y_scaler_.inverse_transform(y_pred.reshape(-1, 1) if y_pred.ndim == 1 else y_pred).ravel()
+                if y_pred.ndim == 1
+                else self.y_scaler_.inverse_transform(y_pred)
+            )
 
         if return_std:
             # Posterior predictive std (includes model uncertainty + noise)
@@ -348,6 +347,7 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
             Upper bound of credible interval.
         """
         from sklearn.utils.validation import check_array
+
         X = check_array(X, dtype=float, ensure_2d=True)
 
         if self.scale:
@@ -504,7 +504,7 @@ class BayesianNNLS(BaseEstimator, RegressorMixin):
 
                 residual = y - X_not_j @ beta_not_j
 
-                var_cond = sigma2 / (np.sum(X_j ** 2) + sigma2 / self.prior_sigma2)
+                var_cond = sigma2 / (np.sum(X_j**2) + sigma2 / self.prior_sigma2)
                 mean_cond = var_cond * np.sum(X_j * residual) / sigma2
 
                 # Sample from truncated normal (truncated at 0)
@@ -512,7 +512,7 @@ class BayesianNNLS(BaseEstimator, RegressorMixin):
 
             # Sample σ²
             residuals = y - X @ beta
-            ss_residuals = np.sum(residuals ** 2)
+            ss_residuals = np.sum(residuals**2)
 
             alpha_post = 1.0 + n_samples / 2
             beta_post = 1.0 + ss_residuals / 2
@@ -524,8 +524,8 @@ class BayesianNNLS(BaseEstimator, RegressorMixin):
             sigma2_samples[i] = sigma2
 
         # Discard burn-in
-        beta_samples = beta_samples[self.burn_in:]
-        sigma2_samples = sigma2_samples[self.burn_in:]
+        beta_samples = beta_samples[self.burn_in :]
+        sigma2_samples = sigma2_samples[self.burn_in :]
 
         self.coef_samples_ = beta_samples
         self.sigma2_samples_ = sigma2_samples
@@ -710,7 +710,7 @@ class VariationalPLS(BaseEstimator, RegressorMixin):
             # Update q(τ) (precision)
             a_q = 1.0 + n_samples / 2
             residuals = y - T @ mu_q
-            b_q = 1.0 + (np.sum(residuals ** 2) + np.trace(T.T @ T @ Sigma_q)) / 2
+            b_q = 1.0 + (np.sum(residuals**2) + np.trace(T.T @ T @ Sigma_q)) / 2
             tau_q = a_q / b_q
 
             # Compute ELBO
@@ -779,11 +779,11 @@ class VariationalPLS(BaseEstimator, RegressorMixin):
 
         # Log likelihood term
         log_lik = -0.5 * n_samples * np.log(2 * np.pi / tau_q)
-        log_lik -= 0.5 * tau_q * (np.sum(residuals ** 2) + np.trace(T.T @ T @ Sigma_q))
+        log_lik -= 0.5 * tau_q * (np.sum(residuals**2) + np.trace(T.T @ T @ Sigma_q))
 
         # Prior term
         log_prior = -0.5 * n_comp * np.log(2 * np.pi * self.prior_sigma2)
-        log_prior -= 0.5 * (np.sum(mu_q ** 2) + np.trace(Sigma_q)) / self.prior_sigma2
+        log_prior -= 0.5 * (np.sum(mu_q**2) + np.trace(Sigma_q)) / self.prior_sigma2
 
         # Entropy term (negative KL divergence)
         entropy = 0.5 * np.log(np.linalg.det(Sigma_q)) + 0.5 * n_comp * (1 + np.log(2 * np.pi))

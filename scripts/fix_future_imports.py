@@ -14,12 +14,12 @@ from pathlib import Path
 def fix_future_imports(filepath):
     """Fix from __future__ imports in a file."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
     except (UnicodeDecodeError, IOError):
         return False
 
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     # Find shebang, encoding, and docstrings
     insert_pos = 0
@@ -30,17 +30,17 @@ def fix_future_imports(filepath):
         stripped = line.strip()
 
         # Skip shebang
-        if i == 0 and stripped.startswith('#!'):
+        if i == 0 and stripped.startswith("#!"):
             insert_pos = i + 1
             continue
 
         # Skip encoding
-        if i <= 1 and ('coding:' in stripped or 'coding=' in stripped):
+        if i <= 1 and ("coding:" in stripped or "coding=" in stripped):
             insert_pos = i + 1
             continue
 
         # Handle module-level docstring
-        if i == insert_pos or (i == insert_pos + 1 and lines[insert_pos].strip().startswith('# ')):
+        if i == insert_pos or (i == insert_pos + 1 and lines[insert_pos].strip().startswith("# ")):
             if stripped.startswith('"""') or stripped.startswith("'''"):
                 quote = '"""' if stripped.startswith('"""') else "'''"
                 if stripped.count(quote) >= 2:
@@ -67,7 +67,7 @@ def fix_future_imports(filepath):
     found_future = False
 
     for line in lines:
-        if re.match(r'^\s*from __future__ import', line):
+        if re.match(r"^\s*from __future__ import", line):
             future_imports.append(line)
             found_future = True
         else:
@@ -92,12 +92,12 @@ def fix_future_imports(filepath):
     if not added_futures:
         new_lines[insert_pos:insert_pos] = future_imports
 
-    new_content = '\n'.join(new_lines)
+    new_content = "\n".join(new_lines)
 
     # Only write if changed
     if new_content.strip() != content.strip():
         try:
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 f.write(new_content)
             return True
         except IOError:
@@ -105,12 +105,13 @@ def fix_future_imports(filepath):
 
     return False
 
+
 def main():
     """Process all Python files."""
-    src_dir = Path('/home/cs/FoodSpec/src/foodspec')
+    src_dir = Path("/home/cs/FoodSpec/src/foodspec")
 
     fixed_files = []
-    for py_file in src_dir.rglob('*.py'):
+    for py_file in src_dir.rglob("*.py"):
         if fix_future_imports(py_file):
             fixed_files.append(str(py_file))
 
@@ -120,5 +121,6 @@ def main():
 
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

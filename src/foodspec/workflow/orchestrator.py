@@ -5,6 +5,7 @@ trust evaluation, visualization, and reporting into a single call.
 The protocol file provides defaults; CLI flags can override modeling,
 scheme, features, and reporting options without mutating the protocol.
 """
+
 from __future__ import annotations
 
 import json
@@ -85,7 +86,9 @@ class EndToEndOrchestrator:
         if label is None and "label" in df.columns:
             label = "label"
         if label is None:
-            raise FoodSpecValidationError("Label column not provided; use --label-col or protocol expected_columns.label_col.")
+            raise FoodSpecValidationError(
+                "Label column not provided; use --label-col or protocol expected_columns.label_col."
+            )
         if label not in df.columns:
             raise FoodSpecValidationError(f"Label column '{label}' not found in CSV.")
 
@@ -108,7 +111,9 @@ class EndToEndOrchestrator:
             return "loso"
         return "random"
 
-    def _plot_confusion(self, y_true: np.ndarray, y_pred: np.ndarray, classes: Iterable[str], registry: ArtifactRegistry) -> Optional[Path]:
+    def _plot_confusion(
+        self, y_true: np.ndarray, y_pred: np.ndarray, classes: Iterable[str], registry: ArtifactRegistry
+    ) -> Optional[Path]:
         try:
             cm = confusion_matrix(y_true, y_pred, labels=list(range(len(classes))))
             fig, ax = plt.subplots(figsize=(4, 4))
@@ -150,7 +155,9 @@ class EndToEndOrchestrator:
         X_cal, y_cal = X[train_idx], y[train_idx]
         X_test, y_test = X[test_idx], y[test_idx]
 
-        evaluator = TrustEvaluator(model, registry, target_coverage=0.9, abstention_threshold=0.7, random_state=self.seed)
+        evaluator = TrustEvaluator(
+            model, registry, target_coverage=0.9, abstention_threshold=0.7, random_state=self.seed
+        )
         try:
             evaluator.fit_conformal(X_cal, y_cal)
             if hasattr(model, "predict_proba"):
@@ -166,7 +173,10 @@ class EndToEndOrchestrator:
             raise FoodSpecValidationError(f"Trust evaluation failed: {exc}")
 
         registry.write_json(registry.trust_eval_path, asdict(result))
-        registry.write_json(registry.calibration_path, {"method": evaluator.calibration_method, "target_coverage": evaluator.target_coverage})
+        registry.write_json(
+            registry.calibration_path,
+            {"method": evaluator.calibration_method, "target_coverage": evaluator.target_coverage},
+        )
         registry.write_trust_calibration_metrics({"ece": result.ece, "coverage": result.conformal_coverage})
         return asdict(result)
 
@@ -217,7 +227,9 @@ class EndToEndOrchestrator:
             scheme = self._choose_scheme(df[group_col].to_numpy() if group_col else None)
 
             feature_config = parse_feature_config(self.protocol_path)
-            feats_df, labels, groups, info, details = self._extract_features(df, proto_cfg, feature_config, label_col, group_col)
+            feats_df, labels, groups, info, details = self._extract_features(
+                df, proto_cfg, feature_config, label_col, group_col
+            )
 
             model_result = fit_predict(
                 feats_df.to_numpy(dtype=float),
@@ -229,9 +241,7 @@ class EndToEndOrchestrator:
                 allow_random_cv=self.unsafe_random_cv,
             )
 
-            metrics_rows = [
-                {"metric": k, "value": v} for k, v in model_result.metrics.items()
-            ]
+            metrics_rows = [{"metric": k, "value": v} for k, v in model_result.metrics.items()]
             registry.write_csv(registry.metrics_path, metrics_rows)
             folds_rows = []
             for fold in model_result.folds:
@@ -264,7 +274,9 @@ class EndToEndOrchestrator:
 
             viz_path = None
             if self.enable_viz:
-                viz_path = self._plot_confusion(model_result.y_true, model_result.y_pred, model_result.classes, registry)
+                viz_path = self._plot_confusion(
+                    model_result.y_true, model_result.y_pred, model_result.classes, registry
+                )
 
             report_artifacts: Dict[str, str] = {}
             artifacts = {
@@ -320,7 +332,9 @@ class EndToEndOrchestrator:
 
             # Persist feature table and metadata for traceability
             feats_df.to_csv(run_dir / "features.csv", index=False)
-            feature_info_serialized = [entry.to_dict() if isinstance(entry, FeatureInfo) else dict(entry) for entry in info]
+            feature_info_serialized = [
+                entry.to_dict() if isinstance(entry, FeatureInfo) else dict(entry) for entry in info
+            ]
             (run_dir / "feature_info.json").write_text(json.dumps({"features": feature_info_serialized}, indent=2))
 
             run_summary = {

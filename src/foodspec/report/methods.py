@@ -1,4 +1,5 @@
 """Generators for manuscript-ready methods sections."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

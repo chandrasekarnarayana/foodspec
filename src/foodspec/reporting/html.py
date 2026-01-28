@@ -1,4 +1,5 @@
 """HTML report builder for FoodSpec reporting subsystem."""
+
 from __future__ import annotations
 
 import base64
@@ -204,7 +205,7 @@ class HtmlReportBuilder:
   <h1>{self.title}</h1>
   <p>Mode: {self.mode.value}</p>
   {card_html}
-  {''.join(section_blocks)}
+  {"".join(section_blocks)}
 </body>
 </html>
 """

@@ -188,6 +188,7 @@ def find_optimal_temperature(
     optimal_temperature : float
         Temperature that minimizes ECE.
     """
+
     def objective(temp):
         if temp <= 0:
             return 1e10
@@ -198,8 +199,8 @@ def find_optimal_temperature(
         objective,
         [initial_temp],
         bounds=[(0.01, 5.0)],
-        method='L-BFGS-B',
-        options={'maxiter': max_iter},
+        method="L-BFGS-B",
+        options={"maxiter": max_iter},
     )
 
     return float(result.x[0])
@@ -337,7 +338,7 @@ class PlattCalibrator:
         y_int = y_true.astype(int)
 
         if (y_int < 0).any() or (y_int >= self.n_classes_).any():
-            raise ValueError(f"y_true labels out of range [0, {self.n_classes_-1}]")
+            raise ValueError(f"y_true labels out of range [0, {self.n_classes_ - 1}]")
 
         # Fit one logistic model per class (one-vs-rest)
         for c in range(self.n_classes_):
@@ -378,9 +379,7 @@ class PlattCalibrator:
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
         if proba.shape[1] != self.n_classes_:
-            raise ValueError(
-                f"proba has {proba.shape[1]} classes, expected {self.n_classes_}"
-            )
+            raise ValueError(f"proba has {proba.shape[1]} classes, expected {self.n_classes_}")
 
         # Apply each one-vs-rest logistic model
         calibrated = np.zeros_like(proba)
@@ -505,12 +504,12 @@ class IsotonicCalibrator:
         y_int = y_true.astype(int)
 
         if (y_int < 0).any() or (y_int >= self.n_classes_).any():
-            raise ValueError(f"y_true labels out of range [0, {self.n_classes_-1}]")
+            raise ValueError(f"y_true labels out of range [0, {self.n_classes_ - 1}]")
 
         # Fit one isotonic model per class (one-vs-rest)
         for c in range(self.n_classes_):
             y_binary = (y_true == c).astype(int)
-            isotonic = IsotonicRegression(out_of_bounds='clip')
+            isotonic = IsotonicRegression(out_of_bounds="clip")
             isotonic.fit(proba[:, c], y_binary)
             self.isotonic_models_[c] = isotonic
 
@@ -545,9 +544,7 @@ class IsotonicCalibrator:
         if proba.ndim != 2:
             raise ValueError("proba must be 2D (n_samples, n_classes)")
         if proba.shape[1] != self.n_classes_:
-            raise ValueError(
-                f"proba has {proba.shape[1]} classes, expected {self.n_classes_}"
-            )
+            raise ValueError(f"proba has {proba.shape[1]} classes, expected {self.n_classes_}")
 
         # Apply isotonic regression to each class
         calibrated = np.zeros_like(proba)
@@ -594,7 +591,7 @@ class IsotonicCalibrator:
 def calibrate_probabilities(
     y_pred_proba: np.ndarray,
     y_calibration: Optional[np.ndarray] = None,
-    method: str = 'temperature',
+    method: str = "temperature",
     **kwargs,
 ) -> Tuple[np.ndarray, Dict]:
     """
@@ -627,52 +624,40 @@ def calibrate_probabilities(
     ValueError
         If method not recognized or calibration data missing.
     """
-    if method == 'none':
-        return y_pred_proba.copy(), {'method': 'none'}
+    if method == "none":
+        return y_pred_proba.copy(), {"method": "none"}
 
-    if method not in ['temperature', 'isotonic', 'platt']:
+    if method not in ["temperature", "isotonic", "platt"]:
         raise ValueError(f"Unknown method: {method}")
 
     if y_calibration is None:
         raise ValueError(f"method={method} requires y_calibration")
 
-    metadata = {'method': method}
+    metadata = {"method": method}
 
-    if method == 'temperature':
-        if 'temperature' in kwargs:
-            temp = kwargs['temperature']
+    if method == "temperature":
+        if "temperature" in kwargs:
+            temp = kwargs["temperature"]
         else:
             temp = find_optimal_temperature(y_calibration, y_pred_proba)
 
         calibrated = temperature_scale(y_pred_proba, temp)
-        metadata['temperature'] = float(temp)
-        metadata['ece_before'] = float(expected_calibration_error(
-            y_calibration, y_pred_proba
-        ))
-        metadata['ece_after'] = float(expected_calibration_error(
-            y_calibration, calibrated
-        ))
+        metadata["temperature"] = float(temp)
+        metadata["ece_before"] = float(expected_calibration_error(y_calibration, y_pred_proba))
+        metadata["ece_after"] = float(expected_calibration_error(y_calibration, calibrated))
 
-    elif method == 'platt':
+    elif method == "platt":
         calibrator = PlattCalibrator()
         calibrator.fit(y_calibration, y_pred_proba)
         calibrated = calibrator.transform(y_pred_proba)
-        metadata['ece_before'] = float(expected_calibration_error(
-            y_calibration, y_pred_proba
-        ))
-        metadata['ece_after'] = float(expected_calibration_error(
-            y_calibration, calibrated
-        ))
+        metadata["ece_before"] = float(expected_calibration_error(y_calibration, y_pred_proba))
+        metadata["ece_after"] = float(expected_calibration_error(y_calibration, calibrated))
 
-    elif method == 'isotonic':
+    elif method == "isotonic":
         calibrator = IsotonicCalibrator()
         calibrator.fit(y_calibration, y_pred_proba)
         calibrated = calibrator.transform(y_pred_proba)
-        metadata['ece_before'] = float(expected_calibration_error(
-            y_calibration, y_pred_proba
-        ))
-        metadata['ece_after'] = float(expected_calibration_error(
-            y_calibration, calibrated
-        ))
+        metadata["ece_before"] = float(expected_calibration_error(y_calibration, y_pred_proba))
+        metadata["ece_after"] = float(expected_calibration_error(y_calibration, calibrated))
 
     return calibrated, metadata

@@ -1,4 +1,5 @@
 """Multi-modal fusion strategies for combining predictions and features."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

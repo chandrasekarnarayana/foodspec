@@ -18,6 +18,7 @@ class DatasetCard:
     References:
         Gebru et al. (2021). Datasheets for Datasets. Commun. ACM, 64(12).
     """
+
     name: str
     version: str
     description: str
@@ -54,39 +55,39 @@ class DatasetCard:
     def to_dict(self) -> dict:
         """Export as dictionary."""
         return {
-            'name': self.name,
-            'version': self.version,
-            'description': self.description,
-            'dataset_info': {
-                'n_samples': self.n_samples,
-                'n_features': self.n_features,
-                'feature_type': self.feature_type,
-                'target_type': self.target_type,
+            "name": self.name,
+            "version": self.version,
+            "description": self.description,
+            "dataset_info": {
+                "n_samples": self.n_samples,
+                "n_features": self.n_features,
+                "feature_type": self.feature_type,
+                "target_type": self.target_type,
             },
-            'provenance': {
-                'collection_date': self.collection_date,
-                'collection_method': self.collection_method,
-                'instrument': self.instrument,
+            "provenance": {
+                "collection_date": self.collection_date,
+                "collection_method": self.collection_method,
+                "instrument": self.instrument,
             },
-            'characteristics': {
-                'wavelength_range': self.wavelength_range,
-                'sample_types': self.sample_types,
-                'preprocessing': self.preprocessing_applied,
+            "characteristics": {
+                "wavelength_range": self.wavelength_range,
+                "sample_types": self.sample_types,
+                "preprocessing": self.preprocessing_applied,
             },
-            'quality': {
-                'missing_data_fraction': self.missing_data_fraction,
-                'outlier_fraction': self.outlier_fraction,
-                'notes': self.quality_notes,
+            "quality": {
+                "missing_data_fraction": self.missing_data_fraction,
+                "outlier_fraction": self.outlier_fraction,
+                "notes": self.quality_notes,
             },
-            'usage': {
-                'intended_use': self.intended_use,
-                'limitations': self.limitations,
-                'ethical_considerations': self.ethical_considerations,
+            "usage": {
+                "intended_use": self.intended_use,
+                "limitations": self.limitations,
+                "ethical_considerations": self.ethical_considerations,
             },
-            'metadata': {
-                'created_by': self.created_by,
-                'license': self.license,
-                'doi': self.doi,
+            "metadata": {
+                "created_by": self.created_by,
+                "license": self.license,
+                "doi": self.doi,
             },
         }
 
@@ -94,6 +95,7 @@ class DatasetCard:
 @dataclass
 class ReproducibilityPackage:
     """Complete reproducibility package for publication."""
+
     title: str
     authors: List[str]
     date: str
@@ -119,30 +121,30 @@ class ReproducibilityPackage:
     def to_json(self, filepath: str):
         """Save as JSON."""
         data = {
-            'title': self.title,
-            'authors': self.authors,
-            'date': self.date,
-            'code': {
-                'repository': self.code_repository,
-                'commit_hash': self.commit_hash,
-                'requirements': self.requirements,
+            "title": self.title,
+            "authors": self.authors,
+            "date": self.date,
+            "code": {
+                "repository": self.code_repository,
+                "commit_hash": self.commit_hash,
+                "requirements": self.requirements,
             },
-            'data': {
-                'datasets': [ds.to_dict() for ds in self.dataset_cards],
-                'availability': self.data_availability,
+            "data": {
+                "datasets": [ds.to_dict() for ds in self.dataset_cards],
+                "availability": self.data_availability,
             },
-            'methods': {
-                'description': self.methods_section,
-                'preprocessing': self.preprocessing_steps,
-                'hyperparameters': self.model_hyperparameters,
+            "methods": {
+                "description": self.methods_section,
+                "preprocessing": self.preprocessing_steps,
+                "hyperparameters": self.model_hyperparameters,
             },
-            'reproducibility': {
-                'random_seeds': self.random_seeds,
-                'environment': self.computational_environment,
+            "reproducibility": {
+                "random_seeds": self.random_seeds,
+                "environment": self.computational_environment,
             },
         }
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(data, f, indent=2)
 
 
@@ -165,10 +167,10 @@ class MethodsSectionGenerator:
 
     def __init__(self):
         self.templates = {
-            'dataset': "A dataset of {n_samples} samples with {n_features} spectral features was used.",
-            'preprocessing': "Preprocessing steps included: {steps}.",
-            'model': "{model_type} regression was performed with the following parameters: {params}.",
-            'validation': "Model performance was evaluated using {strategy}.",
+            "dataset": "A dataset of {n_samples} samples with {n_features} spectral features was used.",
+            "preprocessing": "Preprocessing steps included: {steps}.",
+            "model": "{model_type} regression was performed with the following parameters: {params}.",
+            "validation": "Model performance was evaluated using {strategy}.",
         }
 
     def generate(
@@ -183,29 +185,35 @@ class MethodsSectionGenerator:
         sections = []
 
         # Dataset
-        sections.append(self.templates['dataset'].format(
-            n_samples=dataset_info.get('n_samples', 'N'),
-            n_features=dataset_info.get('n_features', 'M'),
-        ))
+        sections.append(
+            self.templates["dataset"].format(
+                n_samples=dataset_info.get("n_samples", "N"),
+                n_features=dataset_info.get("n_features", "M"),
+            )
+        )
 
         # Preprocessing
         if preprocessing:
-            steps_str = ', '.join(preprocessing)
-            sections.append(self.templates['preprocessing'].format(steps=steps_str))
+            steps_str = ", ".join(preprocessing)
+            sections.append(self.templates["preprocessing"].format(steps=steps_str))
 
         # Model
-        params_str = ', '.join([f"{k}={v}" for k, v in model_params.items()])
-        sections.append(self.templates['model'].format(
-            model_type=model_type,
-            params=params_str,
-        ))
+        params_str = ", ".join([f"{k}={v}" for k, v in model_params.items()])
+        sections.append(
+            self.templates["model"].format(
+                model_type=model_type,
+                params=params_str,
+            )
+        )
 
         # Validation
-        sections.append(self.templates['validation'].format(
-            strategy=validation_strategy,
-        ))
+        sections.append(
+            self.templates["validation"].format(
+                strategy=validation_strategy,
+            )
+        )
 
-        return ' '.join(sections)
+        return " ".join(sections)
 
 
 class ResearchOutputGenerator:
@@ -259,14 +267,14 @@ class ResearchOutputGenerator:
 
         return DatasetCard(
             name=name,
-            version='1.0',
+            version="1.0",
             description=description,
             n_samples=n_samples,
             n_features=n_features,
-            feature_type=kwargs.get('feature_type', 'spectra'),
-            target_type=kwargs.get('target_type', 'regression'),
+            feature_type=kwargs.get("feature_type", "spectra"),
+            target_type=kwargs.get("target_type", "regression"),
             missing_data_fraction=float(np.isnan(X).sum() / X.size),
-            **{k: v for k, v in kwargs.items() if k not in ['feature_type', 'target_type']},
+            **{k: v for k, v in kwargs.items() if k not in ["feature_type", "target_type"]},
         )
 
     def generate_methods(
@@ -276,11 +284,11 @@ class ResearchOutputGenerator:
         validation_results: Dict,
     ) -> str:
         """Generate methods section from pipeline and model."""
-        dataset_info = validation_results.get('dataset_info', {})
-        preprocessing = [step[0] for step in getattr(preprocessing_pipeline, 'steps', [])]
+        dataset_info = validation_results.get("dataset_info", {})
+        preprocessing = [step[0] for step in getattr(preprocessing_pipeline, "steps", [])]
         model_type = model.__class__.__name__
         model_params = model.get_params()
-        validation_strategy = validation_results.get('cv_strategy', 'cross-validation')
+        validation_strategy = validation_results.get("cv_strategy", "cross-validation")
 
         return self.methods_generator.generate(
             dataset_info=dataset_info,
@@ -309,8 +317,8 @@ class ResearchOutputGenerator:
             dataset_cards=dataset_cards,
             methods_section=methods_section,
             computational_environment={
-                'python_version': sys.version,
-                'platform': platform.platform(),
+                "python_version": sys.version,
+                "platform": platform.platform(),
             },
             **kwargs,
         )

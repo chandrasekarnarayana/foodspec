@@ -8,6 +8,7 @@ This is the minimal orchestrator that guarantees:
 
 Entry point: run_workflow(cfg: WorkflowConfig)
 """
+
 from __future__ import annotations
 
 import json
@@ -143,6 +144,7 @@ def _load_and_validate_protocol(
     try:
         # Use ProtocolConfig directly instead of load_protocol which searches in examples/protocols
         from foodspec.protocol.config import ProtocolConfig
+
         protocol_cfg = ProtocolConfig.from_file(protocol_path)
         logger.info(f"Protocol loaded: version={getattr(protocol_cfg, 'version', 'unknown')}")
         return protocol_cfg, {"status": "valid"}
@@ -176,10 +178,7 @@ def _read_and_validate_data(
     try:
         # Phase 1: use first input
         df = pd.read_csv(input_paths[0])
-        logger.info(
-            f"Loaded CSV: {input_paths[0].name} "
-            f"({len(df)} rows, {len(df.columns)} cols)"
-        )
+        logger.info(f"Loaded CSV: {input_paths[0].name} ({len(df)} rows, {len(df.columns)} cols)")
 
         # Compute fingerprint
         fp = compute_dataset_fingerprint(input_paths[0])
@@ -518,9 +517,7 @@ def run_workflow(cfg: WorkflowConfig) -> int:
                 else:
                     dropped = [c for c in X.columns if c not in numeric_cols]
                     if dropped:
-                        logger_ref.warning(
-                            f"Dropping non-numeric feature columns before modeling: {dropped}"
-                        )
+                        logger_ref.warning(f"Dropping non-numeric feature columns before modeling: {dropped}")
                     X = X[numeric_cols]
                     modeling_result = _run_modeling(
                         X,

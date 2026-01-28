@@ -55,10 +55,7 @@ def _validate_wavenumbers(wavenumbers: np.ndarray) -> int:
     return len(wavenumbers)
 
 
-def _validate_spectral_stages(
-    stages_data: Dict[str, np.ndarray],
-    expected_length: int
-) -> int:
+def _validate_spectral_stages(stages_data: Dict[str, np.ndarray], expected_length: int) -> int:
     """
     Validate spectral data for all stages.
 
@@ -90,23 +87,15 @@ def _validate_spectral_stages(
             spectrum = np.asarray(spectrum)
 
         if spectrum.ndim != 1:
-            raise ValueError(
-                f"Stage '{stage_name}' spectrum must be 1D, got shape {spectrum.shape}"
-            )
+            raise ValueError(f"Stage '{stage_name}' spectrum must be 1D, got shape {spectrum.shape}")
 
         if len(spectrum) != expected_length:
-            raise ValueError(
-                f"Stage '{stage_name}' has length {len(spectrum)}, "
-                f"expected {expected_length}"
-            )
+            raise ValueError(f"Stage '{stage_name}' has length {len(spectrum)}, expected {expected_length}")
 
     return len(stages_data)
 
 
-def _get_stage_colors(
-    n_stages: int,
-    colormap: str = "viridis"
-) -> List:
+def _get_stage_colors(n_stages: int, colormap: str = "viridis") -> List:
     """
     Generate colors for different stages.
 
@@ -131,8 +120,7 @@ def _get_stage_colors(
 
 
 def _extract_zoom_regions(
-    wavenumbers: np.ndarray,
-    zoom_regions: Optional[List[Tuple[float, float]]]
+    wavenumbers: np.ndarray, zoom_regions: Optional[List[Tuple[float, float]]]
 ) -> List[Tuple[int, int]]:
     """
     Convert wavenumber ranges to array indices.
@@ -189,7 +177,7 @@ def plot_processing_stages(
     title: Optional[str] = None,
     figure_size: Tuple[float, float] = (16, 10),
     save_path: Optional[Path] = None,
-    dpi: int = 300
+    dpi: int = 300,
 ) -> Figure:
     """
     Visualize multi-stage spectral preprocessing with optional zoom windows.
@@ -275,19 +263,13 @@ def plot_processing_stages(
     if stage_names is None:
         stage_names = list(stages_data.keys())
     elif len(stage_names) != n_stages:
-        raise ValueError(
-            f"stage_names length {len(stage_names)} doesn't match "
-            f"stages_data length {n_stages}"
-        )
+        raise ValueError(f"stage_names length {len(stage_names)} doesn't match stages_data length {n_stages}")
 
     # Get colors
     if stage_colors is None:
         stage_colors = _get_stage_colors(n_stages, colormap)
     elif len(stage_colors) != n_stages:
-        raise ValueError(
-            f"stage_colors length {len(stage_colors)} doesn't match "
-            f"n_stages {n_stages}"
-        )
+        raise ValueError(f"stage_colors length {len(stage_colors)} doesn't match n_stages {n_stages}")
 
     # Extract zoom regions
     zoom_indices = _extract_zoom_regions(wavenumbers, zoom_regions)
@@ -317,17 +299,8 @@ def plot_processing_stages(
         axes_inset = []
 
     # Plot main spectral stages
-    for (stage_key, spectrum), stage_name, color in zip(
-        stages_data.items(), stage_names, stage_colors
-    ):
-        ax_main.plot(
-            wavenumbers,
-            spectrum,
-            label=stage_name,
-            color=color,
-            alpha=alpha,
-            linewidth=linewidth
-        )
+    for (stage_key, spectrum), stage_name, color in zip(stages_data.items(), stage_names, stage_colors):
+        ax_main.plot(wavenumbers, spectrum, label=stage_name, color=color, alpha=alpha, linewidth=linewidth)
 
     # Formatting main plot
     ax_main.set_xlabel("Wavenumber (cm⁻¹)", fontsize=12, fontweight="bold")
@@ -356,33 +329,20 @@ def plot_processing_stages(
                 edgecolor="red",
                 facecolor="none",
                 linestyle="--",
-                alpha=0.6
+                alpha=0.6,
             )
             ax_main.add_patch(rect)
 
             # Plot zoom window
-            for (stage_key, spectrum), stage_name, color in zip(
-                stages_data.items(), stage_names, stage_colors
-            ):
-                zoom_spectrum = spectrum[start_idx:end_idx+1]
-                zoom_wv = wavenumbers[start_idx:end_idx+1]
-                ax_inset.plot(
-                    zoom_wv,
-                    zoom_spectrum,
-                    label=stage_name,
-                    color=color,
-                    alpha=alpha,
-                    linewidth=linewidth
-                )
+            for (stage_key, spectrum), stage_name, color in zip(stages_data.items(), stage_names, stage_colors):
+                zoom_spectrum = spectrum[start_idx : end_idx + 1]
+                zoom_wv = wavenumbers[start_idx : end_idx + 1]
+                ax_inset.plot(zoom_wv, zoom_spectrum, label=stage_name, color=color, alpha=alpha, linewidth=linewidth)
 
             # Format zoom window
             ax_inset.set_xlabel("Wavenumber (cm⁻¹)", fontsize=10)
             ax_inset.set_ylabel("Intensity", fontsize=10)
-            ax_inset.set_title(
-                f"Zoom: {wv_min:.0f}-{wv_max:.0f} cm⁻¹",
-                fontsize=11,
-                fontweight="bold"
-            )
+            ax_inset.set_title(f"Zoom: {wv_min:.0f}-{wv_max:.0f} cm⁻¹", fontsize=11, fontweight="bold")
 
             if show_grid:
                 ax_inset.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
@@ -412,7 +372,7 @@ def plot_preprocessing_comparison(
     title: Optional[str] = None,
     figure_size: Tuple[float, float] = (14, 8),
     save_path: Optional[Path] = None,
-    dpi: int = 300
+    dpi: int = 300,
 ) -> Figure:
     """
     Compare before and after a single preprocessing step.
@@ -478,22 +438,8 @@ def plot_preprocessing_comparison(
 
     # Main comparison plot
     ax = axes[0]
-    ax.plot(
-        wavenumbers,
-        before_spectrum,
-        label="Before",
-        color=color_before,
-        alpha=alpha,
-        linewidth=linewidth
-    )
-    ax.plot(
-        wavenumbers,
-        after_spectrum,
-        label="After",
-        color=color_after,
-        alpha=alpha,
-        linewidth=linewidth
-    )
+    ax.plot(wavenumbers, before_spectrum, label="Before", color=color_before, alpha=alpha, linewidth=linewidth)
+    ax.plot(wavenumbers, after_spectrum, label="After", color=color_after, alpha=alpha, linewidth=linewidth)
     ax.set_xlabel("Wavenumber (cm⁻¹)", fontsize=11, fontweight="bold")
     ax.set_ylabel("Intensity", fontsize=11, fontweight="bold")
     ax.set_title(title, fontsize=12, fontweight="bold")
@@ -524,10 +470,7 @@ def plot_preprocessing_comparison(
     return fig
 
 
-def get_processing_statistics(
-    stages_data: Dict[str, np.ndarray],
-    wavenumbers: Optional[np.ndarray] = None
-) -> Dict:
+def get_processing_statistics(stages_data: Dict[str, np.ndarray], wavenumbers: Optional[np.ndarray] = None) -> Dict:
     """
     Extract statistics for each preprocessing stage.
 

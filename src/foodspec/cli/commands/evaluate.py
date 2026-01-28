@@ -1,4 +1,5 @@
 """Evaluation CLI command for run directories."""
+
 from __future__ import annotations
 
 from pathlib import Path

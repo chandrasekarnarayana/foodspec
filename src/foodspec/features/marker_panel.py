@@ -1,4 +1,5 @@
 """Minimal marker panel selection and export helpers."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -64,7 +65,11 @@ def build_marker_panel(
         descriptions.append(desc)
 
     w_stab, w_perf, w_interp = weights
-    score = w_stab * stability_series + w_perf * perf_norm + w_interp * pd.Series(interp_scores, index=stability_series.index)
+    score = (
+        w_stab * stability_series
+        + w_perf * perf_norm
+        + w_interp * pd.Series(interp_scores, index=stability_series.index)
+    )
 
     panel = pd.DataFrame(
         {

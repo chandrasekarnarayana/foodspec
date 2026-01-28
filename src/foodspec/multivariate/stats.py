@@ -1,4 +1,5 @@
 """Statistical multivariate tests: Hotelling's T-squared and MANOVA."""
+
 from __future__ import annotations
 
 from typing import Any, Optional

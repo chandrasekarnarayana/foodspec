@@ -1,4 +1,5 @@
 """Hybrid feature construction utilities."""
+
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -172,7 +173,9 @@ def extract_features(
 
     assignments = {entry.name: normalize_assignment(entry.assignment) for entry in info}
     if config.ratios:
-        available = [ratio for ratio in config.ratios if ratio.numerator in df.columns and ratio.denominator in df.columns]
+        available = [
+            ratio for ratio in config.ratios if ratio.numerator in df.columns and ratio.denominator in df.columns
+        ]
         if available:
             ratio_map = {ratio.name: (ratio.numerator, ratio.denominator) for ratio in available}
             df = compute_ratios(df, ratio_map)

@@ -1,4 +1,5 @@
 """Gage R&R (Repeatability & Reproducibility) Analysis."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -120,7 +121,9 @@ class GageRR:
         operator_ss = n_parts * n_replicates * np.sum((operator_means - grand_mean) ** 2)
         df_operator = n_operators - 1
         ms_operator = operator_ss / df_operator if df_operator > 0 else 0
-        var_operator = (ms_operator - ms_repeatability) / (n_parts * n_replicates) if ms_operator > ms_repeatability else 0
+        var_operator = (
+            (ms_operator - ms_repeatability) / (n_parts * n_replicates) if ms_operator > ms_repeatability else 0
+        )
 
         # Part-operator interaction
         interaction_ss = 0
@@ -131,7 +134,7 @@ class GageRR:
                 part_mean_p = np.mean(measurements[parts == p])
                 operator_mean_o = np.mean(measurements[operators == o])
                 effect = group_mean - part_mean_p - operator_mean_o + grand_mean
-                interaction_ss += n_replicates * (effect ** 2)
+                interaction_ss += n_replicates * (effect**2)
 
         df_interaction = (n_parts - 1) * (n_operators - 1)
         ms_interaction = interaction_ss / df_interaction if df_interaction > 0 else 0
@@ -264,50 +267,50 @@ class GageRR:
 Gage R&R Analysis Report
 ========================
 Design:                     Crossed
-Parts:                      {r['n_parts']}
-Operators:                  {r['n_operators']}
-Replicates:                 {r['n_replicates']}
-Total Measurements:         {r['n_measurements']}
-Grand Mean:                 {r['grand_mean']:.6f}
-Tolerance:                  {r['tolerance']:.6f}
+Parts:                      {r["n_parts"]}
+Operators:                  {r["n_operators"]}
+Replicates:                 {r["n_replicates"]}
+Total Measurements:         {r["n_measurements"]}
+Grand Mean:                 {r["grand_mean"]:.6f}
+Tolerance:                  {r["tolerance"]:.6f}
 
 Variance Components:
-  Part-to-Part:             {v['part_to_part']:.6e}
-  Repeatability (Equip):    {v['repeatability']:.6e}
-  Operator (Appraisers):    {v['operator']:.6e}
-  Part×Operator Inter:      {v['part_operator_interaction']:.6e}
-  Reproducibility:          {v['reproducibility']:.6e}
-  Gage R&R:                 {v['gage_rr']:.6e}
-  Total:                    {v['total']:.6e}
+  Part-to-Part:             {v["part_to_part"]:.6e}
+  Repeatability (Equip):    {v["repeatability"]:.6e}
+  Operator (Appraisers):    {v["operator"]:.6e}
+  Part×Operator Inter:      {v["part_operator_interaction"]:.6e}
+  Reproducibility:          {v["reproducibility"]:.6e}
+  Gage R&R:                 {v["gage_rr"]:.6e}
+  Total:                    {v["total"]:.6e}
 
 Standard Deviations:
-  Part-to-Part:             {s['part_to_part']:.6f}
-  Repeatability:            {s['repeatability']:.6f}
-  Reproducibility:          {s['reproducibility']:.6f}
-  Gage R&R:                 {s['gage_rr']:.6f}
-  Total:                    {s['total']:.6f}
+  Part-to-Part:             {s["part_to_part"]:.6f}
+  Repeatability:            {s["repeatability"]:.6f}
+  Reproducibility:          {s["reproducibility"]:.6f}
+  Gage R&R:                 {s["gage_rr"]:.6f}
+  Total:                    {s["total"]:.6f}
 
 %Tolerance Analysis:
-  Repeatability:            {p['repeatability']:.2f}%
-  Reproducibility:          {p['reproducibility']:.2f}%
-  Gage R&R:                 {p['gage_rr']:.2f}%
-  Part-to-Part:             {p['part_to_part']:.2f}%
+  Repeatability:            {p["repeatability"]:.2f}%
+  Reproducibility:          {p["reproducibility"]:.2f}%
+  Gage R&R:                 {p["gage_rr"]:.2f}%
+  Part-to-Part:             {p["part_to_part"]:.2f}%
 
-Number of Distinct Categories (NDC): {r['ndc']:.1f}
+Number of Distinct Categories (NDC): {r["ndc"]:.1f}
 
 Acceptability:
-  Gage R&R:                 {r['acceptability']['gage_rr']}
-  NDC:                      {r['acceptability']['ndc']}
+  Gage R&R:                 {r["acceptability"]["gage_rr"]}
+  NDC:                      {r["acceptability"]["ndc"]}
 
 Recommendations:
 """
-        if r['acceptability']['gage_rr'] == "Unacceptable":
+        if r["acceptability"]["gage_rr"] == "Unacceptable":
             report += "  - Measurement system needs improvement\n"
             report += "  - Investigate major sources of variation\n"
-        elif r['acceptability']['gage_rr'] == "Marginal":
+        elif r["acceptability"]["gage_rr"] == "Marginal":
             report += "  - Consider measurement system improvements\n"
 
-        if r['acceptability']['ndc'] != "Acceptable":
+        if r["acceptability"]["ndc"] != "Acceptable":
             report += "  - System cannot distinguish enough part categories\n"
 
         return report
@@ -354,9 +357,7 @@ class MeasurementSystemAnalysis:
         results : dict
             Complete analysis results.
         """
-        return self.gage_rr.analyze_crossed(
-            measurements, parts, operators, tolerance=self.tolerance
-        )
+        return self.gage_rr.analyze_crossed(measurements, parts, operators, tolerance=self.tolerance)
 
     def report(self) -> str:
         """Get formatted analysis report."""

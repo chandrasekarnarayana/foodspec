@@ -35,6 +35,7 @@ RESET = "\033[0m"
 @dataclass
 class Operation:
     """Represents a single refactoring operation."""
+
     op_type: str  # 'move', 'delete', 'update', 'create'
     src: Optional[str] = None
     dst: Optional[str] = None
@@ -292,9 +293,7 @@ class RefactorExecutor:
         if shadow_pyproject.exists():
             self.log("info", "Removing shadow pyproject.toml...")
             if not self.dry_run:
-                self.run_command(
-                    ["git", "rm", str(shadow_pyproject.relative_to(self.repo_root))]
-                )
+                self.run_command(["git", "rm", str(shadow_pyproject.relative_to(self.repo_root))])
             op = Operation(
                 op_type="delete",
                 src=str(shadow_pyproject.relative_to(self.repo_root)),
@@ -374,9 +373,7 @@ class RefactorExecutor:
             if path.exists():
                 self.log("info", f"Removing tracked artifact: {artifact}")
                 if not self.dry_run:
-                    self.run_command(
-                        ["git", "rm", "-r", "--cached", artifact]
-                    )
+                    self.run_command(["git", "rm", "-r", "--cached", artifact])
 
         # Update .gitignore
         gitignore = self.repo_root / ".gitignore"
@@ -483,9 +480,7 @@ class RefactorExecutor:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="FoodSpec Architecture Refactor Executor"
-    )
+    parser = argparse.ArgumentParser(description="FoodSpec Architecture Refactor Executor")
     parser.add_argument(
         "--phase",
         type=int,

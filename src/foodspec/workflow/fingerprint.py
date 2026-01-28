@@ -3,6 +3,7 @@
 Computes SHA256 hashes of input files and protocol, captures environment
 metadata, and generates manifest.json for artifact tracking.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -91,10 +92,7 @@ def compute_dataset_fingerprint(csv_path: Path) -> Dict[str, Any]:
         df = pd.read_csv(csv_path)
         fingerprint["rows"] = len(df)
         fingerprint["columns"] = list(df.columns)
-        fingerprint["missing_per_column"] = {
-            col: round(df[col].isna().sum() / len(df) * 100, 2)
-            for col in df.columns
-        }
+        fingerprint["missing_per_column"] = {col: round(df[col].isna().sum() / len(df) * 100, 2) for col in df.columns}
     except Exception as e:
         fingerprint["read_error"] = str(e)
 
@@ -207,6 +205,7 @@ class Manifest:
         """
         try:
             from foodspec import __version__
+
             version = __version__
         except Exception:
             version = "unknown"

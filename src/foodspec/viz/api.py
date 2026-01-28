@@ -541,7 +541,7 @@ def plot_batch_drift(
 ) -> plt.Figure:
     bundle = data_bundle if isinstance(data_bundle, RunBundle) else None
     payload = data_bundle if isinstance(data_bundle, Mapping) else {}
-    names = payload.get("batch_names") or [f"b{i+1}" for i in range(5)]
+    names = payload.get("batch_names") or [f"b{i + 1}" for i in range(5)]
     scores = payload.get("drift_scores") or _rng(seed).random(len(names))
     fig = drift_viz.plot_batch_drift(names, scores, seed=seed)
     base = _figure_base(outdir, name or "batch_drift")
@@ -742,7 +742,7 @@ def plot_coefficient_heatmap(
     bundle = data_bundle if isinstance(data_bundle, RunBundle) else None
     payload = data_bundle if isinstance(data_bundle, Mapping) else {}
     coef = np.asarray(payload.get("coefficients", _rng(seed).normal(size=(3, 6))), dtype=float)
-    names = payload.get("feature_names") or [f"f{i+1}" for i in range(coef.shape[1])]
+    names = payload.get("feature_names") or [f"f{i + 1}" for i in range(coef.shape[1])]
     fig = interp_viz.plot_coefficient_heatmap(coef, names, seed=seed)
     base = _figure_base(outdir, name or "coefficient_heatmap")
     if base is not None:
@@ -774,7 +774,7 @@ def plot_feature_stability(
     bundle = data_bundle if isinstance(data_bundle, RunBundle) else None
     payload = data_bundle if isinstance(data_bundle, Mapping) else {}
     matrix = np.asarray(payload.get("stability_matrix", _rng(seed).random((5, 6))), dtype=float)
-    names = payload.get("feature_names") or [f"f{i+1}" for i in range(matrix.shape[1])]
+    names = payload.get("feature_names") or [f"f{i + 1}" for i in range(matrix.shape[1])]
     fig = interp_viz.plot_feature_stability(matrix, names, seed=seed)
     base = _figure_base(outdir, name or "feature_stability")
     if base is not None:
@@ -1254,7 +1254,7 @@ def plot_pareto_chart(
         payload.update(data_bundle)
     categories = payload.get("categories")
     if categories is None:
-        categories = [f"type_{i%3}" for i in range(30)]
+        categories = [f"type_{i % 3}" for i in range(30)]
     counts = qc_stats.pareto_counts(list(categories))
     fig = qc_viz.plot_pareto(counts, title="Pareto Chart")
     base = _figure_base(outdir, name or "pareto_chart")

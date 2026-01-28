@@ -1,4 +1,5 @@
 """ROC/AUC artifact saving and management utilities."""
+
 from __future__ import annotations
 
 import json
@@ -72,9 +73,7 @@ def save_roc_artifacts(
     # 4. Plot ROC curves if matplotlib available
     if plt is not None:
         try:
-            fig_paths = _plot_roc_curves(
-                output_dir / "figures", roc_result, y_true, y_proba, classes
-            )
+            fig_paths = _plot_roc_curves(output_dir / "figures", roc_result, y_true, y_proba, classes)
             artifacts.update(fig_paths)
         except Exception as e:
             warnings.warn(f"Failed to create ROC plots: {e}", stacklevel=2)
@@ -90,39 +89,45 @@ def _build_roc_summary_df(roc_result: Any, classes: list) -> Any:
 
     # Per-class metrics
     for class_label, metrics in roc_result.per_class.items():
-        rows.append({
-            "class": str(class_label),
-            "type": "per_class",
-            "auc": metrics.auc,
-            "ci_lower": metrics.ci_lower or np.nan,
-            "ci_upper": metrics.ci_upper or np.nan,
-            "n_positives": metrics.n_positives or np.nan,
-            "n_negatives": metrics.n_negatives or np.nan,
-        })
+        rows.append(
+            {
+                "class": str(class_label),
+                "type": "per_class",
+                "auc": metrics.auc,
+                "ci_lower": metrics.ci_lower or np.nan,
+                "ci_upper": metrics.ci_upper or np.nan,
+                "n_positives": metrics.n_positives or np.nan,
+                "n_negatives": metrics.n_negatives or np.nan,
+            }
+        )
 
     # Micro-average (multiclass only)
     if roc_result.micro is not None:
-        rows.append({
-            "class": "micro",
-            "type": "aggregate",
-            "auc": roc_result.micro.auc,
-            "ci_lower": np.nan,
-            "ci_upper": np.nan,
-            "n_positives": np.nan,
-            "n_negatives": np.nan,
-        })
+        rows.append(
+            {
+                "class": "micro",
+                "type": "aggregate",
+                "auc": roc_result.micro.auc,
+                "ci_lower": np.nan,
+                "ci_upper": np.nan,
+                "n_positives": np.nan,
+                "n_negatives": np.nan,
+            }
+        )
 
     # Macro-average (multiclass only)
     if roc_result.macro_auc is not None:
-        rows.append({
-            "class": "macro",
-            "type": "aggregate",
-            "auc": roc_result.macro_auc,
-            "ci_lower": np.nan,
-            "ci_upper": np.nan,
-            "n_positives": np.nan,
-            "n_negatives": np.nan,
-        })
+        rows.append(
+            {
+                "class": "macro",
+                "type": "aggregate",
+                "auc": roc_result.macro_auc,
+                "ci_lower": np.nan,
+                "ci_upper": np.nan,
+                "n_positives": np.nan,
+                "n_negatives": np.nan,
+            }
+        )
 
     return pd.DataFrame(rows)
 
@@ -136,15 +141,17 @@ def _build_thresholds_df(roc_result: Any, classes: list) -> Any:
 
     rows = []
     for policy_name, threshold_result in roc_result.optimal_thresholds.items():
-        rows.append({
-            "policy": policy_name,
-            "threshold": threshold_result.threshold,
-            "sensitivity": threshold_result.sensitivity,
-            "specificity": threshold_result.specificity,
-            "ppv": threshold_result.ppv or np.nan,
-            "npv": threshold_result.npv or np.nan,
-            "j_statistic": threshold_result.j_statistic or np.nan,
-        })
+        rows.append(
+            {
+                "policy": policy_name,
+                "threshold": threshold_result.threshold,
+                "sensitivity": threshold_result.sensitivity,
+                "specificity": threshold_result.specificity,
+                "ppv": threshold_result.ppv or np.nan,
+                "npv": threshold_result.npv or np.nan,
+                "j_statistic": threshold_result.j_statistic or np.nan,
+            }
+        )
 
     return pd.DataFrame(rows) if rows else None
 

@@ -1,4 +1,5 @@
 """Outcome type definitions for modeling flows."""
+
 from __future__ import annotations
 
 from enum import Enum

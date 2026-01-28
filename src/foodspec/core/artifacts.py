@@ -312,7 +312,7 @@ class ArtifactRegistry:
         coverage_df : pd.DataFrame
             Coverage table from coverage_by_group() or aggregated coverage
         """
-        self.write_csv(self.conformal_coverage_path, coverage_df.to_dict(orient='records'))
+        self.write_csv(self.conformal_coverage_path, coverage_df.to_dict(orient="records"))
 
     def write_trust_conformal_sets(self, conformal_df: Any) -> None:
         """Write conformal prediction sets.
@@ -322,7 +322,7 @@ class ArtifactRegistry:
         conformal_df : pd.DataFrame
             Conformal sets output from ConformalPredictionResult.to_dataframe()
         """
-        self.write_csv(self.conformal_sets_path, conformal_df.to_dict(orient='records'))
+        self.write_csv(self.conformal_sets_path, conformal_df.to_dict(orient="records"))
 
     def write_trust_abstention_summary(self, abstention_summary: Mapping[str, Any]) -> None:
         """Write abstention rule summary.
@@ -343,7 +343,7 @@ class ArtifactRegistry:
         coef_df : pd.DataFrame
             Output from extract_linear_coefficients()
         """
-        self.write_csv(self.coefficients_path, coef_df.to_dict(orient='records'))
+        self.write_csv(self.coefficients_path, coef_df.to_dict(orient="records"))
 
     def write_trust_permutation_importance(self, importance_df: Any) -> None:
         """Write permutation importance analysis.
@@ -353,7 +353,7 @@ class ArtifactRegistry:
         importance_df : pd.DataFrame
             Output from permutation_importance_with_names()
         """
-        self.write_csv(self.permutation_importance_path, importance_df.to_dict(orient='records'))
+        self.write_csv(self.permutation_importance_path, importance_df.to_dict(orient="records"))
 
     def write_trust_marker_panel_explanations(self, explanations_df: Any) -> None:
         """Write marker panel explanations aligned with interpretability.
@@ -363,7 +363,7 @@ class ArtifactRegistry:
         explanations_df : pd.DataFrame
             Output from link_marker_panel_explanations()
         """
-        self.write_csv(self.marker_panel_explanations_path, explanations_df.to_dict(orient='records'))
+        self.write_csv(self.marker_panel_explanations_path, explanations_df.to_dict(orient="records"))
 
 
 __all__ = ["ArtifactRegistry"]

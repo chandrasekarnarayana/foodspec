@@ -1,4 +1,5 @@
 """Smoothing helpers (engine namespace)."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -22,4 +23,3 @@ def smooth_savgol(X: np.ndarray, window_length: int = 7, polyorder: int = 3) -> 
 
 
 __all__ = ["smooth_savgol"]
-

@@ -1,4 +1,5 @@
 """Partial Least Squares Regression (PLSR) with VIP scores."""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -125,9 +126,9 @@ class PLSRegression(BaseEstimator, RegressorMixin):
             y_fit = y_fit - np.outer(t, c)
 
         # Regression coefficients
-        self.coef_ = self.weights_ @ np.linalg.lstsq(
-            self.weights_.T @ self.x_loadings_, self.y_loadings_.T, rcond=None
-        )[0]
+        self.coef_ = (
+            self.weights_ @ np.linalg.lstsq(self.weights_.T @ self.x_loadings_, self.y_loadings_.T, rcond=None)[0]
+        )
 
         return self
 
@@ -223,9 +224,7 @@ class VIPCalculator:
 
         vip = np.zeros(n_features)
         for i in range(n_features):
-            weight_contrib = np.sum(
-                ((pls.weights_[i, :] ** 2) * ss_y) / (ss_y_total + 1e-8)
-            )
+            weight_contrib = np.sum(((pls.weights_[i, :] ** 2) * ss_y) / (ss_y_total + 1e-8))
             vip[i] = np.sqrt(n_features * weight_contrib)
 
         return vip

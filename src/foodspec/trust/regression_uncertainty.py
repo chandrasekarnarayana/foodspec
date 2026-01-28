@@ -1,4 +1,5 @@
 """Regression Uncertainty Quantification: Bootstrap Intervals, Quantile Regression, Conformal Methods."""
+
 from __future__ import annotations
 
 from typing import Dict, Optional
@@ -144,7 +145,7 @@ class BootstrapPredictionIntervals:
 
                 jack_mean = np.mean(jack_pred)
                 num = np.sum((jack_mean - np.array(jack_pred)) ** 3)
-                den = (6 * np.sum((jack_mean - np.array(jack_pred)) ** 2) ** 1.5)
+                den = 6 * np.sum((jack_mean - np.array(jack_pred)) ** 2) ** 1.5
                 accel = num / den if den > 1e-10 else 0
 
                 # Adjusted percentiles
@@ -247,13 +248,13 @@ class QuantileRegression:
                 weights = np.where(
                     residuals >= 0,
                     q / np.maximum(np.abs(residuals), 1e-6),
-                    (1 - q) / np.maximum(np.abs(residuals), 1e-6)
+                    (1 - q) / np.maximum(np.abs(residuals), 1e-6),
                 )
                 weights = np.minimum(weights, 1e6)  # Cap extreme weights
 
                 # Weighted fit
                 model = model_class(**model_kwargs)
-                if hasattr(model, 'fit'):
+                if hasattr(model, "fit"):
                     # Try sample weights if supported
                     try:
                         model.fit(X_train, y_train, sample_weight=weights)
@@ -294,8 +295,8 @@ class QuantileRegression:
 
         # Extract standard quantiles
         median_key = min(self.models_.keys(), key=lambda x: abs(x - 0.5))
-        lower_key = min(self.models_.keys(), key=lambda x: abs(x - self.alpha/2))
-        upper_key = min(self.models_.keys(), key=lambda x: abs(x - (1 - self.alpha/2)))
+        lower_key = min(self.models_.keys(), key=lambda x: abs(x - self.alpha / 2))
+        upper_key = min(self.models_.keys(), key=lambda x: abs(x - (1 - self.alpha / 2)))
 
         return {
             "median": self.models_[median_key].predict(X_test),
@@ -363,7 +364,7 @@ class ConformalRegression:
         self.model_ = model
 
         # If model not yet fitted, fit it
-        if not hasattr(self.model_, 'predict'):
+        if not hasattr(self.model_, "predict"):
             self.model_.fit(X_train, y_train)
 
         # Calculate conformity scores (nonconformity measures)

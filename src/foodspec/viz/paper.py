@@ -196,9 +196,7 @@ def apply_figure_preset(preset: FigurePreset | str) -> None:
             preset = FigurePreset(preset_str)
         except ValueError:
             valid = ", ".join(p.value for p in FigurePreset)
-            raise ValueError(
-                f"Invalid preset '{preset}'. Choose: {valid}"
-            ) from None
+            raise ValueError(f"Invalid preset '{preset}'. Choose: {valid}") from None
 
     config = _PRESET_CONFIGS[preset]
     plt.rcParams.update(config)
@@ -223,9 +221,7 @@ def get_figure_preset_config(preset: FigurePreset | str) -> Dict[str, Any]:
             preset = FigurePreset(preset_str)
         except ValueError:
             valid = ", ".join(p.value for p in FigurePreset)
-            raise ValueError(
-                f"Invalid preset '{preset}'. Choose: {valid}"
-            ) from None
+            raise ValueError(f"Invalid preset '{preset}'. Choose: {valid}") from None
 
     return copy.deepcopy(_PRESET_CONFIGS[preset])
 

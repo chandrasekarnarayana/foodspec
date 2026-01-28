@@ -1,4 +1,5 @@
 """Preprocessing command: load, preprocess, save to HDF5."""
+
 from __future__ import annotations
 
 from typing import Optional

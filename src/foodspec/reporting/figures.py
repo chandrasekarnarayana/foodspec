@@ -1,4 +1,5 @@
 """Paper-ready figure exporters and style presets."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -96,7 +97,7 @@ def radar_plot(
         vals = np.nan_to_num(vals, nan=0.0)
     if vals.size == 0:
         vals = rng.random(5)
-    labels_list = list(labels) or [f"m{i+1}" for i in range(len(vals))]
+    labels_list = list(labels) or [f"m{i + 1}" for i in range(len(vals))]
     angles = np.linspace(0, 2 * np.pi, len(vals), endpoint=False)
     angles = np.concatenate([angles, angles[:1]])
     vals = np.concatenate([vals, vals[:1]])

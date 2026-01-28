@@ -301,7 +301,9 @@ def u_chart(counts: np.ndarray, sample_sizes: np.ndarray) -> ControlChartResult:
     )
 
 
-def levey_jennings(values: np.ndarray, *, mean: Optional[float] = None, sd: Optional[float] = None) -> ControlChartResult:
+def levey_jennings(
+    values: np.ndarray, *, mean: Optional[float] = None, sd: Optional[float] = None
+) -> ControlChartResult:
     """Levey-Jennings chart (mean +/- 3 SD)."""
     x = np.asarray(values, dtype=float)
     center = float(np.mean(x)) if mean is None else float(mean)

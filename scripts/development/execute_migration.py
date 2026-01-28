@@ -93,9 +93,7 @@ class MigrationExecutor:
             },
         }
 
-    def create_deprecation_template(
-        self, filename: str, replacement: str, new_location: str | None
-    ) -> str:
+    def create_deprecation_template(self, filename: str, replacement: str, new_location: str | None) -> str:
         """Create deprecation warning template for a file."""
         module_name = filename.replace(".py", "")
 
@@ -139,7 +137,7 @@ warnings.warn(
             return False
 
         # Read current content
-        with open(filepath, 'r') as f:
+        with open(filepath, "r") as f:
             content = f.read()
 
         # Skip if already has deprecation warning
@@ -148,9 +146,7 @@ warnings.warn(
             return True
 
         # Create deprecation header
-        deprecation_header = self.create_deprecation_template(
-            filepath.name, replacement, new_location
-        )
+        deprecation_header = self.create_deprecation_template(filepath.name, replacement, new_location)
 
         # Insert after module docstring if exists, otherwise at top
         if content.startswith('"""') or content.startswith("'''"):
@@ -158,16 +154,12 @@ warnings.warn(
             delimiter = '"""' if content.startswith('"""') else "'''"
             end_idx = content.find(delimiter, 3) + 3
 
-            new_content = (
-                content[:end_idx] + "\n\n" +
-                deprecation_header + "\n" +
-                content[end_idx:]
-            )
+            new_content = content[:end_idx] + "\n\n" + deprecation_header + "\n" + content[end_idx:]
         else:
             new_content = deprecation_header + "\n" + content
 
         # Write updated content
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             f.write(new_content)
 
         print(f"  ✅ Added deprecation: {filepath.name}")
@@ -175,29 +167,25 @@ warnings.warn(
 
     def deprecate_root_files(self):
         """Add deprecation warnings to root-level files."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("PHASE 1: Adding Deprecation Warnings")
-        print("="*60)
+        print("=" * 60)
 
         success_count = 0
         for filename, info in self.deprecated_files.items():
             filepath = self.src_dir / filename
             print(f"\n📄 Processing: {filename}")
 
-            if self.add_deprecation_to_file(
-                filepath,
-                info["replacement"],
-                info["new_location"]
-            ):
+            if self.add_deprecation_to_file(filepath, info["replacement"], info["new_location"]):
                 success_count += 1
 
         print(f"\n✅ Successfully processed {success_count}/{len(self.deprecated_files)} files")
 
     def create_deprecation_helper(self):
         """Create deprecation utility module."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("Creating Deprecation Helper Module")
-        print("="*60)
+        print("=" * 60)
 
         helper_path = self.src_dir / "utils" / "deprecation.py"
         helper_path.parent.mkdir(parents=True, exist_ok=True)
@@ -284,23 +272,23 @@ def warn_deprecated_import(
     )
 '''
 
-        with open(helper_path, 'w') as f:
+        with open(helper_path, "w") as f:
             f.write(helper_content)
 
         print(f"✅ Created: {helper_path}")
 
     def create_migration_guide(self):
         """Create migration guide documentation."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("Creating Migration Guide")
-        print("="*60)
+        print("=" * 60)
 
         docs_dir = self.repo_root / "docs" / "migration"
         docs_dir.mkdir(parents=True, exist_ok=True)
 
         guide_path = docs_dir / "v1-to-v2.md"
 
-        guide_content = '''# FoodSpec Migration Guide: v1.x → v2.0.0
+        guide_content = """# FoodSpec Migration Guide: v1.x → v2.0.0
 
 ## Overview
 
@@ -549,22 +537,22 @@ Better: Fix the deprecated usage.
 - 🚀 Performance improvements
 
 **Recommendation:** Start migrating now to avoid last-minute issues.
-'''
+"""
 
-        with open(guide_path, 'w') as f:
+        with open(guide_path, "w") as f:
             f.write(guide_content)
 
         print(f"✅ Created: {guide_path}")
 
     def update_changelog(self):
         """Update CHANGELOG with migration information."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("Updating CHANGELOG")
-        print("="*60)
+        print("=" * 60)
 
         changelog_path = self.repo_root / "CHANGELOG.md"
 
-        new_entry = '''
+        new_entry = """
 ## [1.1.0] - 2026-01-25
 
 ### Added
@@ -587,43 +575,40 @@ v1.1.0 → v1.2.0 → v1.3.0 → v1.4.0 → v2.0.0 (deprecated code removed)
 
 **Action Required:** Update your code to use new imports before v2.0.0 (planned: June 2026)
 
-'''
+"""
 
         if changelog_path.exists():
-            with open(changelog_path, 'r') as f:
+            with open(changelog_path, "r") as f:
                 content = f.read()
 
             # Insert after title
             if "# Changelog" in content or "# CHANGELOG" in content:
-                lines = content.split('\n')
+                lines = content.split("\n")
                 insert_idx = 2  # After title and blank line
                 lines.insert(insert_idx, new_entry)
 
-                with open(changelog_path, 'w') as f:
-                    f.write('\n'.join(lines))
+                with open(changelog_path, "w") as f:
+                    f.write("\n".join(lines))
 
                 print(f"✅ Updated: {changelog_path}")
             else:
                 print("  ⚠️  Could not find changelog header")
         else:
             # Create new changelog
-            with open(changelog_path, 'w') as f:
+            with open(changelog_path, "w") as f:
                 f.write("# Changelog\n\n" + new_entry)
 
             print(f"✅ Created: {changelog_path}")
 
     def run_tests(self):
         """Run test suite to verify deprecations don't break anything."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("Running Test Suite")
-        print("="*60)
+        print("=" * 60)
 
         try:
             result = subprocess.run(
-                ["pytest", "tests/", "-v", "--tb=short"],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True
+                ["pytest", "tests/", "-v", "--tb=short"], cwd=self.repo_root, capture_output=True, text=True
             )
 
             if result.returncode == 0:
@@ -636,9 +621,9 @@ v1.1.0 → v1.2.0 → v1.3.0 → v1.4.0 → v2.0.0 (deprecated code removed)
 
     def generate_summary(self):
         """Generate execution summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("EXECUTION SUMMARY")
-        print("="*60)
+        print("=" * 60)
 
         deprecated_count = len(self.deprecated_files)
 
@@ -686,10 +671,10 @@ def main():
     """Execute Phase 1 migration."""
     repo_root = Path("/home/cs/FoodSpec")
 
-    print("="*60)
+    print("=" * 60)
     print("FoodSpec Branch Migration Executor")
     print("Phase 1: Week 1-2 - Add Deprecation Warnings")
-    print("="*60)
+    print("=" * 60)
 
     executor = MigrationExecutor(repo_root)
 

@@ -1,4 +1,5 @@
 """Non-Negative Least Squares (NNLS) regression for constrained prediction."""
+
 from __future__ import annotations
 
 import numpy as np

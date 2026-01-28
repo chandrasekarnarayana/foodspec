@@ -1,4 +1,5 @@
 """Metadata validation helpers for FoodSpec datasets."""
+
 from __future__ import annotations
 
 from typing import Dict, List
@@ -43,4 +44,3 @@ def validate_metadata(metadata: pd.DataFrame, label_column: str | None = None) -
 
 
 __all__ = ["validate_metadata"]
-

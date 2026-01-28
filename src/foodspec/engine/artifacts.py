@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class ArtifactType(str, Enum):
     """Types of artifacts produced during run"""
+
     METRICS = "metrics"
     PREDICTIONS = "predictions"
     PLOTS = "plots"
@@ -37,13 +38,13 @@ class Artifact:
     Represents one output file/object.
     """
 
-    name: str                               # Unique name
-    artifact_type: ArtifactType             # Type
-    path: Path                              # File path
-    created_at: str = None                  # ISO timestamp
-    size_bytes: Optional[int] = None        # File size
-    description: str = ""                   # Human description
-    source_node: Optional[str] = None       # Which DAG node produced this
+    name: str  # Unique name
+    artifact_type: ArtifactType  # Type
+    path: Path  # File path
+    created_at: str = None  # ISO timestamp
+    size_bytes: Optional[int] = None  # File size
+    description: str = ""  # Human description
+    source_node: Optional[str] = None  # Which DAG node produced this
     metadata: Dict[str, Any] = field(default_factory=dict)  # Extra metadata
 
     def __post_init__(self):
@@ -146,11 +147,7 @@ class ArtifactRegistry:
 
     def list_by_type(self) -> Dict[str, List[str]]:
         """List artifact names grouped by type"""
-        return {
-            art_type.value: names
-            for art_type, names in self.types.items()
-            if names
-        }
+        return {art_type.value: names for art_type, names in self.types.items() if names}
 
     def list_by_source(self) -> Dict[str, List[str]]:
         """List artifact names grouped by source node"""
@@ -164,10 +161,7 @@ class ArtifactRegistry:
 
     def count_by_type(self) -> Dict[str, int]:
         """Count artifacts by type"""
-        return {
-            art_type.value: len(names)
-            for art_type, names in self.types.items()
-        }
+        return {art_type.value: len(names) for art_type, names in self.types.items()}
 
     def total_size(self) -> int:
         """Compute total size of all artifacts in bytes"""

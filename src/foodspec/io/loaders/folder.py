@@ -1,4 +1,5 @@
 """Folder-based loaders for text spectra."""
+
 from __future__ import annotations
 
 from os import PathLike

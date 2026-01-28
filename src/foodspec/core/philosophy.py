@@ -4,6 +4,7 @@ FoodSpec Core Design Philosophy System
 Principles enforced at execution time.
 Every run must satisfy these principles.
 """
+
 from __future__ import annotations
 
 import logging
@@ -101,13 +102,16 @@ def feature_map() -> List[Dict[str, str]]:
 # Formal Design Principles (Enforced at Runtime)
 # ============================================================================
 
+
 class PhilosophyError(Exception):
     """Raised when a design principle is violated"""
+
     pass
 
 
 class TaskType(str, Enum):
     """Canonical task types for FoodSpec"""
+
     AUTHENTICATION = "authentication"
     ADULTERATION = "adulteration"
     MONITORING = "monitoring"
@@ -120,13 +124,13 @@ class DesignPrinciples:
     """
 
     # Core Principles
-    TASK_FIRST: List[str] = None           # Task must be one of these
-    QC_FIRST: bool = True                  # QC must run before modeling
-    TRUST_FIRST: bool = True               # Trust stack required outputs
+    TASK_FIRST: List[str] = None  # Task must be one of these
+    QC_FIRST: bool = True  # QC must run before modeling
+    TRUST_FIRST: bool = True  # Trust stack required outputs
     PROTOCOL_IS_SOURCE_OF_TRUTH: bool = True  # Protocol immutable
     REPRODUCIBILITY_REQUIRED: bool = True  # Seeds, versions, env captured
-    DUAL_API: bool = True                  # CLI and programmatic both
-    REPORT_FIRST: bool = True              # Reports on every run
+    DUAL_API: bool = True  # CLI and programmatic both
+    REPORT_FIRST: bool = True  # Reports on every run
 
     def __post_init__(self):
         if self.TASK_FIRST is None:
@@ -156,6 +160,7 @@ DESIGN_PRINCIPLES = DesignPrinciples()
 # ============================================================================
 # Enforcement Functions
 # ============================================================================
+
 
 def enforce_task_first(config: Dict[str, Any]) -> None:
     """
@@ -189,9 +194,7 @@ def enforce_protocol_truth(protocol: Any) -> None:
     required = ["task", "modality", "model", "validation"]
     for attr in required:
         if not hasattr(protocol, attr):
-            raise PhilosophyError(
-                f"Protocol missing required attribute '{attr}' for source-of-truth"
-            )
+            raise PhilosophyError(f"Protocol missing required attribute '{attr}' for source-of-truth")
 
     logger.info("✓ Protocol is complete source of truth")
 
@@ -205,21 +208,15 @@ def enforce_qc_first(qc_results: Dict[str, Any]) -> None:
         raise PhilosophyError("QC results not available - QC must run first")
 
     if "critical_failures" in qc_results and qc_results["critical_failures"]:
-        raise PhilosophyError(
-            f"QC_FIRST violated: Critical failures: {qc_results['critical_failures']}"
-        )
+        raise PhilosophyError(f"QC_FIRST violated: Critical failures: {qc_results['critical_failures']}")
 
     status = qc_results.get("status", "unknown")
     if status not in ["pass", "warning"]:
-        raise PhilosophyError(
-            f"QC_FIRST violated: QC status is '{status}', must be 'pass' or 'warning'"
-        )
+        raise PhilosophyError(f"QC_FIRST violated: QC status is '{status}', must be 'pass' or 'warning'")
 
     pass_rate = qc_results.get("pass_rate", 0.0)
     if pass_rate < 0.5:
-        raise PhilosophyError(
-            f"QC_FIRST violated: Pass rate {pass_rate:.1%} below 50% threshold"
-        )
+        raise PhilosophyError(f"QC_FIRST violated: Pass rate {pass_rate:.1%} below 50% threshold")
 
     logger.info(f"✓ QC passed (status={status}, pass_rate={pass_rate:.1%})")
 
@@ -237,10 +234,7 @@ def enforce_trust_first(trust_outputs: Dict[str, Any]) -> None:
 
     if len(available_keys) < len(required_keys):
         missing = set(required_keys) - set(available_keys)
-        raise PhilosophyError(
-            f"TRUST_FIRST violated: Missing {missing}. "
-            f"Available: {list(trust_outputs.keys())}"
-        )
+        raise PhilosophyError(f"TRUST_FIRST violated: Missing {missing}. Available: {list(trust_outputs.keys())}")
 
     logger.info(f"✓ Trust stack outputs available: {list(trust_outputs.keys())}")
 
@@ -258,12 +252,10 @@ def enforce_reproducibility(manifest: Dict[str, Any]) -> None:
 
     if missing:
         raise PhilosophyError(
-            f"REPRODUCIBILITY_REQUIRED violated: Missing {missing}. "
-            f"Available: {list(manifest.keys())}"
+            f"REPRODUCIBILITY_REQUIRED violated: Missing {missing}. Available: {list(manifest.keys())}"
         )
 
-    logger.info(f"✓ Reproducibility verified (seed={manifest.get('seed')}, "
-                f"python={manifest.get('python_version')})")
+    logger.info(f"✓ Reproducibility verified (seed={manifest.get('seed')}, python={manifest.get('python_version')})")
 
 
 def enforce_report_first(artifacts: Dict[str, Path]) -> None:
@@ -279,8 +271,7 @@ def enforce_report_first(artifacts: Dict[str, Path]) -> None:
 
     if not available:
         raise PhilosophyError(
-            f"REPORT_FIRST violated: No report artifacts. "
-            f"Expected: {report_keys}, Got: {list(artifacts.keys())}"
+            f"REPORT_FIRST violated: No report artifacts. Expected: {report_keys}, Got: {list(artifacts.keys())}"
         )
 
     logger.info(f"✓ Reports generated: {available}")
@@ -339,9 +330,7 @@ def validate_all_principles(
     if errors:
         error_msg = "\n".join(f"  ✗ {e}" for e in errors)
         logger.error(f"\nPHILOSOPHY VIOLATIONS:\n{error_msg}")
-        raise PhilosophyError(
-            f"Philosophy enforcement failed ({len(errors)} violations):\n{error_msg}"
-        )
+        raise PhilosophyError(f"Philosophy enforcement failed ({len(errors)} violations):\n{error_msg}")
 
     logger.info("=" * 70)
     logger.info("✓ ALL PHILOSOPHY PRINCIPLES SATISFIED")
