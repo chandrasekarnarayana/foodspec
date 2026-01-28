@@ -5,6 +5,7 @@ description: "Minimal test protocol for Phase 1 orchestrator testing"
 task:
   type: "classification"
   name: "multiclass_classification"
+  target_column: "label"
 
 expected_columns:
   label_col: "label"

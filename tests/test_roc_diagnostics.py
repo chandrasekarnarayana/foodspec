@@ -96,7 +96,7 @@ class TestMulticlassROC:
         """Test multiclass ROC output shapes and structure."""
         X, y = make_classification(n_samples=150, n_features=20, n_informative=15, n_classes=3, n_clusters_per_class=1, random_state=42)
 
-        clf = LogisticRegression(multi_class="multinomial", max_iter=1000, random_state=42)
+        clf = LogisticRegression(max_iter=1000, random_state=42)
         clf.fit(X[:100], y[:100])
         y_proba = clf.predict_proba(X[100:])
         y_test = y[100:]
@@ -112,7 +112,7 @@ class TestMulticlassROC:
         """Test per-class ROC metrics are valid."""
         X, y = make_classification(n_samples=120, n_features=15, n_informative=12, n_classes=3, n_clusters_per_class=1, random_state=42)
 
-        clf = LogisticRegression(multi_class="multinomial", max_iter=1000, random_state=42)
+        clf = LogisticRegression(max_iter=1000, random_state=42)
         clf.fit(X[:80], y[:80])
         y_proba = clf.predict_proba(X[80:])
         y_test = y[80:]
@@ -130,7 +130,7 @@ class TestMulticlassROC:
         """Test micro/macro averaging."""
         X, y = make_classification(n_samples=120, n_features=15, n_informative=12, n_classes=3, n_clusters_per_class=1, random_state=42)
 
-        clf = LogisticRegression(multi_class="multinomial", max_iter=1000, random_state=42)
+        clf = LogisticRegression(max_iter=1000, random_state=42)
         clf.fit(X[:80], y[:80])
         y_proba = clf.predict_proba(X[80:])
         y_test = y[80:]
@@ -313,7 +313,7 @@ class TestRealData:
         """Test on multiclass problem."""
         X, y = make_classification(n_samples=300, n_features=30, n_informative=20, n_classes=5, n_clusters_per_class=2, random_state=42)
 
-        clf = LogisticRegression(multi_class="multinomial", max_iter=1000, random_state=42)
+        clf = LogisticRegression(max_iter=1000, random_state=42)
         clf.fit(X[:200], y[:200])
         y_proba = clf.predict_proba(X[200:])
         y_test = y[200:]

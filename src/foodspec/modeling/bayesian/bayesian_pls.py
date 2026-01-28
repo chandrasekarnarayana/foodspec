@@ -42,12 +42,13 @@ Example:
 
 from __future__ import annotations
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union, Any
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.preprocessing import StandardScaler
+from sklearn.utils.validation import check_X_y, check_array
 
 
 class BayesianPLS(BaseEstimator, RegressorMixin):
@@ -146,6 +147,59 @@ class BayesianPLS(BaseEstimator, RegressorMixin):
         self.prior_beta = prior_beta
         self.scale = scale
         self.random_state = random_state
+
+    def _validate_data(
+        self,
+        X: np.ndarray,
+        y: Optional[np.ndarray] = None,
+        dtype: Union[type, str] = float,
+        ensure_2d: bool = True,
+        reset: bool = True,
+        y_numeric: bool = False,
+        **kwargs: Any
+    ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+        """
+        Validate and standardize input data (compatibility with sklearn).
+
+        Parameters
+        ----------
+        X : ndarray
+            Input features.
+        y : ndarray, optional
+            Target values.
+        dtype : type or str, default=float
+            Data type to convert to.
+        ensure_2d : bool, default=True
+            Ensure X is 2D.
+        reset : bool, default=True
+            Whether this is a reset validation (not tracking during predict).
+        y_numeric : bool, default=False
+            Whether to ensure y is numeric.
+        **kwargs : dict
+            Additional kwargs for sklearn validation functions.
+
+        Returns
+        -------
+        X_validated : ndarray
+            Validated X.
+        y_validated : ndarray, optional
+            Validated y (if y is not None).
+        """
+        if y is None:
+            X_validated = check_array(
+                X, dtype=dtype, ensure_2d=ensure_2d, allow_nd=False
+            )
+            return X_validated
+        else:
+            if y_numeric:
+                X_validated, y_validated = check_X_y(
+                    X, y, dtype=dtype, ensure_2d=ensure_2d, y_numeric=True, multi_output=False
+                )
+            else:
+                X_validated, y_validated = check_X_y(
+                    X, y, dtype=dtype, ensure_2d=ensure_2d, multi_output=False
+                )
+            return X_validated, y_validated
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> BayesianPLS:
         """
@@ -458,6 +512,59 @@ class BayesianNNLS(BaseEstimator, RegressorMixin):
         self.prior_sigma2 = prior_sigma2
         self.random_state = random_state
 
+    def _validate_data(
+        self,
+        X: np.ndarray,
+        y: Optional[np.ndarray] = None,
+        dtype: Union[type, str] = float,
+        ensure_2d: bool = True,
+        reset: bool = True,
+        y_numeric: bool = False,
+        **kwargs: Any
+    ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+        """
+        Validate and standardize input data (compatibility with sklearn).
+
+        Parameters
+        ----------
+        X : ndarray
+            Input features.
+        y : ndarray, optional
+            Target values.
+        dtype : type or str, default=float
+            Data type to convert to.
+        ensure_2d : bool, default=True
+            Ensure X is 2D.
+        reset : bool, default=True
+            Whether this is a reset validation (not tracking during predict).
+        y_numeric : bool, default=False
+            Whether to ensure y is numeric.
+        **kwargs : dict
+            Additional kwargs for sklearn validation functions.
+
+        Returns
+        -------
+        X_validated : ndarray
+            Validated X.
+        y_validated : ndarray, optional
+            Validated y (if y is not None).
+        """
+        if y is None:
+            X_validated = check_array(
+                X, dtype=dtype, ensure_2d=ensure_2d, allow_nd=False
+            )
+            return X_validated
+        else:
+            if y_numeric:
+                X_validated, y_validated = check_X_y(
+                    X, y, dtype=dtype, ensure_2d=ensure_2d, y_numeric=True, multi_output=False
+                )
+            else:
+                X_validated, y_validated = check_X_y(
+                    X, y, dtype=dtype, ensure_2d=ensure_2d, multi_output=False
+                )
+            return X_validated, y_validated
+
     def fit(self, X: np.ndarray, y: np.ndarray) -> BayesianNNLS:
         """
         Fit Bayesian NNLS via truncated normal Gibbs sampling.
@@ -654,6 +761,59 @@ class VariationalPLS(BaseEstimator, RegressorMixin):
         self.tol = tol
         self.prior_sigma2 = prior_sigma2
         self.scale = scale
+
+    def _validate_data(
+        self,
+        X: np.ndarray,
+        y: Optional[np.ndarray] = None,
+        dtype: Union[type, str] = float,
+        ensure_2d: bool = True,
+        reset: bool = True,
+        y_numeric: bool = False,
+        **kwargs: Any
+    ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+        """
+        Validate and standardize input data (compatibility with sklearn).
+
+        Parameters
+        ----------
+        X : ndarray
+            Input features.
+        y : ndarray, optional
+            Target values.
+        dtype : type or str, default=float
+            Data type to convert to.
+        ensure_2d : bool, default=True
+            Ensure X is 2D.
+        reset : bool, default=True
+            Whether this is a reset validation (not tracking during predict).
+        y_numeric : bool, default=False
+            Whether to ensure y is numeric.
+        **kwargs : dict
+            Additional kwargs for sklearn validation functions.
+
+        Returns
+        -------
+        X_validated : ndarray
+            Validated X.
+        y_validated : ndarray, optional
+            Validated y (if y is not None).
+        """
+        if y is None:
+            X_validated = check_array(
+                X, dtype=dtype, ensure_2d=ensure_2d, allow_nd=False
+            )
+            return X_validated
+        else:
+            if y_numeric:
+                X_validated, y_validated = check_X_y(
+                    X, y, dtype=dtype, ensure_2d=ensure_2d, y_numeric=True, multi_output=False
+                )
+            else:
+                X_validated, y_validated = check_X_y(
+                    X, y, dtype=dtype, ensure_2d=ensure_2d, multi_output=False
+                )
+            return X_validated, y_validated
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> VariationalPLS:
         """

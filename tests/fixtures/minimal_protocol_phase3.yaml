@@ -19,3 +19,4 @@ modeling:
 
 expected_columns:
   label_col: "label"
+  target_column: "label"

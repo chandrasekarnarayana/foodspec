@@ -42,6 +42,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Literal, Optional, Tuple
 
 import numpy as np
+from scipy import ndimage
 from scipy import signal
 
 
@@ -308,7 +309,7 @@ class SpectraSimulator:
         if self.instrument_model.resolution > 0:
             sigma = self.instrument_model.resolution / (2 * np.sqrt(2 * np.log(2)))
             for i in range(n_samples):
-                X_inst[i] = signal.gaussian_filter1d(X_inst[i], sigma)
+                X_inst[i] = ndimage.gaussian_filter1d(X_inst[i], sigma)
 
         # Baseline drift (linear + quadratic)
         if self.instrument_model.baseline_drift != 0 or self.instrument_model.baseline_curve != 0:

@@ -103,23 +103,31 @@ def validate_protocol(cfg: ProtocolConfig, df: pd.DataFrame) -> Dict[str, List[s
     for step in cfg.steps:
         if step.get("type") not in STEP_REGISTRY:
             errors.append(f"Unknown step type: {step.get('type')}")
-    # outcome typing
+    
+    # Check if this protocol has modeling steps that need target_column
+    has_modeling_steps = any(
+        step.get("type") in {"model_fit_predict", "multivariate_analysis"}
+        for step in cfg.steps
+    )
+    
+    # outcome typing - only validate if there are modeling steps
     outcome = (cfg.outcome_type or "classification").lower()
     target_col = cfg.target_column or cfg.expected_columns.get("target_column")
-    if outcome in {OutcomeType.REGRESSION.value, OutcomeType.COUNT.value, OutcomeType.CLASSIFICATION.value}:
-        if not target_col:
-            errors.append("target_column is required for modeling tasks; set task.target_column in protocol.")
-        elif target_col not in df.columns:
-            errors.append(f"target_column '{target_col}' not found in dataset.")
-    if outcome == OutcomeType.SURVIVAL.value:
-        if not target_col or target_col not in df.columns:
-            errors.append("Survival tasks require target_column (event indicator) present in data.")
-        if not cfg.time_column or cfg.time_column not in df.columns:
-            errors.append("Survival tasks require time_column present in data.")
-    if outcome == OutcomeType.COUNT.value:
-        if target_col and target_col in df.columns:
-            if (df[target_col] < 0).any():
-                errors.append(f"Count outcome '{target_col}' must be non-negative.")
+    if has_modeling_steps:
+        if outcome in {OutcomeType.REGRESSION.value, OutcomeType.COUNT.value, OutcomeType.CLASSIFICATION.value}:
+            if not target_col:
+                errors.append("target_column is required for modeling tasks; set task.target_column in protocol.")
+            elif target_col not in df.columns:
+                errors.append(f"target_column '{target_col}' not found in dataset.")
+        if outcome == OutcomeType.SURVIVAL.value:
+            if not target_col or target_col not in df.columns:
+                errors.append("Survival tasks require target_column (event indicator) present in data.")
+            if not cfg.time_column or cfg.time_column not in df.columns:
+                errors.append("Survival tasks require time_column present in data.")
+        if outcome == OutcomeType.COUNT.value:
+            if target_col and target_col in df.columns:
+                if (df[target_col] < 0).any():
+                    errors.append(f"Count outcome '{target_col}' must be non-negative.")
 
     # expected columns
     if cfg.expected_columns:
