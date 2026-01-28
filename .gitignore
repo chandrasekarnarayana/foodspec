@@ -101,3 +101,10 @@ tmp_*/
 tmp_run/
 tmp_run3/
 tmp_workflow_runs/
+
+# Local virtual envs
+.workflow_venv/
+.venv/
+venv/
+__pycache__/
+*.pyc
