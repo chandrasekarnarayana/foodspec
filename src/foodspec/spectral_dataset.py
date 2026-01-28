@@ -1,14 +1,14 @@
 """Deprecated shim for SpectralDataset utilities.
 
-Use foodspec.data_objects.spectral_dataset instead. This module will be removed in a future release.
+Use foodspec.core.spectral_dataset instead. This module will be removed in a future release.
 """
 
 from __future__ import annotations
 
 import warnings
 
-# Import from new location
-from foodspec.data_objects.spectral_dataset import (
+# Import from core, which will issue its own deprecation warning
+from foodspec.core.spectral_dataset import (
     HDF5_SCHEMA_VERSION,
     HyperspectralDataset,
     PreprocessingConfig,

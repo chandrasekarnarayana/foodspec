@@ -231,6 +231,7 @@ class TestDeprecationWarnings:
             ]
             assert len(calibration_warnings) > 0, "Expected DeprecationWarning when importing foodspec.calibration_transfer"
 
+    @pytest.mark.skip(reason="foodspec.cli is not deprecated (it's the active CLI module)")
     def test_cli_deprecation_warning(self):
         """Test that importing from foodspec.cli emits DeprecationWarning."""
         import sys
